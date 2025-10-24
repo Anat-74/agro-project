@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="325px" height="365px" viewBox="0 0 325 365" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 60.1 (88133) - https://sketch.com -->
+    <title>BYNlightBlack</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M296.15,0.86 L296.15,30.44 L79.4,30.44 L79.4,95.96 L255,95.96 L255,125.54 L79.4,125.539 L79.4,154.88 L216.59,154.88 L217.6078,154.8828 C251.1197,155.0679 277.3004,164.417 296.15,182.93 C315.19,201.63 324.71,227.3 324.71,259.94 C324.71,292.58 315.19,318.25 296.15,336.95 C277.11,355.65 250.59,365 216.59,365 L216.59,365 L44.72,365 L44.72,125.539 L0,125.54 L0,95.96 L44.72,95.96 L44.72,0.86 L296.15,0.86 Z M208.94,184.46 L79.4,184.46 L79.4,335.42 L208.94,335.42 C234.44,335.42 254.33,328.705 268.61,315.275 C282.89,301.845 290.03,283.4 290.03,259.94 C290.03,236.48 282.89,218.035 268.61,204.605 C254.33,191.175 234.44,184.46 208.94,184.46 L208.94,184.46 Z" id="path-1"></path>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="BYNlightBlack" transform="translate(-21.000000, -640.000000)">
+            <g transform="translate(21.000000, 640.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <g id="Clip-2"></g>
+                <polygon id="Fill-1" fill="#000000" mask="url(#mask-2)" points="-5 -4.14 329.71 -4.14 329.71 370 -5 370"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

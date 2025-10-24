@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_contacts_phones",
+  "info": {
+    "displayName": "Phone",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "phoneNumber": {
+      "type": "string",
+      "required": true
+    },
+    "isMobile": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

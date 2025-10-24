@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_legal_bank_details",
+  "info": {
+    "displayName": "BankDetails",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "bankName": {
+      "type": "string",
+      "required": false
+    },
+    "bankAddress": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "accountNumber": {
+      "type": "string"
+    },
+    "swiftCode": {
+      "type": "string",
+      "regex": "^SWIFT: [A-Z]{6}[A-Z\\d]{2}([A-Z\\d]{3})?$"
+    }
+  }
+}

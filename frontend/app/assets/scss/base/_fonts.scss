@@ -1,0 +1,32 @@
+// ?Подключение шрифтов
+
+ @font-face {
+   font-family: "Montserrat";
+   src: local("Montserrat-Regular"),
+   url("/fonts/Montserrat-Regular.woff2") format("woff2");
+   font-weight: 400;
+   font-display: swap;
+ }
+
+@font-face {
+   font-family: "Montserrat";
+   src: local("Montserrat-Medium"),
+   url("/fonts/Montserrat-Medium.woff2") format("woff2");
+   font-weight: 500;
+   font-display: swap;
+ }
+
+ @font-face {
+   font-family: "Montserrat";
+   src: local("Montserrat-MediumItalic"),
+   url("/fonts/Montserrat-MediumItalic.woff2") format("woff2");
+   font-style: italic;
+   font-display: swap;
+ }
+
+@font-face {
+   font-family: "RubikBurned";
+   src: local("RubikBurned-Regular"),
+   url("/fonts/RubikBurned-Regular.woff2") format("woff2");
+   font-display: swap;
+ }

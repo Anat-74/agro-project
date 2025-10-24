@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_contacts_socials",
+  "info": {
+    "displayName": "Social",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "href": {
+      "type": "string"
+    },
+    "isSocial": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

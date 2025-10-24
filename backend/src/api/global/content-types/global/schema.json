@@ -1,0 +1,60 @@
+{
+  "kind": "singleType",
+  "collectionName": "globals",
+  "info": {
+    "singularName": "global",
+    "pluralName": "globals",
+    "displayName": "Global",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "phones": {
+      "type": "component",
+      "repeatable": true,
+      "component": "contacts.phone",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
+    "email": {
+      "type": "component",
+      "repeatable": true,
+      "component": "contacts.email"
+    },
+    "legal": {
+      "type": "component",
+      "repeatable": false,
+      "component": "legal.bank-details",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "footer": {
+      "type": "component",
+      "repeatable": false,
+      "component": "layout.footer",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "socials": {
+      "type": "component",
+      "repeatable": true,
+      "component": "contacts.social"
+    }
+  }
+}

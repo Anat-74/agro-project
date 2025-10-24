@@ -1,0 +1,85 @@
+@use "sass:math";
+@use './container' as c;
+@use './functions' as f;
+
+@mixin hover($hasActiveEffectOnMobile: true) {
+   @media(any-hover: hover) {
+      &:hover {
+         @content;
+      }
+   }
+   @if($hasActiveEffectOnMobile) {
+      @media(any-hover: none) {
+         &:active {
+            @content;
+         }
+      }
+   }
+}
+
+// Grids
+@mixin gridCards($type: fit, $min: 280px, $max: 1fr, $gap: 30px) {
+	display: grid;
+	gap: $gap;
+	grid-template-columns: repeat(auto-#{$type}, minmax($min, $max));
+}
+
+// Адаптивное свойство(clamp)
+@mixin adaptiveValue($property, $startSize, $minSize, $keepSize: 0, $widthFrom: c.$containerWidth, $widthTo: c.$minWidth) {
+	@if ($startSize==0) {
+		$startSize: 0.000001;
+	}
+	@if ($minSize==0) {
+		$minSize: 0.000001;
+	}
+
+	// Для calc();
+	$addSize: math.div($startSize - $minSize, 16);
+
+	@if ($widthFrom == c.$containerWidth and c.$maxWidthContainer == 0) {
+		$widthFrom: c.$maxWidth;
+	}
+
+	// Брейк-поинты в EM
+	$widthFromMedia: f.toEm($widthFrom);
+	$widthToMedia: f.toEm($widthTo);
+
+	// Формула плавающего значения
+	// Источник: https://css-tricks.com/linearly-scale-font-size-with-css-clamp-based-on-the-viewport/
+	$slope: math.div(($startSize - $minSize), ($widthFrom - $widthTo));
+	$yIntersection: -$widthTo * $slope + $minSize;
+	@if ($yIntersection==0) {
+		$yIntersection: 0.000001;
+	}
+	$flyValue: #{f.toRem($yIntersection)}" + " #{$slope * 100}vw;
+
+	// Получение значения свойства
+	$propertyValue: #{"clamp(" f.toRem($minSize) "," $flyValue "," f.toRem($startSize) ")"};
+	// Если отрицательные значения
+	@if ($minSize > $startSize) {
+		$propertyValue: #{"clamp(" f.toRem($startSize) "," $flyValue "," f.toRem($minSize) ")"};
+	}
+
+	// Устанавливаем значение по умолчанию
+	@if $keepSize != 1 and $keepSize != 3 {
+		@media (min-width: $widthFromMedia) {
+			#{$property}: f.toRem($startSize);
+		}
+	}
+	// Адаптируем размер в промежутке между указанными ширинами вьюпорта
+	@media (min-width: $widthToMedia) and (max-width: $widthFromMedia) {
+		// Если поддерживается clamp();
+		@supports (#{$property}: $propertyValue) {
+			#{$property}: $propertyValue;
+		}
+		// Если не поддерживается clamp();
+		@supports not (#{$property}: $propertyValue) {
+			#{$property}: calc(#{f.toRem($minSize)} + #{$addSize} * (100vw - #{f.toRem($widthTo)}) / #{math.div($widthFrom, 16) - math.div($widthTo, 16)});
+		}
+	}
+	@if $keepSize != 1 and $keepSize != 2 {
+		@media (max-width: $widthToMedia) {
+			#{$property}: f.toRem($minSize);
+		}
+	}
+}

@@ -1,0 +1,35 @@
+{
+  "collectionName": "components_layout_footers",
+  "info": {
+    "displayName": "Footer",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "companyName": {
+      "type": "string"
+    },
+    "workingHours": {
+      "type": "string"
+    },
+    "legalAdress": {
+      "type": "string"
+    },
+    "taxId": {
+      "type": "string"
+    },
+    "copyright": {
+      "type": "string"
+    },
+    "logo": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": true
+    }
+  }
+}
