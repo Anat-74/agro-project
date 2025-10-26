@@ -1,4 +1,4 @@
-require('dotenv').config() 
+require('dotenv').config()
 
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
