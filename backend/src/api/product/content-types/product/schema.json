@@ -52,17 +52,6 @@
       "type": "uid",
       "targetField": "name"
     },
-    "category": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::category.category"
-    },
-    "subcategory": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "api::subcategory.subcategory",
-      "inversedBy": "products"
-    },
     "description": {
       "type": "richtext",
       "pluginOptions": {
@@ -91,6 +80,16 @@
     "isDiscount": {
       "type": "boolean",
       "default": false
+    },
+    "subcategory": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::subcategory.subcategory"
+    },
+    "category": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::category.category"
     }
   }
 }

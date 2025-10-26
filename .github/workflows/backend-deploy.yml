@@ -1,0 +1,39 @@
+name: Backend Deploy
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-deploy.yml'
+  pull_request:
+    paths:
+      - 'backend/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: 'backend/package-lock.json'
+    
+    - name: Install backend dependencies
+      run: npm ci
+      working-directory: backend
+    
+    - name: Build backend
+      run: npm run build
+      working-directory: backend
+    
+    - name: Deploy to production
+      run: |
+        echo "Deploying backend..."
+        # Добавьте сюда команды для деплоя вашего Strapi приложения
+        # Например, деплой на Heroku, DigitalOcean, AWS или другой хостинг

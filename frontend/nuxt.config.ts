@@ -1,5 +1,3 @@
-require('dotenv').config()
-
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
    devtools: {
@@ -14,7 +12,6 @@ export default defineNuxtConfig({
     "@nuxtjs/strapi",
     "@nuxtjs/mdc",
     "@nuxtjs/seo",
-    "@nuxtjs/dotenv",
   ],
   nitro: {
     storage: {
@@ -58,7 +55,7 @@ export default defineNuxtConfig({
       //   maxAge: 86400, // 24 часа
       //   swr: true
       // }
-    },
+     },
 
     // Главная страница - ISR с кэшем 30 мин на CDN
     "/ru": { isr: 1800 },
@@ -72,23 +69,22 @@ export default defineNuxtConfig({
     "/ru/**": { isr: 3600 },
 
     // Товары - SWR для обновления в фоне при изменениях
-    "/ru/*/*": {
-      cache: {
-        maxAge: 600,
-        swr: true,
-        staleMaxAge: 3600,
-      },
-    },
+   //  "/ru/*/*": {
+   //    cache: {
+   //      maxAge: 600,
+   //      swr: true,
+   //      staleMaxAge: 3600,
+   //    },
+   //  },
 
     // Описание товара - как товары
-    "/ru/*/*/*": {
-      cache: {
-        maxAge: 600,
-        swr: true,
-        staleMaxAge: 3600,
-      },
-    },
-    
+   //  "/ru/*/*/*": {
+   //    cache: {
+   //      maxAge: 600,
+   //      swr: true,
+   //      staleMaxAge: 3600,
+   //    },
+   //  },
   },
   runtimeConfig: {
     strapi: {

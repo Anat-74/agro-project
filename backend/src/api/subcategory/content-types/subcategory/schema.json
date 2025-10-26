@@ -26,18 +26,18 @@
     },
     "image": {
       "type": "media",
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      },
       "multiple": true,
       "required": false,
       "allowedTypes": [
         "images",
         "videos",
         "audios"
-      ],
-      "pluginOptions": {
-        "i18n": {
-          "localized": false
-        }
-      }
+      ]
     },
     "slug": {
       "type": "uid",
@@ -51,8 +51,7 @@
     "products": {
       "type": "relation",
       "relation": "oneToMany",
-      "target": "api::product.product",
-      "mappedBy": "subcategory"
+      "target": "api::product.product"
     }
   }
 }

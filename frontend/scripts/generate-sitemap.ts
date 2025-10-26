@@ -1,11 +1,17 @@
 // @ts-ignore
-import { writeFileSync } from 'fs'
+import { writeFileSync, existsSync } from 'fs'
 import { $fetch } from 'ofetch'
+import { resolve } from 'path'
 
 async function loadEnv() {
   try {
     const dotenv = await import('dotenv')
-    dotenv.config()
+    const envPath = resolve(process.cwd(), '.env')
+    if (existsSync(envPath)) {
+      dotenv.config({ path: envPath })
+    } else {
+      console.warn('.env file not found, using default values')
+    }
   } catch (error) {
     console.warn('dotenv not found, using default values')
   }
@@ -23,9 +29,9 @@ async function generateSitemap() {
   // Загружаем переменные окружения
   await loadEnv()
   
-  const siteUrl = process.env.SITE_URL || 'http://localhost:3000'
-  const strapiUrl = process.env.NUXT_PUBLIC_STRAPI_URL || 'http://127.0.0.1:1337'
-  const strapiToken = process.env.NUXT_STRAPI_TOKEN || '64acd09db50794111c1b62365941ac1a5a45a54fee8e5b4b882b838d9445de32a16f000532908f67c7fe211cd66e9cd88b691005c25dae4493fc897acce3ce6131b9bc1cd202ce01e2bae8ac6d53338f4a632b6193df492582e49bc41b4213eeaa1fe47a714ac3dc1c986ebcad539a0778e4c20c5d3d5974d57591e89d382350'
+  const siteUrl = process.env.SITE_URL
+  const strapiUrl = process.env.NUXT_PUBLIC_STRAPI_URL
+  const strapiToken = process.env.NUXT_STRAPI_TOKEN
   
   console.log('Strapi URL:', strapiUrl) // Отладочный вывод
 
