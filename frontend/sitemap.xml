@@ -27,7 +27,7 @@
  
   <url>
     <loc>http://localhost:3000/ru/cartshopping</loc>
-    <lastmod>2025-10-28T12:55:27.969Z</lastmod>
+    <lastmod>2025-10-28T16:38:16.817Z</lastmod>
     <priority>0.8</priority>
     <changefreq>weekly</changefreq>
     
@@ -59,7 +59,7 @@
  
   <url>
     <loc>http://localhost:3000/en/cartshopping</loc>
-    <lastmod>2025-10-28T12:55:27.969Z</lastmod>
+    <lastmod>2025-10-28T16:38:16.819Z</lastmod>
     <priority>0.8</priority>
     <changefreq>weekly</changefreq>
     
@@ -91,7 +91,7 @@
  
   <url>
     <loc>http://localhost:3000/be/cartshopping</loc>
-    <lastmod>2025-10-28T12:55:27.969Z</lastmod>
+    <lastmod>2025-10-28T16:38:16.819Z</lastmod>
     <priority>0.8</priority>
     <changefreq>weekly</changefreq>
     
@@ -142,17 +142,6 @@
   </url>
  
   <url>
-    <loc>http://localhost:3000/ru/drugaya-produkcziya/tumby-mobilnye</loc>
-    <lastmod>2025-10-26T10:46:16.726Z</lastmod>
-    <priority>0.8</priority>
-    <changefreq>weekly</changefreq>
-    
-    <image:image>
-      <image:loc>http://127.0.0.1:1337/uploads/e117eee46c5d657291d5f267e2e747a2_removebg_preview_1dbe179070.png</image:loc>
-    </image:image>
-  </url>
- 
-  <url>
     <loc>http://localhost:3000/en/drugaya-produkcziya</loc>
     <lastmod>2025-10-26T11:31:15.782Z</lastmod>
     <priority>0.8</priority>
@@ -160,17 +149,6 @@
     
     <image:image>
       <image:loc>http://127.0.0.1:1337/uploads/1b7c42162fd50db539d7f9255b933dd5_6950b00c11.png</image:loc>
-    </image:image>
-  </url>
- 
-  <url>
-    <loc>http://localhost:3000/en/drugaya-produkcziya/tumby-mobilnye</loc>
-    <lastmod>2025-10-26T10:46:16.726Z</lastmod>
-    <priority>0.8</priority>
-    <changefreq>weekly</changefreq>
-    
-    <image:image>
-      <image:loc>http://127.0.0.1:1337/uploads/e117eee46c5d657291d5f267e2e747a2_removebg_preview_1dbe179070.png</image:loc>
     </image:image>
   </url>
  
@@ -186,7 +164,7 @@
   </url>
  
   <url>
-    <loc>http://localhost:3000/be/drugaya-produkcziya/tumby-mobilnye</loc>
+    <loc>http://localhost:3000/ru/drugaya-produkcziya/tumby-mobilnye</loc>
     <lastmod>2025-10-26T10:46:16.726Z</lastmod>
     <priority>0.8</priority>
     <changefreq>weekly</changefreq>
@@ -217,6 +195,17 @@
   </url>
  
   <url>
+    <loc>http://localhost:3000/en/drugaya-produkcziya/tumby-mobilnye</loc>
+    <lastmod>2025-10-26T10:46:16.726Z</lastmod>
+    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    
+    <image:image>
+      <image:loc>http://127.0.0.1:1337/uploads/e117eee46c5d657291d5f267e2e747a2_removebg_preview_1dbe179070.png</image:loc>
+    </image:image>
+  </url>
+ 
+  <url>
     <loc>http://localhost:3000/en/drugaya-produkcziya/tumby-mobilnye/ofisnyj-sejf-aiko-tsn-37-el</loc>
     <lastmod>2025-10-26T10:56:18.419Z</lastmod>
     <priority>0.8</priority>
@@ -237,6 +226,17 @@
   </url>
  
   <url>
+    <loc>http://localhost:3000/be/drugaya-produkcziya/tumby-mobilnye</loc>
+    <lastmod>2025-10-26T10:46:16.726Z</lastmod>
+    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    
+    <image:image>
+      <image:loc>http://127.0.0.1:1337/uploads/e117eee46c5d657291d5f267e2e747a2_removebg_preview_1dbe179070.png</image:loc>
+    </image:image>
+  </url>
+ 
+  <url>
     <loc>http://localhost:3000/be/drugaya-produkcziya/tumby-mobilnye/ofisnyj-sejf-aiko-tsn-37-el</loc>
     <lastmod>2025-10-26T10:56:18.419Z</lastmod>
     <priority>0.8</priority>
@@ -253,6 +253,39 @@
     </image:image>
     <image:image>
       <image:loc>http://127.0.0.1:1337/uploads/additional_photo_1_6cc0c4abba.jpg</image:loc>
+    </image:image>
+  </url>
+ 
+  <url>
+    <loc>http://localhost:3000/ru/test-category/test-product</loc>
+    <lastmod>2025-10-26T11:32:12.343Z</lastmod>
+    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    
+    <image:image>
+      <image:loc>http://127.0.0.1:1337/uploads/additional_photo_0_removebg_preview_c1bf90827f.png</image:loc>
+    </image:image>
+  </url>
+ 
+  <url>
+    <loc>http://localhost:3000/en/test-category/test-product</loc>
+    <lastmod>2025-10-26T11:32:12.343Z</lastmod>
+    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    
+    <image:image>
+      <image:loc>http://127.0.0.1:1337/uploads/additional_photo_0_removebg_preview_c1bf90827f.png</image:loc>
+    </image:image>
+  </url>
+ 
+  <url>
+    <loc>http://localhost:3000/be/test-category/test-product</loc>
+    <lastmod>2025-10-26T11:32:12.343Z</lastmod>
+    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    
+    <image:image>
+      <image:loc>http://127.0.0.1:1337/uploads/additional_photo_0_removebg_preview_c1bf90827f.png</image:loc>
     </image:image>
   </url>
  

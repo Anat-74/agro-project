@@ -1,3 +1,5 @@
+import { defineNuxtConfig } from 'nuxt/config'
+
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
    devtools: {
@@ -12,6 +14,7 @@ export default defineNuxtConfig({
     "@nuxtjs/strapi",
     "@nuxtjs/mdc",
     "@nuxtjs/seo",
+    "nuxt-cron",
   ],
   nitro: {
     storage: {
@@ -103,7 +106,8 @@ export default defineNuxtConfig({
     },
   },
   image: {
-      domains: ["api.vh324.by3020.ihb.by"],
+   //   domains: ["api.vh324.by3020.ihb.by"],
+     domains: ["http://127.0.0.1:1337"],
     screens: {
       xs: 320,
       sm: 480,

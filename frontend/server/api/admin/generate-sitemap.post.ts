@@ -1,4 +1,4 @@
-import { generateSitemap } from '../../../scripts/generate-sitemap'
+import { generateSitemap } from '../../utils/generate-sitemap'
 import { createError, getHeader } from 'h3'
 
 interface SitemapResponse {
@@ -10,9 +10,9 @@ interface SitemapResponse {
 export default defineEventHandler(async (event): Promise<SitemapResponse> => {
   // Проверка токена безопасности
   const token = getHeader(event, 'X-Sitemap-Token')
- const expectedToken = process.env.SITEMAP_GENERATION_TOKEN
+  const expectedToken = process.env.SITEMAP_GENERATION_TOKEN
 
- if (!token || token !== expectedToken) {
+  if (!token || token !== expectedToken) {
     throw createError({
       statusCode: 401,
       statusMessage: 'Unauthorized: Invalid or missing sitemap token'
