@@ -25,7 +25,7 @@ interface SitemapUrl {
   images?: Array<{ loc: string }>
 }
 
-async function generateSitemap() {
+export async function generateSitemap() {
   // Загружаем переменные окружения
   await loadEnv()
   
@@ -33,19 +33,19 @@ async function generateSitemap() {
   const strapiUrl = process.env.NUXT_PUBLIC_STRAPI_URL
   const strapiToken = process.env.NUXT_STRAPI_TOKEN
   
-  console.log('Strapi URL:', strapiUrl) // Отладочный вывод
+  console.debug('Strapi URL:', strapiUrl) // Отладочный вывод
 
   let urls: SitemapUrl[] = []
   
   try {
-    // Transform Strapi data to sitemap format
+    // Преобразуем данные Strapi в формат sitemap
     const langs = ['ru', 'en', 'be']
     const mainLocale = 'ru'; // Основная локаль, где есть все данные
     
-    // Get data directly from Strapi API (more reliable than Nuxt API)
+    // Получаем данные напрямую из API Strapi (более надёжно, чем Nuxt API)
     
     try {
-      // Add static pages
+      // Добавляем статические страницы
       for (const lang of langs) {
         urls.push({ loc: `/${lang}/about`, lastmod: '2024-01-01' })
         urls.push({ loc: `/${lang}/services`, lastmod: '2024-01-01' })
@@ -64,9 +64,9 @@ async function generateSitemap() {
         }).catch(() => ({ data: [] }))
       ])
       
-      console.log('Categories data for main locale', mainLocale, ':', categoriesRes.data?.length);
-      console.log('Subcategories data for main locale', mainLocale, ':', subcategoriesRes.data?.length);
-      console.log('Subcategories data with products:', JSON.stringify(subcategoriesRes.data?.[0], null, 2));
+      console.debug('Categories data for main locale', mainLocale, ':', categoriesRes.data?.length);
+      console.debug('Subcategories data for main locale', mainLocale, ':', subcategoriesRes.data?.length);
+      console.debug('Subcategories data with products:', JSON.stringify(subcategoriesRes.data?.[0], null, 2));
       
       // Create a map of category ID to subcategories for easier lookup
       const categorySubcategoriesMap: Record<string, any[]> = {};
@@ -126,8 +126,8 @@ async function generateSitemap() {
             for (const prod of sub.products) {
               if (sub.category) {
                 for (const lang of langs) {
-                  // Extract images from product data
-                  // The image field is an array, so we need to map all images
+                  // Извлекаем изображения из данных продукта
+                  // Поле изображения - это массив, поэтому нам нужно отобразить все изображения
                   const images = prod.image && Array.isArray(prod.image)
                     ? prod.image.map((img: any) => ({
                         loc: `${strapiUrl}${img.url}`
@@ -146,7 +146,7 @@ async function generateSitemap() {
       }
     } catch (error) {
       console.error('Strapi API Error:', error)
-      // Fallback to minimal sitemap if Strapi fails
+      // Резервный вариант минимального sitemap, если Strapi не отвечает
       urls = [
         { loc: `/`, lastmod: new Date().toISOString() },
         { loc: `/ru/about`, lastmod: '2024-01-01' },
@@ -164,7 +164,7 @@ async function generateSitemap() {
       ]
     }
     
-    // Generate XML sitemap
+    // Генерируем XML sitemap
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   ${urls.map(url => `
@@ -181,7 +181,7 @@ async function generateSitemap() {
  `).join('')}
 </urlset>`
 
-    // Write to file
+    // Записываем в файл
     const outputPath = './sitemap.xml'
     writeFileSync(outputPath, xml)
     console.log('✅ Sitemap generated successfully!')
@@ -192,4 +192,15 @@ async function generateSitemap() {
  }
 }
 
-generateSitemap()
+// Вызов функции для CLI использования (сохранение обратной совместимости)
+// Проверяем, запущен ли скрипт напрямую (не импортирован)
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Проверяем, что скрипт запущен напрямую (а не импортирован)
+if (process.argv[1] === __filename) {
+  generateSitemap();
+}

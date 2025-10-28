@@ -42,6 +42,7 @@ export type Image = {
     publishedAt?: string;
     image: Image[];
    subcategories?: Subcategory[];
+   products?: Product[];
  }
  
  export type Subcategory = {

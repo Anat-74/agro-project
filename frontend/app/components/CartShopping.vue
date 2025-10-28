@@ -9,7 +9,14 @@ const { currentLocale } = useLocale()
 const config = useRuntimeConfig()
 
 const getProductLink = (product: CartItem['product']) => {
-  return `/${currentLocale.value}/${product.categorySlug}/${product.subcategorySlug}/${product.slug}`
+  // Если у продукта есть subcategorySlug, используем старый маршрут
+  if (product.subcategorySlug) {
+    return `/${currentLocale.value}/${product.categorySlug}/${product.subcategorySlug}/${product.slug}`
+  }
+  // Если у продукта нет subcategorySlug, используем новый маршрут
+  else {
+    return `/${currentLocale.value}/${product.categorySlug}/products/${product.slug}`
+  }
 }
 
 const switchToLocale = (locale: string) => {

@@ -3,7 +3,7 @@ import type { Product } from "../types/types"
 export type CartProduct = Omit<Product, 'image'> & {
    image: string
    categorySlug: string
-   subcategorySlug: string
+   subcategorySlug: string | null
    originalLocale: string
  }
  
@@ -16,25 +16,25 @@ export const useCartStore = defineStore('cart', () => {
    const { currentLocale } = useLocale()
    const items = ref<CartItem[]>([])
 
-   const totalItems = computed(() => 
+   const totalItems = computed(() =>
       items.value.reduce((total, item) => total + item.quantity, 0)
    )
 
-   const totalPrice = computed(() => 
+   const totalPrice = computed(() =>
       items.value.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
     )
 
    const addToCart = (
       product: Product,
       categorySlug: string,
-      subcategorySlug: string
+      subcategorySlug: string | null = null
     ) => {
       const existingItem = items.value.find(item => item.product.id === product.id)
       
       // Нормализация изображения
-      const normalizedImage = typeof product.image === 'string' 
-        ? product.image 
-        : Array.isArray(product.image) 
+      const normalizedImage = typeof product.image === 'string'
+        ? product.image
+        : Array.isArray(product.image)
           ? product.image[0]?.url || ''
           : ''
   

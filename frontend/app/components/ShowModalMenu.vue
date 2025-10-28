@@ -28,19 +28,22 @@ const { data: category, pending: pendingCategories, error, refresh: refreshCateg
       populate: {
         subcategories: {
             fields: ['id', 'name', 'slug']
+        },
+        products: {
+          fields: ['id', 'name', 'slug']
         }
        }
-    })
+     })
 
 
-    if (!response.data || response.data.length === 0) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Category - Not Found'
-      })
-     }
-    return response.data
-   }
+     if (!response.data || response.data.length === 0) {
+       throw createError({
+         statusCode: 404,
+         statusMessage: 'Category - Not Found'
+       })
+      }
+     return response.data
+    }
 )
 
 
@@ -149,7 +152,7 @@ watch(currentLocale, () => {
 
          <div class="accordion__content">
          <ul class="accordion__product-list">
-         <li 
+         <li
          v-for="sub in cat.subcategories"
          :key="sub.id"
          class="accordion__product-item"
@@ -160,6 +163,19 @@ watch(currentLocale, () => {
          :to="`/${currentLocale}/${cat.slug}/${sub.slug}`"
          >{{ sub.name }}
       </NuxtLink>
+   </li>
+   <!-- Отображение продуктов, принадлежащих напрямую категории -->
+   <li
+   v-for="prod in cat.products"
+   :key="prod.id"
+   class="accordion__product-item"
+   >
+   <NuxtLink
+   class="accordion__product-link"
+   @click="close()"
+   :to="`/${currentLocale}/${cat.slug}/products`"
+   >{{ prod.name }}
+   </NuxtLink>
    </li>
                   </ul>
                </div>

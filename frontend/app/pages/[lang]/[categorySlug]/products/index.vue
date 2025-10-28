@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Product, ProductsResponse, Subcategory } from "@/types/types"
+import type { Category, Product, ProductsResponse } from "@/types/types"
 import { productFilterTranslations } from '~/locales/productFilter'
 import { visuallyHiddenTranslations } from '~/locales/visuallyHidden'
 import { buttonTranslations } from '~/locales/button'
@@ -7,6 +7,7 @@ import { formatPrice } from '~/utils/formatPrice'
 
 const { find } = useStrapi()
 const route = useRoute()
+const { categorySlug } = route.params as { categorySlug: string }
 const { currentLocale } = useLocale()
 const { goBack, goForward } = useGoToForwardOrBack()
 const { isInCart } = useIsInCart()
@@ -18,34 +19,25 @@ const sortOption = ref<string>('name:asc')
 const page = ref(route.query.page ? +route.query.page : 1) // Текущая страница из query-параметра
 const pageSize = 12 // Количество товаров на странице
 
-const { categorySlug, subcategorySlug } = route.params as {
-  categorySlug: string
-  subcategorySlug: string
-}
-
-// Параллельная загрузка подкатегории и продуктов
+// Загрузка категории и продуктов напрямую
 const { data, pending, error, refresh } = useAsyncData(
-  `subcategory-products-${currentLocale.value}-${categorySlug}-${subcategorySlug}-${page.value}-${sortOption.value}`,
+  `category-products-${currentLocale.value}-${categorySlug}-${page.value}-${sortOption.value}`,
   async () => {
     // Параллельная загрузка данных
-    const [subcategoryRes, productsRes] = await Promise.all([
-      // Запрос подкатегории
-      find('subcategories', {
+    const [categoryRes, productsRes] = await Promise.all([
+      // Запрос категории
+      find('categories', {
         filters: {
-          slug: { $eq: subcategorySlug },
-          category: { slug: { $eq: categorySlug } },
+          slug: { $eq: categorySlug },
           locale: currentLocale.value
         },
         fields: ['id', 'name']
       }),
       
-      // Запрос продуктов с фильтрацией по slug
+      // Запрос продуктов с фильтрацией по slug категории
       find('products', {
         filters: {
-          subcategory: {
-            slug: { $eq: subcategorySlug },
-            category: { slug: { $eq: categorySlug } }
-          },
+          category: { slug: { $eq: categorySlug } },
           locale: currentLocale.value
         },
         populate: {
@@ -61,16 +53,16 @@ const { data, pending, error, refresh } = useAsyncData(
       })
     ])
 
-    // Обработка ошибок подкатегории
-    if (!subcategoryRes.data || subcategoryRes.data.length === 0) {
+    // Обработка ошибок категории
+    if (!categoryRes.data || categoryRes.data.length === 0) {
       throw createError({
         statusCode: 404,
-        statusMessage: 'Products subCategory Not Found'
+        statusMessage: 'Category Not Found'
       })
     }
 
     return {
-      subcategory: subcategoryRes.data[0] as Subcategory,
+      category: categoryRes.data[0] as Category,
       products: productsRes as ProductsResponse
     }
   }
@@ -84,7 +76,7 @@ const visibleImagesCount = computed(() => {
 })
 
 // Разделение данных
-const subcategory = computed(() => data.value?.subcategory)
+const category = computed(() => data.value?.category)
 const products = computed(() => data.value?.products)
 
 // Флаг загрузки
@@ -108,10 +100,10 @@ watch(sortOption, () => {
 
 // SEO
 watchEffect(() => {
-  if (subcategory.value) {
+  if (category.value) {
     useSeoMeta({
-      title: subcategory.value.name,
-      description: subcategory.value.name
+      title: category.value.name,
+      description: category.value.name
     })
   }
 })
@@ -120,7 +112,7 @@ const handleAddToCart = (product: Product) => {
   cartStore.addToCart(
     product,
     categorySlug,
-    subcategorySlug
+    null // subcategorySlug - null, так как продукт принадлежит напрямую категории
   )
 }
 </script>
@@ -131,10 +123,10 @@ const handleAddToCart = (product: Product) => {
   />
   <section 
     v-show="!isLoading"
-    class="subcategory-products"
-    aria-labelledby="subcategory-products"
+    class="category-products"
+    aria-labelledby="category-products"
   >
-    <div class="subcategory-products__row-top">
+    <div class="category-products__row-top">
       <UButton
         @click="goBack"
         icon="material-symbols:arrow-back"
@@ -147,18 +139,18 @@ const handleAddToCart = (product: Product) => {
         :aria-label="buttonTranslations[currentLocale].ariaLabelGoForward"
         name-class="go-forward-back"
       />
-      <div class="subcategory-products__select-wrapper select-wrapper">
+      <div class="category-products__select-wrapper select-wrapper">
         <label 
           class="visually-hidden"
-          for="sort-subcategory-product"
+          for="sort-category-product"
         >
           {{ productFilterTranslations[currentLocale].labelSelect }}
         </label>
         
         <select 
-          class="subcategory-products__select select"
+          class="category-products__select select"
           v-model="sortOption"
-          id="sort-subcategory-product"
+          id="sort-category-product"
         >
           <option 
             class="option"
@@ -186,35 +178,35 @@ const handleAddToCart = (product: Product) => {
         </select>
       </div>
     </div>
-    <h1 class="subcategory-products__subcategory-title"
-     id="subcategory-products"
+    <h1 class="category-products__category-title"
+     id="category-products"
     >
-         {{ subcategory?.name }}
+         {{ category?.name }}
       </h1>
     <h2 class="visually-hidden">{{ visuallyHiddenTranslations[currentLocale].sectionSubcategorySlugList }}</h2>
     <ul
-      v-if="products?.data.length" 
-      class="subcategory-products__list"
+      v-if="products?.data.length"
+      class="category-products__list"
     >
       <li 
         v-for="(product, index) in products.data" 
         :key="product.id"
-        class="subcategory-products__item"
+        class="category-products__item"
       >
       <Icon 
       v-if="product.isDiscount"
-      class="subcategory-products__discount-icon"
+      class="category-products__discount-icon"
       name="mdi:discount" />
       <ProductStatus 
       :product="product"
-      class="subcategory-products__in-stock"
+      class="category-products__in-stock"
      />
         <NuxtLink 
-          class="subcategory-products__link"
-          :to="`/${currentLocale}/${categorySlug}/${subcategorySlug}/${product.slug}`"
+          class="category-products__link"
+          :to="`/${currentLocale}/${categorySlug}/products/${product.slug}`"
         >
           <NuxtImg 
-            class="subcategory-products__image"
+            class="category-products__image"
             v-if="product.image?.length"
             :src="`${config.public.strapi.url}${product.image[0]?.url}`"
             :alt="product.name"
@@ -227,13 +219,13 @@ const handleAddToCart = (product: Product) => {
           />
         </NuxtLink>
         
-        <div class="subcategory-products__items-bottom">
-          <h3 class="subcategory-products__title">
+        <div class="category-products__items-bottom">
+          <h3 class="category-products__title">
             {{ product.name }}
           </h3>
           
           <span
-          :class="['subcategory-products__price', {'subcategory-products__price_discount': product.isDiscount}]"
+          :class="['category-products__price', {'category-products__price_discount': product.isDiscount}]"
           >
             {{ formatPrice(product.price) }}
           </span>
@@ -241,14 +233,14 @@ const handleAddToCart = (product: Product) => {
           <UButton 
             v-if="!isInCart(product.id)"
             @click="handleAddToCart(product)"
-            class="subcategory-products__add-to-cart"
+            class="category-products__add-to-cart"
             name-class="small-add-to-cart"
             icon="qlementine-icons:add-to-cart-16"
             :aria-label="buttonTranslations[currentLocale].label"
           />
           
           <UButton 
-            class="subcategory-products__add-to-cart"
+            class="category-products__add-to-cart"
             v-else
             disabled
             name-class="small-add-to-cart"
@@ -258,10 +250,13 @@ const handleAddToCart = (product: Product) => {
         </div>
       </li>
     </ul>
+    <div v-else-if="!pending" class="category-products__empty">
+      {{ productFilterTranslations[currentLocale].noResults }}
+    </div>
 
     <Pagination 
       v-if="pageCount > 1"
-      class="subcategory-products__pagination"
+      class="category-products__pagination"
       :page="page"
       :pageCount="pageCount"
       :routeName="route.name?.toString() || ''"
@@ -274,7 +269,7 @@ const handleAddToCart = (product: Product) => {
 </template>
 
 <style lang="scss" scoped>
-.subcategory-products {
+.category-products {
    padding-block: toEm(12);
 
 &__row-top {
@@ -291,7 +286,7 @@ const handleAddToCart = (product: Product) => {
    height: 100%;
 }
 
-&__subcategory-title {
+&__category-title {
    color: var(--dark-golden-color);
    @include adaptiveValue("margin-block-end", 66, 32);
 }
@@ -340,7 +335,7 @@ const handleAddToCart = (product: Product) => {
    transition: scale var(--transition-duration);
 
 @include hover {
-.subcategory-products__image {
+.category-products__image {
    outline: toRem(3) solid var(--secondary-color);
    outline-offset: toRem(1);
    border-radius: toRem(12);
@@ -391,6 +386,13 @@ const handleAddToCart = (product: Product) => {
 
    &__pagination {
       justify-self: end;
+   }
+   
+   &__empty {
+      text-align: center;
+      padding: toEm(20);
+      font-size: toEm(18);
+      color: var(--text-color);
    }
 }
 </style>

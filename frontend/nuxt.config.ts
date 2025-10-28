@@ -1,7 +1,7 @@
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
    devtools: {
-      enabled: true,
+      enabled: false,
    },
   modules: [
     "@nuxt/image",
@@ -58,15 +58,15 @@ export default defineNuxtConfig({
      },
 
     // Главная страница - ISR с кэшем 30 мин на CDN
-    "/ru": { isr: 1800 },
+   //  "/ru": { isr: 1800 },
 
     // Статические страницы
-    "/ru/about": { prerender: true },
-    "/ru/services": { prerender: true },
-    "/ru/contacts": { prerender: true },
+   //  "/ru/about": { prerender: true },
+   //  "/ru/services": { prerender: true },
+   //  "/ru/contacts": { prerender: true },
 
     // Категории - ISR для баланса скорости и свежести
-    "/ru/**": { isr: 3600 },
+   //  "/ru/**": { isr: 3600 },
 
     // Товары - SWR для обновления в фоне при изменениях
    //  "/ru/*/*": {
@@ -104,7 +104,6 @@ export default defineNuxtConfig({
   },
   image: {
       domains: ["api.vh324.by3020.ihb.by"],
-         // domains: ["127.0.0.1:1337"],
     screens: {
       xs: 320,
       sm: 480,

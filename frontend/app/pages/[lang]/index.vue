@@ -8,10 +8,10 @@ const { width } = useViewport()
 const config = useRuntimeConfig()
 
 const visibleImagesCount = computed(() => {
-  if (width.value < 565.98) return 2
-  if (width.value < 878.98) return 4
-  if (width.value < 1215.98) return 6
-  return 10
+   if (width.value < 565.98) return 2
+   if (width.value < 878.98) return 4
+   if (width.value < 1215.98) return 6
+   return 10
 })
 
 const { data: categories, pending, error } = useAsyncData(
@@ -23,7 +23,13 @@ const { data: categories, pending, error } = useAsyncData(
          image: {
             fields: ["alternativeText", "url"]
          },
+         subcategories: {
+            fields: ['id']
+         },
+         products: {
+            fields: ['id']
          }
+      }
       })
       if (!response.data || response.data.length === 0) {
       throw createError({
@@ -34,6 +40,22 @@ const { data: categories, pending, error } = useAsyncData(
       return response.data
    }
 )
+
+// Функция для определения типа ссылки для категории
+const getCategoryLink = (category: Category) => {
+  // Если у категории есть подкатегории, ведем к странице с подкатегориями
+  if (category.subcategories && category.subcategories.length > 0) {
+    return `/${currentLocale.value}/${category.slug}`;
+  }
+  // Если у категории есть продукты, ведем к странице с продуктами
+  else if (category.products && category.products.length > 0) {
+    return `/${currentLocale.value}/${category.slug}/products`;
+  }
+  // В противном случае ведем к странице категории (где будет отображено, что контента нет)
+  else {
+    return `/${currentLocale.value}/${category.slug}`;
+  }
+}
 </script>
 
 <template>
@@ -53,7 +75,7 @@ const { data: categories, pending, error } = useAsyncData(
          >
          <NuxtLink
          class="category__link"
-         :to="`/${currentLocale}/${category.slug}`"
+         :to="getCategoryLink(category)"
          >
          <NuxtImg
          class="category__image"

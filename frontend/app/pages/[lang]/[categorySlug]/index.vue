@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { Category, SubcategoriesResponse } from "@/types/types"
+import type { Category, SubcategoriesResponse, ProductsResponse } from "@/types/types"
 import { buttonTranslations } from '~/locales/button'
+import { productFilterTranslations } from '~/locales/productFilter'
 
 const { find } = useStrapi()
 const route = useRoute()
@@ -16,14 +17,22 @@ const pageSize = 12
 const { data, pending, error, refresh } = useAsyncData(
   `category-data-${currentLocale.value}-${categorySlug}-${page.value}`,
   async () => {
-    // Параллельная загрузка категории и подкатегорий
-    const [categoryRes, subcategoriesRes] = await Promise.all([
+    // Параллельная загрузка категории, подкатегорий и продуктов
+    const [categoryRes, subcategoriesRes, productsRes] = await Promise.all([
       find('categories', {
         filters: {
           slug: { $eq: categorySlug },
           locale: currentLocale.value
         },
-        fields: ['id', 'name']
+        fields: ['id', 'name'],
+        populate: {
+          subcategories: {
+            fields: ['id']
+          },
+          products: {
+            fields: ['id']
+          }
+        }
       }),
       find('subcategories', {
         filters: {
@@ -35,6 +44,17 @@ const { data, pending, error, refresh } = useAsyncData(
             fields: ["alternativeText", "url"]
           }
         },
+        pagination: {
+          page: page.value,
+          pageSize: pageSize
+        }
+      }),
+      find('products', {
+        filters: {
+          category: { slug: { $eq: categorySlug } }, // Фильтруем по slug категории!
+          locale: currentLocale.value
+        },
+        fields: ['id'],
         pagination: {
           page: page.value,
           pageSize: pageSize
@@ -52,7 +72,8 @@ const { data, pending, error, refresh } = useAsyncData(
 
     return {
       category: categoryRes.data[0] as Category,
-      subcategories: subcategoriesRes as SubcategoriesResponse
+      subcategories: subcategoriesRes as SubcategoriesResponse,
+      products: productsRes as ProductsResponse
     }
   }
 )
@@ -60,18 +81,41 @@ const { data, pending, error, refresh } = useAsyncData(
 const visibleImagesCount = computed(() => {
    if (width.value < 565.98) return 2
   if (width.value < 878.98) return 4
-  if (width.value < 1215.98) return 6
+ if (width.value < 1215.98) return 6
   return 10
 })
 
 // Разделяем данные
 const category = computed(() => data.value?.category);
 const subcategories = computed(() => data.value?.subcategories);
+const products = computed(() => data.value?.products);
+
+// Определяем, какие элементы отображать: подкатегории или продукты
+const hasSubcategories = computed(() => {
+  return subcategories.value?.data && subcategories.value.data.length > 0;
+});
+
+const hasProducts = computed(() => {
+  return products.value?.data && products.value.data.length > 0;
+});
+
+const displayMode = computed(() => {
+  if (hasSubcategories.value) {
+    return 'subcategories';
+  } else if (hasProducts.value) {
+    return 'products';
+  }
+  return 'empty';
+});
 
 //Управление загрузкой и ошибками
 const isLoading = ref(pending);
 const pageCount = computed(() => {
-  return subcategories.value?.meta?.pagination?.pageCount || 1;
+  if (displayMode.value === 'subcategories') {
+    return subcategories.value?.meta?.pagination?.pageCount || 1;
+  } else {
+    return products.value?.meta?.pagination?.pageCount || 1;
+  }
 })
 
 //Обновление данных при изменении страницы
@@ -93,8 +137,8 @@ watchEffect(() => {
 // useSeoMeta({
 //   ogTitle: category.value.seoTitle || category.value.name,
 //   ogDescription: category.value.seoDescription,
-//   ogImage: category.value.seoImage 
-//     ? `${config.public.strapi.url}${category.value.seoImage.url}` 
+//   ogImage: category.value.seoImage
+//     ? `${config.public.strapi.url}${category.value.seoImage.url}`
 //     : `${config.public.siteUrl}/default-category-image.jpg`,
 //   ogUrl: `${config.public.siteUrl}${route.path}`
 // })
@@ -104,12 +148,12 @@ watchEffect(() => {
     <Loader v-show="isLoading"
       class="loader"
     />
-   <section 
-      v-show="!isLoading" 
-     class="sub-category"
-     aria-labelledby="sub-category"
+   <section
+      v-show="!isLoading"
+     class="category-content"
+     :aria-labelledby="displayMode === 'subcategories' ? 'subcategories' : 'products'"
    >
-     <div class="sub-category__buttons">
+     <div class="category-content__buttons">
        <UButton
          @click="goBack"
          icon="material-symbols:arrow-back"
@@ -123,24 +167,26 @@ watchEffect(() => {
          name-class="go-forward-back"
        />
      </div>
-     <h1 class="sub-category__category-title"
-     id="sub-category"
+     <h1 class="category-content__category-title"
+     :id="displayMode === 'subcategories' ? 'subcategories' : 'products'"
      >
          {{ category?.name }}
       </h1>
-     <ul 
-       v-if="subcategories?.data?.length"
-       class="sub-category__list"
+      
+      <!-- Отображение подкатегорий, если они существуют -->
+     <ul
+       v-if="displayMode === 'subcategories' && subcategories?.data?.length"
+       class="category-content__list"
      >
-       <li 
-         v-for="(subcategory, index) in subcategories.data" 
+       <li
+         v-for="(subcategory, index) in subcategories.data"
          :key="subcategory.id"
-         class="sub-category__item"
+         class="category-content__item"
        >
-         <NuxtLink class="sub-category__link"
+         <NuxtLink class="category-content__link"
             :to="`/${currentLocale}/${categorySlug}/${subcategory.slug}`"
           >
-          <h2 class="sub-category__title">
+          <h2 class="category-content__title">
            {{ subcategory.name }}
          </h2>
             <NuxtImg
@@ -149,7 +195,7 @@ watchEffect(() => {
               :alt="subcategory.name"
               :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
               :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
-              class="sub-category__image"
+              class="category-content__image"
               decoding="async"
             width="258"
             height="194"
@@ -158,9 +204,47 @@ watchEffect(() => {
          </NuxtLink>
        </li>
      </ul>
+     
+     <!-- Отображение продуктов напрямую, если подкатегорий нет, но есть продукты -->
+     <ul
+       v-else-if="displayMode === 'products' && products?.data?.length"
+       class="category-content__list"
+     >
+       <li
+         v-for="(product, index) in products.data"
+         :key="product.id"
+         class="category-content__item"
+       >
+         <NuxtLink class="category-content__link"
+            :to="`/${currentLocale}/${categorySlug}/products/${product.slug}`"
+          >
+          <h2 class="category-content__title">
+           {{ product.name }}
+         </h2>
+            <NuxtImg
+              v-if="product.image?.length"
+              :src="`${config.public.strapi.url}${product.image[0]?.url}`"
+              :alt="product.name"
+              :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
+              :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
+              class="category-content__image"
+              decoding="async"
+            width="258"
+            height="194"
+             format="webp"
+            />
+         </NuxtLink>
+       </li>
+     </ul>
+     
+     <!-- Сообщение, если нет ни подкатегорий, ни продуктов -->
+     <div v-else-if="displayMode === 'empty'" class="category-content__empty">
+       {{ productFilterTranslations[currentLocale].noResults }}
+     </div>
 
-     <Pagination 
-       class="sub-category__pagination"
+     <Pagination
+       v-if="displayMode !== 'empty'"
+       class="category-content__pagination"
        :page="page"
        :pageCount="pageCount"
        :routeName="route.name?.toString() || ''"
@@ -173,7 +257,7 @@ watchEffect(() => {
  </template>
 
 <style lang="scss" scoped>
-.sub-category {
+.category-content {
    padding-block: toEm(12);
 
 &__buttons {
@@ -217,14 +301,14 @@ watchEffect(() => {
    @include hover {
       scale: 1.1;
 
-      .sub-category__title {
+      .category-content__title {
          color: var(--warning-hover);
       }
    }
 }
 
 &__title {
-   flex: 1 1 auto;
+   flex: 1 auto;
    text-align: center;
    margin-block-end: toEm(7);
    transition: color var(--transition-duration);
@@ -232,6 +316,13 @@ watchEffect(() => {
 
 &__pagination {
    justify-self: end;
+}
+
+&__empty {
+   text-align: center;
+   padding: toEm(20);
+   font-size: toEm(18);
+   color: var(--text-color);
 }
 }
 
