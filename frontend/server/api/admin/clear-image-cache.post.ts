@@ -1,7 +1,5 @@
 import { createError, getHeader } from 'h3'
-import { existsSync } from 'fs'
-import { join, resolve } from 'path'
-import { readdir, stat, unlink } from 'fs/promises'
+import { clearImageCache } from '../../utils/clear-image-cache'
 
 interface ClearCacheResponse {
   success: boolean
@@ -12,56 +10,28 @@ interface ClearCacheResponse {
 
 export default defineEventHandler(async (event): Promise<ClearCacheResponse> => {
   // Проверка токена безопасности
- const token = getHeader(event, 'X-Sitemap-Token')
- const expectedToken = process.env.SITEMAP_GENERATION_TOKEN
+  const token = getHeader(event, 'X-Sitemap-Token')
+  const expectedToken = process.env.SITEMAP_GENERATION_TOKEN
 
- if (!token || token !== expectedToken) {
+  if (!token || token !== expectedToken) {
     throw createError({
       statusCode: 401,
       statusMessage: 'Unauthorized: Invalid or missing cache clear token'
     })
   }
 
- try {
-    // Определяем путь к кэшу nuxt-image
-    const cacheDir = resolve('./node_modules/.cache/nuxt-image')
+  try {
+    // Используем общую утилиту для очистки кэша
+    const result = await clearImageCache()
     
-    // Проверяем, существует ли директория кэша
-    if (!existsSync(cacheDir)) {
+    if (result.success) {
       return {
         success: true,
-        message: 'Cache directory does not exist, nothing to clear'
+        message: result.message,
+        deletedCount: result.deletedCount
       }
-    }
-
-    // Получаем список файлов в кэше
-    const files = await readdir(cacheDir).catch(() => [])
-    const now = Date.now()
-    const sevenDaysInMs = 7 * 24 * 60 * 60 * 1000 // 7 дней в миллисекундах
-    let deletedCount = 0
-
-    // Фильтруем файлы, старше 7 дней
-    for (const file of files) {
-      const filePath = join(cacheDir, file)
-      
-      try {
-        const fileStat = await stat(filePath)
-        
-        // Если файл старше 7 дней, удаляем его
-        if (fileStat.isFile() && (now - fileStat.mtimeMs) > sevenDaysInMs) {
-          await unlink(filePath)
-          deletedCount++
-        }
-      } catch (err) {
-        // Пропускаем файлы, к которым нет доступа
-        console.warn(`Could not access file: ${filePath}`, err)
-      }
-    }
-
-    return {
-      success: true,
-      message: `Cache cleared successfully. ${deletedCount} files deleted.`,
-      deletedCount
+    } else {
+      throw new Error(result.error || 'Unknown error')
     }
   } catch (error: any) {
     throw createError({

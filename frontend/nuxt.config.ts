@@ -16,6 +16,11 @@ export default defineNuxtConfig({
     "@nuxtjs/seo",
     "nuxt-cron",
   ],
+  cron: {
+    runOnInit: false, // Не запускаем задачи при инициализации приложения
+    timeZone: 'Europe/Moscow', // Устанавливаем часовой пояс по умолчанию
+    jobsDir: 'server/cron' // Указываем директорию для задач (по умолчанию)
+  },
   nitro: {
     storage: {
       // Кэширование оптимизированных изображений
@@ -106,8 +111,8 @@ export default defineNuxtConfig({
     },
   },
   image: {
-   //   domains: ["api.vh324.by3020.ihb.by"],
-     domains: ["http://127.0.0.1:1337"],
+     domains: ["api.vh324.by3020.ihb.by"],
+   //   domains: ["http://127.0.0.1:1337"],
     screens: {
       xs: 320,
       sm: 480,
