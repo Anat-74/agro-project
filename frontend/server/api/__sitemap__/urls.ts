@@ -7,13 +7,18 @@ export default defineEventHandler(async () => {
 
   for (const lang of langs) {
     try {
-      // Получаем категории с подкатегориями для локали
-      const categories = await $fetch(`${strapiUrl}/api/categories?populate=subcategories&locale=${lang}`, {
+      // Получаем категории для локали
+      const categories = await $fetch(`${strapiUrl}/api/categories?populate=image&locale=${lang}`, {
         headers: { Authorization: `Bearer ${process.env.NUXT_STRAPI_TOKEN}` }
       }).catch(() => ({ data: [] })) as { data: any[] }
 
-      // Получаем продукты с подкатегорией для локали
-      const products = await $fetch(`${strapiUrl}/api/products?populate=subcategory.category`, {
+      // Получаем подкатегории с продуктами для локали
+      const subcategories = await $fetch(`${strapiUrl}/api/subcategories?populate=products,category,products.image&locale=${lang}`, {
+        headers: { Authorization: `Bearer ${process.env.NUXT_STRAPI_TOKEN}` }
+      }).catch(() => ({ data: [] })) as { data: any[] }
+
+      // Получаем продукты, которые напрямую связаны с категориями (не через подкатегории)
+      const products = await $fetch(`${strapiUrl}/api/products?populate=category,image&locale=${lang}`, {
         headers: { Authorization: `Bearer ${process.env.NUXT_STRAPI_TOKEN}` }
       }).catch(() => ({ data: [] })) as { data: any[] }
 
@@ -23,26 +28,51 @@ export default defineEventHandler(async () => {
       urls.push({ loc: `/${lang}/contacts`, lastmod: '2024-01-01' })
       urls.push({ loc: `/${lang}/cartshopping`, lastmod: new Date().toISOString() })
 
+      // Create a map of category ID to subcategories for easier lookup
+      const categorySubcategoriesMap: Record<string, any[]> = {};
+      if (subcategories.data) {
+        for (const sub of subcategories.data) {
+          if (sub.category) {
+            const categoryId = sub.category.id;
+            if (!categorySubcategoriesMap[categoryId]) {
+              categorySubcategoriesMap[categoryId] = [];
+            }
+            categorySubcategoriesMap[categoryId].push(sub);
+          }
+        }
+      }
+
       // Добавляем категории для локали
       if (categories.data) {
         for (const cat of categories.data) {
           urls.push({ loc: `/${lang}/${cat.slug}`, lastmod: cat.updatedAt || cat.createdAt })
-          // Добавляем подкатегории
-          if (cat.subcategories?.data) {
-            for (const sub of cat.subcategories.data) {
+          
+          // Добавляем подкатегории для этой категории
+          if (categorySubcategoriesMap[cat.id]) {
+            for (const sub of categorySubcategoriesMap[cat.id]) {
               urls.push({ loc: `/${lang}/${cat.slug}/${sub.slug}`, lastmod: sub.updatedAt || sub.createdAt })
+              
+              // Добавляем продукты для этой подкатегории
+              if (sub.products && Array.isArray(sub.products)) {
+                for (const prod of sub.products) {
+                  urls.push({
+                    loc: `/${lang}/${cat.slug}/${sub.slug}/${prod.slug}`,
+                    lastmod: prod.updatedAt || prod.createdAt,
+                  })
+                }
+              }
             }
           }
         }
       }
 
-      // Добавляем продукты для локали
+      // Добавляем продукты, которые напрямую связаны с категориями (не через подкатегории)
       if (products.data) {
         for (const prod of products.data) {
-          if (prod.subcategory?.data && prod.subcategory.data.category) {
+          if (prod.category && !prod.subcategory?.data) { // Только продукты, которые напрямую связаны с категорией
             urls.push({
-              loc: `/${lang}/${prod.subcategory.data.category.slug}/${prod.subcategory.data.slug}/${prod.slug}`,
-               lastmod: prod.updatedAt || prod.createdAt,
+              loc: `/${lang}/${prod.category.slug}/${prod.slug}`,
+              lastmod: prod.updatedAt || prod.createdAt,
             })
           }
         }

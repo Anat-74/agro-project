@@ -1,18 +1,38 @@
 // CLI-скрипт для генерации sitemap, использующий серверную функцию
 // Для работы в CLI-контексте имитируем необходимые Nuxt функции
 
+// Загружаем dotenv до всего остального
+async function loadEnv() {
+  try {
+    const dotenv = await import('dotenv');
+    const path = await import('path');
+    const envPath = path.resolve(process.cwd(), '.env');
+    dotenv.config({ path: envPath });
+  } catch (error) {
+    console.warn('dotenv not found, using default values');
+  }
+}
+
+// Загружаем переменные окружения
+await loadEnv();
+
+// Функция для получения переменных окружения с приоритетом
+function getEnvVar(name: string, defaultValue: string = ''): string {
+  return process.env[name] || defaultValue;
+}
+
 // Имитация useRuntimeConfig для CLI
 // Используем продакшен-переменные, если они доступны, иначе локальные
 const mockRuntimeConfig = {
-  public: {
-    siteUrl: process.env.SITE_URL || 'http://localhost:3000',
+ public: {
+    siteUrl: getEnvVar('SITE_URL', getEnvVar('NUXT_PUBLIC_SITE_URL', 'http://localhost:3000')),
     strapi: {
-      url: process.env.NUXT_PUBLIC_STRAPI_URL || 'http://127.0.0.1:1337'
+      url: getEnvVar('NUXT_STRAPI_URL', getEnvVar('NUXT_PUBLIC_STRAPI_URL', 'http://127.0.0.1:1337'))
     }
  },
-  strapi: {
-    token: process.env.NUXT_STRAPI_TOKEN
-  }
+ strapi: {
+   token: getEnvVar('NUXT_STRAPI_TOKEN')
+ }
 };
 
 // Глобальная функция для имитации useRuntimeConfig

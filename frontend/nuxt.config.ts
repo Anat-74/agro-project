@@ -35,7 +35,7 @@ export default defineNuxtConfig({
   },
    // @ts-ignore
    site: {
-     url: process.env.SITE_URL,
+     url: process.env.SITE_URL || process.env.NUXT_PUBLIC_SITE_URL,
      name: 'Awesome Site',
      description: 'Welcome to my awesome site!'
    },
@@ -104,7 +104,7 @@ export default defineNuxtConfig({
       cookieName: "strapi_jwt",
     },
     public: {
-      siteUrl: process.env.SITE_URL,
+      siteUrl: process.env.SITE_URL || process.env.NUXT_PUBLIC_SITE_URL,
       strapi: {
         url: process.env.NUXT_PUBLIC_STRAPI_URL,
       },
