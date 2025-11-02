@@ -18,15 +18,6 @@ export const cartTranslations: Record<LocaleCode, {
      warningLocale: 'Для просмотра описания товара, переключите язык на:',
      total: 'Всего товаров:'
    },
-   en: {
-     title: 'Cart',
-     description: 'Website cart page',
-      visuallyHidden: 'Shopping Cart and Checkout',
-      ariaLabelBasket: 'Go to the goods market',
-      cartEmpty: 'The basket is empty',
-      warningLocale: 'To view the product description, switch the language to:',
-      total: 'Total items:'
-   },
    be: {
      title: 'Кошык',
      description: 'Старонка кошыка сайта',

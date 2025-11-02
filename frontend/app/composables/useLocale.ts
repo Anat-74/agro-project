@@ -30,24 +30,20 @@ const _currentLocale = ref<LocaleCode>(
 
    watch(() => route.params.lang, (newVal) => {
      if (newVal && newVal !== currentLocale.value) {
-       const validLocales: LocaleCode[] = ['ru', 'en', 'be']
-       currentLocale.value = validLocales.includes(newVal as LocaleCode) 
-         ? newVal as LocaleCode 
+       const validLocales: LocaleCode[] = ['ru', 'be']
+       currentLocale.value = validLocales.includes(newVal as LocaleCode)
+         ? newVal as LocaleCode
          : 'ru'
      }
    })
 
    const locales = [
-     { 
-       code: 'ru', 
+     {
+       code: 'ru',
        icon: 'emojione:flag-for-russia'
      },
-     { 
-       code: 'en', 
-       icon: 'emojione:flag-for-united-kingdom'
-     },
-     { 
-       code: 'be', 
+     {
+       code: 'be',
        icon: 'emojione:flag-for-belarus'
      }
    ]

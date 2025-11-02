@@ -20,16 +20,6 @@ export const orderFormTranslations: Record<LocaleCode, {
       submitting: 'Оформляем...',
       showSuccessMessage: 'Заказ оформлен!'
    },
-   en: {
-      title: 'Placing an order',
-      email: 'Email',
-      phone: 'Phone',
-      checkbox: 'I agree with the terms of data processing',
-      total: 'Total:',
-      checkout: 'Checkout',
-      submitting: 'We are making out...',
-      showSuccessMessage: 'The order has been placed!'
-   },
    be: {
       title: 'Афармленне замовы',
       email: 'Пошта',

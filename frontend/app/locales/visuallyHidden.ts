@@ -19,15 +19,6 @@ export const visuallyHiddenTranslations: Record<LocaleCode, {
       showModalMenuTitle: "Список товаров категории и подкатегории",
       sectionContactsTitle: "Секция с контактами компании"
    },
-   en: {
-      sectionProductSlugTitle: "Product description section",
-      sectionSubcategorySlugList: "List of products in subcategory",
-      sectionLangTitle: "Product categories section or main page",
-      sectionAboutUsTitle: "Section - About Us",
-      sectionOurServicesTitle: "Section - our services",
-      showModalMenuTitle: "List of products by category and subcategory",
-      sectionContactsTitle: "Company contacts section"
-   },
    be: {
       sectionProductSlugTitle: "Секцыя з апісаннем тавару",
       sectionSubcategorySlugList: "Спіс тавараў падкатэгорыі",

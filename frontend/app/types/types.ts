@@ -1,4 +1,4 @@
-export type LocaleCode = 'ru' | 'en' | 'be'
+export type LocaleCode = 'ru' | 'be'
 
 export interface VisibilityState {
    // isAccount: Ref<boolean>

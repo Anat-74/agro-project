@@ -39,7 +39,7 @@ const mockRuntimeConfig = {
 (global as any).useRuntimeConfig = () => mockRuntimeConfig;
 
 // Импортируем используем серверную функцию
-import { generateSitemap } from '../server/utils/generate-sitemap';
+import { generateSitemap } from '../server/_utils/generate-sitemap';
 
 // Вызов функции для CLI использования
 import { fileURLToPath } from 'url';

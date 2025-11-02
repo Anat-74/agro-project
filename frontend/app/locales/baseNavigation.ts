@@ -12,12 +12,6 @@ export const baseNavigationTranslations: Record<LocaleCode, {
       services: "Услуги",
       contacts: "Контакты"
    },
-   en: {
-      home: "Home",
-      about: "About Us",
-      services: "Services",
-      contacts: "Contacts"
-   },
    be: {
       home: "Галоўная",
       about: "Пра нас",

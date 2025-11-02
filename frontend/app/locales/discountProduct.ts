@@ -6,9 +6,6 @@ export const discountProductTranslations: Record<LocaleCode, {
    ru: {
        discount: 'Акция'
    },
-   en: {
-      discount: 'Promotion'
-   },
    be: {
       discount: 'Акцыя'
    }

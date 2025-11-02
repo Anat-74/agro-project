@@ -18,15 +18,6 @@ export const productFilterTranslations: Record<LocaleCode, {
       optionPrice: "Дешевле",
       optionPriceDesc: "Дороже"
    },
-   en: {
-      labelInput: "Search for products",
-      placeholder: "Search...",
-      noResults: "No products found",
-      labelSelect: "Sorting products",
-      optionName: "A --> Z",
-      optionPrice: "Cheaper",
-      optionPriceDesc: "More expensive"
-   },
    be: {
       labelInput: "Пошук тавараў",
       placeholder: "Пошук...",

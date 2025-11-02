@@ -50,7 +50,7 @@ export async function generateSitemap() {
   
   try {
     // Преобразуем данные Strapi в формат sitemap
-    const langs = ['ru', 'en', 'be']
+    const langs = ['ru', 'be']
     const mainLocale = 'ru'; // Основная локаль, где есть все данные
     
     // Получаем данные напрямую из API Strapi (более надёжно, чем Nuxt API)
@@ -189,10 +189,6 @@ export async function generateSitemap() {
         { loc: `/ru/services`, lastmod: '2024-01-01' },
         { loc: `/ru/contacts`, lastmod: '2024-01-01' },
         { loc: `/ru/cartshopping`, lastmod: new Date().toISOString() },
-        { loc: `/en/about`, lastmod: '2024-01-01' },
-        { loc: `/en/services`, lastmod: '2024-01-01' },
-        { loc: `/en/contacts`, lastmod: '2024-01-01' },
-        { loc: `/en/cartshopping`, lastmod: new Date().toISOString() },
         { loc: `/be/about`, lastmod: '2024-01-01' },
         { loc: `/be/services`, lastmod: '2024-01-01' },
         { loc: `/be/contacts`, lastmod: '2024-01-01' },

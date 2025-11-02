@@ -1,7 +1,7 @@
 import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
-  compatibilityDate: "2024-11-01",
+ compatibilityDate: "2024-11-01",
    devtools: {
       enabled: false,
    },
@@ -32,7 +32,7 @@ export default defineNuxtConfig({
     prerender: {
       ignore: ['/sitemap.xml']
     }
-  },
+ },
    // @ts-ignore
    site: {
      url: process.env.SITE_URL || process.env.NUXT_PUBLIC_SITE_URL,
@@ -64,7 +64,9 @@ export default defineNuxtConfig({
       //   swr: true
       // }
      },
-
+    // Делаем sitemap.xml доступным
+    "/sitemap.xml": { static: true },
+ 
     // Главная страница - ISR с кэшем 30 мин на CDN
    //  "/ru": { isr: 1800 },
 

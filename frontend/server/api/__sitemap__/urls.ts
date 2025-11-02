@@ -3,7 +3,7 @@ const urls = [{ loc: `/`, lastmod: new Date().toISOString() }]
 
 export default defineEventHandler(async () => {
   const strapiUrl = process.env.NUXT_PUBLIC_STRAPI_URL
-  const langs = ['ru', 'en', 'be']
+  const langs = ['ru', 'be']
 
   for (const lang of langs) {
     try {
@@ -85,3 +85,4 @@ export default defineEventHandler(async () => {
 
   return urls
 })
+

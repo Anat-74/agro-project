@@ -7,9 +7,6 @@ export const characteristcsTranslations: Record<LocaleCode, {
    ru: {
       title: "Характеристики"
    },
-   en: {
-      title: "Characteristics"
-   },
    be: {
       title: "Характарыстыкі"
    }

@@ -8,10 +8,6 @@ export const shareButtonTranslations: Record<LocaleCode, {
     successMessage: "Ссылка скопирована в буфер обмена!",
     errorMessage: "Не удалось скопировать ссылку"
   },
-  en: {
-    successMessage: "Link copied to clipboard!",
-    errorMessage: "Failed to copy link"
-  },
   be: {
     successMessage: "Спасылка скапіявана ў буфер абмену!",
     errorMessage: "Не ўдалося скапіяваць спасылку"

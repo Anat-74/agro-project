@@ -33,22 +33,6 @@ export const buttonTranslations: Record<LocaleCode, {
        ariaLabelRemoveItemFromCart: "Удалить товар из корзины",
        ariaLabelScrollToTop: "Прокрутить наверх"
    },
-   en: {
-      label: "Add to cart",
-      ariaLabelAdded: "Added to cart",
-      ariaLabelLang: "Switch language",
-      ariaLabelGoBack: "Go back",
-      ariaLabelGoForward: "Go forward",
-      ariaLabelPagination: "Go to the next page",
-      ariaLabelClosedSuccess: "Close message",
-      ariaLabelDialogOpen: "Open modal window",
-      ariaLabelDialogClosed: "Close modal window",
-      ariaLabelCopyLink: "Copy link to product",
-      ariaLabelReduceQuantity: "Reduce quantities",
-      ariaLabelIncreaseQuantity: "Increase quantities",
-      ariaLabelRemoveItemFromCart: "Remove item from cart",
-      ariaLabelScrollToTop: "Scroll to top"
-   },
    be: {
       label: "Дадаць у кошык",
       ariaLabelAdded: "Паведамленні ў кошык",

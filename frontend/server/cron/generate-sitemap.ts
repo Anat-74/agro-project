@@ -1,9 +1,9 @@
 import { defineCronHandler } from '#nuxt/cron'
-import { generateSitemap } from '../utils/generate-sitemap'
+import { generateSitemap } from '../_utils/generate-sitemap'
 
 // Запуск генерации sitemap каждый час
 export default defineCronHandler('hourly', async () => {
-  console.log('Запуск генерации sitemap по расписанию:', new Date().toISOString())
+  console.log('Запуск генерации sitemap по расписанию:', new Date().toISOString(), 'Timezone:', Intl.DateTimeFormat().resolvedOptions().timeZone)
   try {
     await generateSitemap()
     console.log('Генерация sitemap завершена успешно')

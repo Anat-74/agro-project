@@ -27,39 +27,7 @@
  
   <url>
     <loc>https://vh324.by3020.ihb.by/ru/cartshopping</loc>
-    <lastmod>2025-11-01T15:08:54.069Z</lastmod>
-    <priority>0.8</priority>
-    <changefreq>weekly</changefreq>
-    
-  </url>
- 
-  <url>
-    <loc>https://vh324.by3020.ihb.by/en/about</loc>
-    <lastmod>2024-01-01</lastmod>
-    <priority>0.8</priority>
-    <changefreq>weekly</changefreq>
-    
-  </url>
- 
-  <url>
-    <loc>https://vh324.by3020.ihb.by/en/services</loc>
-    <lastmod>2024-01-01</lastmod>
-    <priority>0.8</priority>
-    <changefreq>weekly</changefreq>
-    
-  </url>
- 
-  <url>
-    <loc>https://vh324.by3020.ihb.by/en/contacts</loc>
-    <lastmod>2024-01-01</lastmod>
-    <priority>0.8</priority>
-    <changefreq>weekly</changefreq>
-    
-  </url>
- 
-  <url>
-    <loc>https://vh324.by3020.ihb.by/en/cartshopping</loc>
-    <lastmod>2025-11-01T15:08:54.070Z</lastmod>
+    <lastmod>2025-11-02T13:23:30.612Z</lastmod>
     <priority>0.8</priority>
     <changefreq>weekly</changefreq>
     
@@ -91,7 +59,7 @@
  
   <url>
     <loc>https://vh324.by3020.ihb.by/be/cartshopping</loc>
-    <lastmod>2025-11-01T15:08:54.070Z</lastmod>
+    <lastmod>2025-11-02T13:23:30.614Z</lastmod>
     <priority>0.8</priority>
     <changefreq>weekly</changefreq>
     
@@ -110,7 +78,7 @@
  
   <url>
     <loc>https://vh324.by3020.ihb.by/ru/test-category</loc>
-    <lastmod>2025-11-01T14:40:24.174Z</lastmod>
+    <lastmod>2025-11-01T21:40:22.773Z</lastmod>
     <priority>0.8</priority>
     <changefreq>weekly</changefreq>
     
@@ -131,39 +99,6 @@
   </url>
  
   <url>
-    <loc>https://vh324.by3020.ihb.by/ru/drugaya-produkcziya/tumby-mobilnye/ofisnyj-sejf-aiko-tsn-37-el</loc>
-    <lastmod>2025-10-28T18:43:40.649Z</lastmod>
-    <priority>0.8</priority>
-    <changefreq>weekly</changefreq>
-    
-    <image:image>
-      <image:loc>https://api.vh324.by3020.ihb.by/uploads/Metal_stel_picture_08728f8d41.png</image:loc>
-    </image:image>
-  </url>
- 
-  <url>
-    <loc>https://vh324.by3020.ihb.by/en/drugaya-produkcziya/tumby-mobilnye</loc>
-    <lastmod>2025-10-26T10:46:16.726Z</lastmod>
-    <priority>0.8</priority>
-    <changefreq>weekly</changefreq>
-    
-    <image:image>
-      <image:loc>https://api.vh324.by3020.ihb.by/uploads/e117eee46c5d657291d5f267e2e747a2_removebg_preview_1dbe179070.png</image:loc>
-    </image:image>
-  </url>
- 
-  <url>
-    <loc>https://vh324.by3020.ihb.by/en/drugaya-produkcziya/tumby-mobilnye/ofisnyj-sejf-aiko-tsn-37-el</loc>
-    <lastmod>2025-10-28T18:43:40.649Z</lastmod>
-    <priority>0.8</priority>
-    <changefreq>weekly</changefreq>
-    
-    <image:image>
-      <image:loc>https://api.vh324.by3020.ihb.by/uploads/Metal_stel_picture_08728f8d41.png</image:loc>
-    </image:image>
-  </url>
- 
-  <url>
     <loc>https://vh324.by3020.ihb.by/be/drugaya-produkcziya/tumby-mobilnye</loc>
     <lastmod>2025-10-26T10:46:16.726Z</lastmod>
     <priority>0.8</priority>
@@ -175,29 +110,7 @@
   </url>
  
   <url>
-    <loc>https://vh324.by3020.ihb.by/be/drugaya-produkcziya/tumby-mobilnye/ofisnyj-sejf-aiko-tsn-37-el</loc>
-    <lastmod>2025-10-28T18:43:40.649Z</lastmod>
-    <priority>0.8</priority>
-    <changefreq>weekly</changefreq>
-    
-    <image:image>
-      <image:loc>https://api.vh324.by3020.ihb.by/uploads/Metal_stel_picture_08728f8d41.png</image:loc>
-    </image:image>
-  </url>
- 
-  <url>
     <loc>https://vh324.by3020.ihb.by/ru/test-category/test-product</loc>
-    <lastmod>2025-10-28T18:42:56.848Z</lastmod>
-    <priority>0.8</priority>
-    <changefreq>weekly</changefreq>
-    
-    <image:image>
-      <image:loc>https://api.vh324.by3020.ihb.by/uploads/thumbnail_aea7d2938abbff6706b_b79ca45e79_20fa41bf36.png</image:loc>
-    </image:image>
-  </url>
- 
-  <url>
-    <loc>https://vh324.by3020.ihb.by/en/test-category/test-product</loc>
     <lastmod>2025-10-28T18:42:56.848Z</lastmod>
     <priority>0.8</priority>
     <changefreq>weekly</changefreq>
@@ -216,6 +129,22 @@
     <image:image>
       <image:loc>https://api.vh324.by3020.ihb.by/uploads/thumbnail_aea7d2938abbff6706b_b79ca45e79_20fa41bf36.png</image:loc>
     </image:image>
+  </url>
+ 
+  <url>
+    <loc>https://vh324.by3020.ihb.by/ru/test-category/test-product-2</loc>
+    <lastmod>2025-11-01T21:40:11.740Z</lastmod>
+    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    
+  </url>
+ 
+  <url>
+    <loc>https://vh324.by3020.ihb.by/be/test-category/test-product-2</loc>
+    <lastmod>2025-11-01T21:40:11.740Z</lastmod>
+    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    
   </url>
  
 </urlset>
