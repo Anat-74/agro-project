@@ -30,7 +30,6 @@
   "devDependencies": {
     "@types/node": "^24.9.1",
     "@types/sharp": "^0.31.1",
-    "nuxt-cron": "^1.8.0",
     "sass": "^1.84.0"
   }
 }

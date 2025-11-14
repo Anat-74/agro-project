@@ -14,13 +14,7 @@ export default defineNuxtConfig({
     "@nuxtjs/strapi",
     "@nuxtjs/mdc",
     "@nuxtjs/seo",
-    "nuxt-cron",
   ],
-  cron: {
-    runOnInit: false, // Не запускаем задачи при инициализации приложения
-    timeZone: 'Europe/Moscow', // Устанавливаем часовой пояс по умолчанию
-    jobsDir: 'server/cron' // Указываем директорию для задач (по умолчанию)
-  },
   nitro: {
     storage: {
       // Кэширование оптимизированных изображений

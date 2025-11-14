@@ -217,9 +217,9 @@ export async function generateSitemap() {
     const outputPath = './sitemap.xml'
     writeFileSync(outputPath, xml)
     
-    console.log(`✅ Sitemap generated successfully at ${outputPath}`)
-    console.log(`✅ Using site URL: ${siteUrl}`)
-    console.log('✅ Sitemap generated successfully!')
+    console.debug(`✅ Sitemap generated successfully at ${outputPath}`)
+    console.debug(`✅ Using site URL: ${siteUrl}`)
+    console.debug('✅ Sitemap generated successfully!')
     
  } catch (error) {
     console.error('❌ Sitemap generation failed:', error)
