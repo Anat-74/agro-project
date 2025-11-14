@@ -30,7 +30,7 @@
 		$startSize: 0.000001;
 	}
 	@if ($minSize==0) {
-		$minSize: 0.000001;
+		$minSize: 0.00001;
 	}
 
 	// Для calc();
@@ -82,4 +82,22 @@
 			#{$property}: f.toRem($minSize);
 		}
 	}
+}
+
+// Автоматический адаптивный миксин с поддержкой Container Queries
+@mixin containerAdaptive($property, $min: null, $ratio: null, $max: null) {
+  $default-min: toRem(12);
+  $default-ratio: 3;
+  $default-max: toRem(22);
+  
+  $use-min: if($min != null, $min, $default-min);
+  $use-ratio: if($ratio != null, $ratio, $default-ratio);
+  $use-max: if($max != null, $max, $default-max);
+  
+  @supports (width: 1cqw) {
+    #{$property}: clamp(#{$use-min}, #{$use-ratio}cqw, #{$use-max});
+  }
+  @supports not (width: 1cqw) {
+    #{$property}: clamp(#{$use-min}, #{($use-ratio + 1)}vw, #{$use-max});
+  }
 }

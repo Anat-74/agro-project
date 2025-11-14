@@ -99,6 +99,9 @@ export default defineNuxtConfig({
       version: "v5",
       cookieName: "strapi_jwt",
     },
+    strapiAdmin: {
+      token: process.env.STRAPI_ADMIN_TOKEN,
+    },
     public: {
       siteUrl: process.env.SITE_URL || process.env.NUXT_PUBLIC_SITE_URL,
       strapi: {
@@ -166,6 +169,7 @@ export default defineNuxtConfig({
              @use "@/assets/scss/base/_fonts.scss" as *;
              @use "@/assets/scss/base/_functions.scss" as *;
              @use "@/assets/scss/base/_globals.scss" as *;
+             @use "@/assets/scss/base/_utils.scss" as *;
              @use "@/assets/scss/base/_mixins.scss" as *;
              @use "@/assets/scss/base/_normalize.scss" as *;
              `,

@@ -2,8 +2,16 @@
 @use './mixins' as m;
 @use './container' as c;
 
+// ===================================================================
+//! VARIABLES
+// ===================================================================
+
 $font-family: "Montserrat";
 $font-family2: "RubikBurned";
+
+// ===================================================================
+//! BODY STYLES
+// ===================================================================
 
 body {
    background-color: var(--bg);
@@ -12,6 +20,11 @@ body {
    @include m.adaptiveValue("font-size", 16, 14);
 }
 
+// ===================================================================
+//! DIALOG-RELATED STYLES
+// ===================================================================
+
+// Стили для скрытия header и footer при открытом диалоге
 body:has(dialog[open]) {
    overflow: hidden;
 
@@ -21,9 +34,10 @@ body:has(dialog[open]) {
    .footer {
       display: none;
    }
- }
+}
 
- body:has(.dialog-hamburger[open]) {
+// Стили для гамбургера при открытом меню
+body:has(.dialog-hamburger[open]) {
    .btn_hamburger {
       span {
          width: 0;
@@ -41,14 +55,19 @@ body:has(dialog[open]) {
          transform: rotate(45deg);
       }
    }
- }
+}
 
- main:has(.dialog-menu[open]) {
+// Стили для размытия main при открытом меню
+main:has(.dialog-menu[open]) {
    transition: all .1s linear forwards;
    filter: blur(16px);
- }
+}
 
- h1 {
+// ===================================================================
+//! HEADINGS
+// ===================================================================
+
+h1 {
    @include m.adaptiveValue("font-size", 22, 20);
 }
 
@@ -59,6 +78,10 @@ h2 {
 h3 {
    @include m.adaptiveValue("font-size", 18, 14);
 }
+
+// ===================================================================
+//! LINKS
+// ===================================================================
 
 a {
    color: inherit;
@@ -73,7 +96,11 @@ a {
    }
 }
 
-button, 
+// ===================================================================
+//! FORM ELEMENTS
+// ===================================================================
+
+button,
 label,
 select,
 input {
@@ -84,92 +111,3 @@ input {
    }
 }
 
-.iconify--my-icon {
-   translate: 0 toRem(2);
-   color: var(--dark-golden-color);
-}
-
-.loader {
-   translate: 0 100%;
-}
-
-//*select start======================================================================================================================
-.select-wrapper {
-   position: relative;
-
- &::before,
-   &::after{
-      content: '';
-      pointer-events: none;
-      position: absolute;
-      top: calc(50% - toRem(1));
-      width: toRem(6);
-      height: toRem(2);
-      background-color: var(--warning-color);
-   }
-   &::before {
-      right: toRem(9);
-      transform: rotate(-125deg);
-   }
-   &::after {
-      right: toRem(6);
-      transform: rotate(125deg);
-   }
- }
- .select {
-   width: toEm(154);
-   padding-inline: toEm(4);
-   padding-block: toRem(1);
-   border: toRem(2) solid var(--warning-color);
-   border-radius: toEm(4, 16);
-   outline: none;
-   appearance: none;
-   cursor: pointer;
-   background-color: var(--light-color);
-
-   @media (max-width:c.$mobile){
-      width: toEm(112);
-   }
-}
-.option {
-   border-radius: toRem(6);
-  }
-//*select end======================================================================================================================
-
-
-.hidden-tablet {
-   @media (max-width:c.$tablet){
-      display: none;
-   }
-}
-
-.hidden-mobile {
-   @media (max-width:c.$mobile){
-      display: none;
-   }
-}
-
-.visible-tablet {
-   @media (min-width:c.$tablet){
-       display: none; 
-   }
-}
-
-.visible-mobile {
-   @media (min-width:c.$mobile){
-       display: none; 
-   }
-}
-
-.visually-hidden {
-   position: absolute !important;
-   width: 1px !important;
-   height: 1px !important;
-   margin: -1px !important;
-   border: 0 !important;
-   padding: 0 !important;
-   white-space: nowrap !important;
-   clip-path: inset(100%) !important;
-   clip: rect(0 0 0 0) !important;
-   overflow: hidden !important;
-}
