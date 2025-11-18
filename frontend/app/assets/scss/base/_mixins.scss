@@ -101,3 +101,7 @@
     #{$property}: clamp(#{$use-min}, #{($use-ratio + 1)}vw, #{$use-max});
   }
 }
+
+@mixin containerParent($type: inline-size) {
+  container-type: $type;
+}

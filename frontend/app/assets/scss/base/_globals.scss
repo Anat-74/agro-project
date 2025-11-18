@@ -68,15 +68,15 @@ main:has(.dialog-menu[open]) {
 // ===================================================================
 
 h1 {
-   @include m.adaptiveValue("font-size", 22, 20);
+   @include m.containerAdaptive("font-size", toRem(20), 4, toRem(24));
 }
 
 h2 {
-   @include m.adaptiveValue("font-size", 20, 18);
+   @include m.containerAdaptive("font-size", toRem(18), 3, toRem(22));
 }
 
 h3 {
-   @include m.adaptiveValue("font-size", 18, 14);
+   @include m.containerAdaptive("font-size", toRem(16), 2.5, toRem(20));
 }
 
 // ===================================================================

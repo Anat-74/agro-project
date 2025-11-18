@@ -27,7 +27,7 @@ const copyLink = async () => {
    <UButton
    @click="copyLink"
    icon="ph:link-simple-bold"
-   name-class="share"
+   variant="share"
   :aria-label="buttonTranslations[currentLocale].ariaLabelCopyLink"
    />
 

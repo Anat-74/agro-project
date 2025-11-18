@@ -114,7 +114,7 @@ const handleAddToCart = (product: Product) => {
       @click="goBack"
       icon="material-symbols:arrow-back"
       :aria-label="buttonTranslations[currentLocale].ariaLabelGoBack"
-      name-class="go-forward-back"
+      variant="go-forward-back"
      />
      <Icon 
       v-if="product.isDiscount"
@@ -181,19 +181,13 @@ const handleAddToCart = (product: Product) => {
       {{ formatPrice(product.price) }}
      </span>
      <UButton
-      v-if="!isInCart(product.id)"
-     @click="handleAddToCart(product)"
-      name-class="add-to-cart"
-      :label="buttonTranslations[currentLocale].label"
+      @click="handleAddToCart(product)"
+      :disabled="isInCart(product.id)"
+      variant="add-to-cart"
       class="wrapper-right__btn"
-     />
-     <UButton class="subcategory-products__add-to-cart"
-      v-else
-      disabled
-      name-class="add-to-cart"
-      icon="emojione-v1:left-check-mark"
-      :aira-label="buttonTranslations[currentLocale].ariaLabelAdded"
-      />
+     >
+     {{ isInCart(product.id) ? 'Товар в корзине' : buttonTranslations[currentLocale].label }}
+     </UButton>
    </div>
 </section>
    <span v-else-if="error">

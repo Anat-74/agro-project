@@ -43,7 +43,7 @@ onMounted(() => {
         <span>{{ cartTranslations[currentLocale].warningLocale }}</span>
         <UButton
          :label="item.product.originalLocale"
-         name-class="switch-locale-cart"
+         variant="switch-locale-cart"
          @click="switchToLocale(item.product.originalLocale)"
          />
       </div>
@@ -76,7 +76,7 @@ onMounted(() => {
         <UButton
          @click="cartStore.updateQuantity(item.product.id, item.quantity -1)"
          :disabled="item.quantity <= 1"
-         name-class="remove-quantity-prod"
+         variant="remove-quantity-prod"
          :aria-label="buttonTranslations[currentLocale].ariaLabelReduceQuantity"
         />
          <span 
@@ -89,13 +89,13 @@ onMounted(() => {
   </span>
         <UButton
          @click="cartStore.updateQuantity(item.product.id, item.quantity +1)"
-         name-class="add-quantity-prod"
+         variant="add-quantity-prod"
          :aria-label="buttonTranslations[currentLocale].ariaLabelIncreaseQuantity"
         />
       </div>
         <UButton
         @click="cartStore.removeFromCart(item.product.id)"
-        name-class="remove-cart-item"
+        variant="remove-cart-item"
         icon="material-symbols:delete-outline-rounded"
         class="cart-item__remove-from-cart"
         :aria-label="buttonTranslations[currentLocale].ariaLabelRemoveItemFromCart"

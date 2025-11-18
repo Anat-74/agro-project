@@ -98,7 +98,7 @@ watch(currentLocale, () => {
    <UButton 
    @click="open()"
    icon="line-md:arrow-open-left"
-   name-class="dialog-menu"
+   variant="dialog-menu"
    aria-label="open"
    />
    <dialog 
@@ -114,7 +114,7 @@ watch(currentLocale, () => {
      <div class="dialog-menu__items">
          <UButton 
          @click="close()"
-         name-class="close"
+         variant="close"
          aria-label="closed"
           />
          <div class="dialog-menu__top">

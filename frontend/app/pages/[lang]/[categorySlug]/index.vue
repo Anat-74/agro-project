@@ -158,13 +158,13 @@ watchEffect(() => {
          @click="goBack"
          icon="material-symbols:arrow-back"
         :aria-label="buttonTranslations[currentLocale].ariaLabelGoBack"
-         name-class="go-forward-back"
+         variant="go-forward-back"
        />
        <UButton
          @click="goForward"
          icon="material-symbols:arrow-forward"
          :aria-label="buttonTranslations[currentLocale].ariaLabelGoForward"
-         name-class="go-forward-back"
+         variant="go-forward-back"
        />
      </div>
      <h1 class="category-content__category-title"
@@ -257,72 +257,74 @@ watchEffect(() => {
  </template>
 
 <style lang="scss" scoped>
+@use '@/assets/scss/base/mixins' as m;
 .category-content {
-   padding-block: toEm(12);
+  padding-block: toEm(12);
+  @include m.containerParent;
 
 &__buttons {
-   display: inline-flex;
-   align-items: center;
-   column-gap: toRem(7);
-   margin-block-end: toEm(12);
+  display: inline-flex;
+  align-items: center;
+  column-gap: toRem(7);
+  margin-block-end: toEm(12);
 }
 
 &__category-title {
-   color: var(--dark-golden-color);
-   @include adaptiveValue("margin-block-end", 66, 32);
+  color: var(--dark-golden-color);
+  @include m.adaptiveValue("margin-block-end", 6, 32);
 }
 
 &__list {
-   display: grid;
-   grid-template-columns: repeat(auto-fill, minmax(toRem(262), 1fr));
-   justify-items: center;
-   row-gap: toEm(32);
-   @include adaptiveValue("column-gap", 64, 7);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(toRem(262), 1fr));
+  justify-items: center;
+  row-gap: toEm(32);
+  @include m.adaptiveValue("column-gap", 64, 7);
 }
 
 &__item {
-   width: 100%;
-   display: grid;
-   justify-items: center;
-   padding-inline: toEm(12);
-   padding-block-end: toEm(7);
-   background-color: var(--bg-product);
-   box-shadow: 0px 1px 2px 0px var(--shadow);
-   border-radius: toEm(4);
+  width: 100%;
+  display: grid;
+  justify-items: center;
+  padding-inline: toEm(12);
+  padding-block-end: toEm(7);
+  background-color: var(--bg-product);
+  box-shadow: 0px 1px 2px 0px var(--shadow);
+  border-radius: toEm(4);
 }
 
 &__link {
-   min-height: 100%;
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   row-gap: toEm(4);
-   transition: scale var(--transition-duration);
-   @include hover {
-      scale: 1.1;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: toEm(4);
+  transition: scale var(--transition-duration);
+  @include m.hover {
+     scale: 1.1;
 
-      .category-content__title {
-         color: var(--warning-hover);
-      }
-   }
+     .category-content__title {
+        color: var(--warning-hover);
+     }
+  }
 }
 
 &__title {
-   flex: 1 auto;
-   text-align: center;
-   margin-block-end: toEm(7);
-   transition: color var(--transition-duration);
+  flex: 1 auto;
+  text-align: center;
+  margin-block-end: toEm(7);
+  transition: color var(--transition-duration);
 }
 
 &__pagination {
-   justify-self: end;
+  justify-self: end;
 }
 
 &__empty {
-   text-align: center;
-   padding: toEm(20);
-   font-size: toEm(18);
-   color: var(--text-color);
+  text-align: center;
+  padding: toEm(20);
+  font-size: toEm(18);
+  color: var(--text-color);
 }
 }
 

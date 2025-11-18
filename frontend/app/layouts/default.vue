@@ -86,7 +86,7 @@ watch(currentLocale, () => {
             <UButton
               v-for="page in totalPages"
               :key="page"
-              name-class="pagination"
+              variant="pagination"
               :label="page"
               @click="searchStore.changePage(page)"
               :class="{ 'pagination-active': currentPage === page }"

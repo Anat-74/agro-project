@@ -139,13 +139,13 @@ const handleAddToCart = (product: Product) => {
         @click="goBack"
         icon="material-symbols:arrow-back"
         :aria-label="buttonTranslations[currentLocale].ariaLabelGoBack"
-        name-class="go-forward-back"
+        variant="go-forward-back"
       />
       <UButton
         @click="goForward"
         icon="material-symbols:arrow-forward"
         :aria-label="buttonTranslations[currentLocale].ariaLabelGoForward"
-        name-class="go-forward-back"
+        variant="go-forward-back"
       />
       <div class="subcategory-products__select-wrapper select-wrapper">
         <label 
@@ -242,7 +242,7 @@ const handleAddToCart = (product: Product) => {
             v-if="!isInCart(product.id)"
             @click="handleAddToCart(product)"
             class="subcategory-products__add-to-cart"
-            name-class="small-add-to-cart"
+            variant="small-add-to-cart"
             icon="qlementine-icons:add-to-cart-16"
             :aria-label="buttonTranslations[currentLocale].label"
           />
@@ -251,7 +251,7 @@ const handleAddToCart = (product: Product) => {
             class="subcategory-products__add-to-cart"
             v-else
             disabled
-            name-class="small-add-to-cart"
+            variant="small-add-to-cart"
             icon="emojione-v1:left-check-mark"
             :aira-label="buttonTranslations[currentLocale].ariaLabelAdded"
           />

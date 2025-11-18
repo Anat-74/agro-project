@@ -32,7 +32,7 @@ onUnmounted(() => {
       <UButton
       @click="scrollToTop"
       v-show="isVisible"
-      name-class="go-to-top"
+      variant="go-to-top"
       icon="pixelarticons:chevron-up"
       :aria-label="buttonTranslations[currentLocale].ariaLabelScrollToTop"
       />

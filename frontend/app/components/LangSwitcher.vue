@@ -8,13 +8,13 @@ const { currentLocale, locales, switchLocale } = useLocale()
   <div class="lang-switcher">
     <UButton
       v-for="locale in locales"
+      @click="switchLocale(locale.code)"
       :key="locale.code"
       :icon="locale.icon"
       :class="{ active: currentLocale === locale.code }"
-      @click="switchLocale(locale.code)"
-      name-class="lang-switcher"
-     :aria-label="buttonTranslations[currentLocale].ariaLabelLang"
-    />
+      :aria-label="buttonTranslations[currentLocale].ariaLabelLang"
+      variant="lang-switcher"
+     />
   </div>
 </template>
 

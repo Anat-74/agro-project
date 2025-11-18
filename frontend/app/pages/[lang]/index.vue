@@ -101,37 +101,38 @@ const getCategoryLink = (category: Category) => {
 
 <style lang="scss" scoped>
 .category {
+  @include containerParent;
 
-&__list {
-   display: grid;
-   grid-template-columns: repeat(auto-fit, minmax(toRem(262), 1fr));
-   justify-items: center;
-   row-gap: toEm(27);
-   padding-block: toEm(16);
-   @include adaptiveValue("column-gap", 64, 7);
-}
+  &__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(toRem(262), 1fr));
+    justify-items: center;
+    row-gap: toEm(27);
+    padding-block: toEm(16);
+    @include m.adaptiveValue("column-gap", 64, 7);
+  }
 
-&__item {
-   width: 100%;
-   display: grid;
-   justify-items: center;
-   padding-inline: toEm(16);
-   padding-block-start: toEm(7);
-   padding-block-end: toEm(16);
-   background-color: var(--bg-product);
-   box-shadow: 0px 1px 2px 0px var(--shadow);
-   border-radius: toEm(4);
-}
+  &__item {
+    width: 100%;
+    display: grid;
+    justify-items: center;
+    padding-inline: toEm(16);
+    padding-block-start: toEm(7);
+    padding-block-end: toEm(16);
+    background-color: var(--bg-product);
+    box-shadow: 0px 1px 2px 0px var(--shadow);
+    border-radius: toEm(4);
+  }
 
-&__link {
-   min-height: 100%;
-   display: grid;
-   align-items: center;
-   justify-items: center;
-   row-gap: toEm(18);
-   margin-block-end: toEm(12);
+  &__link {
+    min-height: 100%;
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    row-gap: toEm(18);
+    margin-block-end: toEm(12);
 
-   @include hover {
+    @include m.hover {
       .category__image {
          outline: toRem(4) solid var(--secondary-color);
          outline-offset: toEm(4);
@@ -141,18 +142,18 @@ const getCategoryLink = (category: Category) => {
       .category__title {
          color: var(--danger-hover);
       }
-   }
-}
+    }
+  }
 
-&__image {
-   transition: border-radius var(--transition-duration);
-}
+  &__image {
+    transition: border-radius var(--transition-duration);
+  }
 
-&__title {
-   align-self: end;
-   text-align: center;
-   transition: color var(--transition-duration);
+  &__title {
+    align-self: end;
+    text-align: center;
+    transition: color var(--transition-duration);
+  }
 }
-}
-
 </style>
+

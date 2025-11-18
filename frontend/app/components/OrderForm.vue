@@ -87,9 +87,8 @@ const submitOrder = async () => {
          size="large"
          type="submit" 
          :disabled="isSubmitting || cartStore.totalItems === 0"
-         :label="isSubmitting ? orderFormTranslations[currentLocale].submitting : orderFormTranslations[currentLocale].checkout"
          class="order-form__btn"
-         />
+         >{{ isSubmitting ? orderFormTranslations[currentLocale].submitting : orderFormTranslations[currentLocale].checkout }}</UButton>
      </form>
      <div class="order-form__total">
       <b>{{ orderFormTranslations[currentLocale].total }}</b>

@@ -44,14 +44,15 @@ useSeoMeta({
 </template>
 
 <style lang="scss" scoped>
+@use '@/assets/scss/base/mixins' as m;
 .contacts {
-   height: 50dvh;
-   padding-block-start: toEm(32);
+  height: 50dvh;
+  padding-block-start: toEm(32);
 
-   p {
-      font-size: toEm(22);
-      margin-block-end: toRem(16);
-   }
+  p {
+    font-size: toEm(22);
+    margin-block-end: toRem(16);
+  }
 }
 
 </style>

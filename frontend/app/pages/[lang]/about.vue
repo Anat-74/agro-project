@@ -45,13 +45,13 @@ useSeoMeta({
 
 <style lang="scss" scoped>
 .about-us {
-   height: 50dvh;
-   padding-block-start: toEm(32);
+  height: 50dvh;
+  padding-block-start: toEm(32);
 
-   p {
-      font-size: toEm(22);
-      margin-block-end: toRem(16);
-   }
+  p {
+    font-size: toEm(22);
+    margin-block-end: toRem(16);
+  }
 }
 
 </style>

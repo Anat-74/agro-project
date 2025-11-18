@@ -8,7 +8,7 @@ const { open, close } = useDialog(dialogElement)
    <div>
    <UButton 
    @click="open()" 
-   name-class="hamburger"
+   variant="hamburger"
    aria-label="open"
    />
    <dialog 
@@ -20,7 +20,7 @@ const { open, close } = useDialog(dialogElement)
      <div class="dialog-hamburger__items">
          <UButton 
          @click="close()"
-         name-class="hamburger"
+         variant="hamburger"
          aria-label="closed"
           />
          <p>В процессе наполнения контентом...</p>

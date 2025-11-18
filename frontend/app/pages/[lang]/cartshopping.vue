@@ -95,7 +95,7 @@ onMounted(() => {
       @click="goBack"
       icon="material-symbols:arrow-back"
       aria-label="go back"
-      name-class="go-forward-back"
+      variant="go-forward-back"
       class="cart-page__go-back"
      />
      <div 
@@ -225,11 +225,13 @@ onMounted(() => {
  </template>
 
 <style lang="scss" scoped>
+@use '@/assets/scss/base/mixins' as m;
 .cart-empty {
    display: grid;
    grid-template-columns: 1fr auto;
    align-items: center;
    padding-block-start: toEm(58);
+   @include m.containerParent;
 
    &__body {
       min-height: 100%;

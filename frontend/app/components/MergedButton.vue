@@ -6,7 +6,6 @@ interface Props {
   isDisabled?: boolean
   type?: 'button' | 'submit' | 'reset'
   icon?: string
-  label?: string | number
   theme?: string
 }
 
@@ -42,7 +41,6 @@ defineEmits<Emits>()
     <span v-else-if="icon" class="btn-icon">
       <Icon :name="icon" />
     </span>
-    <span v-else-if="label" class="btn-label">{{ label }}</span>
     <span v-else class="button-content">
       <slot></slot>
     </span>
