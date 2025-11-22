@@ -36,7 +36,12 @@ const { data, pending, error, refresh } = useAsyncData(
           category: { slug: { $eq: categorySlug } },
           locale: currentLocale.value
         },
-        fields: ['id', 'name']
+        fields: ['id', 'name', 'seoTitle', 'seoDescription'],
+        populate: {
+          seoImage: {
+            fields: ["id", "alternativeText", "url"]
+          }
+        }
       }),
       
       // Запрос продуктов с фильтрацией по slug
@@ -110,8 +115,16 @@ watch(sortOption, () => {
 watchEffect(() => {
   if (subcategory.value) {
     useSeoMeta({
-      title: subcategory.value.name,
-      description: subcategory.value.name
+      title: subcategory.value.seoTitle || subcategory.value.name,
+      description: subcategory.value.seoDescription || subcategory.value.name,
+      ogTitle: subcategory.value.seoTitle || subcategory.value.name,
+      ogDescription: subcategory.value.seoDescription || subcategory.value.name,
+      ogImage: subcategory.value.seoImage?.[0]?.url
+        ? `${config.public.strapi.url}${subcategory.value.seoImage[0].url}`
+        : subcategory.value.image?.[0]?.url
+          ? `${config.public.strapi.url}${subcategory.value.image[0].url}`
+          : `${config.public.siteUrl}/default-subcategory-image.jpg`,
+      ogUrl: `${config.public.siteUrl}${route.fullPath}`
     })
   }
 })

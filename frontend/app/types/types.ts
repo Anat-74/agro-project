@@ -43,6 +43,9 @@ export type Image = {
     image: Image[];
    subcategories?: Subcategory[];
    products?: Product[];
+   seoTitle?: string;
+   seoDescription?: string;
+   seoImage?: Image[];
  }
  
  export type Subcategory = {
@@ -58,6 +61,9 @@ export type Image = {
    publishedAt?: string;
    image: Image[];
    products?: Product[];
+   seoTitle?: string;
+   seoDescription?: string;
+   seoImage?: Image[];
  }
  
  export type Product = {

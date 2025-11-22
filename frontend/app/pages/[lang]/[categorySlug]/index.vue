@@ -24,8 +24,11 @@ const { data, pending, error, refresh } = useAsyncData(
           slug: { $eq: categorySlug },
           locale: currentLocale.value
         },
-        fields: ['id', 'name'],
+        fields: ['id', 'name', 'seoTitle', 'seoDescription'],
         populate: {
+          seoImage: {
+            fields: ["id", "alternativeText", "url"]
+          },
           subcategories: {
             fields: ['id']
           },
@@ -128,8 +131,16 @@ watch(() => route.query.page, (newPage) => {
 watchEffect(() => {
   if (category.value) {
     useSeoMeta({
-      title: category.value.name,
-      description: category.value.name
+      title: category.value.seoTitle || category.value.name,
+      description: category.value.seoDescription || category.value.name,
+      ogTitle: category.value.seoTitle || category.value.name,
+      ogDescription: category.value.seoDescription || category.value.name,
+      ogImage: category.value.seoImage?.[0]?.url
+        ? `${config.public.strapi.url}${category.value.seoImage[0].url}`
+        : category.value.image?.[0]?.url
+          ? `${config.public.strapi.url}${category.value.image[0].url}`
+          : `${config.public.siteUrl}/default-category-image.jpg`,
+      ogUrl: `${config.public.siteUrl}${route.fullPath}`
     })
   }
 })

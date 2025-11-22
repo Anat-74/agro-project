@@ -7,6 +7,7 @@ import { discountProductTranslations } from '~/locales/discountProduct'
 import { formatPrice } from '~/utils/formatPrice'
 
 const { currentLocale } = useLocale()
+const route = useRoute()
 const cartStore = useCartStore()
 const { goBack } = useGoToForwardOrBack()
 const { find } = useStrapi()
@@ -16,7 +17,10 @@ useSeoMeta({
   title: cartTranslations[currentLocale.value as LocaleCode].title,
   ogTitle: cartTranslations[currentLocale.value as LocaleCode].title,
   description: cartTranslations[currentLocale.value as LocaleCode].description,
-  ogDescription: cartTranslations[currentLocale.value as LocaleCode].description
+  ogDescription: cartTranslations[currentLocale.value as LocaleCode].description,
+  ogImage: `${config.public.siteUrl}/image/cart-share-image.jpg`, // можно использовать специфичное изображение для корзины
+  ogUrl: `${config.public.siteUrl}${route.fullPath}`,
+  twitterCard: 'summary_large_image'
 })
 
 const { data: product } = useAsyncData(
