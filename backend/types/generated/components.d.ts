@@ -77,6 +77,19 @@ export interface LegalBankDetails extends Struct.ComponentSchema {
   };
 }
 
+export interface SeoSeo extends Struct.ComponentSchema {
+  collectionName: 'components_seo_seos';
+  info: {
+    description: '';
+    displayName: 'SEO';
+  };
+  attributes: {
+    metaDescription: Schema.Attribute.Text;
+    metaTitle: Schema.Attribute.String;
+    structuredData: Schema.Attribute.JSON;
+  };
+}
+
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
@@ -85,6 +98,7 @@ declare module '@strapi/strapi' {
       'contacts.social': ContactsSocial;
       'layout.footer': LayoutFooter;
       'legal.bank-details': LegalBankDetails;
+      'seo.seo': SeoSeo;
     }
   }
 }

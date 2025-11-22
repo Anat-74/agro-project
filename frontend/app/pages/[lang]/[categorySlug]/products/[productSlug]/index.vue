@@ -30,6 +30,12 @@ const { data: product, error, pending } = useAsyncData
        populate: {
         image: {
           fields: ["id", "alternativeText", "url"]
+        },
+        seo: {
+          fields: ["metaTitle", "metaDescription", "structuredData"]
+        },
+        seoImage: {
+          fields: ["id", "alternativeText", "url"]
         }
       }
     })
@@ -63,22 +69,46 @@ const isActive = (imgUrl: string) =>
   })
 
   useSeoMeta({
- title: product.value?.name,
- description: product.value?.description
-})
+    title: product.value?.seoTitle || product.value?.seo?.metaTitle || product.value?.name,
+    description: product.value?.seoDescription || product.value?.seo?.metaDescription || product.value?.description,
+    ogTitle: product.value?.seoTitle || product.value?.seo?.metaTitle || product.value?.name,
+    ogDescription: product.value?.seoDescription || product.value?.seo?.metaDescription || product.value?.description,
+    ogImage: product.value?.seoImage?.[0]?.url
+      ? `${config.public.strapi.url}${product.value.seoImage[0].url}`
+      : product.value?.image?.[0]?.url
+        ? `${config.public.strapi.url}${product.value.image[0].url}`
+        : `${config.public.siteUrl}/default-product-image.jpg`,
+    ogUrl: `${config.public.siteUrl}${route.fullPath}`
+  })
+  
+  // Добавляем structured data в useHead
+  useHead({
+    script: product.value?.seo?.structuredData ? [{
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify(product.value.seo.structuredData)
+    }] : []
+  })
 
 
 watch(() => product.value, (newProduct) => {
-  if (newProduct?.image?.[0]?.url) {
-    currentImage.value = `${config.public.strapi.url}${newProduct.image[0].url}`
-    
-    // Обновляем SEO метаданные
-    useSeoMeta({
-      title: newProduct.name,
-      description: newProduct.description
-    })
-  }
-}, { immediate: true })
+   if (newProduct?.image?.[0]?.url) {
+     currentImage.value = `${config.public.strapi.url}${newProduct.image[0].url}`
+     
+     // Обновляем SEO метаданные
+     useSeoMeta({
+       title: newProduct?.seoTitle || newProduct?.seo?.metaTitle || newProduct?.name,
+       description: newProduct?.seoDescription || newProduct?.seo?.metaDescription || newProduct?.description,
+       ogTitle: newProduct?.seoTitle || newProduct?.seo?.metaTitle || newProduct?.name,
+       ogDescription: newProduct?.seoDescription || newProduct?.seo?.metaDescription || newProduct?.description,
+       ogImage: newProduct?.seoImage?.[0]?.url
+         ? `${config.public.strapi.url}${newProduct.seoImage[0].url}`
+         : newProduct?.image?.[0]?.url
+           ? `${config.public.strapi.url}${newProduct.image[0].url}`
+           : `${config.public.siteUrl}/default-product-image.jpg`,
+       ogUrl: `${config.public.siteUrl}${route.fullPath}`
+     })
+   }
+ }, { immediate: true })
 
 const setCurrentImage = (imgUrl: string) => {
   currentImage.value = `${config.public.strapi.url}${imgUrl}`

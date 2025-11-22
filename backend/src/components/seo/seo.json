@@ -1,0 +1,1 @@
+{"collectionName": "components_seo_seos", "info": {"displayName": "SEO", "description": ""}, "options": {}, "attributes": {"metaTitle": {"type": "string", "required": false}, "metaDescription": {"type": "text", "required": false}, "structuredData": {"type": "json", "required": false}}} 
