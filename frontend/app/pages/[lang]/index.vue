@@ -109,7 +109,7 @@ const getCategoryLink = (category: Category) => {
     justify-items: center;
     row-gap: toEm(27);
     padding-block: toEm(16);
-    @include m.adaptiveValue("column-gap", 64, 7);
+    @include adaptiveValue("column-gap", 64, 7);
   }
 
   &__item {
@@ -132,7 +132,7 @@ const getCategoryLink = (category: Category) => {
     row-gap: toEm(18);
     margin-block-end: toEm(12);
 
-    @include m.hover {
+    @include hover {
       .category__image {
          outline: toRem(4) solid var(--secondary-color);
          outline-offset: toEm(4);

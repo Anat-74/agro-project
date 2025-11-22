@@ -102,6 +102,10 @@
   }
 }
 
-@mixin containerParent($type: inline-size) {
-  container-type: $type;
+@mixin containerParent($type: inline-size, $name: null) {
+  @if ($name) {
+    container: $name / $type;
+  } @else {
+    container-type: $type;
+  }
 }

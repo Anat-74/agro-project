@@ -68,7 +68,7 @@ main:has(.dialog-menu[open]) {
 // ===================================================================
 
 h1 {
-   @include m.containerAdaptive("font-size", toRem(20), 4, toRem(24));
+   @include m.containerAdaptive("font-size", toRem(22), 4, toRem(26));
 }
 
 h2 {
@@ -80,20 +80,32 @@ h3 {
 }
 
 // ===================================================================
+//! PARAGRAPHS AND LISTS
+// ===================================================================
+
+p {
+   @include m.containerAdaptive("font-size", toRem(14), 2.5, toRem(16));
+}
+
+li {
+   @include m.containerAdaptive("font-size", toRem(16), 2.5, toRem(18));
+}
+
+// ===================================================================
 //! LINKS
 // ===================================================================
 
 a {
-   color: inherit;
-   &[class] {
-      text-decoration: none;
-   }
+    color: inherit;
+    &[class] {
+       text-decoration: none;
+    }
 
-   &:focus-visible {
-      outline: toRem(2) dashed var(--warning-color);
-      outline-offset: toRem(4);
-      transition-duration: 0s !important;
-   }
+    &:focus-visible {
+       outline: toRem(2) dashed var(--warning-color);
+       outline-offset: toRem(4);
+       transition-duration: 0s !important;
+    }
 }
 
 // ===================================================================

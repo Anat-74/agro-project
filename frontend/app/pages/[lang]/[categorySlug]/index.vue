@@ -257,11 +257,9 @@ watchEffect(() => {
  </template>
 
 <style lang="scss" scoped>
-@use '@/assets/scss/base/mixins' as m;
 .category-content {
   padding-block: toEm(12);
-  @include m.containerParent;
-
+  
 &__buttons {
   display: inline-flex;
   align-items: center;
@@ -271,7 +269,7 @@ watchEffect(() => {
 
 &__category-title {
   color: var(--dark-golden-color);
-  @include m.adaptiveValue("margin-block-end", 6, 32);
+  @include adaptiveValue("margin-block-end", 6, 32);
 }
 
 &__list {
@@ -279,7 +277,7 @@ watchEffect(() => {
   grid-template-columns: repeat(auto-fill, minmax(toRem(262), 1fr));
   justify-items: center;
   row-gap: toEm(32);
-  @include m.adaptiveValue("column-gap", 64, 7);
+  @include adaptiveValue("column-gap", 64, 7);
 }
 
 &__item {
@@ -291,6 +289,7 @@ watchEffect(() => {
   background-color: var(--bg-product);
   box-shadow: 0px 1px 2px 0px var(--shadow);
   border-radius: toEm(4);
+  @include containerParent;
 }
 
 &__link {
@@ -300,13 +299,13 @@ watchEffect(() => {
   align-items: center;
   row-gap: toEm(4);
   transition: scale var(--transition-duration);
-  @include m.hover {
-     scale: 1.1;
 
-     .category-content__title {
-        color: var(--warning-hover);
-     }
-  }
+  @include hover {
+      scale: 1.1;
+      .category-content__title {
+         color: var(--warning-hover);
+      }
+   }
 }
 
 &__title {
