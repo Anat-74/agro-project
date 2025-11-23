@@ -1,179 +1,178 @@
+// ===================================================================
+//! GLOBAL CSS VARIABLES FOR COLOR THEMES
+// ===================================================================
 
-:root {
-   --transition-duration: .2s ease;
-   --active-color: #f08080;
-   --light-color: #ffffff;
-   --sky-blue-color: #66b5f8;
-   --blue-color: #3b82f6;
-   --warning-color: #ffa26b;
-   --warning-hover: #ffc7a6;
-   --danger-color: #ff647c;
-   --danger-hover: #fdaFbb;
-   --dark-golden-color: #b8860b;
-   --dark-color: #000000;
-   --black-color: #000000;
-   --green-color: #4caf50;
-   --lime-color: #32cd32;
-   --slate-gray: #708090;
-   --border-color: #a9A9a9;
-   --gray-color: #808080;
-   --color: #243746;
-   --bg: #f3f5f4;
-   --primary-color: #778899;
-   --secondary-color: #ffffff;
-   --placeholder-hover: #ffffff;
-   --shadow: rgba(0,0,0,0.1);
-   --bg-footer-color: #dcdcdc;
-   --bg-nav-footer: #f3f5f4;
-   --bg-nav-footer-outline: #f3f5f4;
-   --locale-warning-color: #fff3cd;
-   --bg-product: #f3f5f4;
+// Светлая тема (на основе цветов из Figma)
+:root,
+.light-mode {
+    --transition-duration: .2s ease;     // Длительность переходов
+  // Основные цвета
+  --color: #274C5B;                    // Основной цвет текста (темно-синий)
+  --bg: #F9F8F8;                      // Основной цвет фона (почти белый)
+  --primary-color: #7EB693;            // Основной акцентный цвет (зеленовато-серый)
+  --secondary-color: #F0D171;          // Вторичный цвет (желтый)
+  
+  // Цвета для элементов интерфейса
+  --light-color: #ffffff;              // Белый цвет
+  --dark-color: #274C5B;               // Темный цвет (тот же что и --color)
+  --border-color: #D4D4D4;             // Цвет границ (светло-серый)
+  --gray-color: #808080;               // Стандартный серый
+  --bg-product: #EFF6F1;               // Цвет фона для карточек товаров (светлый зеленоватый)
+  
+  // Цвета состояний
+  --active-color: #7EB693;             // Цвет активного состояния
+  --warning-color: #F0D171;            // Цвет предупреждения
+  --warning-hover: #e6c767;            // Цвет при наведении на предупреждение
+  --danger-color: #ff647c;             // Цвет опасности
+  --danger-hover: #fdaFbb;             // Цвет при наведении на опасность
+  --success-color: #4caf50;            // Цвет успеха
+  --info-color: #3b82f6;               // Цвет информации (синий)
+  
+  // Дополнительные цвета
+  --bg-footer-color: #EFF6F1;          // Цвет фона футера
+ --bg-nav-footer: #F9F8F8;            // Цвет фона навигации в футере
+  --bg-nav-footer-outline: #D4D4D4;    // Цвет обводки навигации в футере
+  --locale-warning-color: #fff3cd;     // Цвет предупреждения локали
+  --shadow: rgba(39, 76, 91, 0.1);     // Цвет тени (на основе основного цвета)
+  --placeholder-hover: #ffffff;        // Цвет плейсхолдера при наведении
+  
+  // Дополнительные оттенки
+  --slate-gray: #708090;               // Серо-голубой оттенок
+  --dark-golden-color: #b8860b;        // Темно-золотой оттенок
+ --lime-color: #32cd32;               // Лайм-зеленый оттенок
+ --sky-blue-color: #66b5f8;           // Голубой оттенок
+  --blue-color: #3b82f6;               // Синий оттенок
+  --green-color: #4caf50;              // Зеленый оттенок
+}
 
-   .dialog-menu__logo {
-   --light-color: #f3f5f4;
-   }
- }
-
- .dark-mode {
+// Темная тема (контрастная к светлой)
+.dark-mode {
    filter: brightness(95%);
-  --color: #f5f5f5;
-  --bg: #091A28;
-  --dark-color: #a9A9a9;
-  --secondary-color:#2f4f4f;
-  --primary-color: #fdf9f3;
-  --light-color: #fdf9f3;
-  --border-color: #c0c0c0;
-  --gray-color: #fdf9f3;
-  --blue-color: #2f4f4f;
-  --placeholder-hover: #091A28;
-  --shadow: #2f4f4f;
-  --bg-footer-color: #2f4f4f;
-  --bg-nav-footer: #091A28;
-  --bg-nav-footer-outline: #778899;
-  --bg-product: #091A28;
-
-  .search-input {
-     --color: #091A28;
-  }
-
-  .dialog-hamburger {
-  &[open]::backdrop {
-   --dark-color: #000000;
-  }
+  // Основные цвета
+  --color: #F9F8F8;                    // Основной цвет текста (почти белый)
+  --bg: #274C5B;                       // Основной цвет фона (темно-синий)
+  --primary-color: #7EB693;            // Основной акцентный цвет (зеленовато-серый)
+  --secondary-color: #F0D171;          // Вторичный цвет (желтый)
+  
+  // Цвета для элементов интерфейса
+  --light-color: #F9F8F8;              // Светлый цвет (вместо белого)
+  --dark-color: #D4D4;               // Темный цвет (светло-серый в темной теме)
+  --border-color: #525C60;             // Цвет границ (серо-синий)
+  --gray-color: #a9A9a9;               // Светлый серый
+  --bg-product: #525C60;               // Цвет фона для карточек товаров (серо-синий)
+  
+  // Цвета состояний
+  --active-color: #7EB693;             // Цвет активного состояния
+  --warning-color: #F0D171;            // Цвет предупреждения
+  --warning-hover: #e6c767;            // Цвет при наведении на предупреждение
+  --danger-color: #ff647c;             // Цвет опасности
+  --danger-hover: #fdaFbb;             // Цвет при наведении на опасность
+  --success-color: #4caf50;            // Цвет успеха
+  --info-color: #6b5f8;               // Цвет информации (голубой в темной теме)
+  
+  // Дополнительные цвета
+  --bg-footer-color: #525C60;          // Цвет фона футера
+  --bg-nav-footer: #274C5B;            // Цвет фона навигации в футере
+  --bg-nav-footer-outline: #7EB693;    // Цвет обводки навигации в футере
+  --locale-warning-color: #7a6d36;     // Темный цвет предупреждения локали
+  --shadow: rgba(212, 212, 212, 0.2);  // Цвет тени (на основе серого)
+  --placeholder-hover: #274C5B;        // Цвет плейсхолдера при наведении
+  
+  // Дополнительные оттенки
+  --slate-gray: #a0b0c0;               // Светлый серо-голубой оттенок
+  --dark-golden-color: #d8a62b;        // Светлый темно-золотой оттенок
+  --lime-color: #52e052;               // Светлый лайм-зеленый оттенок
+  --sky-blue-color: #86c5ff;           // Светлый голубой оттенок
+  --blue-color: #66b5f8;               // Светлый синий оттенок
+  --green-color: #6bcf70;              // Светлый зеленый оттенок
 }
 
-.order-form {
-&__title {
-   --danger-color: #f5f5f5;
-   }
+// Произвольная тема (альтернативная комбинация цветов из Figma)
+.custom-mode {
+  --transition-duration: .2s ease;
+  // Основные цвета
+  --color: #525C60;                    // Основной цвет текста (серо-синий)
+  --bg: #f0e8c5;                       // Основной цвет фона (светлый зеленоватый)
+  --primary-color: #274C5B;            // Основной акцентный цвет (темно-синий)
+  --secondary-color: #F0D171;          // Вторичный цвет (желтый)
+  
+  // Цвета для элементов интерфейса
+ --light-color: #F9F8F8;              // Светлый цвет (почти белый)
+  --dark-color: #274C5B;               // Темный цвет (темно-синий)
+  --border-color: #7EB693;             // Цвет границ (зеленовато-серый)
+  --gray-color: #808080;               // Стандартный серый
+  --bg-product: #F9F8F8;               // Цвет фона для карточек товаров (почти белый)
+  
+  // Цвета состояний
+  --active-color: #274C5B;             // Цвет активного состояния
+  --warning-color: #F0D171;            // Цвет предупреждения
+  --warning-hover: #e6c767;            // Цвет при наведении на предупреждение
+  --danger-color: #ff647c;             // Цвет опасности
+  --danger-hover: #fdaFbb;             // Цвет при наведении на опасность
+  --success-color: #4caf50;            // Цвет успеха
+  --info-color: #3b82f6;               // Цвет информации (синий)
+  
+  // Дополнительные цвета
+  --bg-footer-color: #274C5B;          // Цвет фона футера
+  --bg-nav-footer: #7EB693;            // Цвет фона навигации в футере
+  --bg-nav-footer-outline: #274C5B;    // Цвет обводки навигации в футере
+  --locale-warning-color: #f0e8c5;     // Светлый цвет предупреждения локали
+  --shadow: rgba(82, 92, 96, 0.1);     // Цвет тени (на основе серо-синего)
+  --placeholder-hover: #EFF6F1;        // Цвет плейсхолдера при наведении
+  
+  // Дополнительные оттенки
+ --slate-gray: #708090;               // Серо-голубой оттенок
+  --dark-golden-color: #b8860b;        // Темно-золотой оттенок
+  --lime-color: #32cd32;               // Лайм-зеленый оттенок
+ --sky-blue-color: #66b5f8;           // Голубой оттенок
+  --blue-color: #3b82f6;               // Синий оттенок
+  --green-color: #4caf50;              // Зеленый оттенок     // Длительность переходов
 }
 
-.btn {
-&_dialog-menu {
-   --warning-color:#a9A9a9;
-   --warning-hover:#091A28;
-      }
-   }
- }
-
-
- .sepia-mode {
-  --color: #504231;
-  --gray-color: #ffffff;
-  --primary-color: #504231;
-  --secondary-color: #504231;
-  --bg: #f1e7d0;
-  --light-color:#f1e7d0;
-  --border-color: #504231;
-  --blue-color: #504231;
-  --bg-footer-color: #504231;
-  --bg-nav-footer: #f1e7d0;
-  --bg-product: #f1e7d0;
-
-  .header__logo {
-     --light-color:#f5f5f5;
-  }
-
-  .contacts {
-   --color: #f5f5f5;
-  }
-  .cart-item{
-  &__title {
-   --color: #f5f5f5;
-  }
-  &__price {
-   --primary-color:#f5f5f5;
-  }
-  &__controls {
-      --color: #f5f5f5;
-  }
-  }
-
-  .cart-link {
-   svg {
-      --primary-color:#f5f5f5;
-   }
-  }
-   .cart-page__total {
-   --primary-color: #f1e7d0;
-  }
-
-.accordion__product-list {
-   --color: #f5f5f5;
+// ===================================================================
+//? DIALOG MENU LOGO OVERRIDE (для светлой темы)
+// ===================================================================
+.light-mode .dialog-menu__logo {
+  --light-color: #EFF6F1;
 }
 
-.product-card__title {
-   --color: #f5f5f5;
+// ===================================================================
+//? DIALOG HAMBURGER MENU OVERRIDES
+// ===================================================================
+.light-mode .dialog-hamburger[open]::backdrop {
+  --dark-color: #0000;
 }
 
-.order-form {
-&__title {
-   --danger-color: #f5f5f5;
-}
-&__label {
-    --color: #f5f5f5;
-}
-&__conditions {
-   --primary-color:#f5f5f5;
-}
-&__total {
-   --color: #f5f5f5;
-}
+.dark-mode .dialog-hamburger[open]::backdrop {
+  --dark-color: #0000;
 }
 
-.company {
-   --color: #f5f5f5;
+.custom-mode .dialog-hamburger[open]::backdrop {
+  --dark-color: #00000;
 }
 
-.legal {
-   --color: #f5f5f5;
+// ===================================================================
+//? ORDER FORM OVERRIDES
+// ===================================================================
+.light-mode .order-form__title,
+.dark-mode .order-form__title,
+.custom-mode .order-form__title {
+  --danger-color: #f5f5f5;
 }
 
-  .btn {
-   &_color-theme {
-   --secondary-color: #f5f5f5;
-   }
-&_dialog-menu {
-   --warning-color:#f5f5f5;
-   --warning-hover:#f1e7d0;
-   svg {
-      --light-color: #504231;
-   }
+// ===================================================================
+//? BUTTON OVERRIDES
+// ===================================================================
+.light-mode .btn_dialog-menu,
+.dark-mode .btn_dialog-menu,
+.custom-mode .btn_dialog-menu {
+  --warning-color: #a9A9a9;
+  --warning-hover: #274C5B;
 }
-&_remove-quantity-prod {
-   --light-color: #504231;
-   --border-color: #f5f5f5;
+
+// ===================================================================
+//? SEARCH INPUT OVERRIDES (только для темной темы)
+// ===================================================================
+.dark-mode .search-input {
+  --color: #274C5B;
 }
-&_add-quantity-prod {
-   --light-color: #504231;
-   --border-color: #f5f5f5;
-}
- &_small-add-to-cart {
-   --primary-color: #f1e7d0;
- }
-   }
- }
-
-
-
-

@@ -12,7 +12,7 @@ function iconName(theme: string) {
 <template>
    <ul class="color-mode">
       <li class="color-mode__item"
-      v-for="theme of ['system', 'light', 'dark', 'sepia']"
+      v-for="theme of ['system', 'light', 'dark', 'custom']"
       :key="theme"
       >
       <UButton

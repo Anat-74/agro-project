@@ -1,18 +1,18 @@
 <script setup lang="ts">
 interface Props {
-   variant?:
-   'primary' | 'danger' | 'icon' | 'hamburger' |
-   'dialog-menu' | 'lang-switcher' | 'go-forward-back' | 'share' |
-   'switch-locale-cart' | 'add-to-cart' | 'small-add-to-cart' | 'remove-cart-item' |
-   'remove-quantity-prod' | 'add-quantity-prod' | 'large' | 'go-to-top' |
-   'pagination' | 'close'
-  size?: 'small' | 'normal' | 'large'
-  isLoading?: boolean
-  isDisabled?: boolean
-  type?: 'button' | 'submit' | 'reset'
-  icon?: string
-  theme?: string
-}
+    variant?:
+    'primary'| 'secondary' | 'outline' | 'icon' | 'hamburger' |
+    'dialog-menu' | 'lang-switcher' | 'go-forward-back' | 'share' |
+    'switch-locale-cart' | 'add-to-cart' | 'small-add-to-cart' | 'remove-cart-item' |
+    'remove-quantity-prod' | 'add-quantity-prod' | 'large' | 'go-to-top' |
+    'pagination' | 'close'
+    size?: 'small' | 'normal' | 'large'
+    isLoading?: boolean
+    isDisabled?: boolean
+    type?: 'button' | 'submit' | 'reset'
+    icon?: string
+    theme?: string
+  }
 
 interface Emits {
   (e: 'click', event: MouseEvent): void
@@ -84,6 +84,42 @@ defineEmits<Emits>()
   span {
     display: flex;
     justify-content: center;
+  }
+
+  &_primary {
+    background-color: var(--color);
+    color: var(--light-color);
+    border: 1px solid var(--color);
+    transition: background-color var(--transition-duration), color var(--transition-duration);
+    
+    @include m.hover {
+      background-color: var(--secondary-color);
+      color: var(--color);
+    }
+  }
+  
+  &_secondary {
+    background-color: var(--secondary-color);
+    color: var(--color);
+    border: 1px solid var(--secondary-color);
+    transition: background-color var(--transition-duration), color var(--transition-duration);
+    
+    @include m.hover {
+      background-color: var(--color);
+      color: var(--light-color);
+    }
+  }
+  
+  &_outline {
+    background-color: transparent;
+    color: var(--color);
+    border: 1px solid var(--color);
+    transition: background-color var(--transition-duration), color var(--transition-duration);
+    
+    @include m.hover {
+      background-color: var(--color);
+      color: var(--light-color);
+    }
   }
 
   &_icon {
@@ -421,7 +457,14 @@ defineEmits<Emits>()
     padding-block: toEm(7);
     font-weight: 600;
     color: var(--light-color);
-    background-color: var(--sky-blue-color);
+    background-color: var(--color);
+    border: 1px solid var(--color);
+    transition: background-color var(--transition-duration), color var(--transition-duration);
+    
+    @include m.hover {
+      background-color: var(--secondary-color);
+      color: var(--color);
+    }
   }
 
   &_close {
@@ -456,42 +499,6 @@ defineEmits<Emits>()
       transform: scale(1.1);
     }
   }
-
-  /* Варианты из AppButton */
-  &.primary {
-    background-color: var(--primary-color);
-    color: white;
-  }
-
-  &.primary:hover:not(:disabled) {
-    background-color: var(--primary-hover);
-  }
-
- &.danger {
-    background-color: var(--danger-color);
-    color: var(--light-color);
-  }
-
-  &.danger:hover:not(:disabled) {
-    background-color: var(--danger-hover);
-  }
-
- /* Размеры из AppButton */
-  &.medium {
-    padding: 6px 12px;
-    font-size: 14px;
- }
-
-  &.large {
-    padding: 8px 16px;
-    font-size: 16px;
- }
-
-  @media (max-width: 768px) {
-    &.large:hover:not(:disabled) {
-      background-color: var(--primary-hover);
-    }
- }
 
   /* Состояние загрузки */
   &.loading {

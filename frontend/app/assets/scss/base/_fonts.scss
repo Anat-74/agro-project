@@ -1,32 +1,91 @@
 // ?Подключение шрифтов
 
- @font-face {
-   font-family: "Montserrat";
-   src: local("Montserrat-Regular"),
-   url("/fonts/Montserrat-Regular.woff2") format("woff2");
-   font-weight: 400;
-   font-display: swap;
- }
+//  @font-face {
+//     font-family: "Montserrat";
+//     src: local("Montserrat-Regular"),
+//     url("/fonts/Montserrat-Regular.woff2") format("woff2");
+//     font-weight: 400;
+//     font-display: swap;
+//   }
 
-@font-face {
-   font-family: "Montserrat";
-   src: local("Montserrat-Medium"),
-   url("/fonts/Montserrat-Medium.woff2") format("woff2");
-   font-weight: 500;
-   font-display: swap;
- }
+//  @font-face {
+//     font-family: "Montserrat";
+//     src: local("Montserrat-Medium"),
+//     url("/fonts/Montserrat-Medium.woff2") format("woff2");
+//     font-weight: 500;
+//     font-display: swap;
+//   }
 
- @font-face {
-   font-family: "Montserrat";
-   src: local("Montserrat-MediumItalic"),
-   url("/fonts/Montserrat-MediumItalic.woff2") format("woff2");
-   font-style: italic;
-   font-display: swap;
- }
+//   @font-face {
+//     font-family: "Montserrat";
+//     src: local("Montserrat-MediumItalic"),
+//     url("/fonts/Montserrat-MediumItalic.woff2") format("woff2");
+//     font-style: italic;
+//     font-display: swap;
+//   }
 
-@font-face {
-   font-family: "RubikBurned";
-   src: local("RubikBurned-Regular"),
-   url("/fonts/RubikBurned-Regular.woff2") format("woff2");
-   font-display: swap;
- }
+//  @font-face {
+//     font-family: "RubikBurned";
+//     src: local("RubikBurned-Regular"),
+//     url("/fonts/RubikBurned-Regular.woff2") format("woff2");
+//     font-display: swap;
+//   }
+
+  // Yellowtail
+  @font-face {
+    font-family: "Yellowtail";
+    src: local("Yellowtail-Regular"),
+    url("/fonts/Yellowtail-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-display: swap;
+  }
+
+  // Roboto
+  @font-face {
+    font-family: "Roboto";
+    src: local("Roboto-Regular"),
+    url("/fonts/Roboto-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Roboto";
+    src: local("Roboto-Bold"),
+    url("/fonts/Roboto-Bold.woff2") format("woff2");
+    font-weight: 700;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Roboto";
+    src: local("Roboto-ExtraBold"),
+    url("/fonts/Roboto-ExtraBold.woff2") format("woff2");
+    font-weight: 800;
+    font-display: swap;
+  }
+
+  // Open Sans
+  @font-face {
+    font-family: "Open Sans";
+    src: local("OpenSans-Regular"),
+    url("/fonts/OpenSans-Regular.woff2") format("woff2");
+    font-weight: 400;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Open Sans";
+    src: local("OpenSans-SemiBold"),
+    url("/fonts/OpenSans-SemiBold.woff2") format("woff2");
+    font-weight: 600;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "Open Sans";
+    src: local("OpenSans-Bold"),
+    url("/fonts/OpenSans-Bold.woff2") format("woff2");
+    font-weight: 700;
+    font-display: swap;
+  }
