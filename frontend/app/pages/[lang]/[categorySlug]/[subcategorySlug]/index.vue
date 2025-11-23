@@ -40,6 +40,9 @@ const { data, pending, error, refresh } = useAsyncData(
         populate: {
           seoImage: {
             fields: ["id", "alternativeText", "url"]
+          },
+          seo: {
+            fields: ["metaTitle", "metaDescription", "structuredData"]
           }
         }
       }),
@@ -115,16 +118,24 @@ watch(sortOption, () => {
 watchEffect(() => {
   if (subcategory.value) {
     useSeoMeta({
-      title: subcategory.value.seoTitle || subcategory.value.name,
-      description: subcategory.value.seoDescription || subcategory.value.name,
-      ogTitle: subcategory.value.seoTitle || subcategory.value.name,
-      ogDescription: subcategory.value.seoDescription || subcategory.value.name,
+      title: subcategory.value.seo?.metaTitle || subcategory.value.seoTitle || subcategory.value.name,
+      description: subcategory.value.seo?.metaDescription || subcategory.value.seoDescription || subcategory.value.name,
+      ogTitle: subcategory.value.seo?.metaTitle || subcategory.value.seoTitle || subcategory.value.name,
+      ogDescription: subcategory.value.seo?.metaDescription || subcategory.value.seoDescription || subcategory.value.name,
       ogImage: subcategory.value.seoImage?.[0]?.url
         ? `${config.public.strapi.url}${subcategory.value.seoImage[0].url}`
         : subcategory.value.image?.[0]?.url
           ? `${config.public.strapi.url}${subcategory.value.image[0].url}`
           : `${config.public.siteUrl}/default-subcategory-image.jpg`,
       ogUrl: `${config.public.siteUrl}${route.fullPath}`
+    })
+    
+    // Добавляем structured data в useHead
+    useHead({
+      script: subcategory.value?.seo?.structuredData ? [{
+        type: 'application/ld+json',
+        innerHTML: JSON.stringify(subcategory.value.seo.structuredData)
+      }] : []
     })
   }
 })

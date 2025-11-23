@@ -49,6 +49,11 @@
       "relation": "oneToMany",
       "target": "api::product.product"
     },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "seo.seo"
+    },
     "seoTitle": {
       "type": "string",
       "pluginOptions": {

@@ -29,6 +29,9 @@ const { data, pending, error, refresh } = useAsyncData(
           seoImage: {
             fields: ["id", "alternativeText", "url"]
           },
+          seo: {
+            fields: ["metaTitle", "metaDescription", "structuredData"]
+          },
           subcategories: {
             fields: ['id']
           },
@@ -131,10 +134,10 @@ watch(() => route.query.page, (newPage) => {
 watchEffect(() => {
   if (category.value) {
     useSeoMeta({
-      title: category.value.seoTitle || category.value.name,
-      description: category.value.seoDescription || category.value.name,
-      ogTitle: category.value.seoTitle || category.value.name,
-      ogDescription: category.value.seoDescription || category.value.name,
+      title: category.value.seo?.metaTitle || category.value.seoTitle || category.value.name,
+      description: category.value.seo?.metaDescription || category.value.seoDescription || category.value.name,
+      ogTitle: category.value.seo?.metaTitle || category.value.seoTitle || category.value.name,
+      ogDescription: category.value.seo?.metaDescription || category.value.seoDescription || category.value.name,
       ogImage: category.value.seoImage?.[0]?.url
         ? `${config.public.strapi.url}${category.value.seoImage[0].url}`
         : category.value.image?.[0]?.url
@@ -142,17 +145,16 @@ watchEffect(() => {
           : `${config.public.siteUrl}/default-category-image.jpg`,
       ogUrl: `${config.public.siteUrl}${route.fullPath}`
     })
+    
+    // Добавляем structured data в useHead
+    useHead({
+      script: category.value?.seo?.structuredData ? [{
+        type: 'application/ld+json',
+        innerHTML: JSON.stringify(category.value.seo.structuredData)
+      }] : []
+    })
   }
 })
-
-// useSeoMeta({
-//   ogTitle: category.value.seoTitle || category.value.name,
-//   ogDescription: category.value.seoDescription,
-//   ogImage: category.value.seoImage
-//     ? `${config.public.strapi.url}${category.value.seoImage.url}`
-//     : `${config.public.siteUrl}/default-category-image.jpg`,
-//   ogUrl: `${config.public.siteUrl}${route.path}`
-// })
 </script>
 
 <template>
@@ -208,9 +210,9 @@ watchEffect(() => {
               :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
               class="category-content__image"
               decoding="async"
-            width="258"
-            height="194"
-             format="webp"
+              format="webp"
+              width="258"
+              height="194"
             />
          </NuxtLink>
        </li>
@@ -240,9 +242,9 @@ watchEffect(() => {
               :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
               class="category-content__image"
               decoding="async"
-            width="258"
-            height="194"
-             format="webp"
+              width="258"
+              height="194"
+              format="webp"
             />
          </NuxtLink>
        </li>

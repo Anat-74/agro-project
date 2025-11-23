@@ -46,6 +46,11 @@ export type Image = {
    seoTitle?: string;
    seoDescription?: string;
    seoImage?: Image[];
+   seo?: {
+     metaTitle?: string;
+     metaDescription?: string;
+     structuredData?: any;
+   };
  }
  
  export type Subcategory = {
@@ -64,6 +69,11 @@ export type Image = {
    seoTitle?: string;
    seoDescription?: string;
    seoImage?: Image[];
+   seo?: {
+     metaTitle?: string;
+     metaDescription?: string;
+     structuredData?: any;
+   };
  }
  
  export type Product = {
