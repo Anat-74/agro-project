@@ -116,7 +116,7 @@ onUnmounted(() => {
    class="search-no-results">
    {{ productFilterTranslations[currentLocale].noResults }}
     </span>
-   <div class="search-select-wrapper select-wrapper">
+   <!-- <div class="search-select-wrapper select-wrapper">
       <label 
       class="visually-hidden"
       for="sort-product"
@@ -149,7 +149,7 @@ onUnmounted(() => {
       > {{ productFilterTranslations[currentLocale].optionPriceDesc }}
    </option>
     </select>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -168,7 +168,7 @@ onUnmounted(() => {
       padding-inline-start: toRem(42);
       border-radius: toEm(4) toEm(0) toEm(0) toEm(4);
       border: toRem(2) solid var(--danger-color);
-      border-right: none;
+      // border-right: none;
       font-size: toEm(18);
       color: var(--color);
       background-color: var(--light-color);
@@ -212,48 +212,48 @@ onUnmounted(() => {
       color: var(--primary-color);
    }
 
-   &-select-wrapper {
-      height: 100%;
+//    &-select-wrapper {
+//       height: 100%;
 
-&::before,
-   &::after{
-      content: '';
-      width: toRem(10);
-      height: toEm(3);
-      background-color: var(--danger-color);
+// &::before,
+//    &::after{
+//       content: '';
+//       width: toRem(10);
+//       height: toEm(3);
+//       background-color: var(--danger-color);
 
-      @media (max-width:$mobile){
-         background-color: var(--light-color);
-      }
-   }
-   &::before {
-      transform: rotate(-125deg);
-      @include adaptiveValue("right", 16, 14);
-   }
-   &::after {
-      transform: rotate(125deg);
-      @include adaptiveValue("right", 11, 9);
-   }
-   }
+//       @media (max-width:$mobile){
+//          background-color: var(--light-color);
+//       }
+//    }
+//    &::before {
+//       transform: rotate(-125deg);
+//       @include adaptiveValue("right", 16, 14);
+//    }
+//    &::after {
+//       transform: rotate(125deg);
+//       @include adaptiveValue("right", 11, 9);
+//    }
+//    }
 
-   &-select {
-      height: 100%;
-      width: toEm(170);
-      border: toRem(2) solid var(--danger-color);
-      border-radius: 0 toEm(4) toEm(4) 0;
-      padding-inline-start: toEm(6);
-      transition: background-color var(--transition-duration);
+//    &-select {
+//       height: 100%;
+//       width: toEm(170);
+//       border: toRem(2) solid var(--danger-color);
+//       border-radius: 0 toEm(4) toEm(4) 0;
+//       padding-inline-start: toEm(6);
+//       transition: background-color var(--transition-duration);
 
-      @media (max-width:$mobile){
-          width: toEm(40);
-          padding-inline: toRem(2);
-          color: var(--danger-color);
-          background-color: currentColor;
-      }
-   }
-   &-option {
-      background-color: var(--border-color);
-      color: var(--light-color);
-   }
+//       @media (max-width:$mobile){
+//           width: toEm(40);
+//           padding-inline: toRem(2);
+//           color: var(--danger-color);
+//           background-color: currentColor;
+//       }
+//    }
+//    &-option {
+//       background-color: var(--border-color);
+//       color: var(--light-color);
+//    }
 }
 </style>

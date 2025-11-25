@@ -20,14 +20,12 @@ const { currentLocale, locales, switchLocale } = useLocale()
 
 <style lang="scss" scoped>
 .lang-switcher {
-  display: inline-flex;
-  flex-direction: column;
+  height: auto;
+  display: flex;
   gap: toRem(12);
-  padding-inline: toEm(12);
-  padding-block: toEm(8);
-  border-radius: toEm(8);
-  margin-inline-start: toRem(38);
-  margin-block-start: toEm(8);
+  padding-inline: toEm(4);
+  padding-block: toRem(3);
+  border-radius: toEm(4);
   background-color: var(--secondary-color);
 
   @media (max-width:$mobile){

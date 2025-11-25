@@ -1,13 +1,19 @@
 <script setup lang="ts">
 const dialogElement = useTemplateRef<HTMLDialogElement>('dialog-hamburger')
 
-const { open, close } = useDialog(dialogElement)
+// const { open, close } = useDialog(dialogElement) - проработать, что бы и по методу show() все работало
+const openDialog = () => {
+      dialogElement.value?.show()
+   }
+
+const closeDialog = () => {
+   dialogElement.value?.close()
+}
 </script>
 
 <template>
-   <div>
    <UButton 
-   @click="open()" 
+   @click="openDialog" 
    variant="hamburger"
    aria-label="open"
    />
@@ -19,7 +25,7 @@ const { open, close } = useDialog(dialogElement)
    >
      <div class="dialog-hamburger__items">
          <UButton 
-         @click="close()"
+         @click="closeDialog"
          variant="hamburger"
          aria-label="closed"
           />
@@ -27,38 +33,33 @@ const { open, close } = useDialog(dialogElement)
          <p>In the process of filling with content...</p>
      </div>
    </dialog>
-</div>
  </template>
 
 <style lang="scss" scoped>
 .dialog-hamburger {
-  min-height: 100dvh;
-  display: block;
-  position: fixed;
-  inset: 0;
-  margin-inline-end: 0;
-  background-color: var(--slate-gray);
-  translate: 100%;
-  transition: translate .2s linear;
-  @include adaptiveValue('width', 855, 285);
+   display: block;
+   z-index: 9999;
+   height: auto;
+   border-radius: toRem(4);
+   margin-inline-start: toRem(0);
+   scale: 0;
+   border: toRem(2) solid var(--active-color);
+   border-top: none;
+   background-color: transparent;
+   backdrop-filter: blur(5px);
+   transition: scale .1s linear;
+   @include adaptiveValue("width", 210, 140);
 
   &[open] {
-   translate: 0;
-   transition: translate .2s linear;
-  }
-  &[open]::backdrop {
-   background-color: var(--dark-color);
-   animation: fade .2s linear forwards;
+   scale: 1;
+   transition: scale .1s linear;
   }
 
   &__items {
-   min-height: 100dvh;
-   padding-block: toEm(25, 16);
-   display: flex;
-   flex-direction: column;
-   justify-content: center;
-   align-items: center;
-   @include adaptiveValue('padding-inline', 22, 12);
+   position: relative;
+   padding-inline: toEm(12, 16);
+   padding-block-start: toEm(16, 16);
+   padding-block-end: toEm(18, 16);
   }
    p {
       font-weight: 600;

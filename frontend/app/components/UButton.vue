@@ -156,17 +156,10 @@ defineEmits<Emits>()
   }
 
  &_hamburger {
-    display: none;
-
-    @media (max-width: $tablet) {
-      display: block;
-      position: absolute;
-      z-index: 100;
-      right: toRem(15);
+      position: relative;
       width: toRem(26);
       height: toRem(18);
-      @include m.adaptiveValue("top", 32, 23);
-
+      
       span,
       &::before,
       &::after {
@@ -199,8 +192,7 @@ defineEmits<Emits>()
           height: toRem(3);
         }
       }
-    }
-  }
+   }
 
   &_dialog-menu {
     position: fixed;

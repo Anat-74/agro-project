@@ -114,7 +114,6 @@ defineProps<{
          }
 
          &_contacts {
-         position: relative;
          padding-block-start: toRem(7);
          margin-block-start: toRem(-7);
          padding-block-end: toRem(24);
@@ -177,8 +176,9 @@ defineProps<{
       padding-block-end: toRem(6);
       white-space: nowrap;
       position: absolute;
-      top: toRem(56);
-      right: 0;
+      top: 50%;
+      left: 25%;
+      translate: 0 -50%;
       border-radius: toRem(4);
       color: var(--color);
       background-color: var(--secondary-color);
@@ -236,7 +236,7 @@ defineProps<{
 }
 
 .router-link-active {
-   color: var(--active-color) !important;
+   color: var(--danger-color) !important;
    pointer-events: none !important;
 }
 </style>

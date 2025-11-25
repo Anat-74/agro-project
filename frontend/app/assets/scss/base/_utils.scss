@@ -1,6 +1,10 @@
 @use './functions' as *;
 @use './container' as c;
 
+.blur {
+   filter: blur(7px);
+}
+
 .hidden-tablet {
    @media (max-width: c.$tablet){
       display: none;

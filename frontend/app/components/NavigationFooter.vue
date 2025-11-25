@@ -54,7 +54,6 @@ const { currentLocale } = useLocale()
 &__link {
    font-weight: 600;
    letter-spacing: 1.2px;
-   font-family: $font-family2;
    color: var(--border-color);
    transition: color var(--transition-duration);
    @include adaptiveValue("font-size", 18, 15);

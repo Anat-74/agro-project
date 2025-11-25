@@ -294,7 +294,6 @@ onMounted(() => {
       font-size: toEm(22);
       font-weight: 600;
       letter-spacing: toRem(1.2);
-      font-family: $font-family2;
       color: var(--warning-color);
    }
 }

@@ -1,21 +1,3 @@
-// export const useCloseDialogElement = (dialogElement: HTMLDialogElement) => {
-
-//    function closeOnBackDropClick({ currentTarget, target }: MouseEvent): void {
-//      const dialogEl = currentTarget as HTMLDialogElement
-//      const isClickedOnBackDrop = target === dialogEl
-//      if (isClickedOnBackDrop) {
-//        dialogEl.close()
-//      }
-//    }
-
-//    dialogElement.addEventListener("click", closeOnBackDropClick)
-// console.log('Добавлен обработчик для диалога')
-//    return () => {
-//          console.log('Удалён обработчик для диалога')
-//     dialogElement.removeEventListener("click", closeOnBackDropClick)
-//   }
-// }
-
 export const useDialog = (dialogElement: Ref<HTMLDialogElement | null>) => {
 
     const isOpen = ref(false)

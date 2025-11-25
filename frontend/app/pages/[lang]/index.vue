@@ -65,7 +65,6 @@ const getCategoryLink = (category: Category) => {
       <h1 
       id="category-page"
       class="visually-hidden">{{ visuallyHiddenTranslations[currentLocale].sectionLangTitle }}</h1>
-      <LangSwitcher/>
       <ul class="category__list"
       v-if="categories"
       >

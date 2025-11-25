@@ -28,16 +28,16 @@ body {
 // ===================================================================
 
 // Стили для скрытия header и footer при открытом диалоге
-body:has(dialog[open]) {
-   overflow: hidden;
+// body:has(dialog[open]) {
+//    overflow: hidden;
 
-   .header {
-      opacity: 0;
-   }
-   .footer {
-      display: none;
-   }
-}
+//    .header {
+//       opacity: 0;
+//    }
+//    .footer {
+//       display: none;
+//    }
+// }
 
 // Стили для гамбургера при открытом меню
 body:has(.dialog-hamburger[open]) {
@@ -71,28 +71,42 @@ main:has(.dialog-menu[open]) {
 // ===================================================================
 
 h1 {
-    @include m.containerAdaptive("font-size", toRem(70), 4, toRem(45));
- }
+     font-family: $font-family, "Roboto", sans-serif;
+     @include m.containerAdaptive("font-size", toRem(70), 4, toRem(45));
+  }
 
  h2 {
-    @include m.containerAdaptive("font-size", toRem(50), 3, toRem(35));
- }
+     font-family: $font-family-cursive, "Yellowtail", cursive;
+     @include m.containerAdaptive("font-size", toRem(50), 3, toRem(35));
+  }
 
- h3 {
-    @include m.containerAdaptive("font-size", toRem(40), 2.5, toRem(30));
- }
+  h3 {
+     font-family: $font-family, "Roboto", sans-serif;
+     @include m.containerAdaptive("font-size", toRem(40), 2.5, toRem(30));
+  }
 
- h4 {
-    @include m.containerAdaptive("font-size", toRem(35), 2.5, toRem(25));
- }
+  h4 {
+     @include m.containerAdaptive("font-size", toRem(35), 2.5, toRem(25));
+  }
 
- h5 {
-    @include m.containerAdaptive("font-size", toRem(30), 2.5, toRem(18));
- }
+  h5 {
+     @include m.containerAdaptive("font-size", toRem(30), 2.5, toRem(18));
+  }
 
- h6 {
-    @include m.containerAdaptive("font-size", toRem(25), 2.5, toRem(16));
-}
+  h6 {
+     @include m.containerAdaptive("font-size", toRem(25), 2.5, toRem(16));
+  }
+
+  // Специальные стили для заголовков "Categories" и "Our Products" в ProductsSection
+  .products-section__categories {
+     font-family: $font-family-cursive, "Yellowtail", cursive;
+     @extend h2;
+  }
+
+  .products-section__products {
+     font-family: $font-family, "Roboto", sans-serif;
+     @extend h3;
+  }
 
 // ===================================================================
 //! PARAGRAPHS AND LISTS
