@@ -47,20 +47,12 @@ watch(currentLocale, () => {
   <header class="header">
    <BannerLayouts />
         <div :class="['header__container-top', { 'header__container-top_hidden': isContacts }]">
-            <NuxtLink
-          class="header__logo"
-          :to="`/${currentLocale}`"
-          aria-label="Go home"
-        >
-          <NuxtImg
-            v-if="global?.footer?.logo?.length"
-            :src="`${config.public.strapi.url}${global?.footer?.logo[0]?.url}`"
-            alt="logo"
-            width="76"
-            height="67"
-            format="webp"
-          />
-        </NuxtLink>
+      <Logo
+         class="header__logo"
+        :global="global"
+        :currentLocale="currentLocale"
+        :config="config"
+      />
       <ProductFilter class="header__search" />
          <Basket class="header__cart" />
    </div>

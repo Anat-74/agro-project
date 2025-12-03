@@ -137,7 +137,6 @@ watch(currentLocale, () => {
          :src="`${config.public.strapi.url}${footer.logo[0]?.url}`"
          :alt="footer.companyName"
          format="webp"
-         width="55"
          aria-label="Go home"
     />
    </NuxtLink>
