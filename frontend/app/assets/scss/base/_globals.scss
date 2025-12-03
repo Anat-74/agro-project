@@ -20,7 +20,7 @@ body {
    background-color: var(--bg);
    color: var(--color);
    transition: background-color var(--transition-duration);
-   // @include m.adaptiveValue("font-size", 16, 14);
+   // @include m.adaptiveValue("font-size", 12, 10);
 }
 
 // ===================================================================
@@ -47,7 +47,7 @@ body:has(.dialog-hamburger[open]) {
       }
       &::before,
       &::after {
-         background-color: var( --dark-color);
+         background-color: var(--light-color);
       }
       &::before {
          top: calc(50% - toRem(1));
@@ -77,24 +77,24 @@ h1 {
 
  h2 {
      font-family: $font-family-cursive, "Yellowtail", cursive;
-     @include m.containerAdaptive("font-size", toRem(50), 3, toRem(35));
+     @include m.containerAdaptive("font-size", toRem(36), 3, toRem(30));
   }
 
   h3 {
      font-family: $font-family, "Roboto", sans-serif;
-     @include m.containerAdaptive("font-size", toRem(40), 2.5, toRem(30));
+     @include m.containerAdaptive("font-size", toRem(32), 2.5, toRem(28));
   }
 
   h4 {
-     @include m.containerAdaptive("font-size", toRem(35), 2.5, toRem(25));
+     @include m.containerAdaptive("font-size", toRem(30), 2.5, toRem(25));
   }
 
   h5 {
-     @include m.containerAdaptive("font-size", toRem(30), 2.5, toRem(18));
+     @include m.containerAdaptive("font-size", toRem(26), 2.5, toRem(18));
   }
 
   h6 {
-     @include m.containerAdaptive("font-size", toRem(25), 2.5, toRem(16));
+     @include m.containerAdaptive("font-size", toRem(22), 2.5, toRem(16));
   }
 
   // Специальные стили для заголовков "Categories" и "Our Products" в ProductsSection

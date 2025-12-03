@@ -1,9 +1,9 @@
 
 <template>
  <div class="animate-items">
-		<h2 class="animate-items__title">TechnoMars</h2>
-		<h2 class="animate-items__title">TechnoMars</h2>
-		<h2 class="animate-items__title">TechnoMars</h2>
+		<h2 class="animate-items__title">Organick</h2>
+		<h2 class="animate-items__title">Organick</h2>
+		<h2 class="animate-items__title">Organick</h2>
 		</div> 
 </template>
 
@@ -16,6 +16,7 @@
          translate: -50% -50%;
          letter-spacing: 1.2px;
          font-weight: 600;
+         font-size: toEm(22);
 
          &:nth-child(1) {
          color: transparent;

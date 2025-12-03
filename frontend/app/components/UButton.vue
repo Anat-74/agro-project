@@ -60,7 +60,7 @@ defineEmits<Emits>()
   padding-inline: toRem(12);
   padding-block: toRem(8);
   border-radius: toRem(4);
-  color: var(--light-color);
+  color: var(--color);
   background-color: transparent;
   border: none;
   display: inline-flex;
@@ -157,31 +157,33 @@ defineEmits<Emits>()
 
  &_hamburger {
       position: relative;
-      width: toRem(26);
-      height: toRem(18);
-      
+      height: 100%;
+      padding-inline: toRem(32);
+      background-color: var(--success-color);
+      border-radius: 0;
+
       span,
       &::before,
       &::after {
         content: '';
-        right: 0;
+        left: 50%;
+        translate: -50% 0;
         position: absolute;
-        width: 100%;
+        width: toRem(24);
         height: toRem(2);
-        background-color: var(--primary-color);
-        transition: transform .4s .2s, height var(--transition-duration);
+        background-color: var(--secondary-color);
+        transition: transform var(--transition-duration), height var(--transition-duration);
       }
 
       &::before {
-        top: 0;
+        top: toRem(24);
       }
 
       &::after {
-        bottom: 0;
+        bottom: toRem(24);
       }
 
       span {
-        width: 70%;
         top: calc(50% - toRem(1));
       }
 
@@ -466,6 +468,7 @@ defineEmits<Emits>()
     right: toEm(7);
     padding-inline: toEm(14);
     padding-block: toEm(14);
+    transition: transform .8s;
 
     &::before,
     &::after {

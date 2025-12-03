@@ -66,7 +66,13 @@ watch(currentLocale, () => {
    </div>
    <div class="header__bg">
       <div class="header__container-bottom">
-         <ShowHamburger class="header__dialog-header" />
+         <ShowHamburger 
+         class="header__dialog-header"
+         v-if="global"
+         :phones="global.phones"
+         :footer="global.footer"
+         :socials="global.socials"
+         />
             <BaseNavigation
         class="header__navigation"
         v-if="global"
