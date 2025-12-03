@@ -1,13 +1,16 @@
 <script setup lang="ts">
-const { find } = useStrapi()
-const searchStore = useSearchStore()
-const { products, totalPages, currentPage } = storeToRefs(searchStore)
-const { currentLocale } = useLocale()
-const config = useRuntimeConfig()
-const { isContacts } = useVisibilityProvider()
+const { find } = useStrapi();
+const searchStore = useSearchStore();
+const { products, totalPages, currentPage } = storeToRefs(searchStore);
+const { currentLocale } = useLocale();
+const config = useRuntimeConfig();
+const { isContacts } = useVisibilityProvider();
 
-const { data: global, error, refresh, } = useAsyncData
-   <any>(`global-${currentLocale.value}`, async () => {
+const {
+  data: global,
+  error,
+  refresh,
+} = useAsyncData<any>(`global-${currentLocale.value}`, async () => {
   const response = await find("global", {
     filters: { locale: currentLocale.value },
     populate: {
@@ -29,49 +32,55 @@ const { data: global, error, refresh, } = useAsyncData
       phones: true,
       email: true,
     },
-  })
+  });
 
   if (!response.data) {
     throw createError({ statusCode: 404, message: "Global not found" });
   }
 
-  return response.data
-})
+  return response.data;
+});
 
 watch(currentLocale, () => {
-  refresh()
-})
+  refresh();
+});
 </script>
 
 <template>
   <header class="header">
-   <BannerLayouts />
-        <div :class="['header__container-top', { 'header__container-top_hidden': isContacts }]">
+    <BannerLayouts />
+    <div
+      :class="[
+        'header__container-top',
+        { 'header__container-top_hidden': isContacts },
+      ]"
+    >
       <Logo
-         class="header__logo"
+        class="header__logo"
         :global="global"
         :currentLocale="currentLocale"
         :config="config"
       />
       <ProductFilter class="header__search" />
-         <Basket class="header__cart" />
-   </div>
-   <div class="header__bg">
+      <Basket class="header__cart" />
+    </div>
+    <div class="header__bg">
       <div class="header__container-bottom">
-         <ShowHamburger 
-         class="header__dialog-header"
-         v-if="global"
-         :phones="global.phones"
-         :footer="global.footer"
-         :socials="global.socials"
-         />
-            <BaseNavigation
-        class="header__navigation"
-        v-if="global"
-        :phones="global.phones"
-        :email="global.email"
-      />
-      <div>telphone</div>
+        <ShowHamburger
+          class="header__dialog-header"
+          v-if="global"
+          :phones="global.phones"
+          :footer="global.footer"
+          :socials="global.socials"
+          :global="global"
+        />
+        <BaseNavigation
+          class="header__navigation"
+          v-if="global"
+          :phones="global.phones"
+          :email="global.email"
+        />
+        <div>telphone</div>
         <div v-if="searchStore.products.length" class="header__product-card">
           <ul class="header__product-card-list">
             <ProductCard
@@ -92,12 +101,11 @@ watch(currentLocale, () => {
           </div>
         </div>
       </div>
-      </div>
+    </div>
   </header>
 
   <main class="main">
-    <div 
-     :class="['main__container', { 'blur': isContacts }]">
+    <div :class="['main__container', { blur: isContacts }]">
       <slot />
     </div>
     <ShowModalMenu
@@ -123,21 +131,21 @@ watch(currentLocale, () => {
 
 <style lang="scss" scoped>
 .header {
-   // position: relative;
+  // position: relative;
   &__color-mode {
     opacity: 0;
-    animation: fadeIn .3s ease-in-out .1s forwards;
+    animation: fadeIn 0.3s ease-in-out 0.1s forwards;
   }
 
   &__navigation {
-   flex: 1 1 auto;
+    flex: 1 1 auto;
   }
 
   &__container-top {
-   display: grid;
-   grid-template-columns: .5fr 1fr auto;
-   align-items: center;
-    transition: visibility 0s, opacity .7s;
+    display: grid;
+    grid-template-columns: 0.5fr 1fr auto;
+    align-items: center;
+    transition: visibility 0s, opacity 0.7s;
 
     &_hidden {
       filter: blur(4px);
@@ -145,15 +153,15 @@ watch(currentLocale, () => {
   }
 
   &__container-bottom {
-   position: relative;
-   display: flex;
-   align-items: center;
-   column-gap: toRem(95);
-   height: toRem(66);
+    position: relative;
+    display: flex;
+    align-items: center;
+    column-gap: toRem(95);
+    height: toRem(66);
   }
 
   &__logo {
-   justify-self: start;
+    justify-self: start;
     margin-inline-start: toRem(20);
     border-radius: 50%;
     padding-inline: toEm(6);
@@ -184,11 +192,10 @@ watch(currentLocale, () => {
   }
 
   &__dialog-header {
-
   }
 
   &__bg {
-   background-color: var(--secondary-color);
+    background-color: var(--secondary-color);
   }
 
   &__product-card {

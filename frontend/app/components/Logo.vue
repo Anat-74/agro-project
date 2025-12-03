@@ -21,6 +21,7 @@ const props = defineProps<Props>();
       width="76"
       height="67"
       format="webp"
+      aria-label="Go home"
     />
   </NuxtLink>
 </template>

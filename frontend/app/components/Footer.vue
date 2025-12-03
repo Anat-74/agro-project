@@ -26,9 +26,6 @@ defineProps<{
          :src="`${config.public.strapi.url}${footer.logo[0]?.url}`"
          :alt="footer.companyName"
          format="webp"
-         width="62"
-         height="55"
-         loading="lazy"
          class="base-footer__logo"
          aria-label="Go home"
     />
