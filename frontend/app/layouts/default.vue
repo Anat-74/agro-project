@@ -48,13 +48,8 @@ watch(currentLocale, () => {
 
 <template>
   <header class="header">
-    <BannerLayouts />
-    <div
-      :class="[
-        'header__container-top',
-        { 'header__container-top_hidden': isContacts },
-      ]"
-    >
+    <BannerLayouts class="header__banner" />
+    <div :class="['header__container-top', { backdrop: isContacts }]">
       <Logo
         class="header__logo"
         :global="global"
@@ -64,7 +59,7 @@ watch(currentLocale, () => {
       <ProductFilter class="header__search" />
       <Basket class="header__cart" />
     </div>
-    <div class="header__bg">
+    <div class="header__bottom">
       <div class="header__container-bottom">
         <ShowHamburger
           class="header__dialog-header"
@@ -75,12 +70,11 @@ watch(currentLocale, () => {
           :global="global"
         />
         <BaseNavigation
-          class="header__navigation"
+          class="header__navigation hidden-tablet"
           v-if="global"
           :phones="global.phones"
           :email="global.email"
         />
-        <div>telphone</div>
         <div v-if="searchStore.products.length" class="header__product-card">
           <ul class="header__product-card-list">
             <ProductCard
@@ -104,16 +98,10 @@ watch(currentLocale, () => {
     </div>
   </header>
 
-  <main class="main">
-    <div :class="['main__container', { blur: isContacts }]">
+  <main :class="['main', { backdrop: isContacts }]">
+    <div class="main__container">
       <slot />
     </div>
-    <ShowModalMenu
-      v-if="global"
-      :phones="global.phones"
-      :footer="global.footer"
-      :socials="global.socials"
-    />
   </main>
 
   <Footer
@@ -124,6 +112,7 @@ watch(currentLocale, () => {
     :footer="global.footer"
     :legal="global.legal"
     :socials="global.socials"
+    :global="global"
   />
 
   <span v-if="error"> Error: {{ error.message }} </span>
@@ -131,71 +120,49 @@ watch(currentLocale, () => {
 
 <style lang="scss" scoped>
 .header {
-  // position: relative;
-  &__color-mode {
-    opacity: 0;
-    animation: fadeIn 0.3s ease-in-out 0.1s forwards;
-  }
+  padding-block-end: toRem(22);
 
-  &__navigation {
-    flex: 1 1 auto;
+  &__banner {
   }
 
   &__container-top {
     display: grid;
-    grid-template-columns: 0.5fr 1fr auto;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    transition: visibility 0s, opacity 0.7s;
-
-    &_hidden {
-      filter: blur(4px);
-    }
-  }
-
-  &__container-bottom {
-    position: relative;
-    display: flex;
-    align-items: center;
-    column-gap: toRem(95);
-    height: toRem(66);
+    column-gap: toRem(22);
+    transition: opacity var(--transition-duration);
+     @include adaptiveValue("height", 65, 55);
   }
 
   &__logo {
     justify-self: start;
-    margin-inline-start: toRem(20);
-    border-radius: 50%;
-    padding-inline: toEm(6);
-    padding-block: toEm(8);
-    outline: 1px solid var(--light-color);
-    outline-offset: toRem(2);
-    background-color: var(--light-color);
-    transition: outline var(--transition-duration);
-
-    @include hover {
-      outline-color: var(--warning-hover);
-    }
-
-    @media (max-width: $mobile) {
-      width: toRem(68);
-      margin-inline-start: toRem(0);
-    }
-
-    @media (max-width: $mobileSmall) {
-      width: toEm(55);
-      border-radius: 50%;
-      position: absolute;
-      top: toEm(10);
-    }
   }
 
   &__search {
+    justify-self: end;
+    width: 60%;
+  }
+
+  &__cart {
+  }
+
+  &__bottom {
+    background-color: var(--bg-navigation);
+  }
+
+  &__container-bottom {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    height: toRem(56);
   }
 
   &__dialog-header {
   }
 
-  &__bg {
-    background-color: var(--secondary-color);
+  &__navigation {
+    justify-self: end;
   }
 
   &__product-card {
@@ -236,19 +203,12 @@ watch(currentLocale, () => {
     column-gap: toEm(12);
   }
 
-  &__cart {
-    translate: 0 toRem(5);
-    margin-inline-end: toRem(9);
-  }
-
   .pagination-active {
     background-color: var(--active-color);
   }
 }
 
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-  }
+.main {
+  transition: opacity var(--transition-duration);
 }
 </style>

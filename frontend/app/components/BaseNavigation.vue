@@ -114,10 +114,11 @@ defineProps<{
          }
 
          &_contacts {
-         padding-block-start: toRem(7);
-         margin-block-start: toRem(-7);
-         padding-block-end: toRem(24);
-         margin-block-end: toRem(-24);
+         position: relative;
+         padding-inline: toRem(16);
+         margin-inline: toRem(-16);
+         padding-block-end: toRem(56);
+         margin-block-end: toRem(-56);
 
          svg {
             transition: color var(--transition-duration);
@@ -176,8 +177,9 @@ defineProps<{
       padding-block-end: toRem(6);
       white-space: nowrap;
       position: absolute;
-      top: 50%;
-      left: 25%;
+      z-index: 999;
+      top: calc(100% + toRem(22));
+      right: 0;
       translate: 0 -50%;
       border-radius: toRem(4);
       color: var(--color);

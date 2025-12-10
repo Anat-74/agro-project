@@ -116,40 +116,6 @@ onUnmounted(() => {
    class="search-no-results">
    {{ productFilterTranslations[currentLocale].noResults }}
     </span>
-   <!-- <div class="search-select-wrapper select-wrapper">
-      <label 
-      class="visually-hidden"
-      for="sort-product"
-      >{{ productFilterTranslations[currentLocale].labelSelect }}
-   </label>
-      <select 
-      v-model="sortBy" 
-      @change="applyFilters"
-      id="sort-product"
-      class="search-select select"
-    >
-      <option 
-      class="search-option option"
-      disabled
-      value="">
-   </option>
-      <option 
-      class="search-option option" 
-      value="name:asc"
-      >{{ productFilterTranslations[currentLocale].optionName }}
-   </option>
-      <option 
-      class="search-option option" 
-      value="price:asc"
-      >{{ productFilterTranslations[currentLocale].optionPrice }}
-   </option>
-      <option 
-      class="search-option option" 
-      value="price:desc"
-      > {{ productFilterTranslations[currentLocale].optionPriceDesc }}
-   </option>
-    </select>
-    </div> -->
   </div>
 </template>
 
@@ -157,29 +123,40 @@ onUnmounted(() => {
 .search {
    &-body {
       position: relative;
-      height: toRem(40);
+      height: toRem(44);
       display: flex;
       align-items: center;
+
+         &::after {
+         content: '';
+         position: absolute;
+         right: 0;
+         width: toRem(55);
+         height: calc(100% - toRem(4));
+         border-radius: 0 toRem(25) toRem(25) 0;
+         background-color: var(--danger-color);
+      }
    }
 
    &-input {
+      position: relative;
       width: 100%;
       height: 100%;
       padding-inline-start: toRem(42);
-      border-radius: toEm(4) toEm(0) toEm(0) toEm(4);
-      border: toRem(2) solid var(--danger-color);
-      // border-right: none;
+      border-radius: toEm(25);
+      border: toRem(2) solid whitesmoke;
       font-size: toEm(18);
       color: var(--color);
       background-color: var(--light-color);
 
       &::placeholder {
+      color: var(--success-color);
       transition: color var(--transition-duration);
     }
 
       @include hover {
       &::placeholder {
-        color: var(--black-color);
+        color: var(--dark-color);
       }
     }
    }
@@ -198,7 +175,7 @@ onUnmounted(() => {
       top: 50%;
       left: toRem(12);
       translate: 0 -50%;
-      color: var(--warning-color);
+      color: var(--primary-color);
       font-size: toRem(25);
    }
 
@@ -211,49 +188,5 @@ onUnmounted(() => {
       font-weight: 600;
       color: var(--primary-color);
    }
-
-//    &-select-wrapper {
-//       height: 100%;
-
-// &::before,
-//    &::after{
-//       content: '';
-//       width: toRem(10);
-//       height: toEm(3);
-//       background-color: var(--danger-color);
-
-//       @media (max-width:$mobile){
-//          background-color: var(--light-color);
-//       }
-//    }
-//    &::before {
-//       transform: rotate(-125deg);
-//       @include adaptiveValue("right", 16, 14);
-//    }
-//    &::after {
-//       transform: rotate(125deg);
-//       @include adaptiveValue("right", 11, 9);
-//    }
-//    }
-
-//    &-select {
-//       height: 100%;
-//       width: toEm(170);
-//       border: toRem(2) solid var(--danger-color);
-//       border-radius: 0 toEm(4) toEm(4) 0;
-//       padding-inline-start: toEm(6);
-//       transition: background-color var(--transition-duration);
-
-//       @media (max-width:$mobile){
-//           width: toEm(40);
-//           padding-inline: toRem(2);
-//           color: var(--danger-color);
-//           background-color: currentColor;
-//       }
-//    }
-//    &-option {
-//       background-color: var(--border-color);
-//       color: var(--light-color);
-//    }
 }
 </style>

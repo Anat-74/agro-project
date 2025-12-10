@@ -43,8 +43,8 @@ const { currentLocale } = useLocale()
    align-items: center;
    padding-inline: toEm(9);
    padding-block: toEm(18);
-   outline: toRem(5) inset var(--bg-nav-footer-outline);
-   background-color: var(--bg-nav-footer);
+   outline: toRem(5) inset var(--bg);
+   background-color: var(--bg);
 
    @media (max-width:$mobile){
       outline-width: toRem(3);

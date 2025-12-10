@@ -1,8 +1,8 @@
 @use './functions' as *;
 @use './container' as c;
 
-.blur {
-   filter: blur(7px);
+.backdrop {
+   opacity: .7;
 }
 
 .hidden-tablet {

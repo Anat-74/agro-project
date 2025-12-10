@@ -16,7 +16,7 @@ function iconName(theme: string) {
       >
       <UButton
       @click="colorMode.preference = theme"
-       :class="`btn_color-theme btn_${theme}`"
+      variant="color-theme"
       :icon="iconName(theme)"
       :theme="theme"
       :aria-label="theme"

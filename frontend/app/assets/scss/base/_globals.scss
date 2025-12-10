@@ -72,17 +72,17 @@ main:has(.dialog-menu[open]) {
 
 h1 {
      font-family: $font-family, "Roboto", sans-serif;
-     @include m.containerAdaptive("font-size", toRem(70), 4, toRem(45));
+     @include m.containerAdaptive("font-size", toRem(40), 4, toRem(35));
   }
 
  h2 {
      font-family: $font-family-cursive, "Yellowtail", cursive;
-     @include m.containerAdaptive("font-size", toRem(36), 3, toRem(30));
+     @include m.containerAdaptive("font-size", toRem(34), 3, toRem(30));
   }
 
   h3 {
      font-family: $font-family, "Roboto", sans-serif;
-     @include m.containerAdaptive("font-size", toRem(32), 2.5, toRem(28));
+     @include m.containerAdaptive("font-size", toRem(24), 2.5, toRem(12));
   }
 
   h4 {
@@ -117,7 +117,7 @@ p {
 }
 
 li {
-   @include m.containerAdaptive("font-size", toRem(18), 2.5, toRem(16));
+   @include m.containerAdaptive("font-size", toRem(16), 2.5, toRem(14));
 }
 
 // ===================================================================

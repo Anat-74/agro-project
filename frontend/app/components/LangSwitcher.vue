@@ -9,11 +9,11 @@ const { currentLocale, locales, switchLocale } = useLocale()
     <UButton
       v-for="locale in locales"
       @click="switchLocale(locale.code)"
+      variant="lang-switcher"
       :key="locale.code"
       :icon="locale.icon"
       :class="{ active: currentLocale === locale.code }"
       :aria-label="buttonTranslations[currentLocale].ariaLabelLang"
-      variant="lang-switcher"
      />
   </div>
 </template>
@@ -23,8 +23,8 @@ const { currentLocale, locales, switchLocale } = useLocale()
   height: auto;
   display: flex;
   gap: toRem(12);
-  padding-inline: toEm(4);
-  padding-block: toRem(3);
+  padding-inline: toEm(3);
+  padding-block: toRem(2);
   border-radius: toEm(4);
   background-color: var(--secondary-color);
 
@@ -38,9 +38,7 @@ const { currentLocale, locales, switchLocale } = useLocale()
 }
 .active {
    border: 1px solid var(--danger-color);
-   border-radius: 50%;
    padding: toRem(1);
-   font-size: toRem(20);
    cursor: default;
 
    @include hover {

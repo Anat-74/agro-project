@@ -6,9 +6,9 @@ import type {
   FooterData,
   SocialLink,
   Phone,
-} from "../types/types";
-import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
-import { discountProductTranslations } from "~/locales/discountProduct";
+} from "../types/types"
+import { visuallyHiddenTranslations } from "~/locales/visuallyHidden"
+import { discountProductTranslations } from "~/locales/discountProduct"
 
 interface Props {
   footer: FooterData;
@@ -17,21 +17,21 @@ interface Props {
   global: any;
 }
 
-defineProps<Props>();
+defineProps<Props>()
 
-const dialogElement = useTemplateRef<HTMLDialogElement>("dialog-hamburger");
+const dialogElement = useTemplateRef<HTMLDialogElement>("dialog-hamburger")
 
 // Создаем отдельное состояние для изначальной видимости
 const { open, close, isOpen } = useDialog(dialogElement, {
   useShowMethod: true,
-});
+})
 
-onMounted(() => {
-  if (dialogElement.value) {
-    dialogElement.value.show();
-    isOpen.value = true;
-  }
-});
+// onMounted(() => {
+//   if (dialogElement.value) {
+//     dialogElement.value.show()
+//     isOpen.value = true;
+//   }
+// })
 
 const { currentLocale } = useLocale();
 const { formatPhone } = useFormatPhone();
@@ -129,15 +129,14 @@ watch(currentLocale, () => {
         'hamburger-menu__categories',
         { 'hamburger-menu__categories_is-open': isOpen },
       ]"
-      >{{ "Все категории" }}
-      <Icon name="mdi:chevron-left" />
+      >{{ "Каталог" }}
     </span>
   </div>
   <dialog
     class="dialog-hamburger"
     ref="dialog-hamburger"
     id="dialogHamburger"
-    aria-label="Меню"
+    aria-label="Catalog"
   >
     <Loader v-if="pending" />
     <h1 class="visually-hidden">
@@ -145,6 +144,9 @@ watch(currentLocale, () => {
     </h1>
     <div class="dialog-hamburger__items">
       <div class="dialog-hamburger__top">
+         <ClientOnly>
+        <ColorMode class="dialog-hamburger__color-mode" />
+      </ClientOnly>
         <Logo
           class="dialog-hamburger__logo"
           :global="global"
@@ -269,6 +271,7 @@ watch(currentLocale, () => {
           />
         </a>
       </div>
+      <LangSwitcher />
     </div>
   </dialog>
   <span v-if="error" class="error">
@@ -283,19 +286,19 @@ watch(currentLocale, () => {
   align-items: center;
   justify-items: center;
   height: 100%;
-  background-color: var(--bg-product);
-  @include adaptiveValue("width", 290, 170);
+  background-color: var(--light-color);
+  @include adaptiveValue("width", 290, 200);
 
   &__categories {
     display: flex;
     align-items: center;
+    font-size: toEm(22);
+    font-family: $font-family-cursive, "Yellowtail", cursive;
+    color: var(--success-color);
     transition: color var(--transition-duration);
-    svg {
-      font-size: toRem(24);
-      rotate: -90deg;
-    }
+   
     &_is-open {
-      color: var(--success-color);
+      color: var(--danger-hover);
     }
   }
 }
@@ -305,42 +308,44 @@ watch(currentLocale, () => {
   z-index: 9999;
   left: toRem(15);
   top: 100%;
+  scale: 0;
   border-radius: toRem(4);
   margin-inline-start: toRem(0);
-  transition: scale 0.1s linear;
   border: toRem(2) solid var(--secondary-color);
   border-top: none;
   background-color: transparent;
-  transition: scale 0.1s linear;
-  @include adaptiveValue("width", 290, 170);
+  transition: scale .1s linear;
+  @include adaptiveValue("width", 290, 220);
 
   &[open] {
     scale: 1;
-    transition: scale 0.1s linear;
+    transition: scale .1s linear;
   }
 
-  &:not([open]) {
-    scale: 0;
-    transition: scale 0.1s linear;
-  }
+//   &:not([open]) {
+//     scale: 0;
+//     transition: scale .1s linear;
+//   }
 
   &__items {
+    min-height: toRem(600);
     display: flex;
     flex-direction: column;
     row-gap: toEm(16);
     padding-inline: toEm(8);
     padding-block: toEm(16);
     margin-inline: toEm(4);
-    background: linear-gradient(
-      -135deg,
-      transparent toRem(45),
-      var(--secondary-color) 0
-    );
+    margin-block: toRem(4);
+   //  background: linear-gradient(
+   //    -135deg,
+   //    transparent toRem(45),
+   //    var(--secondary-color) 0
+   //  );
   }
 
   &__top {
     position: relative;
-    display: flex;
+   //  display: flex;
   }
 
   &__logo {

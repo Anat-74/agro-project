@@ -1,11 +1,13 @@
 <script setup lang="ts">
+const colorMode = useColorMode()
+
 interface Props {
     variant?:
     'primary'| 'secondary' | 'outline' | 'icon' | 'hamburger' |
     'dialog-menu' | 'lang-switcher' | 'go-forward-back' | 'share' |
     'switch-locale-cart' | 'add-to-cart' | 'small-add-to-cart' | 'remove-cart-item' |
     'remove-quantity-prod' | 'add-quantity-prod' | 'large' | 'go-to-top' |
-    'pagination' | 'close'
+    'pagination' | 'close' | 'color-theme'
     size?: 'small' | 'normal' | 'large'
     isLoading?: boolean
     isDisabled?: boolean
@@ -35,8 +37,9 @@ defineEmits<Emits>()
       'btn',
       `btn_${variant}`,
       { 'btn_loading': isLoading, 'btn_disabled': isDisabled },
+      { 'btn_selected': !colorMode.unknown && theme === colorMode.value },
       size === 'large' ? 'btn_large' : '',
-      icon ? 'btn_icon' : ''
+      icon ? 'btn_icon' : '',
     ]"
     :disabled="isDisabled || isLoading"
     :type="type"
@@ -53,9 +56,6 @@ defineEmits<Emits>()
 </template>
 
 <style lang="scss" scoped>
-@use '@/assets/scss/base/functions' as *;
-@use '@/assets/scss/base/mixins' as m;
-
 .btn {
   padding-inline: toRem(12);
   padding-block: toRem(8);
@@ -92,7 +92,7 @@ defineEmits<Emits>()
     border: 1px solid var(--color);
     transition: background-color var(--transition-duration), color var(--transition-duration);
     
-    @include m.hover {
+    @include hover {
       background-color: var(--secondary-color);
       color: var(--color);
     }
@@ -104,7 +104,7 @@ defineEmits<Emits>()
     border: 1px solid var(--secondary-color);
     transition: background-color var(--transition-duration), color var(--transition-duration);
     
-    @include m.hover {
+    @include hover {
       background-color: var(--color);
       color: var(--light-color);
     }
@@ -116,7 +116,7 @@ defineEmits<Emits>()
     border: 1px solid var(--color);
     transition: background-color var(--transition-duration), color var(--transition-duration);
     
-    @include m.hover {
+    @include hover {
       background-color: var(--color);
       color: var(--light-color);
     }
@@ -124,34 +124,30 @@ defineEmits<Emits>()
 
   &_icon {
     padding: 0;
-    font-size: toEm(24);
+    font-size: toEm(22);
   }
 
   &_color-theme {
     padding: toRem(2);
     border: toRem(2) solid var(--secondary-color);
     border-radius: toRem(6);
-    transition: transform var(--transition-duration);
 
-    @include m.hover {
-      transform: scale(1.4) rotate(-25deg);
+    span {
+      transition: transform var(--transition-duration);
+      @include hover {
+         transform: scale(1.4) rotate(-25deg);
+      }
     }
 
     svg {
-      color: var(--green-color);
-      @include m.adaptiveValue("font-size", 18, 20);
-    }
-  }
-
-  &_preferred {
-    svg {
-      color: var(--primary-color);
+      color: var(--secondary-color);
+      @include adaptiveValue("font-size", 18, 20);
     }
   }
 
   &_selected {
     svg {
-      color: var(--active-color);
+      color: var(--warning-color);
     }
   }
 
@@ -172,29 +168,25 @@ defineEmits<Emits>()
         width: toRem(24);
         height: toRem(2);
         background-color: var(--secondary-color);
-        transition: transform var(--transition-duration), height var(--transition-duration);
+        transition: transform var(--transition-duration), opacity var(--transition-duration);
       }
 
       &::before {
-        top: toRem(24);
+        top: toRem(20);
       }
 
       &::after {
-        bottom: toRem(24);
+        bottom: toRem(20);
       }
 
       span {
         top: calc(50% - toRem(1));
       }
 
-      @include m.hover {
-        span,
-        &::before,
-        &::after {
-          height: toRem(3);
-        }
-      }
+      @include hover {
+         opacity: .8;
    }
+}
 
   &_dialog-menu {
     position: fixed;
@@ -208,7 +200,7 @@ defineEmits<Emits>()
     background-color: var(--warning-hover);
     transition: scale var(--transition-duration);
 
-    @include m.hover {
+    @include hover {
       scale: 1.1;
     }
 
@@ -225,9 +217,10 @@ defineEmits<Emits>()
   }
 
  &_lang-switcher {
+    border-radius: 50%;
     transition: scale var(--transition-duration);
 
-    @include m.hover {
+    @include hover {
       scale: 1.2;
     }
 
@@ -247,9 +240,9 @@ defineEmits<Emits>()
 
     svg {
       color: var(--warning-color);
-      @include m.adaptiveValue("font-size", 18, 20);
+      @include adaptiveValue("font-size", 18, 20);
 
-      @include m.hover {
+      @include hover {
         color: var(--danger-color);
         scale: 1.1;
       }
@@ -265,7 +258,7 @@ defineEmits<Emits>()
       font-size: toEm(22, 24);
       color: var(--warning-color);
 
-      @include m.hover {
+      @include hover {
         color: var(--danger-color);
       }
     }
@@ -296,7 +289,7 @@ defineEmits<Emits>()
       padding: toRem(4);
     }
 
-    @include m.hover {
+    @include hover {
       &:enabled {
         color: var(--light-color);
         background-color: var(--danger-hover);
@@ -319,7 +312,7 @@ defineEmits<Emits>()
       color: var(--primary-color);
       transition: color var(--transition-duration);
 
-      @include m.hover {
+      @include hover {
         color: var(--warning-color);
       }
     }
@@ -339,7 +332,7 @@ defineEmits<Emits>()
       font-size: toRem(24);
       transition: color var(--transition-duration), scale var(--transition-duration);
 
-      @include m.hover {
+      @include hover {
         color: var(--danger-color);
         scale: 1.1;
       }
@@ -353,7 +346,7 @@ defineEmits<Emits>()
     background-color: var(--border-color);
     transition: background-color var(--transition-duration);
 
-    @include m.hover {
+    @include hover {
       &:enabled {
         background-color: var(--warning-hover);
       }
@@ -383,7 +376,7 @@ defineEmits<Emits>()
     background-color: var(--border-color);
     transition: background-color var(--transition-duration);
 
-    @include m.hover {
+    @include hover {
       background-color: var(--warning-hover);
     }
 
@@ -415,7 +408,7 @@ defineEmits<Emits>()
     background-color: var(--danger-color);
     transition: background-color var(--transition-duration);
 
-    @include m.hover {
+    @include hover {
       &:enabled {
         background-color: var(--danger-hover);
       }
@@ -430,14 +423,14 @@ defineEmits<Emits>()
     padding: toRem(4);
     border: toRem(1) solid var(--dark-golden-color);
     transition: color var(--transition-duration);
-    @include m.adaptiveValue("width", 36, 30);
-    @include m.adaptiveValue("height", 36, 30);
+    @include adaptiveValue("width", 36, 30);
+    @include adaptiveValue("height", 36, 30);
 
     svg {
       color: var(--dark-golden-color);
     }
 
-    @include m.hover {
+    @include hover {
       background-color: var(--warning-hover);
     }
 
@@ -455,7 +448,7 @@ defineEmits<Emits>()
     border: 1px solid var(--color);
     transition: background-color var(--transition-duration), color var(--transition-duration);
     
-    @include m.hover {
+    @include hover {
       background-color: var(--secondary-color);
       color: var(--color);
     }
@@ -490,7 +483,7 @@ defineEmits<Emits>()
       transform: rotate(45deg);
     }
 
-    @include m.hover {
+    @include hover {
       transform: scale(1.1);
     }
   }

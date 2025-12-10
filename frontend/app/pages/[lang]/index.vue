@@ -72,6 +72,7 @@ const getCategoryLink = (category: Category) => {
          v-for="(category, index) in categories"
          :key="category.id"
          >
+         <h2 class="visually-hidden">Категория из списка категорий</h2>
          <NuxtLink
          class="category__link"
          :to="getCategoryLink(category)"
@@ -84,10 +85,9 @@ const getCategoryLink = (category: Category) => {
          :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
          decoding="async"
          format="webp"
-         width="254"
-         height="268"
+         width="184"
         />
-        <h2 class="category__title">{{ category.name }}</h2>
+        <h3 class="category__title">{{ category.name }}</h3>
          </NuxtLink>
       </li>
       </ul>
@@ -104,11 +104,11 @@ const getCategoryLink = (category: Category) => {
 
   &__list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(toRem(262), 1fr));
-    justify-items: center;
+    grid-template-columns: repeat(auto-fill, minmax(toRem(262), 1fr));
+   //  justify-items: center;
     row-gap: toEm(27);
     padding-block: toEm(16);
-    @include adaptiveValue("column-gap", 64, 7);
+    @include containerAdaptive("column-gap", toRem(64), 2.5, toRem(7));
   }
 
   &__item {

@@ -18,31 +18,13 @@
   --border-color: #D4D4D4;             // Цвет границ (светло-серый)
   --gray-color: #808080;               // Стандартный серый
   --bg-product: #EFF6F1;               // Цвет фона для карточек товаров (светлый зеленоватый)
-  
-  // Цвета состояний
-  --active-color: #7EB693;             // Цвет активного состояния
-  --warning-color: #F0D171;            // Цвет предупреждения
-  --warning-hover: #e6c767;            // Цвет при наведении на предупреждение
-  --danger-color: #ff647c;             // Цвет опасности
-  --danger-hover: #fdaFbb;             // Цвет при наведении на опасность
-  --success-color: #4caf50;            // Цвет успеха
-  --info-color: #3b82f6;               // Цвет информации (синий)
-  
-  // Дополнительные цвета
-  --bg-footer-color: #EFF6F1;          // Цвет фона футера
- --bg-nav-footer: #F9F8F8;            // Цвет фона навигации в футере
-  --bg-nav-footer-outline: #D4D4D4;    // Цвет обводки навигации в футере
-  --locale-warning-color: #fff3cd;     // Цвет предупреждения локали
-  --shadow: rgba(39, 76, 91, 0.1);     // Цвет тени (на основе основного цвета)
-  --placeholder-hover: #ffffff;        // Цвет плейсхолдера при наведении
-  
-  // Дополнительные оттенки
-  --slate-gray: #708090;               // Серо-голубой оттенок
-  --dark-golden-color: #b8860b;        // Темно-золотой оттенок
- --lime-color: #32cd32;               // Лайм-зеленый оттенок
- --sky-blue-color: #66b5f8;           // Голубой оттенок
-  --blue-color: #3b82f6;               // Синий оттенок
-  --green-color: #4caf50;              // Зеленый оттенок
+  --bg-navigation: #fdf5e6;
+  --bg-footer: #778899;
+  --active-color: #FA8072;
+  --danger-color: #DC143C;
+  --danger-hover: #F08080;
+  --warning-color: #FF8C00;
+  --warning-hover: #F4A460;
 }
 
 // Темная тема (контрастная к светлой)
@@ -56,35 +38,17 @@
   
   // Цвета для элементов интерфейса
   --light-color: #F9F8F8;              // Светлый цвет (вместо белого)
-  --dark-color: #D4D4;               // Темный цвет (светло-серый в темной теме)
+  --dark-color: #000000;               // Темный цвет (светло-серый в темной теме)
   --border-color: #525C60;             // Цвет границ (серо-синий)
   --gray-color: #a9A9a9;               // Светлый серый
   --bg-product: #525C60;               // Цвет фона для карточек товаров (серо-синий)
-  
-  // Цвета состояний
-  --active-color: #7EB693;             // Цвет активного состояния
-  --warning-color: #F0D171;            // Цвет предупреждения
-  --warning-hover: #e6c767;            // Цвет при наведении на предупреждение
-  --danger-color: #ff647c;             // Цвет опасности
-  --danger-hover: #fdaFbb;             // Цвет при наведении на опасность
-  --success-color: #4caf50;            // Цвет успеха
-  --info-color: #6b5f8;               // Цвет информации (голубой в темной теме)
-  
-  // Дополнительные цвета
-  --bg-footer-color: #525C60;          // Цвет фона футера
-  --bg-nav-footer: #274C5B;            // Цвет фона навигации в футере
-  --bg-nav-footer-outline: #7EB693;    // Цвет обводки навигации в футере
-  --locale-warning-color: #7a6d36;     // Темный цвет предупреждения локали
-  --shadow: rgba(212, 212, 212, 0.2);  // Цвет тени (на основе серого)
-  --placeholder-hover: #274C5B;        // Цвет плейсхолдера при наведении
-  
-  // Дополнительные оттенки
-  --slate-gray: #a0b0c0;               // Светлый серо-голубой оттенок
-  --dark-golden-color: #d8a62b;        // Светлый темно-золотой оттенок
-  --lime-color: #52e052;               // Светлый лайм-зеленый оттенок
-  --sky-blue-color: #86c5ff;           // Светлый голубой оттенок
-  --blue-color: #66b5f8;               // Светлый синий оттенок
-  --green-color: #6bcf70;              // Светлый зеленый оттенок
+  --bg-navigation: #C0C0C0;
+  --bg-footer: #274C5B;
+  --active-color: #FA8072;
+  --danger-color: #DC143C;
+  --danger-hover: #F08080;
+  --warning-color: #FF8C00;
+  --warning-hover: #F4A460;
 }
 
 // Произвольная тема (альтернативная комбинация цветов из Figma)
@@ -102,77 +66,59 @@
   --border-color: #7EB693;             // Цвет границ (зеленовато-серый)
   --gray-color: #808080;               // Стандартный серый
   --bg-product: #F9F8F8;               // Цвет фона для карточек товаров (почти белый)
-  
-  // Цвета состояний
-  --active-color: #274C5B;             // Цвет активного состояния
-  --warning-color: #F0D171;            // Цвет предупреждения
-  --warning-hover: #e6c767;            // Цвет при наведении на предупреждение
-  --danger-color: #ff647c;             // Цвет опасности
-  --danger-hover: #fdaFbb;             // Цвет при наведении на опасность
-  --success-color: #4caf50;            // Цвет успеха
-  --info-color: #3b82f6;               // Цвет информации (синий)
-  
-  // Дополнительные цвета
-  --bg-footer-color: #274C5B;          // Цвет фона футера
-  --bg-nav-footer: #7EB693;            // Цвет фона навигации в футере
-  --bg-nav-footer-outline: #274C5B;    // Цвет обводки навигации в футере
-  --locale-warning-color: #f0e8c5;     // Светлый цвет предупреждения локали
-  --shadow: rgba(82, 92, 96, 0.1);     // Цвет тени (на основе серо-синего)
-  --placeholder-hover: #EFF6F1;        // Цвет плейсхолдера при наведении
-  
-  // Дополнительные оттенки
- --slate-gray: #708090;               // Серо-голубой оттенок
-  --dark-golden-color: #b8860b;        // Темно-золотой оттенок
-  --lime-color: #32cd32;               // Лайм-зеленый оттенок
- --sky-blue-color: #66b5f8;           // Голубой оттенок
-  --blue-color: #3b82f6;               // Синий оттенок
-  --green-color: #4caf50;              // Зеленый оттенок     // Длительность переходов
+  --bg-navigation: #C0C0C0;
+  --bg-footer: #274C5B;
+  --active-color: #FA8072;
+  --danger-color: #DC143C;
+  --danger-hover: #F08080;
+  --warning-color: #FF8C00;
+  --warning-hover: #F4A460;
 }
 
 // ===================================================================
 //? DIALOG MENU LOGO OVERRIDE (для светлой темы)
 // ===================================================================
-.light-mode .dialog-menu__logo {
-  --light-color: #EFF6F1;
-}
+// .light-mode .dialog-menu__logo {
+//   --light-color: #EFF6F1;
+// }
 
 // ===================================================================
 //? DIALOG HAMBURGER MENU OVERRIDES
 // ===================================================================
-.light-mode .dialog-hamburger[open]::backdrop {
-  --dark-color: #0000;
-}
+// .light-mode .dialog-hamburger[open]::backdrop {
+//   --dark-color: #0000;
+// }
 
-.dark-mode .dialog-hamburger[open]::backdrop {
-  --dark-color: #0000;
-}
+// .dark-mode .dialog-hamburger[open]::backdrop {
+//   --dark-color: #0000;
+// }
 
-.custom-mode .dialog-hamburger[open]::backdrop {
-  --dark-color: #00000;
-}
+// .custom-mode .dialog-hamburger[open]::backdrop {
+//   --dark-color: #00000;
+// }
 
 // ===================================================================
 //? ORDER FORM OVERRIDES
 // ===================================================================
-.light-mode .order-form__title,
-.dark-mode .order-form__title,
-.custom-mode .order-form__title {
-  --danger-color: #f5f5f5;
-}
+// .light-mode .order-form__title,
+// .dark-mode .order-form__title,
+// .custom-mode .order-form__title {
+//   --danger-color: #f5f5f5;
+// }
 
 // ===================================================================
 //? BUTTON OVERRIDES
 // ===================================================================
-.light-mode .btn_dialog-menu,
-.dark-mode .btn_dialog-menu,
-.custom-mode .btn_dialog-menu {
-  --warning-color: #a9A9a9;
-  --warning-hover: #274C5B;
-}
+// .light-mode .btn_dialog-menu,
+// .dark-mode .btn_dialog-menu,
+// .custom-mode .btn_dialog-menu {
+//   --warning-color: #a9A9a9;
+//   --warning-hover: #274C5B;
+// }
 
 // ===================================================================
 //? SEARCH INPUT OVERRIDES (только для темной темы)
 // ===================================================================
-.dark-mode .search-input {
-  --color: #274C5B;
-}
+// .dark-mode .search-input {
+//   --color: #274C5B;
+// }
