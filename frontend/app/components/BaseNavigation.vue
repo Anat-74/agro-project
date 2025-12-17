@@ -39,6 +39,14 @@ defineProps<{
          </NuxtLink>
       </li>
 
+         <li class="nav__item">
+            <NuxtLink 
+            class="nav__link" 
+            :to="`/${currentLocale}/services`">
+            {{ baseNavigationTranslations[currentLocale].blog }}
+         </NuxtLink>
+      </li>
+
       <li :class="['nav__item', {nav__item_contacts: isContacts}]"
       @mouseenter="visibleIsContacts"
       @mouseleave="isContacts = false"

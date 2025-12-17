@@ -8,10 +8,6 @@ const pageMeta = {
     title: 'Контакты',
     description: 'Страница с контактами'
   },
-  en: {
-    title: 'Contacts',
-    description: 'Contact page'
-  },
   be: {
     title: 'Кантакты',
     description: 'Старонка з кантактамі'

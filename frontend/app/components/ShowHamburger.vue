@@ -278,43 +278,58 @@ watch(currentLocale, () => {
 
 <style lang="scss" scoped>
 .hamburger-menu {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  justify-items: center;
-  height: 100%;
-  border-left: toRem(2) solid var(--secondary-color);
-  border-right: toRem(2) solid var(--secondary-color);
-  background-color: var(--light-color);
-  @include adaptiveValue("width", 320, 280);
+   height: 100%;
+   display: grid;
+   grid-template-columns: auto 1fr;
+   justify-items: center;
+   align-items: center;
+   width: toRem(320);
+   border-left: toRem(2) solid var(--secondary-color);
+   border-right: toRem(2) solid var(--secondary-color);
+   background-color: var(--light-color);
+
+      @media (max-width:$tablet){
+         direction: rtl;
+         border-left: 0;
+         border-right: 0;
+         border-radius: toRem(4) 0 0 toRem(4);
+         @include adaptiveValue("width", 280, 160);
+      }
 
   &__categories {
-    display: flex;
-    align-items: center;
-    font-size: toEm(22);
-    font-family: $font-family-cursive, "Yellowtail", cursive;
-    color: var(--success-color);
-    transition: color var(--transition-duration);
+      font-family: $font-family-cursive, "Yellowtail", cursive;
+      color: var(--success-color);
+      transition: color var(--transition-duration);
+      @include adaptiveValue("font-size", 22, 16);
    
     &_is-open {
       color: var(--danger-hover);
+      }
+
+    @media (max-width:$tablet){
+
     }
   }
 }
 
 .dialog-hamburger {
   display: block;
+  width: toRem(320);
   z-index: 9999;
   left: toRem(15);
   top: 100%;
   scale: 0;
   border-radius: toRem(4);
-  margin-inline-start: toRem(0);
+  margin-inline-start: 0;
   border: toRem(2) solid var(--secondary-color);
   border-top: none;
   background-color: transparent;
   transition: scale .1s linear;
-  @include adaptiveValue("width", 320, 280);
+
+  @media (max-width:$tablet){
+   width: 100dvw;
+   left: 0;
+  }
 
   &[open] {
     scale: 1;

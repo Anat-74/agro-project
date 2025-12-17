@@ -1,14 +1,14 @@
 
 <template>
- <div class="animate-items">
-		<h2 class="animate-items__title">Organick</h2>
-		<h2 class="animate-items__title">Organick</h2>
-		<h2 class="animate-items__title">Organick</h2>
+ <div class="animate-label">
+		<h2 class="animate-label__title">Organick</h2>
+		<h2 class="animate-label__title">Organick</h2>
+		<h2 class="animate-label__title">Organick</h2>
 		</div> 
 </template>
 
 <style lang="scss" scoped>
-		.animate-items {
+		.animate-label {
          position: relative;
 
          &__title {
@@ -18,7 +18,7 @@
          translate: 0% -50%;
          letter-spacing: 1.2px;
          font-weight: 600;
-         font-size: toEm(26);
+         font-size: toRem(26);
 
          &:nth-child(1) {
          color: transparent;

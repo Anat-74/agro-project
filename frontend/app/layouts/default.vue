@@ -62,14 +62,8 @@ watch(currentLocale, () => {
     </div>
     <div class="header__bottom">
       <div class="header__container-bottom">
-         <Logo
-        class="header__logo visible-tablet"
-        :global="global"
-        :currentLocale="currentLocale"
-        :config="config"
-      />
+         <div class="visible-tablet">content</div>
         <ShowHamburger
-          class="header__dialog-header"
           v-if="global"
           :phones="global.phones"
           :footer="global.footer"
@@ -177,15 +171,22 @@ watch(currentLocale, () => {
 
   &__container-bottom {
     position: relative;
+   //  display: grid;
+   //  grid-template-columns: auto 1fr;
+   display: flex;
+   justify-content: space-between;
+    align-items: center;
+    @include adaptiveValue("height", 56, 40);
+
+    @media (min-width:$tablet){
     display: grid;
     grid-template-columns: auto 1fr;
-    align-items: center;
-    height: toRem(56);
-  }
+    }
 
-  &__dialog-header {
-   // justify-self: end;
-   // height: 100%;
+    @media (max-width:$tablet){
+      // grid-template-columns: auto 1fr;
+      padding-block: toRem(4);
+    }
   }
 
   &__navigation {

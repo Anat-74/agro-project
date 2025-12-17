@@ -8,10 +8,6 @@ const pageMeta = {
     title: 'Наши услуги',
     description: 'Страница с нашими услугами'
   },
-  en: {
-    title: 'Our services',
-    description: 'Our Services Page'
-  },
   be: {
     title: 'Нашы паслугі',
     description: 'Старонка з нашымі паслугамі'

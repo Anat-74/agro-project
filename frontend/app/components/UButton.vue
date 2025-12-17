@@ -86,41 +86,41 @@ defineEmits<Emits>()
     justify-content: center;
   }
 
-  &_primary {
-    background-color: var(--color);
-    color: var(--light-color);
-    border: 1px solid var(--color);
-    transition: background-color var(--transition-duration), color var(--transition-duration);
+//   &_primary {
+//     background-color: var(--color);
+//     color: var(--light-color);
+//     border: 1px solid var(--color);
+//     transition: background-color var(--transition-duration), color var(--transition-duration);
     
-    @include hover {
-      background-color: var(--secondary-color);
-      color: var(--color);
-    }
-  }
+//     @include hover {
+//       background-color: var(--secondary-color);
+//       color: var(--color);
+//     }
+//   }
   
-  &_secondary {
-    background-color: var(--secondary-color);
-    color: var(--color);
-    border: 1px solid var(--secondary-color);
-    transition: background-color var(--transition-duration), color var(--transition-duration);
+//   &_secondary {
+//     background-color: var(--secondary-color);
+//     color: var(--color);
+//     border: 1px solid var(--secondary-color);
+//     transition: background-color var(--transition-duration), color var(--transition-duration);
     
-    @include hover {
-      background-color: var(--color);
-      color: var(--light-color);
-    }
-  }
+//     @include hover {
+//       background-color: var(--color);
+//       color: var(--light-color);
+//     }
+//   }
   
-  &_outline {
-    background-color: transparent;
-    color: var(--color);
-    border: 1px solid var(--color);
-    transition: background-color var(--transition-duration), color var(--transition-duration);
+//   &_outline {
+//     background-color: transparent;
+//     color: var(--color);
+//     border: 1px solid var(--color);
+//     transition: background-color var(--transition-duration), color var(--transition-duration);
     
-    @include hover {
-      background-color: var(--color);
-      color: var(--light-color);
-    }
-  }
+//     @include hover {
+//       background-color: var(--color);
+//       color: var(--light-color);
+//     }
+//   }
 
   &_icon {
     padding: 0;
@@ -170,7 +170,11 @@ defineEmits<Emits>()
       height: 100%;
       padding-inline: toRem(32);
       background-color: var(--success-color);
-      border-radius: 0;
+      border-radius: toRem(0);
+
+      @media (max-width:$tablet){
+         border-radius: 0 toRem(4) toRem(4) 0;
+      }
 
       span,
       &::before,
@@ -179,18 +183,20 @@ defineEmits<Emits>()
         left: 50%;
         translate: -50% 0;
         position: absolute;
-        width: toRem(24);
+        width: toRem(25);
         height: toRem(2);
         background-color: var(--secondary-color);
         transition: transform var(--transition-duration), opacity var(--transition-duration);
       }
 
       &::before {
-        top: toRem(20);
+        top: toRem(0);
+        @include adaptiveValue("top", 18, 12);
       }
 
       &::after {
-        bottom: toRem(20);
+        bottom: toRem(0);
+      @include adaptiveValue("bottom", 18, 12);
       }
 
       span {
@@ -202,33 +208,33 @@ defineEmits<Emits>()
    }
 }
 
-  &_dialog-menu {
-    position: fixed;
-    right: toRem(18);
-    top: 50%;
-    translate: 0 -50%;
-    padding: toEm(4);
-    border-radius: 50%;
-    outline: toEm(3) solid var(--warning-color);
-    outline-offset: toRem(6);
-    background-color: var(--warning-hover);
-    transition: scale var(--transition-duration);
+//   &_dialog-menu {
+//     position: fixed;
+//     right: toRem(18);
+//     top: 50%;
+//     translate: 0 -50%;
+//     padding: toEm(4);
+//     border-radius: 50%;
+//     outline: toEm(3) solid var(--warning-color);
+//     outline-offset: toRem(6);
+//     background-color: var(--warning-hover);
+//     transition: scale var(--transition-duration);
 
-    @include hover {
-      scale: 1.1;
-    }
+//     @include hover {
+//       scale: 1.1;
+//     }
 
-    svg {
-      font-size: toEm(25, 24);
-      color: var(--light-color);
-    }
+//     svg {
+//       font-size: toEm(25, 24);
+//       color: var(--light-color);
+//     }
 
-    @media (max-width: $tablet) {
-      right: toRem(15);
-      outline: toEm(2) solid var(--warning-color);
-      outline-offset: toRem(2);
-    }
-  }
+//     @media (max-width: $tablet) {
+//       right: toRem(15);
+//       outline: toEm(2) solid var(--warning-color);
+//       outline-offset: toRem(2);
+//     }
+//   }
 
  &_lang-switcher {
     border-radius: 50%;

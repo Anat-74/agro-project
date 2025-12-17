@@ -20,10 +20,10 @@ const seoData = computed(() => {
 // Функция для обновления head
 const updateHead = () => {
  // Определяем языки для hreflang
-  const locales = ['ru', 'en', 'be']
+  const locales = ['ru', 'be']
   const hreflangLinks = locales.map(locale => {
     // Убираем текущий язык из URL и добавляем новый
-    const pathWithoutCurrentLocale = route.path.replace(/^\/(ru|en|be)(\/|$)/, '/')
+    const pathWithoutCurrentLocale = route.path.replace(/^\/(ru|be)(\/|$)/, '/')
     const newUrl = `/${locale}${pathWithoutCurrentLocale}`
     return {
       rel: 'alternate',
@@ -84,11 +84,11 @@ const updateHead = () => {
       { property: 'og:description', content: seoData.value.ogDescription },
       { property: 'og:url', content: fullUrl.value },
       { property: 'og:type', content: 'website' },
-      { property: 'og:site_name', content: 'TechnoMars' },
+      { property: 'og:site_name', content: 'Organick' },
       { property: 'og:image', content: `${config.public.siteUrl}/logo.png` },
        { property: 'og:locale', content: currentLocale.value },
        // Альтернативные языковые версии
-       { property: 'og:locale:alternate', content: locales.filter(l => l !== currentLocale.value)[0] || 'en' },
+       { property: 'og:locale:alternate', content: locales.filter(l => l !== currentLocale.value)[0] || 'ru' },
  
       // Twitter
        { name: 'twitter:card', content: 'summary_large_image' },
@@ -104,8 +104,8 @@ const updateHead = () => {
       { property: 'telegram:image', content: `${config.public.siteUrl}/logo.png` },
       
       // Instagram
-      { property: 'al:ios:app_name', content: 'TechnoMars' },
-      { property: 'al:android:app_name', content: 'TechnoMars' }
+      { property: 'al:ios:app_name', content: 'Organick' },
+      { property: 'al:android:app_name', content: 'Organick' }
     ]
   })
 }

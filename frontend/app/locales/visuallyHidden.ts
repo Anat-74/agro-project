@@ -6,6 +6,7 @@ export const visuallyHiddenTranslations: Record<LocaleCode, {
    sectionLangTitle: string
    sectionAboutUsTitle: string
    sectionOurServicesTitle: string
+   sectionBlogTitle: string
    sectionContactsTitle: string
    showModalMenuTitle: string
 
@@ -16,6 +17,7 @@ export const visuallyHiddenTranslations: Record<LocaleCode, {
       sectionLangTitle: "Секция с категориями товаров или главная страница",
       sectionAboutUsTitle: "Секция - О нас",
       sectionOurServicesTitle: "Секция - наши услуги",
+      sectionBlogTitle: "Секция блога",
       showModalMenuTitle: "Список товаров категории и подкатегории",
       sectionContactsTitle: "Секция с контактами компании"
    },
@@ -25,6 +27,7 @@ export const visuallyHiddenTranslations: Record<LocaleCode, {
       sectionLangTitle: "Секцыя з катэгорыямі тавараў або галоўная старонка",
       sectionAboutUsTitle: "Секцыя - Пра нас",
       sectionOurServicesTitle: "Секцыя - нашы паслугі",
+      sectionBlogTitle: "Секцыя блога",
       showModalMenuTitle: "Спіс тавараў катэгорыі, а так-жа падкатэгорыі",
       sectionContactsTitle: "Секцыя з кантактамі кампаніі"
    }

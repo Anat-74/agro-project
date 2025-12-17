@@ -5,12 +5,12 @@ const { currentLocale } = useLocale()
 
 const pageMeta = {
   ru: {
-    title: 'О нас',
-    description: 'Страница - о нас'
+    title: 'Блог',
+    description: 'Страница блога'
   },
   be: {
-    title: 'Пра нас',
-    description: 'Старонка - пра нас'
+    title: 'Блог',
+    description: 'Старонка - блога'
   }
 }
 
@@ -33,7 +33,7 @@ useSeoMeta({
          <h1
          class="visually-hidden"
          id="about-us"
-         >{{ visuallyHiddenTranslations[currentLocale].sectionAboutUsTitle }}</h1>
+         >{{ visuallyHiddenTranslations[currentLocale].sectionBlogTitle }}</h1>
          <p>В процессе наполнения контентом...</p>
          <p>In the process of filling with content...</p>
       </section>
