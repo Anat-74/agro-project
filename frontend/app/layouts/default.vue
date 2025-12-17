@@ -51,16 +51,23 @@ watch(currentLocale, () => {
     <BannerLayouts class="header__banner" />
     <div :class="['header__container-top', { backdrop: isContacts }]">
       <Logo
-        class="header__logo"
+        class="header__logo hidden-mobilesmall"
         :global="global"
         :currentLocale="currentLocale"
         :config="config"
       />
+         <AnimateTitle class="hidden-tablet" />
       <ProductFilter class="header__search" />
       <Basket class="header__cart" />
     </div>
     <div class="header__bottom">
       <div class="header__container-bottom">
+         <Logo
+        class="header__logo visible-tablet"
+        :global="global"
+        :currentLocale="currentLocale"
+        :config="config"
+      />
         <ShowHamburger
           class="header__dialog-header"
           v-if="global"
@@ -127,23 +134,41 @@ watch(currentLocale, () => {
 
   &__container-top {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto auto 1fr auto;
     align-items: center;
     column-gap: toRem(22);
     transition: opacity var(--transition-duration);
      @include adaptiveValue("height", 65, 55);
+     @include adaptiveValue("padding-block", 12, 5);
+
+     @media (max-width:$tablet){
+          grid-template-columns: auto 1fr auto;
+     }
+
+     @media (max-width:$mobileSmall){
+         grid-template-columns: 1fr auto;
+     }
   }
 
   &__logo {
     justify-self: start;
+
+   @media (max-width:$mobile){
+       width: toRem(52); 
+   }
   }
 
   &__search {
     justify-self: end;
-    width: 60%;
+    width: 80%;
+
+    @media (max-width:$mobile){
+      width: 100%;
+    }
   }
 
   &__cart {
+   translate: 0 toRem(3);
   }
 
   &__bottom {
@@ -159,6 +184,8 @@ watch(currentLocale, () => {
   }
 
   &__dialog-header {
+   // justify-self: end;
+   // height: 100%;
   }
 
   &__navigation {

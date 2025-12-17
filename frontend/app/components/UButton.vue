@@ -129,7 +129,7 @@ defineEmits<Emits>()
 
   &_color-theme {
     padding: toRem(2);
-    border: toRem(2) solid var(--secondary-color);
+    border: toRem(2) solid var(--whitesmoke-color);
     border-radius: toRem(6);
 
     span {
@@ -140,14 +140,28 @@ defineEmits<Emits>()
     }
 
     svg {
-      color: var(--secondary-color);
+      color: var(--light-color);
       @include adaptiveValue("font-size", 18, 20);
+
+      @media (max-width:$tablet){
+         color: var(--success-color);
+      }
     }
   }
 
   &_selected {
+   background-color: var(--light-color);
+   cursor: default;
+
+      span {
+      transition: transform var(--transition-duration);
+      @include hover {
+         transform: scale(1) rotate(0);
+      }
+    }
+
     svg {
-      color: var(--warning-color);
+      color: var(--active-color);
     }
   }
 
@@ -454,39 +468,39 @@ defineEmits<Emits>()
     }
   }
 
-  &_close {
-    position: absolute;
-    z-index: 10;
-    top: toEm(11);
-    right: toEm(7);
-    padding-inline: toEm(14);
-    padding-block: toEm(14);
-    transition: transform .8s;
+//   &_close {
+//     position: absolute;
+//     z-index: 10;
+//     top: toEm(11);
+//     right: toEm(7);
+//     padding-inline: toEm(14);
+//     padding-block: toEm(14);
+//     transition: transform .8s;
 
-    &::before,
-    &::after {
-      content: '';
-      position: absolute;
-      right: toRem(3);
-      width: toRem(20);
-      height: toRem(2);
-      background-color: var(--border-color);
-    }
+//     &::before,
+//     &::after {
+//       content: '';
+//       position: absolute;
+//       right: toRem(3);
+//       width: toRem(20);
+//       height: toRem(2);
+//       background-color: var(--border-color);
+//     }
 
-    &::before {
-      top: calc(50% - toRem(1));
-      transform: rotate(-45deg);
-    }
+//     &::before {
+//       top: calc(50% - toRem(1));
+//       transform: rotate(-45deg);
+//     }
 
-    &::after {
-      bottom: calc(50% - toRem(1));
-      transform: rotate(45deg);
-    }
+//     &::after {
+//       bottom: calc(50% - toRem(1));
+//       transform: rotate(45deg);
+//     }
 
-    @include hover {
-      transform: scale(1.1);
-    }
-  }
+//     @include hover {
+//       transform: scale(1.1);
+//     }
+//   }
 
   /* Состояние загрузки */
   &.loading {

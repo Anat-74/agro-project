@@ -9,14 +9,16 @@
 
 <style lang="scss" scoped>
 		.animate-items {
+         position: relative;
+
          &__title {
 			position: absolute;
-			left:50%;
+			left: 0%;
 			top: 50%;
-         translate: -50% -50%;
+         translate: 0% -50%;
          letter-spacing: 1.2px;
          font-weight: 600;
-         font-size: toEm(22);
+         font-size: toEm(26);
 
          &:nth-child(1) {
          color: transparent;

@@ -8,8 +8,8 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  width: 62,
-  height: 62,
+  width: 60,
+  height: 60,
 });
 </script>
 

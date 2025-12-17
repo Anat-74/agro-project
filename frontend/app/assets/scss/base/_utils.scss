@@ -17,6 +17,12 @@
    }
 }
 
+.hidden-mobilesmall {
+   @media (max-width: c.$mobileSmall){
+      display: none;
+   }
+}
+
 .visible-tablet {
    @media (min-width: c.$tablet){
        display: none;

@@ -143,20 +143,17 @@ watch(currentLocale, () => {
       {{ visuallyHiddenTranslations[currentLocale].showModalMenuTitle }}
     </h1>
     <div class="dialog-hamburger__items">
-      <div class="dialog-hamburger__top">
+         <div class="dialog-hamburger__top">
+        <AnimateTitle class="visible-tablet" />
          <ClientOnly>
-        <ColorMode class="dialog-hamburger__color-mode" />
+        <ColorMode class="dialog-hamburger__color-mode visible-tablet" />
       </ClientOnly>
-        <Logo
-          class="dialog-hamburger__logo"
-          :global="global"
-          :currentLocale="currentLocale"
-          :config="config"
-        />
-        <AnimateTitle />
       </div>
       <ul v-if="category?.length" class="dialog-hamburger__accordion accordion">
-        <li v-for="cat in category" :key="cat.id" class="accordion__item">
+        <li 
+         v-for="cat in category" 
+         :key="cat.id" 
+         class="accordion__item">
           <details name="faq" class="accordion__details">
             <summary class="accordion__summary">
               <Icon name="mdi:chevron-left" />
@@ -271,12 +268,12 @@ watch(currentLocale, () => {
           />
         </a>
       </div>
-      <LangSwitcher />
+      <LangSwitcher class="dialog-hamburger__lang visible-tablet" />
     </div>
-  </dialog>
-  <span v-if="error" class="error">
+      <span v-if="error" class="error">
     {{ error.message }}
   </span>
+  </dialog>
 </template>
 
 <style lang="scss" scoped>
@@ -286,8 +283,10 @@ watch(currentLocale, () => {
   align-items: center;
   justify-items: center;
   height: 100%;
+  border-left: toRem(2) solid var(--secondary-color);
+  border-right: toRem(2) solid var(--secondary-color);
   background-color: var(--light-color);
-  @include adaptiveValue("width", 290, 200);
+  @include adaptiveValue("width", 320, 280);
 
   &__categories {
     display: flex;
@@ -315,7 +314,7 @@ watch(currentLocale, () => {
   border-top: none;
   background-color: transparent;
   transition: scale .1s linear;
-  @include adaptiveValue("width", 290, 220);
+  @include adaptiveValue("width", 320, 280);
 
   &[open] {
     scale: 1;
@@ -333,33 +332,22 @@ watch(currentLocale, () => {
     flex-direction: column;
     row-gap: toEm(16);
     padding-inline: toEm(8);
-    padding-block: toEm(16);
-    margin-inline: toEm(4);
-    margin-block: toRem(4);
-   //  background: linear-gradient(
-   //    -135deg,
-   //    transparent toRem(45),
-   //    var(--secondary-color) 0
-   //  );
+    padding-block-start: toEm(4);
+    padding-block-end: toEm(16);
+    backdrop-filter: blur(16px);
   }
 
   &__top {
-    position: relative;
-   //  display: flex;
-  }
-
-  &__logo {
-    width: toRem(44);
-    border-radius: 50%;
-    padding-inline: toEm(4);
-    padding-block: toEm(6);
-    outline: 1px solid var(--light-color);
-    outline-offset: toRem(2);
+   @media (max-width:$tablet){
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: toRem(8);
+    border-top: toRem(2) solid var(--whitesmoke-color);
+    border-bottom: toRem(2) solid var(--whitesmoke-color);
+    border-radius: toRem(4);
     background-color: var(--light-color);
-
-    @media (max-width: $mobile) {
-      width: toEm(38);
-    }
+   }
   }
 
   &__accordion {
@@ -376,7 +364,7 @@ watch(currentLocale, () => {
     transition: all var(--transition-duration);
 
     svg {
-      font-size: toEm(22);
+      font-size: toRem(22);
       color: var(--warning-color);
     }
 
@@ -401,10 +389,16 @@ watch(currentLocale, () => {
       }
     }
   }
+
+  &__lang {
+   align-self: start;
+  }
 }
 
 .accordion {
   &__details {
+      font-size: toRem(20);
+
     margin-block-end: toEm(2);
     svg {
       font-size: toEm(22);

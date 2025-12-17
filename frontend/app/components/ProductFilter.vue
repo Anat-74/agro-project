@@ -123,18 +123,18 @@ onUnmounted(() => {
 .search {
    &-body {
       position: relative;
-      height: toRem(44);
       display: flex;
       align-items: center;
+      @include adaptiveValue("height", 44, 40);
 
          &::after {
          content: '';
          position: absolute;
          right: 0;
          width: toRem(55);
-         height: calc(100% - toRem(4));
+         height: 100%;
          border-radius: 0 toRem(25) toRem(25) 0;
-         background-color: var(--danger-color);
+         background-color: var(--success-color);
       }
    }
 
@@ -167,15 +167,16 @@ onUnmounted(() => {
       right: toRem(222);
       translate: 0 -50%;
       font-size: toRem(25);
-      color: var(--sky-blue-color);
+      color: var(--sky-blue);
    }
 
    &-glass {
       position: absolute;
+      z-index: 999;
       top: 50%;
-      left: toRem(12);
+      right: toRem(16);
       translate: 0 -50%;
-      color: var(--primary-color);
+      color: var(--light-color);
       font-size: toRem(25);
    }
 
