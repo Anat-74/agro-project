@@ -13,12 +13,17 @@
 
          &__title {
 			position: absolute;
-			left: 0%;
+			left: 0;
 			top: 50%;
-         translate: 0% -50%;
+         translate: 0 -50%;
          letter-spacing: 1.2px;
          font-weight: 600;
          font-size: toRem(26);
+
+         @media (max-width:$mobile){
+         left: 50%;
+         translate: toRem(-60) -50%;
+         }
 
          &:nth-child(1) {
          color: transparent;

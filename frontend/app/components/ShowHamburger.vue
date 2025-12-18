@@ -120,8 +120,9 @@ watch(currentLocale, () => {
   <div class="hamburger-menu">
     <UButton
       @click="isOpen ? close() : open()"
+      :is-open="isOpen"
       variant="hamburger"
-      aria-label="Открыть и закрыть"
+      aria-label="Открыть - закрыть"
     />
     <span
       :class="[
@@ -142,6 +143,16 @@ watch(currentLocale, () => {
       {{ visuallyHiddenTranslations[currentLocale].showModalMenuTitle }}
     </h1>
     <div class="dialog-hamburger__items">
+      <div class="dialog-hamburger__top visible-mobile">
+         <Logo
+         :global="global"
+         :currentLocale="currentLocale"
+         :config="config"
+         :width="40"
+         :height="40"
+         />
+         <AnimateTitle />
+      </div>
       <ul v-if="category?.length" class="dialog-hamburger__accordion accordion">
         <li v-for="cat in category" :key="cat.id" class="accordion__item">
           <details name="faq" class="accordion__details">
@@ -242,18 +253,19 @@ watch(currentLocale, () => {
         </a>
       </div>
     </div>
-    <div class="dialog-hamburger__sidebar sidebar">
+    <div class="dialog-hamburger__sidebar sidebar visible-mobile">
       <UButton
         @click="close()"
         class="sidebar__close"
         variant="hamburger"
         aria-label="Закрыть"
       />
+      <LangSwitcher class="sidebar__lang" />
       <ClientOnly>
-        <ColorMode class="sidebar__color-mode visible-tablet" />
+        <ColorMode class="sidebar__color-mode" />
       </ClientOnly>
-      <LangSwitcher class="sidebar__lang visible-tablet" />
       <Socials
+      class="sidebar__socials"
       :is-open="isOpen"
       :socials="socials" />
     </div>
@@ -342,6 +354,16 @@ watch(currentLocale, () => {
     }
   }
 
+  &__top {
+   display: grid;
+   grid-template-columns: auto 1fr;
+   align-items: center;
+   padding-inline: toRem(4);
+   padding-block: toRem(2);
+   border-radius: toRem(4);
+   background-color: var(--secondary-color);
+  }
+
   &__accordion {
     flex: 1 1 auto;
   }
@@ -396,19 +418,22 @@ watch(currentLocale, () => {
 
   &__summary {
     position: relative;
-    display: grid;
-    grid-template-columns: auto 1fr;
+    display: flex;
+    justify-content: center;
     align-items: center;
-    justify-items: center;
-    grid-auto-flow: column;
-    text-align: center;
-    translate: toRem(-12) 0;
     cursor: pointer;
-    padding-block: toEm(6, 22);
+    padding-block: toRem(6);
     font-weight: 600;
-    font-size: toEm(16);
-    color: var(--gray-color);
+    font-size: toRem(20);
+    color: var(--primary-color);
     transition: color var(--transition-duration);
+
+    svg {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      translate: 0 -50%;
+    }
 
     @include hover {
       color: var(--warning-color);
@@ -427,10 +452,6 @@ watch(currentLocale, () => {
 
   &__product-list {
     overflow: hidden;
-    display: grid;
-    align-items: center;
-    row-gap: toRem(9);
-    justify-content: center;
     color: var(--color);
   }
 
@@ -438,8 +459,6 @@ watch(currentLocale, () => {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-inline: toEm(4, 18);
-    font-size: toEm(14);
     transition: all var(--transition-duration);
 
     &_is-discount {
@@ -467,41 +486,22 @@ watch(currentLocale, () => {
 }
 
 .sidebar {
-  display: none;
-
-  @media (max-width: $mobile) {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    row-gap: toRem(12);
-    padding-block: toRem(2);
+    display: grid;
+    grid-template-rows: repeat(3, auto) 1fr;
+    justify-items: center;
+    row-gap: toRem(16);
+    padding-inline: toRem(2);
+    padding-block-start: toRem(2);
+    padding-block-end: toRem(9);
     border-left: toRem(2) solid var(--dark-color);
-    background-color: var(--light-color);
-  }
+    background-color: var(--secondary-color);
 
   &__close {
-    width: 90%;
+    align-self: start;
     height: auto;
+    padding-inline: toRem(18);
     padding-block: toRem(14);
     border-radius: toRem(4);
   }
-
-  //      &__lang {
-  //    align-self: start;
-  //   }
 }
-// .hamburger--open {
-//   &::before,
-//   &::after {
-//     background-color: var(--dark-color);
-//   }
-//   &::before {
-//     top: calc(50% - toRem(1));
-//     transform: rotate(-45deg);
-//   }
-//   &::after {
-//     bottom: calc(50% - toRem(1));
-//     transform: rotate(45deg);
-//   }
-// }
 </style>

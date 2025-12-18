@@ -39,6 +39,10 @@ const props = withDefaults(defineProps<Props>(), {
   background-color: var(--light-color);
   transition: outline var(--transition-duration);
 
+  @media (max-width:$mobile){
+   background-color: var(--transparent-color);
+  }
+
   @include hover {
     outline-color: var(--warning-color);
   }

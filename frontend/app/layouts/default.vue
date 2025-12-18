@@ -62,7 +62,14 @@ watch(currentLocale, () => {
     </div>
     <div class="header__bottom">
       <div class="header__container-bottom">
-        <AnimateTitle class="visible-mobile" />
+         <Logo
+        class="header__logo visible-mobile"
+        :global="global"
+        :currentLocale="currentLocale"
+        :config="config"
+        :width="48"
+        :height="48"
+      />
         <ShowHamburger
           v-if="global"
           :phones="global.phones"

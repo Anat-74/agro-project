@@ -13,7 +13,8 @@ interface Props {
     isDisabled?: boolean
     type?: 'button' | 'submit' | 'reset'
     icon?: string
-    theme?: string
+   theme?: string
+   isOpen?: boolean
   }
 
 interface Emits {
@@ -39,7 +40,7 @@ defineEmits<Emits>()
       { 'btn_loading': isLoading, 'btn_disabled': isDisabled },
       { 'btn_selected': !colorMode.unknown && theme === colorMode.value },
       size === 'large' ? 'btn_large' : '',
-      icon ? 'btn_icon' : '',
+   icon ? 'btn_icon' : ''
     ]"
     :disabled="isDisabled || isLoading"
     :type="type"
@@ -206,6 +207,28 @@ defineEmits<Emits>()
 
       @include hover {
          opacity: .8;
+   }
+
+   &_isopen {
+      span {
+         width: 0;
+      }
+      &::before,
+      &::after {
+         background-color: var(--light-color);
+
+         @media (max-width: $mobile){
+          transition: rotate .6s .1s; 
+         }
+      }
+      &::before {
+         top: calc(50% - toRem(1));
+         rotate: -45deg;
+      }
+      &::after {
+         bottom: calc(50% - toRem(1));
+         rotate: 45deg;
+      }
    }
 }
 

@@ -54,7 +54,7 @@ body:has(.dialog-hamburger[open]) {
          background-color: var(--light-color);
 
          @media (max-width:c.$mobile){
-          transition: rotate .7s .1s; 
+          transition: rotate .6s .1s; 
          }
       }
       &::before {

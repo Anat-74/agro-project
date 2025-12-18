@@ -7,37 +7,37 @@
 
 .hidden-tablet {
    @media (max-width: c.$tablet){
-      display: none;
+      display: none !important;
    }
 }
 
 .hidden-mobile {
    @media (max-width: c.$mobile){
-      display: none;
+      display: none !important;
    }
 }
 
 .hidden-mobilesmall {
    @media (max-width: c.$mobileSmall){
-      display: none;
+      display: none !important;
    }
 }
 
 .visible-tablet {
    @media (min-width: c.$tablet){
-       display: none;
+       display: none !important;
    }
 }
 
 .visible-mobile {
    @media (min-width: c.$mobile){
-       display: none;
+       display: none !important;
    }
 }
 
 .iconify--my-icon {
    translate: 0 toRem(2);
-   color: var(--dark-golden-color);
+   color: var(--secondary-color);
 }
 
 .loader {

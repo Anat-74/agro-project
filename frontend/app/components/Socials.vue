@@ -3,7 +3,7 @@ import type { SocialLink } from "../types/types";
 
 interface Props {
    socials: SocialLink[]
-  isOpen: boolean
+   isOpen: boolean
 }
 
 defineProps<Props>()
@@ -12,12 +12,10 @@ const config = useRuntimeConfig();
 </script>
 
 <template>
-  <div class="socials" v-if="socials"
-           :class="[
-        'socials',
-        { 'socials_is-open': isOpen },
-      ]"
-  >
+  <div 
+   v-if="socials"
+   :class="[ 'socials', { 'socials_is-open': isOpen } ]"
+   >
     <a 
     v-for="link in socials" 
     :key="link.id" 
@@ -37,20 +35,21 @@ const config = useRuntimeConfig();
 
 <style lang="scss" scoped>
 .socials {
-  align-self: end;
   display: flex;
   column-gap: toEm(12);
 
   img {
     transition: scale var(--transition-duration);
 
-    &_is-open {
-      flex-direction: column;
-    }
-
     @include hover {
       scale: 1.1;
     }
   }
+
+   &_is-open {
+      align-self: end;
+      flex-direction: column;
+      row-gap: toRem(8);
+   }
 }
 </style>
