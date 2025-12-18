@@ -254,17 +254,17 @@ watch(currentLocale, () => {
       </div>
     </div>
     <div class="dialog-hamburger__sidebar sidebar visible-mobile">
-      <UButton
+      <LangSwitcher class="sidebar__lang" />
+      <ClientOnly>
+        <ColorMode class="sidebar__color-mode" />
+      </ClientOnly>
+         <UButton
         @click="close()"
         :is-open="isOpen"
         class="sidebar__close"
         variant="hamburger"
         aria-label="Закрыть"
       />
-      <LangSwitcher class="sidebar__lang" />
-      <ClientOnly>
-        <ColorMode class="sidebar__color-mode" />
-      </ClientOnly>
       <Socials class="sidebar__socials" :is-open="isOpen" :socials="socials" />
     </div>
     <span v-if="error" class="error">
@@ -356,10 +356,10 @@ watch(currentLocale, () => {
     display: grid;
     grid-template-columns: auto 1fr;
     align-items: center;
-    padding-inline: toRem(4);
+    padding-inline: toRem(8);
     padding-block: toRem(2);
-    border-radius: toRem(4);
-    background-color: var(--secondary-color);
+    border-radius: toRem(25);
+    background-color: var(--light-color);
   }
 
   &__accordion {
@@ -484,22 +484,26 @@ watch(currentLocale, () => {
 }
 
 .sidebar {
+  position: relative;
   display: grid;
-  grid-template-rows: repeat(3, auto) 1fr;
+  grid-template-rows: repeat(2, auto) 1fr;
   justify-items: center;
   row-gap: toRem(16);
-  padding-inline: toRem(2);
-  padding-block-start: toRem(2);
-  padding-block-end: toRem(9);
-  border-left: toRem(2) solid var(--dark-color);
+  padding-inline: toRem(4);
+  padding-block: toRem(9);
+  border-left: toRem(2) solid var(--success-color);
   background-color: var(--secondary-color);
 
   &__close {
-    align-self: start;
-    height: auto;
-    padding-inline: toRem(18);
-    padding-block: toRem(14);
-    border-radius: toRem(4);
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   translate: -50% -50%;
+   height: auto;
+   width: 100%;
+   padding-inline: 0;
+   padding-block: toRem(22);
+   border-radius: toRem(2);
   }
 }
 </style>

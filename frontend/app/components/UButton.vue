@@ -55,7 +55,7 @@ defineEmits<Emits>();
       `btn_${variant}`,
       { btn_loading: isLoading, btn_disabled: isDisabled },
       { btn_selected: !colorMode.unknown && theme === colorMode.value },
-      { btn_open: isOpen && variant === 'hamburger' },
+      { 'btn_hamburger--is-open': isOpen && variant === 'hamburger' },
       size === 'large' ? 'btn_large' : '',
       icon ? 'btn_icon' : '',
     ]"
@@ -206,7 +206,7 @@ defineEmits<Emits>();
       height: toRem(2);
       background-color: var(--secondary-color);
       transition: rotate var(--transition-duration),
-        opacity var(--transition-duration);
+      opacity var(--transition-duration);
     }
 
     &::before {
@@ -227,7 +227,7 @@ defineEmits<Emits>();
       opacity: 0.8;
     }
 
-    &.btn_open {
+    &--is-open {
       span {
         width: 0;
       }
@@ -237,7 +237,7 @@ defineEmits<Emits>();
         background-color: var(--light-color);
 
         @media (max-width: $mobile) {
-          transition: rotate 0.6s 0.1s;
+          transition: rotate .6s .1s;
         }
       }
 

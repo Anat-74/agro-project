@@ -10,6 +10,8 @@
 <style lang="scss" scoped>
 		.animate-label {
          position: relative;
+         padding: toRem(2);
+
 
          &__title {
 			position: absolute;
@@ -22,7 +24,7 @@
 
          @media (max-width:$mobile){
          left: 50%;
-         translate: toRem(-60) -50%;
+         translate: toRem(-65) -50%;
          }
 
          &:nth-child(1) {
