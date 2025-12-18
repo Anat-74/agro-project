@@ -1,46 +1,63 @@
 <script setup lang="ts">
-const colorMode = useColorMode()
+const colorMode = useColorMode();
 
 interface Props {
-    variant?:
-    'primary'| 'secondary' | 'outline' | 'icon' | 'hamburger' |
-    'dialog-menu' | 'lang-switcher' | 'go-forward-back' | 'share' |
-    'switch-locale-cart' | 'add-to-cart' | 'small-add-to-cart' | 'remove-cart-item' |
-    'remove-quantity-prod' | 'add-quantity-prod' | 'large' | 'go-to-top' |
-    'pagination' | 'close' | 'color-theme'
-    size?: 'small' | 'normal' | 'large'
-    isLoading?: boolean
-    isDisabled?: boolean
-    type?: 'button' | 'submit' | 'reset'
-    icon?: string
-   theme?: string
-   isOpen?: boolean
-  }
+  variant?:
+    | "primary"
+    | "secondary"
+    | "outline"
+    | "icon"
+    | "hamburger"
+    | "dialog-menu"
+    | "lang-switcher"
+    | "go-forward-back"
+    | "share"
+    | "switch-locale-cart"
+    | "add-to-cart"
+    | "small-add-to-cart"
+    | "remove-cart-item"
+    | "remove-quantity-prod"
+    | "add-quantity-prod"
+    | "large"
+    | "go-to-top"
+    | "pagination"
+    | "close"
+    | "color-theme";
+  size?: "small" | "normal" | "large";
+  isLoading?: boolean;
+  isDisabled?: boolean;
+  type?: "button" | "submit" | "reset";
+  icon?: string;
+  theme?: string;
+  isOpen?: boolean;
+}
 
 interface Emits {
-  (e: 'click', event: MouseEvent): void
+  (e: "click", event: MouseEvent): void;
 }
 
 withDefaults(defineProps<Props>(), {
-  variant: 'primary',
-  size: 'normal',
+  variant: "primary",
+  size: "normal",
   isLoading: false,
   isDisabled: false,
-  type: 'button'
-})
+  type: "button",
+  isOpen: false,
+});
 
-defineEmits<Emits>()
+defineEmits<Emits>();
 </script>
 
 <template>
   <button
-    :class=" [
+    :class="[
       'btn',
       `btn_${variant}`,
-      { 'btn_loading': isLoading, 'btn_disabled': isDisabled },
-      { 'btn_selected': !colorMode.unknown && theme === colorMode.value },
+      { btn_loading: isLoading, btn_disabled: isDisabled },
+      { btn_selected: !colorMode.unknown && theme === colorMode.value },
+      { btn_open: isOpen && variant === 'hamburger' },
       size === 'large' ? 'btn_large' : '',
-   icon ? 'btn_icon' : ''
+      icon ? 'btn_icon' : '',
     ]"
     :disabled="isDisabled || isLoading"
     :type="type"
@@ -70,11 +87,11 @@ defineEmits<Emits>()
   gap: 8px;
   cursor: pointer;
   font-weight: 500;
-  transition: all .2s ease;
+  transition: all 0.2s ease;
 
- &:disabled,
+  &:disabled,
   &.btn_disabled {
-    opacity: .4;
+    opacity: 0.4;
     cursor: default;
   }
 
@@ -87,41 +104,41 @@ defineEmits<Emits>()
     justify-content: center;
   }
 
-//   &_primary {
-//     background-color: var(--color);
-//     color: var(--light-color);
-//     border: 1px solid var(--color);
-//     transition: background-color var(--transition-duration), color var(--transition-duration);
-    
-//     @include hover {
-//       background-color: var(--secondary-color);
-//       color: var(--color);
-//     }
-//   }
-  
-//   &_secondary {
-//     background-color: var(--secondary-color);
-//     color: var(--color);
-//     border: 1px solid var(--secondary-color);
-//     transition: background-color var(--transition-duration), color var(--transition-duration);
-    
-//     @include hover {
-//       background-color: var(--color);
-//       color: var(--light-color);
-//     }
-//   }
-  
-//   &_outline {
-//     background-color: transparent;
-//     color: var(--color);
-//     border: 1px solid var(--color);
-//     transition: background-color var(--transition-duration), color var(--transition-duration);
-    
-//     @include hover {
-//       background-color: var(--color);
-//       color: var(--light-color);
-//     }
-//   }
+  //   &_primary {
+  //     background-color: var(--color);
+  //     color: var(--light-color);
+  //     border: 1px solid var(--color);
+  //     transition: background-color var(--transition-duration), color var(--transition-duration);
+
+  //     @include hover {
+  //       background-color: var(--secondary-color);
+  //       color: var(--color);
+  //     }
+  //   }
+
+  //   &_secondary {
+  //     background-color: var(--secondary-color);
+  //     color: var(--color);
+  //     border: 1px solid var(--secondary-color);
+  //     transition: background-color var(--transition-duration), color var(--transition-duration);
+
+  //     @include hover {
+  //       background-color: var(--color);
+  //       color: var(--light-color);
+  //     }
+  //   }
+
+  //   &_outline {
+  //     background-color: transparent;
+  //     color: var(--color);
+  //     border: 1px solid var(--color);
+  //     transition: background-color var(--transition-duration), color var(--transition-duration);
+
+  //     @include hover {
+  //       background-color: var(--color);
+  //       color: var(--light-color);
+  //     }
+  //   }
 
   &_icon {
     padding: 0;
@@ -136,7 +153,7 @@ defineEmits<Emits>()
     span {
       transition: transform var(--transition-duration);
       @include hover {
-         transform: scale(1.4) rotate(-25deg);
+        transform: scale(1.4) rotate(-25deg);
       }
     }
 
@@ -144,20 +161,20 @@ defineEmits<Emits>()
       color: var(--light-color);
       @include adaptiveValue("font-size", 18, 20);
 
-      @media (max-width:$tablet){
-         color: var(--success-color);
+      @media (max-width: $tablet) {
+        color: var(--success-color);
       }
     }
   }
 
   &_selected {
-   background-color: var(--light-color);
-   cursor: default;
+    background-color: var(--light-color);
+    cursor: default;
 
-      span {
+    span {
       transition: transform var(--transition-duration);
       @include hover {
-         transform: scale(1) rotate(0);
+        transform: scale(1) rotate(0);
       }
     }
 
@@ -166,101 +183,105 @@ defineEmits<Emits>()
     }
   }
 
- &_hamburger {
-      position: relative;
-      height: 100%;
-      padding-inline: toRem(32);
-      background-color: var(--success-color);
-      border-radius: toRem(0);
+  &_hamburger {
+    position: relative;
+    height: 100%;
+    padding-inline: toRem(32);
+    background-color: var(--success-color);
+    border-radius: toRem(0);
 
-      @media (max-width:$mobile){
-         padding-inline: toRem(28);
-         border-radius: 0 toRem(25) toRem(4) 0;
-      }
+    @media (max-width: $mobile) {
+      padding-inline: toRem(28);
+      border-radius: 0 toRem(25) toRem(4) 0;
+    }
 
-      span,
-      &::before,
-      &::after {
-        content: '';
-        left: 50%;
-        translate: -50% 0;
-        position: absolute;
-        width: toRem(24);
-        height: toRem(2);
-        background-color: var(--secondary-color);
-        transition: rotate var(--transition-duration), opacity var(--transition-duration);
-      }
+    span,
+    &::before,
+    &::after {
+      content: "";
+      left: 50%;
+      translate: -50% 0;
+      position: absolute;
+      width: toRem(24);
+      height: toRem(2);
+      background-color: var(--secondary-color);
+      transition: rotate var(--transition-duration),
+        opacity var(--transition-duration);
+    }
 
-      &::before {
-        top: toRem(0);
-        @include adaptiveValue("top", 18, 12);
-      }
+    &::before {
+      top: toRem(0);
+      @include adaptiveValue("top", 18, 12);
+    }
 
-      &::after {
-        bottom: toRem(0);
+    &::after {
+      bottom: toRem(0);
       @include adaptiveValue("bottom", 18, 12);
-      }
+    }
 
+    span {
+      top: calc(50% - toRem(1));
+    }
+
+    @include hover {
+      opacity: 0.8;
+    }
+
+    &.btn_open {
       span {
-        top: calc(50% - toRem(1));
+        width: 0;
       }
 
-      @include hover {
-         opacity: .8;
-   }
-
-   &_isopen {
-      span {
-         width: 0;
-      }
       &::before,
       &::after {
-         background-color: var(--light-color);
+        background-color: var(--light-color);
 
-         @media (max-width: $mobile){
-          transition: rotate .6s .1s; 
-         }
+        @media (max-width: $mobile) {
+          transition: rotate 0.6s 0.1s;
+        }
       }
+
       &::before {
-         top: calc(50% - toRem(1));
-         rotate: -45deg;
+        top: calc(50% - toRem(1));
+        rotate: -45deg;
       }
+
       &::after {
-         bottom: calc(50% - toRem(1));
-         rotate: 45deg;
+        bottom: calc(50% - toRem(1));
+        rotate: 45deg;
       }
-   }
-}
+    }
+  }
 
-//   &_dialog-menu {
-//     position: fixed;
-//     right: toRem(18);
-//     top: 50%;
-//     translate: 0 -50%;
-//     padding: toEm(4);
-//     border-radius: 50%;
-//     outline: toEm(3) solid var(--warning-color);
-//     outline-offset: toRem(6);
-//     background-color: var(--warning-hover);
-//     transition: scale var(--transition-duration);
+  //   &_dialog-menu {
+  //     position: fixed;
+  //     right: toRem(18);
+  //     top: 50%;
+  //     translate: 0 -50%;
+  //     padding: toEm(4);
+  //     border-radius: 50%;
+  //     outline: toEm(3) solid var(--warning-color);
+  //     outline-offset: toRem(6);
+  //     background-color: var(--warning-hover);
+  //     transition: scale var(--transition-duration);
 
-//     @include hover {
-//       scale: 1.1;
-//     }
+  //     @include hover {
+  //       scale: 1.1;
+  //     }
 
-//     svg {
-//       font-size: toEm(25, 24);
-//       color: var(--light-color);
-//     }
+  //     svg {
+  //       font-size: toEm(25, 24);
+  //       color: var(--light-color);
+  //     }
 
-//     @media (max-width: $tablet) {
-//       right: toRem(15);
-//       outline: toEm(2) solid var(--warning-color);
-//       outline-offset: toRem(2);
-//     }
-//   }
+  //     @media (max-width: $tablet) {
+  //       right: toRem(15);
+  //       outline: toEm(2) solid var(--warning-color);
+  //       outline-offset: toRem(2);
+  //     }
+  //   }
 
- &_lang-switcher {
+  &_lang-switcher {
     border-radius: 50%;
     transition: scale var(--transition-duration);
 
@@ -273,14 +294,15 @@ defineEmits<Emits>()
         font-size: toRem(22);
       }
     }
- }
+  }
 
   &_go-forward-back {
     align-self: start;
     padding: toRem(4);
     border-radius: toRem(6);
     border: 1px solid var(--secondary-color);
-    transition: color var(--transition-duration), scale var(--transition-duration);
+    transition: color var(--transition-duration),
+      scale var(--transition-duration);
 
     svg {
       color: var(--warning-color);
@@ -321,11 +343,12 @@ defineEmits<Emits>()
     box-shadow: 0 toRem(4) toRem(0) rgba(0, 0, 0, 0.2);
     color: var(--danger-hover);
     background-color: var(--secondary-color);
-    transition: background-color var(--transition-duration), color var(--transition-duration);
+    transition: background-color var(--transition-duration),
+      color var(--transition-duration);
 
     &:disabled,
     &.btn_disabled {
-      opacity: .7;
+      opacity: 0.7;
     }
 
     svg {
@@ -374,7 +397,8 @@ defineEmits<Emits>()
     svg {
       color: var(--warning-color);
       font-size: toRem(24);
-      transition: color var(--transition-duration), scale var(--transition-duration);
+      transition: color var(--transition-duration),
+        scale var(--transition-duration);
 
       @include hover {
         color: var(--danger-color);
@@ -402,7 +426,7 @@ defineEmits<Emits>()
     }
 
     &::before {
-      content: '';
+      content: "";
       left: 50%;
       position: absolute;
       width: toRem(16);
@@ -431,7 +455,7 @@ defineEmits<Emits>()
 
     &::before,
     &::after {
-      content: '';
+      content: "";
       left: 50%;
       position: absolute;
       width: toRem(18);
@@ -446,7 +470,7 @@ defineEmits<Emits>()
     }
   }
 
- &_large {
+  &_large {
     font-weight: 600;
     border-radius: toRem(25);
     background-color: var(--danger-color);
@@ -457,7 +481,7 @@ defineEmits<Emits>()
         background-color: var(--danger-hover);
       }
     }
- }
+  }
 
   &_go-to-top {
     position: fixed;
@@ -490,58 +514,59 @@ defineEmits<Emits>()
     color: var(--light-color);
     background-color: var(--color);
     border: 1px solid var(--color);
-    transition: background-color var(--transition-duration), color var(--transition-duration);
-    
+    transition: background-color var(--transition-duration),
+      color var(--transition-duration);
+
     @include hover {
       background-color: var(--secondary-color);
       color: var(--color);
     }
   }
 
-//   &_close {
-//    display: none;
+  //   &_close {
+  //    display: none;
 
-//    @media (max-width:$mobile){
-//     display: block;
-//     position: absolute;
-//     z-index: 10;
-//     top: toEm(11);
-//     right: toEm(7);
-//     padding-inline: toEm(14);
-//     padding-block: toEm(14);
-//     border-radius: toRem(4);
-//     border: toRem(2) solid var(--dark-color);
+  //    @media (max-width:$mobile){
+  //     display: block;
+  //     position: absolute;
+  //     z-index: 10;
+  //     top: toEm(11);
+  //     right: toEm(7);
+  //     padding-inline: toEm(14);
+  //     padding-block: toEm(14);
+  //     border-radius: toRem(4);
+  //     border: toRem(2) solid var(--dark-color);
 
-//     &::before,
-//     &::after {
-//       content: '';
-//       position: absolute;
-//       right: toRem(4);
-//       width: toRem(20);
-//       height: toRem(2);
-//       background-color: var(--dark-color);
-//     }
+  //     &::before,
+  //     &::after {
+  //       content: '';
+  //       position: absolute;
+  //       right: toRem(4);
+  //       width: toRem(20);
+  //       height: toRem(2);
+  //       background-color: var(--dark-color);
+  //     }
 
-//     &::before {
-//       top: calc(50% - toRem(1));
-//       rotate: -45deg;
-//     }
+  //     &::before {
+  //       top: calc(50% - toRem(1));
+  //       rotate: -45deg;
+  //     }
 
-//     &::after {
-//       bottom: calc(50% - toRem(1));
-//       rotate: 45deg;
-//     }
+  //     &::after {
+  //       bottom: calc(50% - toRem(1));
+  //       rotate: 45deg;
+  //     }
 
-//     @include hover {
-//       scale: 1.1;
-//     }
-//    }
-//   }
+  //     @include hover {
+  //       scale: 1.1;
+  //     }
+  //    }
+  //   }
 
   /* Состояние загрузки */
   &.loading {
     pointer-events: none;
- }
+  }
 }
 
 .button-spinner {
@@ -555,7 +580,7 @@ defineEmits<Emits>()
 
 .button-content {
   display: flex;
- align-items: center;
+  align-items: center;
   gap: 4px;
 }
 

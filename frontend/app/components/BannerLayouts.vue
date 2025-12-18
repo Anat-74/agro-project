@@ -35,8 +35,6 @@
    opacity: 0;
    animation: fadeIn 0.3s ease-in-out 0.1s forwards;
 	}
-	&__lang-switcher {
-	}
 }
 @keyframes fadeIn {
   to {

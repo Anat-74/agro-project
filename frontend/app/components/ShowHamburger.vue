@@ -144,14 +144,14 @@ watch(currentLocale, () => {
     </h1>
     <div class="dialog-hamburger__items">
       <div class="dialog-hamburger__top visible-mobile">
-         <Logo
-         :global="global"
-         :currentLocale="currentLocale"
-         :config="config"
-         :width="40"
-         :height="40"
-         />
-         <AnimateTitle />
+        <Logo
+          :global="global"
+          :currentLocale="currentLocale"
+          :config="config"
+          :width="40"
+          :height="40"
+        />
+        <AnimateTitle />
       </div>
       <ul v-if="category?.length" class="dialog-hamburger__accordion accordion">
         <li v-for="cat in category" :key="cat.id" class="accordion__item">
@@ -256,6 +256,7 @@ watch(currentLocale, () => {
     <div class="dialog-hamburger__sidebar sidebar visible-mobile">
       <UButton
         @click="close()"
+        :is-open="isOpen"
         class="sidebar__close"
         variant="hamburger"
         aria-label="Закрыть"
@@ -264,10 +265,7 @@ watch(currentLocale, () => {
       <ClientOnly>
         <ColorMode class="sidebar__color-mode" />
       </ClientOnly>
-      <Socials
-      class="sidebar__socials"
-      :is-open="isOpen"
-      :socials="socials" />
+      <Socials class="sidebar__socials" :is-open="isOpen" :socials="socials" />
     </div>
     <span v-if="error" class="error">
       {{ error.message }}
@@ -355,13 +353,13 @@ watch(currentLocale, () => {
   }
 
   &__top {
-   display: grid;
-   grid-template-columns: auto 1fr;
-   align-items: center;
-   padding-inline: toRem(4);
-   padding-block: toRem(2);
-   border-radius: toRem(4);
-   background-color: var(--secondary-color);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    padding-inline: toRem(4);
+    padding-block: toRem(2);
+    border-radius: toRem(4);
+    background-color: var(--secondary-color);
   }
 
   &__accordion {
@@ -486,15 +484,15 @@ watch(currentLocale, () => {
 }
 
 .sidebar {
-    display: grid;
-    grid-template-rows: repeat(3, auto) 1fr;
-    justify-items: center;
-    row-gap: toRem(16);
-    padding-inline: toRem(2);
-    padding-block-start: toRem(2);
-    padding-block-end: toRem(9);
-    border-left: toRem(2) solid var(--dark-color);
-    background-color: var(--secondary-color);
+  display: grid;
+  grid-template-rows: repeat(3, auto) 1fr;
+  justify-items: center;
+  row-gap: toRem(16);
+  padding-inline: toRem(2);
+  padding-block-start: toRem(2);
+  padding-block-end: toRem(9);
+  border-left: toRem(2) solid var(--dark-color);
+  background-color: var(--secondary-color);
 
   &__close {
     align-self: start;

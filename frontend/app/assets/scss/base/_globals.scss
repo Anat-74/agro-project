@@ -1,6 +1,6 @@
-@use './functions' as *;
-@use './mixins' as m;
-@use './container' as c;
+@use "./functions" as *;
+@use "./mixins" as m;
+@use "./container" as c;
 
 // ===================================================================
 //! VARIABLES
@@ -15,59 +15,23 @@ $font-family-content: "Open Sans";
 // ===================================================================
 
 body {
-   font-weight: 400;
-   line-height: 1.2;
-   background-color: var(--bg);
-   color: var(--color);
-   transition: background-color var(--transition-duration);
-   // @include m.adaptiveValue("font-size", 12, 10);
+  font-weight: 400;
+  line-height: 1.2;
+  background-color: var(--bg);
+  color: var(--color);
+  transition: background-color var(--transition-duration);
+  // @include m.adaptiveValue("font-size", 12, 10);
 }
 
 // ===================================================================
 //! DIALOG-RELATED STYLES
 // ===================================================================
 
-// Стили для скрытия header и footer при открытом диалоге
-// body:has(dialog[open]) {
-//    overflow: hidden;
-
-//    .header {
-//       opacity: 0;
-//    }
-//    .footer {
-//       display: none;
-//    }
-// }
-
-// Стили для гамбургера при открытом меню
 body:has(.dialog-hamburger[open]) {
-   @media (max-width:c.$mobile){
-      overflow: hidden;
-   }
-
-   .btn_hamburger {
-      span {
-         width: 0;
-      }
-      &::before,
-      &::after {
-         background-color: var(--light-color);
-
-         @media (max-width:c.$mobile){
-          transition: rotate .6s .1s; 
-         }
-      }
-      &::before {
-         top: calc(50% - toRem(1));
-         rotate: -45deg;
-      }
-      &::after {
-         bottom: calc(50% - toRem(1));
-         rotate: 45deg;
-      }
+@media (max-width:c.$mobile){
+    overflow: hidden; 
    }
 }
-
 // Стили для размытия main при открытом меню
 // main:has(.dialog-menu[open]) {
 //    transition: all .1s linear forwards;
@@ -79,53 +43,53 @@ body:has(.dialog-hamburger[open]) {
 // ===================================================================
 
 h1 {
-     font-family: $font-family, "Roboto", sans-serif;
-     @include m.containerAdaptive("font-size", toRem(40), 4, toRem(35));
-  }
+  font-family: $font-family, "Roboto", sans-serif;
+  @include m.containerAdaptive("font-size", toRem(40), 4, toRem(35));
+}
 
- h2 {
-     font-family: $font-family-cursive, "Yellowtail", cursive;
-     @include m.containerAdaptive("font-size", toRem(34), 3, toRem(30));
-  }
+h2 {
+  font-family: $font-family-cursive, "Yellowtail", cursive;
+  @include m.containerAdaptive("font-size", toRem(34), 3, toRem(30));
+}
 
-  h3 {
-     font-family: $font-family, "Roboto", sans-serif;
-     @include m.containerAdaptive("font-size", toRem(24), 2.5, toRem(12));
-  }
+h3 {
+  font-family: $font-family, "Roboto", sans-serif;
+  @include m.containerAdaptive("font-size", toRem(24), 2.5, toRem(12));
+}
 
-  h4 {
-     @include m.containerAdaptive("font-size", toRem(30), 2.5, toRem(25));
-  }
+h4 {
+  @include m.containerAdaptive("font-size", toRem(30), 2.5, toRem(25));
+}
 
-  h5 {
-     @include m.containerAdaptive("font-size", toRem(26), 2.5, toRem(18));
-  }
+h5 {
+  @include m.containerAdaptive("font-size", toRem(26), 2.5, toRem(18));
+}
 
-  h6 {
-     @include m.containerAdaptive("font-size", toRem(22), 2.5, toRem(16));
-  }
+h6 {
+  @include m.containerAdaptive("font-size", toRem(22), 2.5, toRem(16));
+}
 
-  // Специальные стили для заголовков "Categories" и "Our Products" в ProductsSection
-  .products-section__categories {
-     font-family: $font-family-cursive, "Yellowtail", cursive;
-     @extend h2;
-  }
+// Специальные стили для заголовков "Categories" и "Our Products" в ProductsSection
+.products-section__categories {
+  font-family: $font-family-cursive, "Yellowtail", cursive;
+  @extend h2;
+}
 
-  .products-section__products {
-     font-family: $font-family, "Roboto", sans-serif;
-     @extend h3;
-  }
+.products-section__products {
+  font-family: $font-family, "Roboto", sans-serif;
+  @extend h3;
+}
 
 // ===================================================================
 //! PARAGRAPHS AND LISTS
 // ===================================================================
 
 p {
-   @include m.containerAdaptive("font-size", toRem(18), 2.5, toRem(16));
+  @include m.containerAdaptive("font-size", toRem(18), 2.5, toRem(16));
 }
 
 li {
-   @include m.containerAdaptive("font-size", toRem(16), 2.5, toRem(14));
+  @include m.containerAdaptive("font-size", toRem(16), 2.5, toRem(14));
 }
 
 // ===================================================================
@@ -133,9 +97,9 @@ li {
 // ===================================================================
 
 blockquote {
-   font-weight: 700;
-   color: var(--color);
-   @include m.containerAdaptive("font-size", toRem(20), 2.5, toRem(16));
+  font-weight: 700;
+  color: var(--color);
+  @include m.containerAdaptive("font-size", toRem(20), 2.5, toRem(16));
 }
 
 // ===================================================================
@@ -143,16 +107,16 @@ blockquote {
 // ===================================================================
 
 a {
-    color: inherit;
-    &[class] {
-       text-decoration: none;
-    }
+  color: inherit;
+  &[class] {
+    text-decoration: none;
+  }
 
-    &:focus-visible {
-       outline: toRem(2) dashed var(--warning-color);
-       outline-offset: toRem(4);
-       transition-duration: 0s !important;
-    }
+  &:focus-visible {
+    outline: toRem(2) dashed var(--warning-color);
+    outline-offset: toRem(4);
+    transition-duration: 0s !important;
+  }
 }
 
 // ===================================================================
@@ -163,10 +127,9 @@ button,
 label,
 select,
 input {
-   &:focus-visible {
-      outline: toRem(2) solid var(--warning-color);
-      outline-offset: toRem(4);
-      transition-duration: 0s !important;
-   }
+  &:focus-visible {
+    outline: toRem(2) solid var(--warning-color);
+    outline-offset: toRem(4);
+    transition-duration: 0s !important;
+  }
 }
-

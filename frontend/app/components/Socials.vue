@@ -2,26 +2,18 @@
 import type { SocialLink } from "../types/types";
 
 interface Props {
-   socials: SocialLink[]
-   isOpen: boolean
+  socials: SocialLink[];
+  isOpen?: boolean;
 }
 
-defineProps<Props>()
+defineProps<Props>();
 
 const config = useRuntimeConfig();
 </script>
 
 <template>
-  <div 
-   v-if="socials"
-   :class="[ 'socials', { 'socials_is-open': isOpen } ]"
-   >
-    <a 
-    v-for="link in socials" 
-    :key="link.id" 
-    :href="link.href" 
-    target="_blank"
-    >
+  <div v-if="socials" :class="['socials', { 'socials_is-open': isOpen }]">
+    <a v-for="link in socials" :key="link.id" :href="link.href" target="_blank">
       <NuxtImg
         v-if="link.icon"
         :src="`${config.public.strapi.url}${link.icon[0]?.url}`"
@@ -46,10 +38,10 @@ const config = useRuntimeConfig();
     }
   }
 
-   &_is-open {
-      align-self: end;
-      flex-direction: column;
-      row-gap: toRem(8);
-   }
+  &_is-open {
+    align-self: end;
+    flex-direction: column;
+    row-gap: toRem(8);
+  }
 }
 </style>
