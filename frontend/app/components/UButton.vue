@@ -205,7 +205,7 @@ defineEmits<Emits>();
       width: toRem(24);
       height: toRem(2);
       background-color: var(--secondary-color);
-      transition: rotate var(--transition-duration),
+      transition: rotate .4s,
       opacity var(--transition-duration);
     }
 
@@ -237,7 +237,7 @@ defineEmits<Emits>();
         background-color: var(--light-color);
 
         @media (max-width: $mobile) {
-          transition: rotate .6s .1s;
+          transition: rotate .5s .2s;
         }
       }
 

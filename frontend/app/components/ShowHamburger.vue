@@ -306,28 +306,36 @@ watch(currentLocale, () => {
 }
 
 .dialog-hamburger {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  z-index: 9999;
-  top: 0;
-  scale: 0;
-  width: 100dvw;
-  margin-inline-end: toRem(0);
-  background-color: transparent;
-  transition: scale 0.1s linear;
+   display: grid;
+   grid-template-columns: 1fr auto;
+   z-index: 9999;
+   top: 0;
+   width: 100dvw;
+   translate: -100%;
+   margin-inline-start: 0;
+   background-color: transparent;
+   transition: translate var(--transition-duration);
 
   @media (min-width: $mobile) {
+    scale: 0;
     top: 100%;
-    margin-inline-start: 0;
+    margin-inline-end: 0;
     left: toRem(15);
+    background-color: transparent;
     border-radius: toRem(4);
     border: toRem(2) solid var(--secondary-color);
+    transition: scale .1s linear;
     @include adaptiveValue("width", 320, 240);
   }
 
   &[open] {
-    scale: 1;
-    transition: scale 0.1s linear;
+      translate: 0;
+      transition: translate var(--transition-duration);
+
+      @media (min-width:$mobile){
+       scale: 1;
+       transition: scale .1s linear;
+      }
   }
 
   //   &:not([open]) {
@@ -488,7 +496,7 @@ watch(currentLocale, () => {
   display: grid;
   grid-template-rows: repeat(2, auto) 1fr;
   justify-items: center;
-  row-gap: toRem(16);
+  row-gap: toRem(18);
   padding-inline: toRem(4);
   padding-block: toRem(9);
   border-left: toRem(2) solid var(--success-color);
@@ -502,7 +510,7 @@ watch(currentLocale, () => {
    height: auto;
    width: 100%;
    padding-inline: 0;
-   padding-block: toRem(22);
+   padding-block: toRem(28);
    border-radius: toRem(2);
   }
 }
