@@ -33,23 +33,9 @@ defineProps<Props>();
         :currentLocale="currentLocale"
         :config="config"
       />
-
-      <div class="base-footer__socials" v-if="socials">
-        <a
-          v-for="link in socials"
-          :key="link.id"
-          :href="link.href"
-          target="_blank"
-        >
-          <NuxtImg
-            v-if="link.icon"
-            :src="`${config.public.strapi.url}${link.icon[0]?.url}`"
-            :alt="link.label"
-            width="26"
-            height="26"
-          />
-        </a>
-      </div>
+      <Socials 
+      class="base-footer__socials"
+      :socials="socials" />
       <div class="base-footer__company company">
         <h2 class="company__title">
           {{ baseFooterTranslations[currentLocale].titleCompany }}

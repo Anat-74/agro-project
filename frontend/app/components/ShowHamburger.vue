@@ -6,9 +6,9 @@ import type {
   FooterData,
   SocialLink,
   Phone,
-} from "../types/types"
-import { visuallyHiddenTranslations } from "~/locales/visuallyHidden"
-import { discountProductTranslations } from "~/locales/discountProduct"
+} from "../types/types";
+import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
+import { discountProductTranslations } from "~/locales/discountProduct";
 
 interface Props {
   footer: FooterData;
@@ -17,14 +17,14 @@ interface Props {
   global: any;
 }
 
-defineProps<Props>()
+defineProps<Props>();
 
-const dialogElement = useTemplateRef<HTMLDialogElement>("dialog-hamburger")
+const dialogElement = useTemplateRef<HTMLDialogElement>("dialog-hamburger");
 
 // Создаем отдельное состояние для изначальной видимости
 const { open, close, isOpen } = useDialog(dialogElement, {
   useShowMethod: true,
-})
+});
 
 // onMounted(() => {
 //   if (dialogElement.value) {
@@ -122,7 +122,7 @@ watch(currentLocale, () => {
       @click="isOpen ? close() : open()"
       variant="hamburger"
       aria-label="Открыть и закрыть"
-   />
+    />
     <span
       :class="[
         'hamburger-menu__categories',
@@ -143,10 +143,7 @@ watch(currentLocale, () => {
     </h1>
     <div class="dialog-hamburger__items">
       <ul v-if="category?.length" class="dialog-hamburger__accordion accordion">
-        <li 
-         v-for="cat in category" 
-         :key="cat.id" 
-         class="accordion__item">
+        <li v-for="cat in category" :key="cat.id" class="accordion__item">
           <details name="faq" class="accordion__details">
             <summary class="accordion__summary">
               <Icon name="mdi:chevron-left" />
@@ -245,69 +242,56 @@ watch(currentLocale, () => {
         </a>
       </div>
     </div>
-         <div class="dialog-hamburger__sidebar sidebar">
-         <UButton
-            @click="close()"
-            class="sidebar__close"
-            variant="hamburger"
-            aria-label="Закрыть"
-         />
-         <ClientOnly>
+    <div class="dialog-hamburger__sidebar sidebar">
+      <UButton
+        @click="close()"
+        class="sidebar__close"
+        variant="hamburger"
+        aria-label="Закрыть"
+      />
+      <ClientOnly>
         <ColorMode class="sidebar__color-mode visible-tablet" />
       </ClientOnly>
-         <LangSwitcher class="sidebar__lang visible-tablet" />
-         <div class="sidebar__socials" v-if="socials">
-        <a
-          v-for="link in socials"
-          :key="link.id"
-          :href="link.href"
-          target="_blank"
-        >
-          <NuxtImg
-            v-if="link.icon"
-            :src="`${config.public.strapi.url}${link.icon[0]?.url}`"
-            :alt="link.label"
-            width="26"
-            height="26"
-          />
-        </a>
-      </div>
-      </div>
-      <span v-if="error" class="error">
-    {{ error.message }}
-  </span>
+      <LangSwitcher class="sidebar__lang visible-tablet" />
+      <Socials
+      :is-open="isOpen"
+      :socials="socials" />
+    </div>
+    <span v-if="error" class="error">
+      {{ error.message }}
+    </span>
   </dialog>
 </template>
 
 <style lang="scss" scoped>
 .hamburger-menu {
-   height: 100%;
-   display: grid;
-   grid-template-columns: auto 1fr;
-   justify-items: center;
-   align-items: center;
-   border-left: toRem(2) solid var(--secondary-color);
-   border-right: toRem(2) solid var(--secondary-color);
-   background-color: var(--light-color);
-   @include adaptiveValue("width", 320, 240);
+  height: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  justify-items: center;
+  align-items: center;
+  border-left: toRem(2) solid var(--secondary-color);
+  border-right: toRem(2) solid var(--secondary-color);
+  background-color: var(--light-color);
+  @include adaptiveValue("width", 320, 240);
 
-      @media (max-width:$mobile){
-         width: toRem(150);
-         direction: rtl;
-         border-left: 0;
-         border-right: 0;
-         border-radius: toRem(4) toRem(25) 0 toRem(25);
-      }
+  @media (max-width: $mobile) {
+    width: toRem(150);
+    direction: rtl;
+    border-left: 0;
+    border-right: 0;
+    border-radius: toRem(4) toRem(25) 0 toRem(25);
+  }
 
   &__categories {
-      font-family: $font-family-cursive, "Yellowtail", cursive;
-      color: var(--success-color);
-      transition: color var(--transition-duration);
-      @include adaptiveValue("font-size", 22, 18);
-   
+    font-family: $font-family-cursive, "Yellowtail", cursive;
+    color: var(--success-color);
+    transition: color var(--transition-duration);
+    @include adaptiveValue("font-size", 22, 18);
+
     &_is-open {
       color: var(--danger-hover);
-      }
+    }
   }
 }
 
@@ -320,26 +304,26 @@ watch(currentLocale, () => {
   width: 100dvw;
   margin-inline-end: toRem(0);
   background-color: transparent;
-  transition: scale .1s linear;
+  transition: scale 0.1s linear;
 
-  @media (min-width:$mobile){
-      top: 100%;
-      margin-inline-start: 0;
-      left: toRem(15);
-      border-radius: toRem(4);
-      border: toRem(2) solid var(--secondary-color);
-      @include adaptiveValue("width", 320, 240);
+  @media (min-width: $mobile) {
+    top: 100%;
+    margin-inline-start: 0;
+    left: toRem(15);
+    border-radius: toRem(4);
+    border: toRem(2) solid var(--secondary-color);
+    @include adaptiveValue("width", 320, 240);
   }
 
   &[open] {
     scale: 1;
-    transition: scale .1s linear;
+    transition: scale 0.1s linear;
   }
 
-//   &:not([open]) {
-//     scale: 0;
-//     transition: scale .1s linear;
-//   }
+  //   &:not([open]) {
+  //     scale: 0;
+  //     transition: scale .1s linear;
+  //   }
 
   &__items {
     min-height: toRem(400);
@@ -351,7 +335,7 @@ watch(currentLocale, () => {
     padding-block-end: toEm(16);
     backdrop-filter: blur(16px);
 
-    @media (max-width:$mobile){
+    @media (max-width: $mobile) {
       min-height: 100dvh;
       padding-inline: toEm(18);
       padding-block: toEm(12);
@@ -387,7 +371,7 @@ watch(currentLocale, () => {
 
 .accordion {
   &__details {
-      font-size: toRem(20);
+    font-size: toRem(20);
 
     margin-block-end: toEm(2);
     svg {
@@ -482,10 +466,10 @@ watch(currentLocale, () => {
   }
 }
 
-  .sidebar {
-   display: none;
+.sidebar {
+  display: none;
 
-   @media (max-width:$mobile){
+  @media (max-width: $mobile) {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -493,33 +477,19 @@ watch(currentLocale, () => {
     padding-block: toRem(2);
     border-left: toRem(2) solid var(--dark-color);
     background-color: var(--light-color);
-   }
-
-   &__close {
-         width: 90%;
-         height: auto;
-         padding-block: toRem(14);
-         border-radius: toRem(4);
-      }
-
-//      &__lang {
-//    align-self: start;
-//   }
-
-     &__socials {
-    align-self: end;
-    display: flex;
-    column-gap: toEm(12);
-
-    img {
-      transition: scale var(--transition-duration);
-
-      @include hover {
-        scale: 1.1;
-      }
-    }
   }
+
+  &__close {
+    width: 90%;
+    height: auto;
+    padding-block: toRem(14);
+    border-radius: toRem(4);
   }
+
+  //      &__lang {
+  //    align-self: start;
+  //   }
+}
 // .hamburger--open {
 //   &::before,
 //   &::after {
