@@ -187,7 +187,7 @@ defineEmits<Emits>()
         width: toRem(24);
         height: toRem(2);
         background-color: var(--secondary-color);
-        transition: transform var(--transition-duration), opacity var(--transition-duration);
+        transition: rotate var(--transition-duration), opacity var(--transition-duration);
       }
 
       &::before {

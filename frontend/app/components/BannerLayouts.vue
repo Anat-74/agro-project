@@ -3,9 +3,9 @@
 <span class="banner__content">
    Store Location: Kolasa - 34, Minsk, Belarus</span>
       <ClientOnly>
-        <ColorMode class="banner__color-mode hidden-tablet" />
+        <ColorMode class="banner__color-mode hidden-mobile" />
       </ClientOnly>
-         <LangSwitcher  class="banner__lang-switcher hidden-tablet"/>
+         <LangSwitcher  class="banner__lang-switcher hidden-mobile"/>
    </div>
 </template>
 
@@ -18,10 +18,10 @@
    background-color: var(--primary-color);
    @include adaptiveValue("height", 40, 35);
 
-   @media (min-width:$tablet){
+   @media (min-width:$mobile){
    grid-template-columns: 1fr repeat(2,auto);
    column-gap: toRem(12);
-   padding-inline: toRem(12);
+   padding-inline: toRem(4);
    }
 
 

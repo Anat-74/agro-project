@@ -30,9 +30,9 @@ function iconName(theme: string) {
    display: inline-flex;
    column-gap: toRem(4);
 
-   @media (max-width:$tablet){
+   @media (max-width:$mobile){
       flex-direction: column;
-      row-gap: toRem(8);
+      row-gap: toRem(6);
    }
  }
  </style>

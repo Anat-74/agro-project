@@ -52,14 +52,18 @@ body:has(.dialog-hamburger[open]) {
       &::before,
       &::after {
          background-color: var(--light-color);
+
+         @media (max-width:c.$mobile){
+          transition: rotate .7s .1s; 
+         }
       }
       &::before {
          top: calc(50% - toRem(1));
-         transform: rotate(-45deg);
+         rotate: -45deg;
       }
       &::after {
          bottom: calc(50% - toRem(1));
-         transform: rotate(45deg);
+         rotate: 45deg;
       }
    }
 }

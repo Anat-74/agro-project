@@ -22,23 +22,20 @@ const { currentLocale, locales, switchLocale } = useLocale()
 .lang-switcher {
   height: auto;
   display: flex;
-  gap: toRem(12);
-  padding-inline: toEm(3);
+  gap: toRem(8);
+  padding-inline: toRem(3);
   padding-block: toRem(2);
-  border-radius: toEm(4);
+  border-radius: toRem(4);
   background-color: var(--secondary-color);
 
   @media (max-width:$mobile){
-   margin-inline-start: toRem(12);
-   gap: toRem(16);
-  }
-  @media (max-width:$mobileSmall){
-   margin-inline-start: toEm(0);
+   flex-direction: column;
+   background-color: var(--transparent-color);
   }
 }
 .active {
-   border: 1px solid var(--danger-color);
-   padding: toRem(1);
+   outline: 1px solid var(--active-color);
+   outline-offset: 1px;
    cursor: default;
 
    @include hover {

@@ -245,21 +245,18 @@ watch(currentLocale, () => {
         </a>
       </div>
     </div>
-         <div class="dialog-hamburger__sidebar">
+         <div class="dialog-hamburger__sidebar sidebar">
          <UButton
-            :class="[
-            'hamburger-menu__close',
-            { 'hamburger-menu__close_is-open': isOpen },
-            ]"
             @click="close()"
+            class="sidebar__close"
             variant="hamburger"
             aria-label="Закрыть"
          />
          <ClientOnly>
-        <ColorMode class="dialog-hamburger__color-mode visible-tablet" />
+        <ColorMode class="sidebar__color-mode visible-tablet" />
       </ClientOnly>
-         <LangSwitcher class="dialog-hamburger__lang visible-tablet" />
-         <div class="dialog-hamburger__socials" v-if="socials">
+         <LangSwitcher class="sidebar__lang visible-tablet" />
+         <div class="sidebar__socials" v-if="socials">
         <a
           v-for="link in socials"
           :key="link.id"
@@ -361,19 +358,6 @@ watch(currentLocale, () => {
     }
   }
 
-  &__sidebar {
-   @media (max-width:$tablet){
-    display: flex;
-    flex-direction: column;
-   //  padding-inline: toRem(4);
-   //  padding-block: toRem(8);
-   //  border-top: toRem(2) solid var(--whitesmoke-color);
-   //  border-bottom: toRem(2) solid var(--whitesmoke-color);
-   //  border-radius: toRem(4);
-    background-color: var(--light-color);
-   }
-  }
-
   &__accordion {
     flex: 1 1 auto;
   }
@@ -398,24 +382,6 @@ watch(currentLocale, () => {
         color: var(--danger-color);
       }
     }
-  }
-
-  &__socials {
-    align-self: end;
-    display: flex;
-    column-gap: toEm(12);
-
-    img {
-      transition: scale var(--transition-duration);
-
-      @include hover {
-        scale: 1.1;
-      }
-    }
-  }
-
-  &__lang {
-   align-self: start;
   }
 }
 
@@ -515,6 +481,45 @@ watch(currentLocale, () => {
     color: var(--danger-hover);
   }
 }
+
+  .sidebar {
+   display: none;
+
+   @media (max-width:$mobile){
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: toRem(12);
+    padding-block: toRem(2);
+    border-left: toRem(2) solid var(--dark-color);
+    background-color: var(--light-color);
+   }
+
+   &__close {
+         width: 90%;
+         height: auto;
+         padding-block: toRem(14);
+         border-radius: toRem(4);
+      }
+
+//      &__lang {
+//    align-self: start;
+//   }
+
+     &__socials {
+    align-self: end;
+    display: flex;
+    column-gap: toEm(12);
+
+    img {
+      transition: scale var(--transition-duration);
+
+      @include hover {
+        scale: 1.1;
+      }
+    }
+  }
+  }
 // .hamburger--open {
 //   &::before,
 //   &::after {
