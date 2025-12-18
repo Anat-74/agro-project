@@ -28,6 +28,11 @@ function iconName(theme: string) {
  <style lang="scss" scoped>
  .color-mode {
    display: inline-flex;
-   @include adaptiveValue("column-gap", 4, 8);
+   column-gap: toRem(4);
+
+   @media (max-width:$tablet){
+      flex-direction: column;
+      row-gap: toRem(8);
+   }
  }
  </style>

@@ -172,8 +172,9 @@ defineEmits<Emits>()
       background-color: var(--success-color);
       border-radius: toRem(0);
 
-      @media (max-width:$tablet){
-         border-radius: 0 toRem(4) toRem(4) 0;
+      @media (max-width:$mobile){
+         padding-inline: toRem(28);
+         border-radius: 0 toRem(25) toRem(4) 0;
       }
 
       span,
@@ -183,7 +184,7 @@ defineEmits<Emits>()
         left: 50%;
         translate: -50% 0;
         position: absolute;
-        width: toRem(25);
+        width: toRem(24);
         height: toRem(2);
         background-color: var(--secondary-color);
         transition: transform var(--transition-duration), opacity var(--transition-duration);
@@ -475,37 +476,43 @@ defineEmits<Emits>()
   }
 
 //   &_close {
+//    display: none;
+
+//    @media (max-width:$mobile){
+//     display: block;
 //     position: absolute;
 //     z-index: 10;
 //     top: toEm(11);
 //     right: toEm(7);
 //     padding-inline: toEm(14);
 //     padding-block: toEm(14);
-//     transition: transform .8s;
+//     border-radius: toRem(4);
+//     border: toRem(2) solid var(--dark-color);
 
 //     &::before,
 //     &::after {
 //       content: '';
 //       position: absolute;
-//       right: toRem(3);
+//       right: toRem(4);
 //       width: toRem(20);
 //       height: toRem(2);
-//       background-color: var(--border-color);
+//       background-color: var(--dark-color);
 //     }
 
 //     &::before {
 //       top: calc(50% - toRem(1));
-//       transform: rotate(-45deg);
+//       rotate: -45deg;
 //     }
 
 //     &::after {
 //       bottom: calc(50% - toRem(1));
-//       transform: rotate(45deg);
+//       rotate: 45deg;
 //     }
 
 //     @include hover {
-//       transform: scale(1.1);
+//       scale: 1.1;
 //     }
+//    }
 //   }
 
   /* Состояние загрузки */

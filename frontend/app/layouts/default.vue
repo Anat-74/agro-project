@@ -51,18 +51,18 @@ watch(currentLocale, () => {
     <BannerLayouts class="header__banner" />
     <div :class="['header__container-top', { backdrop: isContacts }]">
       <Logo
-        class="header__logo hidden-mobilesmall"
+        class="header__logo hidden-mobile"
         :global="global"
         :currentLocale="currentLocale"
         :config="config"
       />
-         <AnimateTitle class="hidden-tablet" />
+         <AnimateTitle class="hidden-mobile" />
       <ProductFilter class="header__search" />
       <Basket class="header__cart" />
     </div>
     <div class="header__bottom">
       <div class="header__container-bottom">
-         <div class="visible-tablet">content</div>
+        <AnimateTitle class="visible-mobile" />
         <ShowHamburger
           v-if="global"
           :phones="global.phones"
@@ -71,7 +71,7 @@ watch(currentLocale, () => {
           :global="global"
         />
         <BaseNavigation
-          class="header__navigation hidden-tablet"
+          class="header__navigation hidden-mobile"
           v-if="global"
           :phones="global.phones"
           :email="global.email"
@@ -135,21 +135,13 @@ watch(currentLocale, () => {
      @include adaptiveValue("height", 65, 55);
      @include adaptiveValue("padding-block", 12, 5);
 
-     @media (max-width:$tablet){
-          grid-template-columns: auto 1fr auto;
-     }
-
-     @media (max-width:$mobileSmall){
-         grid-template-columns: 1fr auto;
+     @media (max-width:$mobile){
+         grid-template-columns: auto 1fr;
      }
   }
 
   &__logo {
     justify-self: start;
-
-   @media (max-width:$mobile){
-       width: toRem(52); 
-   }
   }
 
   &__search {
@@ -158,11 +150,18 @@ watch(currentLocale, () => {
 
     @media (max-width:$mobile){
       width: 100%;
+      grid-column: 2/3;
+      grid-row: 1/2;
     }
   }
 
   &__cart {
    translate: 0 toRem(3);
+
+   @media (max-width:$mobile){
+      grid-column: 1/2; 
+      grid-row: 1/2;
+   }
   }
 
   &__bottom {
@@ -170,7 +169,7 @@ watch(currentLocale, () => {
   }
 
   &__container-bottom {
-    position: relative;
+   //  position: relative;
    //  display: grid;
    //  grid-template-columns: auto 1fr;
    display: flex;
@@ -178,12 +177,13 @@ watch(currentLocale, () => {
     align-items: center;
     @include adaptiveValue("height", 56, 40);
 
-    @media (min-width:$tablet){
+    @media (min-width:$mobile){
+    position: relative;
     display: grid;
     grid-template-columns: auto 1fr;
     }
 
-    @media (max-width:$tablet){
+    @media (max-width:$mobile){
       // grid-template-columns: auto 1fr;
       padding-block: toRem(4);
     }

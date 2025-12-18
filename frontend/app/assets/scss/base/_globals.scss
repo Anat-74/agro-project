@@ -41,6 +41,10 @@ body {
 
 // Стили для гамбургера при открытом меню
 body:has(.dialog-hamburger[open]) {
+   @media (max-width:c.$mobile){
+      overflow: hidden;
+   }
+
    .btn_hamburger {
       span {
          width: 0;
@@ -61,10 +65,10 @@ body:has(.dialog-hamburger[open]) {
 }
 
 // Стили для размытия main при открытом меню
-main:has(.dialog-menu[open]) {
-   transition: all .1s linear forwards;
-   filter: blur(16px);
-}
+// main:has(.dialog-menu[open]) {
+//    transition: all .1s linear forwards;
+//    filter: blur(16px);
+// }
 
 // ===================================================================
 //! HEADINGS

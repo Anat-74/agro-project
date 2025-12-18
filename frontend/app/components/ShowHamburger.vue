@@ -121,9 +121,8 @@ watch(currentLocale, () => {
     <UButton
       @click="isOpen ? close() : open()"
       variant="hamburger"
-      aria-label="open"
-    >
-    </UButton>
+      aria-label="Открыть и закрыть"
+   />
     <span
       :class="[
         'hamburger-menu__categories',
@@ -143,12 +142,6 @@ watch(currentLocale, () => {
       {{ visuallyHiddenTranslations[currentLocale].showModalMenuTitle }}
     </h1>
     <div class="dialog-hamburger__items">
-         <div class="dialog-hamburger__top">
-        <AnimateTitle class="visible-tablet" />
-         <ClientOnly>
-        <ColorMode class="dialog-hamburger__color-mode visible-tablet" />
-      </ClientOnly>
-      </div>
       <ul v-if="category?.length" class="dialog-hamburger__accordion accordion">
         <li 
          v-for="cat in category" 
@@ -251,8 +244,22 @@ watch(currentLocale, () => {
           >{{ formatPhone(item.phoneNumber) }}
         </a>
       </div>
-
-      <div class="dialog-hamburger__socials" v-if="socials">
+    </div>
+         <div class="dialog-hamburger__sidebar">
+         <UButton
+            :class="[
+            'hamburger-menu__close',
+            { 'hamburger-menu__close_is-open': isOpen },
+            ]"
+            @click="close()"
+            variant="hamburger"
+            aria-label="Закрыть"
+         />
+         <ClientOnly>
+        <ColorMode class="dialog-hamburger__color-mode visible-tablet" />
+      </ClientOnly>
+         <LangSwitcher class="dialog-hamburger__lang visible-tablet" />
+         <div class="dialog-hamburger__socials" v-if="socials">
         <a
           v-for="link in socials"
           :key="link.id"
@@ -268,8 +275,7 @@ watch(currentLocale, () => {
           />
         </a>
       </div>
-      <LangSwitcher class="dialog-hamburger__lang visible-tablet" />
-    </div>
+      </div>
       <span v-if="error" class="error">
     {{ error.message }}
   </span>
@@ -283,52 +289,49 @@ watch(currentLocale, () => {
    grid-template-columns: auto 1fr;
    justify-items: center;
    align-items: center;
-   width: toRem(320);
    border-left: toRem(2) solid var(--secondary-color);
    border-right: toRem(2) solid var(--secondary-color);
    background-color: var(--light-color);
+   @include adaptiveValue("width", 320, 240);
 
-      @media (max-width:$tablet){
+      @media (max-width:$mobile){
+         width: toRem(150);
          direction: rtl;
          border-left: 0;
          border-right: 0;
-         border-radius: toRem(4) 0 0 toRem(4);
-         @include adaptiveValue("width", 280, 160);
+         border-radius: toRem(4) toRem(25) 0 toRem(25);
       }
 
   &__categories {
       font-family: $font-family-cursive, "Yellowtail", cursive;
       color: var(--success-color);
       transition: color var(--transition-duration);
-      @include adaptiveValue("font-size", 22, 16);
+      @include adaptiveValue("font-size", 22, 18);
    
     &_is-open {
       color: var(--danger-hover);
       }
-
-    @media (max-width:$tablet){
-
-    }
   }
 }
 
 .dialog-hamburger {
-  display: block;
-  width: toRem(320);
+  display: grid;
+  grid-template-columns: 1fr auto;
   z-index: 9999;
-  left: toRem(15);
-  top: 100%;
+  top: 0;
   scale: 0;
-  border-radius: toRem(4);
-  margin-inline-start: 0;
-  border: toRem(2) solid var(--secondary-color);
-  border-top: none;
+  width: 100dvw;
+  margin-inline-end: toRem(0);
   background-color: transparent;
   transition: scale .1s linear;
 
-  @media (max-width:$tablet){
-   width: 100dvw;
-   left: 0;
+  @media (min-width:$mobile){
+      top: 100%;
+      margin-inline-start: 0;
+      left: toRem(15);
+      border-radius: toRem(4);
+      border: toRem(2) solid var(--secondary-color);
+      @include adaptiveValue("width", 320, 240);
   }
 
   &[open] {
@@ -342,7 +345,7 @@ watch(currentLocale, () => {
 //   }
 
   &__items {
-    min-height: toRem(600);
+    min-height: toRem(400);
     display: flex;
     flex-direction: column;
     row-gap: toEm(16);
@@ -350,17 +353,23 @@ watch(currentLocale, () => {
     padding-block-start: toEm(4);
     padding-block-end: toEm(16);
     backdrop-filter: blur(16px);
+
+    @media (max-width:$mobile){
+      min-height: 100dvh;
+      padding-inline: toEm(18);
+      padding-block: toEm(12);
+    }
   }
 
-  &__top {
+  &__sidebar {
    @media (max-width:$tablet){
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-block: toRem(8);
-    border-top: toRem(2) solid var(--whitesmoke-color);
-    border-bottom: toRem(2) solid var(--whitesmoke-color);
-    border-radius: toRem(4);
+    flex-direction: column;
+   //  padding-inline: toRem(4);
+   //  padding-block: toRem(8);
+   //  border-top: toRem(2) solid var(--whitesmoke-color);
+   //  border-bottom: toRem(2) solid var(--whitesmoke-color);
+   //  border-radius: toRem(4);
     background-color: var(--light-color);
    }
   }

@@ -42,7 +42,7 @@ defineProps<{
          <li class="nav__item">
             <NuxtLink 
             class="nav__link" 
-            :to="`/${currentLocale}/services`">
+            :to="`/${currentLocale}/blog`">
             {{ baseNavigationTranslations[currentLocale].blog }}
          </NuxtLink>
       </li>

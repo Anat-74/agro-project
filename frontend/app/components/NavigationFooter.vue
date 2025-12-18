@@ -23,6 +23,13 @@ const { currentLocale } = useLocale()
             {{ baseNavigationTranslations[currentLocale].services }}
          </NuxtLink>
       </li>
+            <li class="nav-footer__item">
+            <NuxtLink 
+            class="nav-footer__link" 
+            :to="`/${currentLocale}/blog`">
+            {{ baseNavigationTranslations[currentLocale].blog }}
+         </NuxtLink>
+      </li>
       <li class="nav-footer__item">
             <NuxtLink 
             class="nav-footer__link" 
@@ -39,7 +46,7 @@ const { currentLocale } = useLocale()
 &__list {
    display: flex;
    flex-direction: column;
-   row-gap: toEm(28);
+   row-gap: toEm(22);
    align-items: center;
    padding-inline: toEm(9);
    padding-block: toEm(18);
