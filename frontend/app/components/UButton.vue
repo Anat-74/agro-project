@@ -191,7 +191,7 @@ defineEmits<Emits>();
     border-radius: toRem(0);
 
     @media (max-width: $mobile) {
-      padding-inline: toRem(28);
+      padding-inline: toRem(27);
       border-radius: 0 toRem(25) toRem(4) 0;
     }
 

@@ -1,111 +1,149 @@
 @use "sass:math";
-@use './container' as c;
-@use './functions' as f;
+@use "./container" as c;
+@use "./functions" as f;
 
 @mixin hover($hasActiveEffectOnMobile: true) {
-   @media(any-hover: hover) {
-      &:hover {
-         @content;
+  @media (any-hover: hover) {
+    &:hover {
+      @content;
+    }
+  }
+  @if ($hasActiveEffectOnMobile) {
+    @media (any-hover: none) {
+      &:active {
+        @content;
       }
-   }
-   @if($hasActiveEffectOnMobile) {
-      @media(any-hover: none) {
-         &:active {
-            @content;
-         }
-      }
-   }
+    }
+  }
 }
 
 // Grids
 @mixin gridCards($type: fit, $min: 280px, $max: 1fr, $gap: 30px) {
-	display: grid;
-	gap: $gap;
-	grid-template-columns: repeat(auto-#{$type}, minmax($min, $max));
+  display: grid;
+  gap: $gap;
+  grid-template-columns: repeat(auto-#{$type}, minmax($min, $max));
 }
 
 // Адаптивное свойство(clamp)
-@mixin adaptiveValue($property, $startSize, $minSize, $keepSize: 0, $widthFrom: c.$containerWidth, $widthTo: c.$minWidth) {
-	@if ($startSize==0) {
-		$startSize: 0.000001;
-	}
-	@if ($minSize==0) {
-		$minSize: 0.00001;
-	}
+@mixin adaptiveValue(
+  $property,
+  $startSize,
+  $minSize,
+  $keepSize: 0,
+  $widthFrom: c.$containerWidth,
+  $widthTo: c.$minWidth
+) {
+  @if ($startSize==0) {
+    $startSize: 0.000001;
+  }
+  @if ($minSize==0) {
+    $minSize: 0.00001;
+  }
 
-	// Для calc();
-	$addSize: math.div($startSize - $minSize, 16);
+  // Для calc();
+  $addSize: math.div($startSize - $minSize, 16);
 
-	@if ($widthFrom == c.$containerWidth and c.$maxWidthContainer == 0) {
-		$widthFrom: c.$maxWidth;
-	}
+  @if ($widthFrom == c.$containerWidth and c.$maxWidthContainer == 0) {
+    $widthFrom: c.$maxWidth;
+  }
 
-	// Брейк-поинты в EM
-	$widthFromMedia: f.toEm($widthFrom);
-	$widthToMedia: f.toEm($widthTo);
+  // Брейк-поинты в EM
+  $widthFromMedia: f.toEm($widthFrom);
+  $widthToMedia: f.toEm($widthTo);
 
-	// Формула плавающего значения
-	// Источник: https://css-tricks.com/linearly-scale-font-size-with-css-clamp-based-on-the-viewport/
-	$slope: math.div(($startSize - $minSize), ($widthFrom - $widthTo));
-	$yIntersection: -$widthTo * $slope + $minSize;
-	@if ($yIntersection==0) {
-		$yIntersection: 0.000001;
-	}
-	$flyValue: #{f.toRem($yIntersection)}" + " #{$slope * 100}vw;
+  // Формула плавающего значения
+  // Источник: https://css-tricks.com/linearly-scale-font-size-with-css-clamp-based-on-the-viewport/
+  $slope: math.div(($startSize - $minSize), ($widthFrom - $widthTo));
+  $yIntersection: -$widthTo * $slope + $minSize;
+  @if ($yIntersection==0) {
+    $yIntersection: 0.000001;
+  }
+  $flyValue: #{f.toRem($yIntersection)}" + " #{$slope * 100}vw;
 
-	// Получение значения свойства
-	$propertyValue: #{"clamp(" f.toRem($minSize) "," $flyValue "," f.toRem($startSize) ")"};
-	// Если отрицательные значения
-	@if ($minSize > $startSize) {
-		$propertyValue: #{"clamp(" f.toRem($startSize) "," $flyValue "," f.toRem($minSize) ")"};
-	}
+  // Получение значения свойства
+  $propertyValue: #{"clamp(" f.toRem($minSize) "," $flyValue ","
+    f.toRem($startSize) ")"};
+  // Если отрицательные значения
+  @if ($minSize > $startSize) {
+    $propertyValue: #{"clamp("
+      f.toRem($startSize)
+      ","
+      $flyValue
+      ","
+      f.toRem($minSize)
+      ")"};
+  }
 
-	// Устанавливаем значение по умолчанию
-	@if $keepSize != 1 and $keepSize != 3 {
-		@media (min-width: $widthFromMedia) {
-			#{$property}: f.toRem($startSize);
-		}
-	}
-	// Адаптируем размер в промежутке между указанными ширинами вьюпорта
-	@media (min-width: $widthToMedia) and (max-width: $widthFromMedia) {
-		// Если поддерживается clamp();
-		@supports (#{$property}: $propertyValue) {
-			#{$property}: $propertyValue;
-		}
-		// Если не поддерживается clamp();
-		@supports not (#{$property}: $propertyValue) {
-			#{$property}: calc(#{f.toRem($minSize)} + #{$addSize} * (100vw - #{f.toRem($widthTo)}) / #{math.div($widthFrom, 16) - math.div($widthTo, 16)});
-		}
-	}
-	@if $keepSize != 1 and $keepSize != 2 {
-		@media (max-width: $widthToMedia) {
-			#{$property}: f.toRem($minSize);
-		}
-	}
+  // Устанавливаем значение по умолчанию
+  @if $keepSize != 1 and $keepSize != 3 {
+    @media (min-width: $widthFromMedia) {
+      #{$property}: f.toRem($startSize);
+    }
+  }
+  // Адаптируем размер в промежутке между указанными ширинами вьюпорта
+  @media (min-width: $widthToMedia) and (max-width: $widthFromMedia) {
+    // Если поддерживается clamp();
+    @supports (#{$property}: $propertyValue) {
+      #{$property}: $propertyValue;
+    }
+    // Если не поддерживается clamp();
+    @supports not (#{$property}: $propertyValue) {
+      #{$property}: calc(
+        #{f.toRem($minSize)} + #{$addSize} * (100vw - #{f.toRem($widthTo)}) / #{math.div(
+            $widthFrom,
+            16
+          ) - math.div($widthTo, 16)}
+      );
+    }
+  }
+  @if $keepSize != 1 and $keepSize != 2 {
+    @media (max-width: $widthToMedia) {
+      #{$property}: f.toRem($minSize);
+    }
+  }
 }
 
 // Автоматический адаптивный миксин с поддержкой Container Queries
-@mixin containerAdaptive($property, $min: null, $ratio: null, $max: null) {
-  $default-min: toRem(12);
-  $default-ratio: 3;
-  $default-max: toRem(22);
-  
-  $use-min: if($min != null, $min, $default-min);
-  $use-ratio: if($ratio != null, $ratio, $default-ratio);
-  $use-max: if($max != null, $max, $default-max);
-  
-  @supports (width: 1cqw) {
-    #{$property}: clamp(#{$use-min}, #{$use-ratio}cqw, #{$use-max});
-  }
-  @supports not (width: 1cqw) {
-    #{$property}: clamp(#{$use-min}, #{($use-ratio + 1)}vw, #{$use-max});
-  }
-}
+// @mixin containerAdap($property, $min: null, $ratio: null, $max: null) {
+//   $default-min: toRem(12);
+//   $default-ratio: 3;
+//   $default-max: toRem(22);
 
-@mixin containerParent($type: inline-size, $name: null) {
-  @if ($name) {
-    container: $name / $type;
-  } @else {
-    container-type: $type;
-  }
+//   $use-min: if($min != null, $min, $default-min);
+//   $use-ratio: if($ratio != null, $ratio, $default-ratio);
+//   $use-max: if($max != null, $max, $default-max);
+
+//   @supports (width: 1cqw) {
+//     #{$property}: clamp(#{$use-min}, #{$use-ratio}cqw, #{$use-max});
+//   }
+//   @supports not (width: 1cqw) {
+//     #{$property}: clamp(#{$use-min}, #{($use-ratio + 1)}vw, #{$use-max});
+//   }
+// }
+
+// @mixin containerParent($type: inline-size, $name: null) {
+//   @if ($name) {
+//     container: $name / $type;
+//   } @else {
+//     container-type: $type;
+//   }
+// }
+
+// Миксин для адаптивного свойства с плавным изменением в зависимости от ширины контейнера
+@mixin containerAdaptive(
+  $property,
+  // CSS свойство
+  $maxSize,
+  // Макс. значение в toRem
+  $minSize,
+  // Мин. значение в toRem
+  $unit: "cqw",
+  // Единица по умолчанию cqw!
+  $percent: 3 // Процент роста
+) {
+  #{$property}: clamp(
+    #{f.toRem($minSize)},
+    #{$percent}#{$unit} + #{f.toRem($minSize)},
+    #{f.toRem($maxSize)}
+  );
 }

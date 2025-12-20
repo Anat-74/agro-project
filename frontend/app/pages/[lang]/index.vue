@@ -108,7 +108,7 @@ const getCategoryLink = (category: Category) => {
    //  justify-items: center;
     row-gap: toEm(27);
     padding-block: toEm(16);
-    @include containerAdaptive("column-gap", toRem(64), 2.5, toRem(7));
+  @include containerAdaptive('column-gap', 64, 7);
   }
 
   &__item {
@@ -121,6 +121,7 @@ const getCategoryLink = (category: Category) => {
     background-color: var(--bg-product);
     box-shadow: 0px 1px 2px 0px var(--shadow);
     border-radius: toEm(4);
+    @include containerParent;
   }
 
   &__link {

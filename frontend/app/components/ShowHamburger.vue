@@ -364,7 +364,7 @@ watch(currentLocale, () => {
     display: grid;
     grid-template-columns: auto 1fr;
     align-items: center;
-    padding-inline: toRem(8);
+    padding-inline: toRem(12);
     padding-block: toRem(2);
     border-radius: toRem(25);
     background-color: var(--light-color);
