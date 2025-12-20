@@ -34,7 +34,7 @@
   $widthTo: c.$minWidth
 ) {
   @if ($startSize==0) {
-    $startSize: 0.000001;
+    $startSize: 0.0001;
   }
   @if ($minSize==0) {
     $minSize: 0.00001;
@@ -103,31 +103,13 @@
   }
 }
 
-// Автоматический адаптивный миксин с поддержкой Container Queries
-// @mixin containerAdap($property, $min: null, $ratio: null, $max: null) {
-//   $default-min: toRem(12);
-//   $default-ratio: 3;
-//   $default-max: toRem(22);
-
-//   $use-min: if($min != null, $min, $default-min);
-//   $use-ratio: if($ratio != null, $ratio, $default-ratio);
-//   $use-max: if($max != null, $max, $default-max);
-
-//   @supports (width: 1cqw) {
-//     #{$property}: clamp(#{$use-min}, #{$use-ratio}cqw, #{$use-max});
-//   }
-//   @supports not (width: 1cqw) {
-//     #{$property}: clamp(#{$use-min}, #{($use-ratio + 1)}vw, #{$use-max});
-//   }
-// }
-
-// @mixin containerParent($type: inline-size, $name: null) {
-//   @if ($name) {
-//     container: $name / $type;
-//   } @else {
-//     container-type: $type;
-//   }
-// }
+@mixin containerParent($type: inline-size, $name: null) {
+  @if ($name) {
+    container: $name / $type;
+  } @else {
+    container-type: $type;
+  }
+}
 
 // Миксин для адаптивного свойства с плавным изменением в зависимости от ширины контейнера
 @mixin containerAdaptive(
@@ -137,9 +119,10 @@
   // Макс. значение в toRem
   $minSize,
   // Мин. значение в toRem
-  $unit: "cqw",
+  $percent: 2.5, 
+  // Процент роста
+  $unit: "cqw"
   // Единица по умолчанию cqw!
-  $percent: 3 // Процент роста
 ) {
   #{$property}: clamp(
     #{f.toRem($minSize)},
@@ -147,3 +130,4 @@
     #{f.toRem($maxSize)}
   );
 }
+
