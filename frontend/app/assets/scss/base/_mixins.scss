@@ -56,7 +56,7 @@
   $slope: math.div(($startSize - $minSize), ($widthFrom - $widthTo));
   $yIntersection: -$widthTo * $slope + $minSize;
   @if ($yIntersection==0) {
-    $yIntersection: 0.000001;
+    $yIntersection: 0.0001;
   }
   $flyValue: #{f.toRem($yIntersection)}" + " #{$slope * 100}vw;
 
@@ -119,15 +119,32 @@
   // Макс. значение в toRem
   $minSize,
   // Мин. значение в toRem
-  $percent: 2.5, 
+  $percent: 2.5,
   // Процент роста
-  $unit: "cqw"
-  // Единица по умолчанию cqw!
+  $unit: "cqw" // Единица по умолчанию cqw!
 ) {
-  #{$property}: clamp(
-    #{f.toRem($minSize)},
-    #{$percent}#{$unit} + #{f.toRem($minSize)},
-    #{f.toRem($maxSize)}
-  );
-}
+  // Fallback для браузеров без поддержки Container Queries
+  @if ($unit == "cqw" or $unit == "cqh" or $unit == "cqi" or $unit == "cqb") {
+    $fallback-unit: if($unit == "cqw" or $unit == "cqi", "vw", "vh");
+    #{$property}: clamp(
+      #{f.toRem($minSize)},
+      #{$percent + 1}#{$fallback-unit} + #{f.toRem($minSize)},
+      #{f.toRem($maxSize)}
+    );
+  } @else {
+    #{$property}: clamp(
+      #{f.toRem($minSize)},
+      #{$percent}#{$unit} + #{f.toRem($minSize)},
+      #{f.toRem($maxSize)}
+    );
+  }
 
+  // Современная реализация с Container Queries
+  @supports (width: 1cqw) {
+    #{$property}: clamp(
+      #{f.toRem($minSize)},
+      #{$percent}#{$unit} + #{f.toRem($minSize)},
+      #{f.toRem($maxSize)}
+    );
+  }
+}

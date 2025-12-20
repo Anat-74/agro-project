@@ -117,7 +117,7 @@ const getCategoryLink = (category: Category) => {
   }
 
   &__item {
-    width: 100%;
+    width: 185px;
     display: grid;
     justify-items: center;
     padding-inline: toEm(16);
@@ -126,6 +126,7 @@ const getCategoryLink = (category: Category) => {
     background-color: var(--bg-product);
     box-shadow: 0px 1px 2px 0px var(--shadow);
     border-radius: toEm(4);
+    @include adaptiveValue("width", 392, 182);
   }
 
   &__link {
