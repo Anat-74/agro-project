@@ -54,7 +54,7 @@ h2 {
 
 h3 {
   font-family: $font-family, "Roboto", sans-serif;
-  @include m.containerAdaptive("font-size", 28, 18);
+  @include m.containerAdaptive("font-size", 22, 16);
 }
 
 h4 {
@@ -85,10 +85,6 @@ h6 {
 // ===================================================================
 
 p {
-  @include m.containerAdaptive("font-size", 18, 14, 2);
-}
-
-li {
   @include m.containerAdaptive("font-size", 16, 14, 1.5);
 }
 

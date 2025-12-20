@@ -91,9 +91,6 @@ const getCategoryLink = (category: Category) => {
          </NuxtLink>
       </li>
       </ul>
-      <div class="category__test">
-         <h3>Заголовок</h3>
-      </div>
    </section>
 
    <div v-if="error" class="error">
@@ -103,21 +100,15 @@ const getCategoryLink = (category: Category) => {
 
 <style lang="scss" scoped>
 .category {
-   display: grid;
-   grid-template-columns: 2.5fr 1fr;
-
   &__list {
-   width: 100%;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(toRem(262), 1fr));
-   //  justify-items: center;
+    justify-items: center;
     row-gap: toEm(27);
     padding-block: toEm(16);
-  @include adaptiveValue('column-gap', 64, 7);
+   @include gridCards();
+   @include adaptiveValue('column-gap', 40, 7);
   }
 
   &__item {
-    width: 185px;
     display: grid;
     justify-items: center;
     padding-inline: toEm(16);
@@ -126,7 +117,7 @@ const getCategoryLink = (category: Category) => {
     background-color: var(--bg-product);
     box-shadow: 0px 1px 2px 0px var(--shadow);
     border-radius: toEm(4);
-    @include adaptiveValue("width", 392, 182);
+    @include adaptiveValue("width", 260, 240);
   }
 
   &__link {
@@ -160,18 +151,6 @@ const getCategoryLink = (category: Category) => {
     align-self: end;
     text-align: center;
     transition: color var(--transition-duration);
-  }
-
-  &__test {
-   border-left: 1px solid #000;
-   border-right: 1px solid #000;
-   padding-inline: toRem(2);
-   // @include adaptiveValue("width", 300, 150);
-       @include containerParent;
-
-       h3 {
-         text-align: center;
-       }
   }
 }
 </style>

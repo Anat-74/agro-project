@@ -17,14 +17,61 @@
   }
 }
 
-// Grids
-@mixin gridCards($type: fit, $min: 280px, $max: 1fr, $gap: 30px) {
+//* Grids
+@mixin gridCards($type: fit, $min: f.toRem(260), $max: 1fr, $gap: f.toRem(12)) {
   display: grid;
   gap: $gap;
   grid-template-columns: repeat(auto-#{$type}, minmax($min, $max));
 }
 
-// Адаптивное свойство(clamp)
+@mixin containerParent($type: inline-size, $name: null) {
+  @if ($name) {
+    container: $name / $type;
+  } @else {
+    container-type: $type;
+  }
+}
+
+//* Миксин для адаптивного свойства с плавным изменением в зависимости от ширины контейнера
+@mixin containerAdaptive(
+  $property,
+  // CSS свойство
+  $maxSize,
+  // Макс. значение в toRem
+  $minSize,
+  // Мин. значение в toRem
+  $percent: 2.5,
+  // Процент роста
+  $unit: "cqw" 
+  // Единица по умолчанию cqw!
+) {
+  // Fallback для браузеров без поддержки Container Queries
+  @if ($unit == "cqw" or $unit == "cqh" or $unit == "cqi" or $unit == "cqb") {
+    $fallback-unit: if($unit == "cqw" or $unit == "cqi", "vw", "vh");
+    #{$property}: clamp(
+      #{f.toRem($minSize)},
+      #{$percent + 1}#{$fallback-unit} + #{f.toRem($minSize)},
+      #{f.toRem($maxSize)}
+    );
+  } @else {
+    #{$property}: clamp(
+      #{f.toRem($minSize)},
+      #{$percent}#{$unit} + #{f.toRem($minSize)},
+      #{f.toRem($maxSize)}
+    );
+  }
+
+  // Современная реализация с Container Queries
+  @supports (width: 1cqw) {
+    #{$property}: clamp(
+      #{f.toRem($minSize)},
+      #{$percent}#{$unit} + #{f.toRem($minSize)},
+      #{f.toRem($maxSize)}
+    );
+  }
+}
+
+//* Адаптивное свойство(clamp)
 @mixin adaptiveValue(
   $property,
   $startSize,
@@ -100,51 +147,5 @@
     @media (max-width: $widthToMedia) {
       #{$property}: f.toRem($minSize);
     }
-  }
-}
-
-@mixin containerParent($type: inline-size, $name: null) {
-  @if ($name) {
-    container: $name / $type;
-  } @else {
-    container-type: $type;
-  }
-}
-
-// Миксин для адаптивного свойства с плавным изменением в зависимости от ширины контейнера
-@mixin containerAdaptive(
-  $property,
-  // CSS свойство
-  $maxSize,
-  // Макс. значение в toRem
-  $minSize,
-  // Мин. значение в toRem
-  $percent: 2.5,
-  // Процент роста
-  $unit: "cqw" // Единица по умолчанию cqw!
-) {
-  // Fallback для браузеров без поддержки Container Queries
-  @if ($unit == "cqw" or $unit == "cqh" or $unit == "cqi" or $unit == "cqb") {
-    $fallback-unit: if($unit == "cqw" or $unit == "cqi", "vw", "vh");
-    #{$property}: clamp(
-      #{f.toRem($minSize)},
-      #{$percent + 1}#{$fallback-unit} + #{f.toRem($minSize)},
-      #{f.toRem($maxSize)}
-    );
-  } @else {
-    #{$property}: clamp(
-      #{f.toRem($minSize)},
-      #{$percent}#{$unit} + #{f.toRem($minSize)},
-      #{f.toRem($maxSize)}
-    );
-  }
-
-  // Современная реализация с Container Queries
-  @supports (width: 1cqw) {
-    #{$property}: clamp(
-      #{f.toRem($minSize)},
-      #{$percent}#{$unit} + #{f.toRem($minSize)},
-      #{f.toRem($maxSize)}
-    );
   }
 }
