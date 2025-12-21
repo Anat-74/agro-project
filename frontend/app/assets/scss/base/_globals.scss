@@ -44,29 +44,29 @@ body:has(.dialog-hamburger[open]) {
 
 h1 {
   font-family: $font-family, "Roboto", sans-serif;
-  @include m.containerAdaptive("font-size", 28, 24);
+  @include m.adaptiveValue("font-size", 28, 24);
 }
 
 h2 {
-  font-family: $font-family-cursive, "Yellowtail", cursive;
-  @include m.containerAdaptive("font-size", 24, 20);
+//   font-family: $font-family-cursive, "Yellowtail", cursive;
+  @include m.adaptiveValue("font-size", 26, 20);
 }
 
 h3 {
   font-family: $font-family, "Roboto", sans-serif;
-  @include m.containerAdaptive("font-size", 22, 16);
+  @include m.adaptiveValue("font-size", 22, 18);
 }
 
 h4 {
-  @include m.containerAdaptive("font-size", 20, 16);
+  @include m.adaptiveValue("font-size", 20, 16);
 }
 
 h5 {
-  @include m.containerAdaptive("font-size", 18, 16);
+  @include m.adaptiveValue("font-size", 18, 16);
 }
 
 h6 {
-  @include m.containerAdaptive("font-size", 16, 14);
+  @include m.adaptiveValue("font-size", 16, 14);
 }
 
 // Специальные стили для заголовков "Categories" и "Our Products" в ProductsSection

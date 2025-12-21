@@ -210,13 +210,13 @@ defineEmits<Emits>();
     }
 
     &::before {
-      top: toRem(0);
-      @include adaptiveValue("top", 18, 12);
+      // top: toEm(20);
+      @include adaptiveValue("top", 21, 10);
     }
 
     &::after {
-      bottom: toRem(0);
-      @include adaptiveValue("bottom", 18, 12);
+      // bottom: toEm(20);
+      @include adaptiveValue("bottom", 21, 10);
     }
 
     span {
@@ -252,34 +252,6 @@ defineEmits<Emits>();
       }
     }
   }
-
-  //   &_dialog-menu {
-  //     position: fixed;
-  //     right: toRem(18);
-  //     top: 50%;
-  //     translate: 0 -50%;
-  //     padding: toEm(4);
-  //     border-radius: 50%;
-  //     outline: toEm(3) solid var(--warning-color);
-  //     outline-offset: toRem(6);
-  //     background-color: var(--warning-hover);
-  //     transition: scale var(--transition-duration);
-
-  //     @include hover {
-  //       scale: 1.1;
-  //     }
-
-  //     svg {
-  //       font-size: toEm(25, 24);
-  //       color: var(--light-color);
-  //     }
-
-  //     @media (max-width: $tablet) {
-  //       right: toRem(15);
-  //       outline: toEm(2) solid var(--warning-color);
-  //       outline-offset: toRem(2);
-  //     }
-  //   }
 
   &_lang-switcher {
     border-radius: 50%;

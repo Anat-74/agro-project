@@ -138,9 +138,10 @@ watch(currentLocale, () => {
     grid-template-columns: auto auto 1fr auto;
     align-items: center;
     column-gap: toRem(22);
+    padding-block: toEm(16);
     transition: opacity var(--transition-duration);
      @include adaptiveValue("height", 65, 55);
-     @include adaptiveValue("padding-block", 12, 5);
+   //   @include adaptiveValue("padding-block", 12, 5);
 
      @media (max-width:$mobile){
          grid-template-columns: auto 1fr;
@@ -182,7 +183,7 @@ watch(currentLocale, () => {
    display: flex;
    justify-content: space-between;
     align-items: center;
-    @include adaptiveValue("height", 56, 40);
+    @include adaptiveValue("height", 62, 44);
 
     @media (min-width:$mobile){
     position: relative;
@@ -192,7 +193,7 @@ watch(currentLocale, () => {
 
     @media (max-width:$mobile){
       // grid-template-columns: auto 1fr;
-      padding-block: toRem(4);
+      padding-block: toRem(6);
     }
   }
 

@@ -18,7 +18,7 @@
 }
 
 //* Grids
-@mixin gridCards($type: fit, $min: f.toRem(260), $max: 1fr, $gap: f.toRem(12)) {
+@mixin gridCards($type: fit, $min: f.toRem(260), $max: 1fr, $gap: f.toEm(18)) {
   display: grid;
   gap: $gap;
   grid-template-columns: repeat(auto-#{$type}, minmax($min, $max));
@@ -40,7 +40,7 @@
   // Макс. значение в toRem
   $minSize,
   // Мин. значение в toRem
-  $percent: 2.5,
+  $percent: 3,
   // Процент роста
   $unit: "cqw" 
   // Единица по умолчанию cqw!

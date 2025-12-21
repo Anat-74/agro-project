@@ -104,7 +104,8 @@ defineProps<{
 <style lang="scss" scoped>
    .nav {
       &__list {
-         padding-inline-end: toRem(16);
+         font-size: toEm(18);
+         padding-inline-end: toEm(16);
          display: flex;
          align-items: center;
          column-gap: toRem(36);

@@ -267,10 +267,10 @@ watch(currentLocale, () => {
       />
       <Socials class="sidebar__socials" :is-open="isOpen" :socials="socials" />
     </div>
-    <span v-if="error" class="error">
+  </dialog>
+      <span v-if="error" class="error">
       {{ error.message }}
     </span>
-  </dialog>
 </template>
 
 <style lang="scss" scoped>
@@ -280,24 +280,26 @@ watch(currentLocale, () => {
   grid-template-columns: auto 1fr;
   justify-items: center;
   align-items: center;
-  border-left: toRem(2) solid var(--secondary-color);
-  border-right: toRem(2) solid var(--secondary-color);
+  border-left: toEm(3) solid var(--secondary-color);
+  border-right: toEm(3) solid var(--secondary-color);
   background-color: var(--light-color);
-  @include adaptiveValue("width", 320, 240);
+  @include adaptiveValue("width", 320, 235);
 
   @media (max-width: $mobile) {
+    height: 90%;
     width: toRem(150);
     direction: rtl;
     border-left: 0;
     border-right: 0;
-    border-radius: toRem(4) toRem(25) 0 toRem(25);
+    border-radius: toEm(4) toEm(25) 0 toEm(25);
   }
 
   &__categories {
     font-family: $font-family-cursive, "Yellowtail", cursive;
+    font-size: toEm(22);
     color: var(--success-color);
     transition: color var(--transition-duration);
-    @include adaptiveValue("font-size", 22, 18);
+   //  @include adaptiveValue("font-size", 22, 18);
 
     &_is-open {
       color: var(--danger-hover);
@@ -322,10 +324,10 @@ watch(currentLocale, () => {
     margin-inline-end: 0;
     left: toRem(15);
     background-color: transparent;
-    border-radius: toRem(4);
-    border: toRem(2) solid var(--secondary-color);
+    border-radius: toEm(4);
+    border: toEm(3) solid var(--secondary-color);
     transition: scale .1s linear;
-    @include adaptiveValue("width", 320, 240);
+    @include adaptiveValue("width", 320, 235);
   }
 
   &[open] {
@@ -364,9 +366,9 @@ watch(currentLocale, () => {
     display: grid;
     grid-template-columns: auto 1fr;
     align-items: center;
-    padding-inline: toRem(12);
-    padding-block: toRem(2);
-    border-radius: toRem(25);
+    padding-inline: toEm(12);
+    padding-block: toEm(2);
+    border-radius: toEm(25);
     background-color: var(--light-color);
   }
 
@@ -378,7 +380,7 @@ watch(currentLocale, () => {
     align-self: center;
     display: flex;
     align-items: center;
-    column-gap: toRem(4);
+    column-gap: toEm(4);
     color: var(--warning-color);
     font-weight: 600;
     transition: all var(--transition-duration);
@@ -496,10 +498,10 @@ watch(currentLocale, () => {
   display: grid;
   grid-template-rows: repeat(2, auto) 1fr;
   justify-items: center;
-  row-gap: toRem(18);
-  padding-inline: toRem(4);
-  padding-block: toRem(9);
-  border-left: toRem(2) solid var(--success-color);
+  row-gap: toEm(18);
+  padding-inline: toEm(8);
+  padding-block: toEm(12);
+  border-left: toEm(2) solid var(--success-color);
   background-color: var(--secondary-color);
 
   &__close {
@@ -510,8 +512,8 @@ watch(currentLocale, () => {
    height: auto;
    width: 100%;
    padding-inline: 0;
-   padding-block: toRem(28);
-   border-radius: toRem(2);
+   padding-block: toEm(28);
+   border-radius: toEm(2);
   }
 }
 </style>

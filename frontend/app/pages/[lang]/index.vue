@@ -65,6 +65,7 @@ const getCategoryLink = (category: Category) => {
       <h1 
       id="category-page"
       class="visually-hidden">{{ visuallyHiddenTranslations[currentLocale].sectionLangTitle }}</h1>
+      <h2 class="category__title">Топ категории</h2>
       <ul class="category__list"
       v-if="categories"
       >
@@ -72,7 +73,7 @@ const getCategoryLink = (category: Category) => {
          v-for="(category, index) in categories"
          :key="category.id"
          >
-         <h2 class="visually-hidden">Категория из списка категорий</h2>
+         <article class="category__article">
          <NuxtLink
          class="category__link"
          :to="getCategoryLink(category)"
@@ -87,48 +88,52 @@ const getCategoryLink = (category: Category) => {
          format="webp"
          width="184"
         />
-        <h3 class="category__title">{{ category.name }}</h3>
+        <h3 class="category__card-title">{{ category.name }}</h3>
          </NuxtLink>
+         </article>
       </li>
       </ul>
    </section>
 
-   <div v-if="error" class="error">
+   <span v-if="error" class="error">
       {{ error.message }}
-    </div>
+    </span>
 </template>
 
 <style lang="scss" scoped>
 .category {
+   &__title {
+      text-align: center;
+   }
+
   &__list {
     justify-items: center;
-    row-gap: toEm(27);
     padding-block: toEm(16);
-   @include gridCards();
-   @include adaptiveValue('column-gap', 40, 7);
+   @include gridCards;
+   @include adaptiveValue('column-gap', 40, 12);
   }
 
   &__item {
     display: grid;
     justify-items: center;
-    padding-inline: toEm(16);
+  }
+
+  &__article {
+    padding-inline: toEm(28);
     padding-block-start: toEm(7);
     padding-block-end: toEm(16);
     background-color: var(--bg-product);
     box-shadow: 0px 1px 2px 0px var(--shadow);
     border-radius: toEm(4);
-    @include adaptiveValue("width", 260, 240);
   }
 
   &__link {
-    width: 100%;
     min-height: 100%;
     display: grid;
     align-items: center;
     justify-items: center;
     row-gap: toEm(18);
     margin-block-end: toEm(12);
-    @include containerParent;
 
     @include hover {
       .category__image {
@@ -147,7 +152,7 @@ const getCategoryLink = (category: Category) => {
     transition: border-radius var(--transition-duration);
   }
 
-  &__title {
+  &__card-title {
     align-self: end;
     text-align: center;
     transition: color var(--transition-duration);
