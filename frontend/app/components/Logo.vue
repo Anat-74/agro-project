@@ -8,43 +8,41 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  width: 60,
-  height: 60,
+  width: 45,
+  height: 45,
 });
 </script>
 
 <template>
   <NuxtLink
-    class="logo-link"
+    class="logo"
     :to="`/${props.currentLocale}`"
     aria-label="Go home"
   >
     <NuxtImg
       v-if="props.global?.footer?.logo?.length"
       :src="`${props.config.public.strapi.url}${props.global?.footer?.logo[0]?.url}`"
+      class="logo-image"
       alt="logo"
       :width="props.width"
       :height="props.height"
-      format="webp"
-      aria-label="Go home"
+      aria-label="На главную страницу"
     />
   </NuxtLink>
 </template>
 
 <style lang="scss" scoped>
-.logo-link {
+.logo {
   border-radius: 50%;
-  outline: 1px solid transparent;
-  outline-offset: toRem(4);
-  background-color: var(--light-color);
-  transition: outline var(--transition-duration);
-
-  @media (max-width:$mobile){
-   background-color: var(--transparent-color);
-  }
+  background-color: var(--warning-color);
+  transition: background-color var(--transition-duration);
 
   @include hover {
-    outline-color: var(--warning-color);
+   background-color: var(--warning-hover);
   }
+
+   &-image {
+      @include adaptiveValue("width", 45, 32);
+   }
 }
 </style>

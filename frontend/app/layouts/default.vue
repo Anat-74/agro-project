@@ -141,7 +141,6 @@ watch(currentLocale, () => {
     padding-block: toEm(16);
     transition: opacity var(--transition-duration);
      @include adaptiveValue("height", 65, 55);
-   //   @include adaptiveValue("padding-block", 12, 5);
 
      @media (max-width:$mobile){
          grid-template-columns: auto 1fr;
