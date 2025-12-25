@@ -295,7 +295,6 @@ watch(currentLocale, () => {
   }
 
   &__categories {
-    font-family: $font-family-cursive, "Yellowtail", cursive;
     font-size: toEm(22);
     color: var(--success-color);
     transition: color var(--transition-duration);
@@ -312,7 +311,7 @@ watch(currentLocale, () => {
    grid-template-columns: 1fr auto;
    z-index: 9999;
    top: 0;
-   width: 100dvw;
+   width: 100vw;
    translate: -100%;
    margin-inline-start: 0;
    background-color: transparent;
@@ -320,6 +319,7 @@ watch(currentLocale, () => {
 
   @media (min-width: $mobile) {
     scale: 0;
+    translate: 0;
     top: 100%;
     margin-inline-end: 0;
     left: toRem(15);
