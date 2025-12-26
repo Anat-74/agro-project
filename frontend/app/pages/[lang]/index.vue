@@ -80,13 +80,15 @@ const getCategoryLink = (category: Category) => {
          >
          <NuxtImg
          class="category__image"
+         v-if="category.image?.length"
          :src="`${config.public.strapi.url}${category.image[0]?.url}`"
          :alt="category.name"
          :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
          :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
          decoding="async"
          format="webp"
-         width="184"
+         width="94"
+         height="94"
         />
         <h3 class="category__card-title">{{ category.name }}</h3>
          </NuxtLink>
@@ -103,7 +105,6 @@ const getCategoryLink = (category: Category) => {
 <style lang="scss" scoped>
 .category {
    &__title {
-      text-align: center;
    }
 
   &__list {
@@ -122,7 +123,6 @@ const getCategoryLink = (category: Category) => {
     padding-inline: toEm(28);
     padding-block-start: toEm(7);
     padding-block-end: toEm(16);
-    background-color: var(--bg-product);
     box-shadow: 0px 1px 2px 0px var(--shadow);
     border-radius: toEm(4);
   }
@@ -142,14 +142,16 @@ const getCategoryLink = (category: Category) => {
          border-radius: toRem(32);
       }
 
-      .category__title {
+      .category__card-title {
          color: var(--danger-hover);
       }
     }
   }
 
   &__image {
-    transition: border-radius var(--transition-duration);
+   max-height: toRem(94);
+   object-fit: cover;
+   transition: border-radius var(--transition-duration);
   }
 
   &__card-title {

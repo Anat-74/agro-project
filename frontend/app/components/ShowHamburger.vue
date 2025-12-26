@@ -295,10 +295,9 @@ watch(currentLocale, () => {
   }
 
   &__categories {
-    font-size: toEm(22);
+    font-size: toEm(24);
     color: var(--success-color);
     transition: color var(--transition-duration);
-   //  @include adaptiveValue("font-size", 22, 18);
 
     &_is-open {
       color: var(--danger-hover);
@@ -401,9 +400,8 @@ watch(currentLocale, () => {
 
 .accordion {
   &__details {
-    font-size: toRem(20);
-
     margin-block-end: toEm(2);
+
     svg {
       font-size: toEm(22);
     }
@@ -432,7 +430,7 @@ watch(currentLocale, () => {
     cursor: pointer;
     padding-block: toRem(6);
     font-weight: 600;
-    font-size: toRem(20);
+    font-size: toEm(20);
     color: var(--primary-color);
     transition: color var(--transition-duration);
 
