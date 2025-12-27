@@ -158,7 +158,7 @@ watch(currentLocale, () => {
           <details name="faq" class="accordion__details">
             <summary class="accordion__summary">
               <Icon name="mdi:chevron-left" />
-              {{ cat.name }}
+              <span>{{ cat.name }}</span>
             </summary>
           </details>
 
@@ -400,10 +400,10 @@ watch(currentLocale, () => {
 
 .accordion {
   &__details {
-    margin-block-end: toEm(2);
+   padding-block: toRem(2);
 
     svg {
-      font-size: toEm(22);
+      font-size: toRem(22);
     }
   }
 
@@ -428,11 +428,22 @@ watch(currentLocale, () => {
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    padding-block: toRem(6);
+    padding-block: toRem(4);
     font-weight: 600;
-    font-size: toEm(20);
+    font-size: toEm(22);
     color: var(--primary-color);
     transition: color var(--transition-duration);
+
+      // outline: toRem(2) var(--success-color) outset;
+      // border-radius: toRem(4);
+      // background-color: var(--light-color);
+
+   //  span {
+   //    padding: toRem(2) toRem(12);
+   //    outline: toRem(2) var(--success-color) inset;
+   //    border-radius: toRem(8);
+   //    background-color: var(--light-color);
+   //  }
 
     svg {
       position: absolute;
@@ -465,6 +476,10 @@ watch(currentLocale, () => {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: toEm(20);
+    border-radius: toRem(8);
+    margin-block-start: 0;
+    margin-block-end: toRem(6);
     transition: all var(--transition-duration);
 
     &_is-discount {
