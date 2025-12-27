@@ -1,45 +1,46 @@
 <script setup lang="ts">
-import type { Category } from "@/types/types"
-import { visuallyHiddenTranslations } from '~/locales/visuallyHidden'
+import type { Category } from "@/types/types";
+import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
 
-const { find } = useStrapi()
-const { currentLocale } = useLocale()
-const { width } = useViewport()
-const config = useRuntimeConfig()
+const { find } = useStrapi();
+const { currentLocale } = useLocale();
+const { width } = useViewport();
+const config = useRuntimeConfig();
 
 const visibleImagesCount = computed(() => {
-   if (width.value < 565.98) return 2
-   if (width.value < 878.98) return 4
-   if (width.value < 1215.98) return 6
-   return 10
-})
+  if (width.value < 565.98) return 2;
+  if (width.value < 878.98) return 4;
+  if (width.value < 1215.98) return 6;
+  return 10;
+});
 
-const { data: categories, pending, error } = useAsyncData(
-   `category-${currentLocale.value}`,
-   async () => {
-      const response = await find<Category>('categories', {
-      filters: { locale: currentLocale.value },
-      populate: {
-         image: {
-            fields: ["alternativeText", "url"]
-         },
-         subcategories: {
-            fields: ['id']
-         },
-         products: {
-            fields: ['id']
-         }
-      }
-      })
-      if (!response.data || response.data.length === 0) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Category - Not Found'
-      })
-     }
-      return response.data
-   }
-)
+const {
+  data: categories,
+  pending,
+  error,
+} = useAsyncData(`category-${currentLocale.value}`, async () => {
+  const response = await find<Category>("categories", {
+    filters: { locale: currentLocale.value },
+    populate: {
+      image: {
+        fields: ["alternativeText", "url"],
+      },
+      subcategories: {
+        fields: ["id"],
+      },
+      products: {
+        fields: ["id"],
+      },
+    },
+  });
+  if (!response.data || response.data.length === 0) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: "Category - Not Found",
+    });
+  }
+  return response.data;
+});
 
 // Функция для определения типа ссылки для категории
 const getCategoryLink = (category: Category) => {
@@ -55,71 +56,63 @@ const getCategoryLink = (category: Category) => {
   else {
     return `/${currentLocale.value}/${category.slug}`;
   }
-}
+};
 </script>
 
 <template>
-   <Loader v-if=pending />
-   <section class="category"
-   aria-labelledby="category-page">
-      <h1 
-      id="category-page"
-      class="visually-hidden">{{ visuallyHiddenTranslations[currentLocale].sectionLangTitle }}</h1>
-      <h2 class="category__title">Топ категории</h2>
-      <ul class="category__list"
-      v-if="categories"
+  <Loader v-if="pending" />
+  <section class="category" aria-labelledby="category-page">
+    <h1 id="category-page" class="visually-hidden">
+      {{ visuallyHiddenTranslations[currentLocale].sectionLangTitle }}
+    </h1>
+    <h2 class="category__title">Топ категории</h2>
+    <ul class="category__list" v-if="categories">
+      <li
+        class="category__item"
+        v-for="(category, index) in categories"
+        :key="category.id"
       >
-         <li class="category__item"
-         v-for="(category, index) in categories"
-         :key="category.id"
-         >
-         <article class="category__article">
-         <NuxtLink
-         class="category__link"
-         :to="getCategoryLink(category)"
-         >
-         <NuxtImg
-         class="category__image"
-         v-if="category.image?.length"
-         :src="`${config.public.strapi.url}${category.image[0]?.url}`"
-         :alt="category.name"
-         :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
-         :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
-         decoding="async"
-         format="webp"
-         width="94"
-         height="94"
-        />
-        <h3 class="category__card-title">{{ category.name }}</h3>
-         </NuxtLink>
-         </article>
+          <NuxtLink class="category__link" :to="getCategoryLink(category)">
+            <AppImage
+              class="category__image"
+              v-if="
+                category.image && category.image.length > 0 && category.image[0]
+              "
+              :src="category.image[0].url"
+              :alt="category.name"
+              :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
+              :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
+              width="94"
+              height="94"
+              fromStrapi
+              type="avatar"
+            />
+            <h3 class="category__card-title">{{ category.name }}</h3>
+          </NuxtLink>
       </li>
-      </ul>
-   </section>
+    </ul>
+  </section>
 
-   <span v-if="error" class="error">
-      {{ error.message }}
-    </span>
+  <span v-if="error" class="error">
+    {{ error.message }}
+  </span>
 </template>
 
 <style lang="scss" scoped>
 .category {
-   &__title {
-   }
+  &__title {
+  }
 
   &__list {
     justify-items: center;
     padding-block: toEm(16);
-   @include gridCards;
-   @include adaptiveValue('column-gap', 40, 12);
+    @include gridCards;
+    @include adaptiveValue("column-gap", 40, 12);
   }
 
   &__item {
     display: grid;
     justify-items: center;
-  }
-
-  &__article {
     padding-inline: toEm(28);
     padding-block-start: toEm(7);
     padding-block-end: toEm(16);
@@ -137,21 +130,21 @@ const getCategoryLink = (category: Category) => {
 
     @include hover {
       .category__image {
-         outline: toRem(4) solid var(--secondary-color);
-         outline-offset: toEm(4);
-         border-radius: toRem(32);
+        outline: toRem(4) solid var(--secondary-color);
+        outline-offset: toEm(4);
+        border-radius: toRem(25);
       }
 
       .category__card-title {
-         color: var(--danger-hover);
+        color: var(--danger-hover);
       }
     }
   }
 
   &__image {
-   max-height: toRem(94);
-   object-fit: cover;
-   transition: border-radius var(--transition-duration);
+    max-height: toRem(94);
+    object-fit: cover;
+    transition: border-radius var(--transition-duration);
   }
 
   &__card-title {
@@ -161,4 +154,3 @@ const getCategoryLink = (category: Category) => {
   }
 }
 </style>
-

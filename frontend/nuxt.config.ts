@@ -1,10 +1,10 @@
-import { defineNuxtConfig } from 'nuxt/config'
+import { defineNuxtConfig } from "nuxt/config";
 
 export default defineNuxtConfig({
- compatibilityDate: "2024-11-01",
-   devtools: {
-      enabled: false,
-   },
+  compatibilityDate: "2024-11-01",
+  devtools: {
+    enabled: false,
+  },
   modules: [
     "@nuxt/image",
     "@nuxt/icon",
@@ -18,36 +18,36 @@ export default defineNuxtConfig({
   nitro: {
     storage: {
       // Кэширование оптимизированных изображений
-      'cache:nuxt-image': {
-        driver: 'fs',
-        base: './node_modules/.cache/nuxt-image'
-      }
+      // "cache:nuxt-image": {
+      //   driver: "fs",
+      //   base: "./node_modules/.cache/nuxt-image",
+      // },
     },
     prerender: {
-      ignore: ['/sitemap.xml']
-    }
- },
-   // @ts-ignore
-   site: {
-     url: process.env.SITE_URL || process.env.NUXT_PUBLIC_SITE_URL,
-     name: 'Awesome Site',
-     description: 'Welcome to my awesome site!'
-   },
-   // @ts-ignore
-   sitemap: {
-     sources: ['/api/__sitemap__/urls']
-   },
-   // @ts-ignore
-   robots: {
-     blockAiBots: true,
-     disallow: ['/admin'],
-     groups: [
-       {
-         userAgent: ['Yandex'],
-         cleanParam: ['sort', 'filter', 'page', 'search']
-       }
-     ]
-   },
+      ignore: ["/sitemap.xml"],
+    },
+  },
+  // @ts-ignore
+  site: {
+    url: process.env.SITE_URL || process.env.NUXT_PUBLIC_SITE_URL,
+    name: "Awesome Site",
+    description: "Welcome to my awesome site!",
+  },
+  // @ts-ignore
+  sitemap: {
+    sources: ["/api/__sitemap__/urls"],
+  },
+  // @ts-ignore
+  robots: {
+    blockAiBots: true,
+    disallow: ["/admin"],
+    groups: [
+      {
+        userAgent: ["Yandex"],
+        cleanParam: ["sort", "filter", "page", "search"],
+      },
+    ],
+  },
   ssr: true,
   routeRules: {
     // Редирект с корня
@@ -57,38 +57,38 @@ export default defineNuxtConfig({
       //   maxAge: 86400, // 24 часа
       //   swr: true
       // }
-     },
+    },
     // Делаем sitemap.xml доступным
     "/sitemap.xml": { static: true },
- 
+
     // Главная страница - ISR с кэшем 30 мин на CDN
-   //  "/ru": { isr: 1800 },
+    //  "/ru": { isr: 1800 },
 
     // Статические страницы
-   //  "/ru/about": { prerender: true },
-   //  "/ru/services": { prerender: true },
-   //  "/ru/contacts": { prerender: true },
+    //  "/ru/about": { prerender: true },
+    //  "/ru/services": { prerender: true },
+    //  "/ru/contacts": { prerender: true },
 
     // Категории - ISR для баланса скорости и свежести
-   //  "/ru/**": { isr: 3600 },
+    //  "/ru/**": { isr: 3600 },
 
     // Товары - SWR для обновления в фоне при изменениях
-   //  "/ru/*/*": {
-   //    cache: {
-   //      maxAge: 600,
-   //      swr: true,
-   //      staleMaxAge: 3600,
-   //    },
-   //  },
+    //  "/ru/*/*": {
+    //    cache: {
+    //      maxAge: 600,
+    //      swr: true,
+    //      staleMaxAge: 3600,
+    //    },
+    //  },
 
     // Описание товара - как товары
-   //  "/ru/*/*/*": {
-   //    cache: {
-   //      maxAge: 600,
-   //      swr: true,
-   //      staleMaxAge: 3600,
-   //    },
-   //  },
+    //  "/ru/*/*/*": {
+    //    cache: {
+    //      maxAge: 600,
+    //      swr: true,
+    //      staleMaxAge: 3600,
+    //    },
+    //  },
   },
   runtimeConfig: {
     strapi: {
@@ -110,8 +110,8 @@ export default defineNuxtConfig({
     },
   },
   image: {
-     domains: ["api.vh324.by3020.ihb.by"],
-   //   domains: ["http://127.0.0.1:1337"],
+   //  domains: ["api.vh324.by3020.ihb.by"],
+      domains: ["http://127.0.0.1:1337"],
     screens: {
       xs: 320,
       sm: 480,
@@ -121,6 +121,7 @@ export default defineNuxtConfig({
     },
     quality: 85,
     densities: [1, 2],
+    format: ["avif", "webp", "png", "jpeg"],
   },
 
   icon: {

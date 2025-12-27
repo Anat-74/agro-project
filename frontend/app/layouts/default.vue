@@ -67,8 +67,8 @@ watch(currentLocale, () => {
         :global="global"
         :currentLocale="currentLocale"
         :config="config"
-        :width="48"
-        :height="48"
+        width="48"
+        height="48"
       />
         <ShowHamburger
           v-if="global"

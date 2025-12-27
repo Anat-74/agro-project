@@ -3,8 +3,8 @@ interface Props {
   global: any;
   currentLocale: string;
   config: any;
-  width?: number;
-  height?: number;
+  width?: string | number;
+  height?: string | number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
