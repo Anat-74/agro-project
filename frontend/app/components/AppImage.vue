@@ -1,4 +1,9 @@
 <script setup lang="ts">
+// Отключаем автоматическое наследование атрибутов для избежания дублирования классов
+defineOptions({
+  inheritAttrs: false,
+});
+
 const props = withDefaults(
   defineProps<{
     // Обязательные
@@ -51,6 +56,7 @@ type ImageTypeConfig = {
   quality?: number;
   sizes?: string;
   priority?: boolean;
+  ariaHidden?: boolean;
 };
 
 // Конфигурация по типам
@@ -76,7 +82,7 @@ const typeConfigs: Record<string, ImageTypeConfig> = {
   },
   content: {
     quality: 85,
-    sizes: "(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px",
+    sizes: "100vw sm:100vw md:95vw lg:90vw xl:1200px",
   },
   logo: {
     quality: 100,
@@ -89,10 +95,19 @@ const typeConfigs: Record<string, ImageTypeConfig> = {
   background: {
     quality: 70,
     sizes: "100vw",
+    ariaHidden: true,
   },
 };
 
 const configForType = computed(() => typeConfigs[props.type]);
+
+// Вычисляем aria-hidden только для background
+const computedAriaHidden = computed(() => {
+  if (props.type === "background") {
+    return true;
+  }
+  return undefined;
+});
 
 // Автоматическое определение формата
 const computedFormat = computed(() => {
@@ -201,9 +216,10 @@ const finalSrc = computed(() => {
     :loading="computedLoading"
     :fetchpriority="computedFetchPriority"
     :modifiers="mergedModifiers"
-    :class="['app-image', type]"
+    :class="['app-image', type, $attrs.class]"
+    :aria-hidden="computedAriaHidden"
     decoding="async"
-    v-bind="$attrs"
+    v-bind="{ ...$attrs, class: undefined }"
   />
 </template>
 

@@ -238,12 +238,11 @@ watchEffect(() => {
             :alt="subcategory.name"
             :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
             :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
-            width="298"
+            width="222"
             height="194"
-            sizes="(max-width: 768px) 10vw, (max-width: 1200px) 298px"
-            format="avif"
             fromStrapi
             type="thumbnail"
+            sizes= "100vw sm:100vw md:90vw lg:80vw xl:1200px"
           />
         </NuxtLink>
       </li>
@@ -277,10 +276,8 @@ watchEffect(() => {
             class="product-content__image"
             width="322"
             height="194"
-            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 258px"
-            format="avif"
             fromStrapi
-            type="thumbnail"
+            type="content"
           />
         </NuxtLink>
       </li>
@@ -323,7 +320,7 @@ watchEffect(() => {
 
   &__list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(toRem(322), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(toRem(222), 1fr));
     justify-items: center;
     row-gap: toEm(32);
     @include adaptiveValue("column-gap", 64, 7);
