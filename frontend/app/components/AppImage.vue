@@ -1,5 +1,7 @@
 <script setup lang="ts">
-// Отключаем автоматическое наследование атрибутов для избежания дублирования классов
+const config = useRuntimeConfig();
+
+// Отключаем автоматическое наследование атрибутов
 defineOptions({
   inheritAttrs: false,
 });
@@ -25,6 +27,9 @@ const props = withDefaults(
     loading?: "lazy" | "eager";
     priority?: boolean;
 
+    // Strapi
+    fromStrapi?: boolean;
+
     // Тип изображения
     type?:
       | "content"
@@ -35,20 +40,15 @@ const props = withDefaults(
       | "logo"
       | "icon"
       | "background";
-
-    // Strapi
-    fromStrapi?: boolean;
   }>(),
   {
     format: "avif",
     quality: 85,
     loading: "lazy",
-    type: "content",
+    type: "cover",
     fromStrapi: true,
   }
 );
-
-const config = useRuntimeConfig();
 
 // Типы для конфигурации
 type ImageTypeConfig = {
@@ -61,37 +61,45 @@ type ImageTypeConfig = {
 
 // Конфигурация по типам
 const typeConfigs: Record<string, ImageTypeConfig> = {
+  // Главное изображение на странице, обычно крупный баннер в шапке
   hero: {
     loading: "eager",
     quality: 75,
     sizes: "100vw",
     priority: true,
   },
+  // Изображение-обложка для элементов (подкатегории, продукты и т.д.)
   cover: {
     loading: "eager",
     quality: 80,
-    sizes: "100vw",
+    sizes: "100vw sm:100vw md:90vw lg:80vw xl:1200px",
   },
+  // Изображения пользователей/аватарки
   avatar: {
     quality: 90,
     sizes: "200px",
   },
+  // Миниатюры для галерей, превью
   thumbnail: {
     quality: 85,
     sizes: "400px",
   },
+  // Основные изображения в текстовом контенте
   content: {
     quality: 85,
-    sizes: "100vw sm:100vw md:95vw lg:90vw xl:1200px",
+    sizes: "100vw",
   },
+  // Логотипы брендов и компаний
   logo: {
     quality: 100,
     sizes: "200px",
   },
+  // Иконки интерфейса
   icon: {
     quality: 100,
     sizes: "64px",
   },
+  // Декоративные фоновые изображения
   background: {
     quality: 70,
     sizes: "100vw",
@@ -156,13 +164,14 @@ const computedSizes = computed(() => {
   if (props.sizes) return props.sizes;
   if (configForType.value?.sizes) return configForType.value?.sizes;
 
-  const width = Number(props.width) || 1200;
+  const width = Number(props.width ?? 1200);
+  const maxWidth = Math.min(width, 1200);
 
   if (width <= 400) {
     return `${width}px`;
   }
 
-  return `100vw sm:100vw md:95vw lg:90vw xl:${Math.min(width, 1200)}px`;
+  return `100vw sm:100vw md:90vw lg:80vw xl:${maxWidth}px`;
 });
 
 // Модификаторы
