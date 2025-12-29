@@ -30,6 +30,9 @@ const props = withDefaults(
     // Strapi
     fromStrapi?: boolean;
 
+    // Плавный переход при загрузке изображения
+    smoothLoad?: boolean;
+
     // Тип изображения
     type?:
       | "content"
@@ -47,8 +50,25 @@ const props = withDefaults(
     loading: "lazy",
     type: "cover",
     fromStrapi: true,
+    smoothLoad: false,
   }
 );
+
+// Обработчик загрузки изображения
+const emit = defineEmits<{
+  load: [Event];
+}>();
+
+// Получаем ссылку на элемент компонента
+const appImageRef = ref<HTMLElement | null>(null);
+
+const onImageLoad = (event: Event) => {
+  if (props.smoothLoad && appImageRef.value) {
+    // Добавляем класс loaded к обертке сразу при загрузке изображения
+    appImageRef.value.classList.add("loaded");
+  }
+  emit("load", event);
+};
 
 // Типы для конфигурации
 type ImageTypeConfig = {
@@ -211,25 +231,52 @@ const finalSrc = computed(() => {
 </script>
 
 <template>
-  <NuxtImg
-    :src="finalSrc"
-    :alt="alt"
-    :width="width"
-    :height="height"
-    :sizes="computedSizes"
-    :format="computedFormat"
-    :quality="quality"
-    :loading="computedLoading"
-    :fetchpriority="computedFetchPriority"
-    :modifiers="mergedModifiers"
-    :class="['app-image', type, $attrs.class]"
-    :aria-hidden="computedAriaHidden"
-    decoding="async"
-    v-bind="{ ...$attrs, class: undefined }"
-  />
+  <div
+    :class="[
+      'app-image-wrapper',
+      type,
+      { 'smooth-load': smoothLoad && props.smoothLoad },
+      $attrs.class,
+    ]"
+    ref="appImageRef"
+  >
+    <NuxtImg
+      :src="finalSrc"
+      :alt="alt"
+      :width="width"
+      :height="height"
+      :sizes="computedSizes"
+      :format="computedFormat"
+      :quality="quality"
+      :loading="computedLoading"
+      :fetchpriority="computedFetchPriority"
+      :modifiers="mergedModifiers"
+      :class="['app-image', type]"
+      :aria-hidden="computedAriaHidden"
+      decoding="async"
+      v-bind="{ ...$attrs, class: undefined }"
+      @load="onImageLoad"
+    />
+  </div>
 </template>
 
 <style lang="scss" scoped>
+.app-image-wrapper {
+  display: block;
+  max-width: 100%;
+  height: auto;
+
+  // Плавный переход от размытия к четкости - применяем к обертке
+  &.smooth-load {
+    filter: blur(4px);
+    transition: filter .4s ease;
+
+    &.loaded {
+      filter: blur(0);
+    }
+  }
+}
+
 .app-image {
   display: block;
   max-width: 100%;

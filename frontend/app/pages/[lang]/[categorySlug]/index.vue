@@ -240,7 +240,8 @@ watchEffect(() => {
             :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
             width="222"
             height="194"
-            sizes= "100vw sm:100vw md:90vw lg:80vw xl:1200px"
+            sizes="100vw sm:100vw md:90vw lg:80vw xl:1200px"
+            :smoothLoad="true"
           />
         </NuxtLink>
       </li>
@@ -264,9 +265,7 @@ watchEffect(() => {
             {{ product.name }}
           </h2>
           <AppImage
-              v-if="
-                product.image && product.image.length > 0 && product.image[0]
-              "
+            v-if="product.image && product.image.length > 0 && product.image[0]"
             :src="product.image[0]?.url"
             :alt="product.name"
             :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
@@ -274,6 +273,7 @@ watchEffect(() => {
             class="product-content__image"
             width="322"
             height="194"
+            :smoothLoad="true"
           />
         </NuxtLink>
       </li>
