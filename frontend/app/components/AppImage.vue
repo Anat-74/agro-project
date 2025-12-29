@@ -59,13 +59,12 @@ const emit = defineEmits<{
   load: [Event];
 }>();
 
-// Получаем ссылку на элемент компонента
-const appImageRef = ref<HTMLElement | null>(null);
+// Обработчик загрузки изображения
+const loaded = ref(false);
 
 const onImageLoad = (event: Event) => {
-  if (props.smoothLoad && appImageRef.value) {
-    // Добавляем класс loaded к обертке сразу при загрузке изображения
-    appImageRef.value.classList.add("loaded");
+  if (props.smoothLoad) {
+    loaded.value = true;
   }
   emit("load", event);
 };
@@ -235,10 +234,9 @@ const finalSrc = computed(() => {
     :class="[
       'app-image-wrapper',
       type,
-      { 'smooth-load': smoothLoad && props.smoothLoad },
+      { 'smooth-load': smoothLoad && props.smoothLoad, loaded: loaded },
       $attrs.class,
     ]"
-    ref="appImageRef"
   >
     <NuxtImg
       :src="finalSrc"
@@ -269,7 +267,7 @@ const finalSrc = computed(() => {
   // Плавный переход от размытия к четкости - применяем к обертке
   &.smooth-load {
     filter: blur(4px);
-    transition: filter .4s ease;
+    transition: filter 0.4s ease;
 
     &.loaded {
       filter: blur(0);
