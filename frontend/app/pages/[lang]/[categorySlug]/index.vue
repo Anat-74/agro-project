@@ -240,7 +240,6 @@ watchEffect(() => {
             :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
             width="222"
             height="194"
-            fromStrapi
             type="thumbnail"
             sizes= "100vw sm:100vw md:90vw lg:80vw xl:1200px"
           />
@@ -276,7 +275,6 @@ watchEffect(() => {
             class="product-content__image"
             width="322"
             height="194"
-            fromStrapi
             type="content"
           />
         </NuxtLink>

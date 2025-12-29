@@ -40,11 +40,11 @@ const props = withDefaults(
     fromStrapi?: boolean;
   }>(),
   {
-    format: undefined,
+    format: "avif",
     quality: 85,
     loading: "lazy",
     type: "content",
-    fromStrapi: false,
+    fromStrapi: true,
   }
 );
 
@@ -162,10 +162,7 @@ const computedSizes = computed(() => {
     return `${width}px`;
   }
 
-  return `(max-width: 768px) 100vw, (max-width: 1200px) ${Math.min(
-    width,
-    1200
-  )}px, ${width}px`;
+  return `100vw sm:100vw md:95vw lg:90vw xl:${Math.min(width, 1200)}px`;
 });
 
 // Модификаторы
