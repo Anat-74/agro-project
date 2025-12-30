@@ -231,7 +231,6 @@ const finalSrc = computed(() => {
         'app-image_smooth-load': smoothLoad && props.smoothLoad,
         'app-image_loaded': loaded,
       },
-      $attrs.class,
     ]"
   >
     <NuxtImg
@@ -255,13 +254,9 @@ const finalSrc = computed(() => {
 
 <style lang="scss" scoped>
 .app-image {
-  display: block;
-  max-width: 100%;
-  height: auto;
-
   &_smooth-load {
     filter: blur(4px);
-    transition: filter .4s ease;
+    transition: filter 0.4s ease;
 
     &.app-image_loaded {
       filter: blur(0);

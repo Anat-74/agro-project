@@ -84,6 +84,7 @@ const getCategoryLink = (category: Category) => {
               :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
               width="94"
               height="94"
+              :smoothLoad="true"
             />
             <h3 class="category__card-title">{{ category.name }}</h3>
           </NuxtLink>
