@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Category } from "@/types/types";
 import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
+import UBackgroundImage from "~/components/UBackgroundImage.vue";
 
 const { find } = useStrapi();
 const { currentLocale } = useLocale();
@@ -61,6 +62,12 @@ const getCategoryLink = (category: Category) => {
 <template>
   <Loader v-if="pending" />
   <section class="category" aria-labelledby="category-page">
+    <UBackgroundImage
+      class="category__image-background"
+      src="/image/Image-background.png"
+      alt="фоновое изображение"
+      :from-strapi="false"
+    />
     <h1 id="category-page" class="visually-hidden">
       {{ visuallyHiddenTranslations[currentLocale].sectionLangTitle }}
     </h1>
@@ -71,23 +78,23 @@ const getCategoryLink = (category: Category) => {
         v-for="(category, index) in categories"
         :key="category.id"
       >
-          <NuxtLink class="category__link" :to="getCategoryLink(category)">
-            <UImage
-              class="category__image"
-              v-if="
-                category.image && category.image.length > 0 && category.image[0]
-              "
-              :src="category.image[0].url"
-              :alt="category.name"
-              :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
-              :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
-              width="94"
-              height="94"
-              :smoothLoad="true"
-            />
+        <NuxtLink class="category__link" :to="getCategoryLink(category)">
+          <UImage
+            class="category__image"
+            v-if="
+              category.image && category.image.length > 0 && category.image[0]
+            "
+            :src="category.image[0].url"
+            :alt="category.name"
+            :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
+            :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
+            width="94"
+            height="94"
+            :smoothLoad="true"
+          />
 
-            <h3 class="category__card-title">{{ category.name }}</h3>
-          </NuxtLink>
+          <h3 class="category__card-title">{{ category.name }}</h3>
+        </NuxtLink>
       </li>
     </ul>
   </section>
@@ -99,11 +106,10 @@ const getCategoryLink = (category: Category) => {
 
 <style lang="scss" scoped>
 .category {
-position: relative;
+  position: relative;
 
-&__image-background {
-
-}
+  &__image-background {
+  }
   &__title {
   }
 
