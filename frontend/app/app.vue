@@ -88,7 +88,7 @@ const updateHead = () => {
       { property: 'og:image', content: `${config.public.siteUrl}/logo.png` },
        { property: 'og:locale', content: currentLocale.value },
        // Альтернативные языковые версии
-       { property: 'og:locale:alternate', content: locales.filter(l => l !== currentLocale.value)[0] || 'ru' },
+       { property: 'og:locale:alternate', content: locales.filter(l => l !== currentLocale.value)[0] || 'be' },
  
       // Twitter
        { name: 'twitter:card', content: 'summary_large_image' },

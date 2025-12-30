@@ -48,7 +48,6 @@ h1 {
 }
 
 h2 {
-//   font-family: $font-family-cursive, "Yellowtail", cursive;
   @include m.adaptiveValue("font-size", 26, 20);
 }
 
@@ -70,15 +69,15 @@ h6 {
 }
 
 // Специальные стили для заголовков "Categories" и "Our Products" в ProductsSection
-.products-section__categories {
-  font-family: $font-family-cursive, "Yellowtail", cursive;
-  @extend h2;
-}
+// .products-section__categories {
+//   font-family: $font-family-cursive, "Yellowtail", cursive;
+//   @extend h2;
+// }
 
-.products-section__products {
-  font-family: $font-family, "Roboto", sans-serif;
-  @extend h3;
-}
+// .products-section__products {
+//   font-family: $font-family, "Roboto", sans-serif;
+//   @extend h3;
+// }
 
 // ===================================================================
 //! PARAGRAPHS AND LISTS

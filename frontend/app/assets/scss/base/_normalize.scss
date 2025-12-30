@@ -91,19 +91,6 @@
    margin-block-end: var(--paragraphMarginBottom);
  }
  
- 
- /**
-   Упрощаем работу с изображениями
-  */
- img {
-   display: block;
-   max-width: 100%;
-   height: auto;
- }
- button {
-   cursor: pointer;
- }
- 
  /**
    Наследуем свойства шрифт для полей ввода
   */

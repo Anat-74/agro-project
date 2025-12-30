@@ -101,7 +101,7 @@ const typeConfigs: Record<string, ImageTypeConfig> = {
   // Миниатюры для галерей, превью
   thumbnail: {
     quality: 85,
-    sizes: "400px",
+    sizes: "200px",
   },
   // Основные изображения в текстовом контенте
   content: {
@@ -186,18 +186,11 @@ const computedSizes = computed(() => {
   const width = Number(props.width ?? 1200);
   const maxWidth = Math.min(width, 1200);
 
-  if (width <= 400) {
+  if (width <= 200) {
     return `${width}px`;
   }
 
   return `100vw sm:100vw md:90vw lg:80vw xl:${maxWidth}px`;
-});
-
-// Модификаторы
-const mergedModifiers = computed(() => {
-  const modifiers: Record<string, any> = {};
-
-  return modifiers;
 });
 
 // Приоритетная загрузка
@@ -232,9 +225,12 @@ const finalSrc = computed(() => {
 <template>
   <div
     :class="[
-      'app-image-wrapper',
-      type,
-      { 'smooth-load': smoothLoad && props.smoothLoad, loaded: loaded },
+      'app-image',
+      `app-image_${type}`,
+      {
+        'app-image_smooth-load': smoothLoad && props.smoothLoad,
+        'app-image_loaded': loaded,
+      },
       $attrs.class,
     ]"
   >
@@ -248,8 +244,7 @@ const finalSrc = computed(() => {
       :quality="quality"
       :loading="computedLoading"
       :fetchpriority="computedFetchPriority"
-      :modifiers="mergedModifiers"
-      :class="['app-image', type]"
+      :class="['app-image__img', `app-image__img_${type}`]"
       :aria-hidden="computedAriaHidden"
       decoding="async"
       v-bind="{ ...$attrs, class: undefined }"
@@ -259,53 +254,55 @@ const finalSrc = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-.app-image-wrapper {
-  display: block;
-  max-width: 100%;
-  height: auto;
-
-  // Плавный переход от размытия к четкости - применяем к обертке
-  &.smooth-load {
-    filter: blur(4px);
-    transition: filter 0.4s ease;
-
-    &.loaded {
-      filter: blur(0);
-    }
-  }
-}
-
 .app-image {
   display: block;
   max-width: 100%;
   height: auto;
-}
 
-.app-image :deep(img) {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
+  &_smooth-load {
+    filter: blur(4px);
+    transition: filter .4s ease;
 
-// Object-fit по умолчанию
-.app-image.cover :deep(img),
-.app-image.hero :deep(img),
-.app-image.avatar :deep(img) {
-  object-fit: cover;
-}
+    &.app-image_loaded {
+      filter: blur(0);
+    }
+  }
 
-.app-image.contain :deep(img),
-.app-image.logo :deep(img) {
-  object-fit: contain;
-}
+  &__img {
+    display: block;
+    max-width: 100%;
+    height: auto;
 
-// Для фоновых изображений
-.app-image.background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
+    :deep(img) {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    &_cover,
+    &_hero,
+    &_avatar {
+      :deep(img) {
+        object-fit: cover;
+      }
+    }
+
+    &_contain,
+    &_logo {
+      :deep(img) {
+        object-fit: contain;
+      }
+    }
+  }
+
+  // Для фоновых изображений
+  &_background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
 }
 </style>

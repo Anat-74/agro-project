@@ -84,14 +84,14 @@ defineEmits<Emits>();
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+//   gap: 8px;
   cursor: pointer;
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition: all .2s ease;
 
   &:disabled,
   &.btn_disabled {
-    opacity: 0.4;
+    opacity: .4;
     cursor: default;
   }
 
