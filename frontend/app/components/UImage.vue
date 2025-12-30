@@ -182,17 +182,11 @@ const computedLoading = computed(() => {
       :alt="alt"
       :width="width"
       :height="height"
-      :sizes="isSvg ? undefined : props.sizes || configForType?.sizes"
-      :format="isSvg ? undefined : props.format"
+      :sizes="props.sizes || configForType?.sizes"
+      :format="props.format"
       :quality="quality"
-      :loading="isSvg ? 'eager' : computedLoading"
-      :fetchpriority="
-        isSvg
-          ? undefined
-          : props.priority || props.type === 'hero'
-          ? 'high'
-          : 'auto'
-      "
+      :loading="computedLoading"
+      :fetchpriority="props.priority || props.type === 'hero' ? 'high' : 'auto'"
       :class="['app-image__img', `app-image__img_${type}`]"
       :aria-hidden="computedAriaHidden"
       decoding="async"
@@ -205,7 +199,7 @@ const computedLoading = computed(() => {
       :alt="alt"
       :width="width"
       :height="height"
-      :loading="isSvg ? 'eager' : computedLoading"
+      :loading="'eager'"
       :class="['app-image__img', `app-image__img_${type}`]"
       :aria-hidden="computedAriaHidden"
       decoding="async"
