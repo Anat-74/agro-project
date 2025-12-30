@@ -5,7 +5,6 @@ import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
 const { find } = useStrapi();
 const { currentLocale } = useLocale();
 const { width } = useViewport();
-const config = useRuntimeConfig();
 
 const visibleImagesCount = computed(() => {
   if (width.value < 565.98) return 2;
@@ -100,6 +99,11 @@ const getCategoryLink = (category: Category) => {
 
 <style lang="scss" scoped>
 .category {
+position: relative;
+
+&__image-background {
+
+}
   &__title {
   }
 

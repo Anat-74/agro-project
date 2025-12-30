@@ -42,7 +42,6 @@ const props = withDefaults(
       | "thumbnail"
       | "logo"
       | "icon"
-      | "background";
   }>(),
   {
     format: "avif",
@@ -75,7 +74,6 @@ type ImageTypeConfig = {
   quality?: number;
   sizes?: string;
   priority?: boolean;
-  ariaHidden?: boolean;
 };
 
 // Конфигурация по типам
@@ -118,23 +116,9 @@ const typeConfigs: Record<string, ImageTypeConfig> = {
     quality: 100,
     sizes: "64px",
   },
-  // Декоративные фоновые изображения
-  background: {
-    quality: 70,
-    sizes: "100vw",
-    ariaHidden: true,
-  },
 };
 
 const configForType = computed(() => typeConfigs[props.type]);
-
-// Вычисляем aria-hidden только для background
-const computedAriaHidden = computed(() => {
-  if (props.type === "background") {
-    return true;
-  }
-  return undefined;
-});
 
 // Определяем, является ли изображение SVG
 const isSvg = computed(() => {
@@ -188,7 +172,6 @@ const computedLoading = computed(() => {
       :loading="computedLoading"
       :fetchpriority="props.priority || props.type === 'hero' ? 'high' : 'auto'"
       :class="['app-image__img', `app-image__img_${type}`]"
-      :aria-hidden="computedAriaHidden"
       decoding="async"
       v-bind="{ ...$attrs, class: undefined }"
       @load="onImageLoad"
@@ -201,7 +184,6 @@ const computedLoading = computed(() => {
       :height="height"
       :loading="'eager'"
       :class="['app-image__img', `app-image__img_${type}`]"
-      :aria-hidden="computedAriaHidden"
       decoding="async"
       v-bind="{ ...$attrs, class: undefined }"
       @load="onImageLoad"
@@ -239,16 +221,6 @@ const computedLoading = computed(() => {
         object-fit: contain;
       }
     }
-  }
-
-  // Для фоновых изображений
-  &_background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
   }
 }
 </style>
