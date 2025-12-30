@@ -24,7 +24,6 @@ const props = withDefaults(defineProps<Props>(), {
       :src="props.global?.footer?.logo[0]?.url"
       :width="props.width"
       :height="props.height"
-      type="logo"
       alt="logo"
       aria-label="Логотип сайта"
     />

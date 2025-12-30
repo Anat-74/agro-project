@@ -225,12 +225,6 @@ const computedLoading = computed(() => {
     max-width: 100%;
     height: auto;
 
-    & img {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
     &_cover,
     &_hero,
     &_avatar {
