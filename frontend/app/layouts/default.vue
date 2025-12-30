@@ -66,7 +66,6 @@ watch(currentLocale, () => {
         class="header__logo visible-mobile"
         :global="global"
         :currentLocale="currentLocale"
-        :config="config"
         width="48"
         height="48"
       />

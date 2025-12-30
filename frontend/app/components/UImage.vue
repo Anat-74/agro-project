@@ -136,73 +136,10 @@ const computedAriaHidden = computed(() => {
   return undefined;
 });
 
-// Автоматическое определение формата
-const computedFormat = computed(() => {
-  if (props.format) return props.format;
-
-  const src = props.src.toLowerCase();
-  const ext = src.split(".").pop();
-
-  // SVG всегда оставляем как есть
-  if (ext === "svg") return undefined;
-
-  // PNG для логотипов иконок (но не для изображений из Strapi)
-  const isLogo = src.includes("logo") || src.includes("brand");
-  const isIcon =
-    src.includes("icon") || (props.width && Number(props.width) <= 100);
-  const isUi =
-    src.includes("ui-") ||
-    src.includes("screenshot") ||
-    src.includes("interface");
-
-  // Если это Strapi изображение, то используем AVIF для всех, кроме логотипов и иконок
-  if (props.fromStrapi) {
-    // Для логотипов и иконок из Strapi все равно используем PNG
-    if ((isLogo || isIcon) && ext === "png") {
-      return "png";
-    }
-    // Для остальных изображений из Strapi используем AVIF
-    return "avif";
-  }
-
-  // Для обычных изображений вне Strapi
-  if (
-    (ext === "png" && (isLogo || isIcon || isUi)) ||
-    props.type === "logo" ||
-    props.type === "icon"
-  ) {
-    return "png";
-  }
-
-  // Для всего остального - AVIF
-  return "avif";
-});
-
-// Автоматические sizes
-const computedSizes = computed(() => {
-  if (props.sizes) return props.sizes;
-  if (configForType.value?.sizes) return configForType.value?.sizes;
-
-  const width = Number(props.width ?? 1200);
-  const maxWidth = Math.min(width, 1200);
-
-  if (width <= 200) {
-    return `${width}px`;
-  }
-
-  return `100vw sm:100vw md:90vw lg:80vw xl:${maxWidth}px`;
-});
-
-// Приоритетная загрузка
-const computedLoading = computed(() => {
-  if (props.priority || props.type === "hero") return "eager";
-  return props.loading || configForType.value?.loading || "lazy";
-});
-
-// Приоритет загрузки
-const computedFetchPriority = computed(() => {
-  if (props.priority || props.type === "hero") return "high";
-  return "auto";
+// Определяем, является ли изображение SVG
+const isSvg = computed(() => {
+  const ext = props.src.toLowerCase().split(".").pop();
+  return ext === "svg";
 });
 
 // Обработка пути
@@ -220,6 +157,12 @@ const finalSrc = computed(() => {
   // Локальные изображения
   return props.src.startsWith("/") ? props.src : `/images/${props.src}`;
 });
+
+// Приоритетная загрузка
+const computedLoading = computed(() => {
+  if (props.priority || props.type === "hero") return "eager";
+  return props.loading || configForType.value?.loading || "lazy";
+});
 </script>
 
 <template>
@@ -234,15 +177,35 @@ const finalSrc = computed(() => {
     ]"
   >
     <NuxtImg
+      v-if="!isSvg"
       :src="finalSrc"
       :alt="alt"
       :width="width"
       :height="height"
-      :sizes="computedSizes"
-      :format="computedFormat"
+      :sizes="isSvg ? undefined : props.sizes || configForType?.sizes"
+      :format="isSvg ? undefined : props.format"
       :quality="quality"
-      :loading="computedLoading"
-      :fetchpriority="computedFetchPriority"
+      :loading="isSvg ? 'eager' : computedLoading"
+      :fetchpriority="
+        isSvg
+          ? undefined
+          : props.priority || props.type === 'hero'
+          ? 'high'
+          : 'auto'
+      "
+      :class="['app-image__img', `app-image__img_${type}`]"
+      :aria-hidden="computedAriaHidden"
+      decoding="async"
+      v-bind="{ ...$attrs, class: undefined }"
+      @load="onImageLoad"
+    />
+    <img
+      v-else
+      :src="finalSrc"
+      :alt="alt"
+      :width="width"
+      :height="height"
+      :loading="isSvg ? 'eager' : computedLoading"
       :class="['app-image__img', `app-image__img_${type}`]"
       :aria-hidden="computedAriaHidden"
       decoding="async"
@@ -268,7 +231,7 @@ const finalSrc = computed(() => {
     max-width: 100%;
     height: auto;
 
-    :deep(img) {
+    & img {
       width: 100%;
       height: 100%;
       display: block;

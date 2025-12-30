@@ -2,7 +2,6 @@
 interface Props {
   global: any;
   currentLocale: string;
-  config: any;
   width?: string | number;
   height?: string | number;
 }
@@ -15,24 +14,25 @@ const props = withDefaults(defineProps<Props>(), {
 
 <template>
   <NuxtLink
-    class="logo"
+    class="logo-link"
     :to="`/${props.currentLocale}`"
     aria-label="На главную"
   >
     <UImage
+      class="logo-link__image"
       v-if="props.global?.footer?.logo?.length"
-      :src="`${props.config.public.strapi.url}${props.global?.footer?.logo[0]?.url}`"
-      class="logo-image"
-      alt="logo"
+      :src="props.global?.footer?.logo[0]?.url"
       :width="props.width"
       :height="props.height"
+      type="logo"
+      alt="logo"
       aria-label="Логотип сайта"
     />
   </NuxtLink>
 </template>
 
 <style lang="scss" scoped>
-.logo {
+.logo-link {
   border-radius: 50%;
   background-color: var(--warning-color);
   transition: background-color var(--transition-duration);
@@ -41,7 +41,7 @@ const props = withDefaults(defineProps<Props>(), {
    background-color: var(--warning-hover);
   }
 
-   &-image {
+   &__image {
       @include adaptiveValue("width", 45, 32);
    }
 }
