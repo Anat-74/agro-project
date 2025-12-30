@@ -11,16 +11,15 @@ const props = withDefaults(
     src: string;
     alt?: string;
 
-    // Размеры
-    width?: string | number;
-    height?: string | number;
-
     // Формат и качество
     format?: "avif" | "webp" | "jpg" | "jpeg" | "png";
 
     // Strapi
-    fromStrapi?: boolean; // Флаг, указывающий, загружается ли изображение из Strapi.
+     fromStrapi?: boolean; // Флаг, указывающий, загружается ли изображение из Strapi.
 
+        // Плавный переход при загрузке изображения
+     smoothLoad?: boolean;
+    
     // Тип фона
     backgroundSize?: "cover" | "contain" | "auto" | "100% 100%"; // CSS свойство background-size.
     backgroundPosition?: string; // CSS свойство background-position.
@@ -51,15 +50,13 @@ const finalSrc = computed(() => {
   return props.src.startsWith("/") ? props.src : `/images/${props.src}`;
 });
 
-// Строка 64-68: Вычисляемое свойство для генерации строки для CSS `image-set()`.
+//Вычисляемое свойство для генерации строки для CSS `image-set()`.
 const imageSetUrl = computed(() => {
   const baseUrl = finalSrc.value;
-  // В данном случае используется только один URL с плотностью 1x и 2x.
-  // Для более сложной адаптивности можно было бы добавить URL для 3x или использовать атрибут `sizes`.
   return `url('${baseUrl}') 1x, url('${baseUrl}') 2x`;
 });
 
-// Строка 71-77: Вычисляемое свойство для формирования объекта стилей фона.
+// Вычисляемое свойство для формирования объекта стилей фона.
 const backgroundStyles = computed(() => ({
   // Устанавливаем backgroundImage, используя сгенерированную строку для image-set().
   backgroundImage: `image-set(${imageSetUrl.value})`,
@@ -70,15 +67,37 @@ const backgroundStyles = computed(() => ({
   // Добавляем любые пользовательские стили, переданные через customStyles.
   ...props.customStyles,
 }));
+
+const emit = defineEmits<{
+  load: [Event];
+}>();
+
+// Обработчик загрузки изображения
+const loaded = ref(false);
+
+const onImageLoad = (event: Event) => {
+  if (props.smoothLoad) {
+    loaded.value = true;
+  }
+  emit("load", event);
+};
 </script>
 
 <template>
   <div
     class="app-background-image"
+        :class="[
+      'app-background-image',
+      {
+        'app-background-image_smooth-load': smoothLoad && props.smoothLoad,
+        'app-background-image': loaded,
+      },
+    ]"
     :style="backgroundStyles"
     :aria-label="alt"
     role="img"
     v-bind="{ ...$attrs, class: undefined }"
+   @load="onImageLoad"
   />
 </template>
 
