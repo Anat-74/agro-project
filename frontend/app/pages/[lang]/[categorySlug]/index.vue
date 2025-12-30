@@ -227,7 +227,7 @@ watchEffect(() => {
           <h2 class="category-content__title">
             {{ subcategory.name }}
           </h2>
-          <AppImage
+          <UImage
             class="category-content__image"
             v-if="
               subcategory.image &&
@@ -263,7 +263,7 @@ watchEffect(() => {
           <h2 class="category-content__title">
             {{ product.name }}
           </h2>
-          <AppImage
+          <UImage
             v-if="product.image && product.image.length > 0 && product.image[0]"
             :src="product.image[0]?.url"
             :alt="product.name"

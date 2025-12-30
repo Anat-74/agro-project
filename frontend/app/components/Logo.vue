@@ -17,16 +17,16 @@ const props = withDefaults(defineProps<Props>(), {
   <NuxtLink
     class="logo"
     :to="`/${props.currentLocale}`"
-    aria-label="Go home"
+    aria-label="На главную"
   >
-    <NuxtImg
+    <UImage
       v-if="props.global?.footer?.logo?.length"
       :src="`${props.config.public.strapi.url}${props.global?.footer?.logo[0]?.url}`"
       class="logo-image"
       alt="logo"
       :width="props.width"
       :height="props.height"
-      aria-label="На главную страницу"
+      aria-label="Логотип сайта"
     />
   </NuxtLink>
 </template>

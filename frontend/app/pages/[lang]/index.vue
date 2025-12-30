@@ -73,7 +73,7 @@ const getCategoryLink = (category: Category) => {
         :key="category.id"
       >
           <NuxtLink class="category__link" :to="getCategoryLink(category)">
-            <AppImage
+            <UImage
               class="category__image"
               v-if="
                 category.image && category.image.length > 0 && category.image[0]
@@ -86,6 +86,7 @@ const getCategoryLink = (category: Category) => {
               height="94"
               :smoothLoad="true"
             />
+
             <h3 class="category__card-title">{{ category.name }}</h3>
           </NuxtLink>
       </li>
