@@ -68,11 +68,11 @@ const getCategoryLink = (category: Category) => {
       :from-strapi="false"
     /> -->
     <SmartBackground
-      name="avif-image"
+      name="webp-image"
       path="/image"
       :preload="false"
       class="category__image-background"
-    ></SmartBackground>
+   />
     <h1 id="category-page" class="visually-hidden">
       {{ visuallyHiddenTranslations[currentLocale].sectionLangTitle }}
     </h1>

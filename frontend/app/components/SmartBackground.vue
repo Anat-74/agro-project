@@ -1,21 +1,3 @@
-<template>
-  <div
-    :class="['smart-bg', { loaded, 'no-transition': !preload }]"
-    :style="bgVars"
-  >
-    <!-- Предзагрузка AVIF -->
-    <img
-      v-if="preload"
-      :src="avifSrc"
-      @load="onLoad"
-      class="visually-hidden"
-      alt=""
-    />
-
-    <slot />
-  </div>
-</template>
-
 <script setup lang="ts">
 interface Props {
   name: string;
@@ -55,7 +37,7 @@ const finalPath = computed(() => {
 
 const bgVars = computed(() => ({
   "--avif": `url('${finalPath.value}/${props.name}.avif') type('image/avif')`,
-  "--webp": `url('${finalPath.value}/${props.name}.webp')`,
+  "--webp": `url('${finalPath.value}/${props.name}.webp') type('image/webp')`,
 }));
 
 const avifSrc = computed(() => `${finalPath.value}/${props.name}.avif`);
@@ -65,6 +47,24 @@ const onLoad = () => {
   emit("loaded");
 };
 </script>
+
+<template>
+  <div
+    :class="['smart-bg', { loaded, 'no-transition': !preload }]"
+    :style="bgVars"
+  >
+    <!-- Предзагрузка AVIF -->
+    <img
+      v-if="preload"
+      :src="avifSrc"
+      @load="onLoad"
+      class="visually-hidden"
+      alt=""
+    />
+
+    <slot />
+  </div>
+</template>
 
 <style lang="scss" scoped>
 .smart-bg {
@@ -84,14 +84,15 @@ const onLoad = () => {
     filter: blur(0);
   }
 
-  /* WebP для браузеров, которые поддерживают WebP, но не AVIF */
-  @supports (background-image: image-set(url("test.webp") 1x)) {
-    background: image-set(var(--webp)) center / cover no-repeat;
+  /* AVIF для современных браузеров, которые поддерживают AVIF */
+  @supports (background-image: image-set(url("test.avif") type("image/avif"))) {
+    background: image-set(var(--avif)) center / cover no-repeat;
   }
 
-  /* AVIF для современных браузеров */
-  @supports (background-image: image-set(url("test.avif") 1x)) {
-    background: image-set(var(--avif)) center / cover no-repeat;
+  /* WebP для браузеров, которые поддерживают WebP, но не AVIF */
+  @supports (background-image: image-set(url("test.webp") type("image/webp")))
+    and (not (background-image: image-set(url("test.avif") type("image/avif")))) {
+    background: image-set(var(--webp)) center / cover no-repeat;
   }
 }
 
