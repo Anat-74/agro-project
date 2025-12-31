@@ -35,10 +35,16 @@ const finalPath = computed(() => {
   return props.path;
 });
 
-const bgVars = computed(() => ({
-  "--avif": `url('${finalPath.value}/${props.name}.avif') type('image/avif')`,
-  "--webp": `url('${finalPath.value}/${props.name}.webp') type('image/webp')`,
-}));
+const bgVars = computed(() => {
+  // Проверяем, что изображения существуют и формируем правильный image-set
+  const avifUrl = `${finalPath.value}/${props.name}.avif`;
+  const webpUrl = `${finalPath.value}/${props.name}.webp`;
+
+  // Возвращаем строку для image-set с правильным порядком: AVIF первый, затем WebP
+  return {
+    "--image-set": `url('${avifUrl}') type('image/avif'), url('${webpUrl}') type('image/webp')`,
+  };
+});
 
 const avifSrc = computed(() => `${finalPath.value}/${props.name}.avif`);
 
@@ -68,7 +74,10 @@ const onLoad = () => {
 
 <style lang="scss" scoped>
 .smart-bg {
-  background: var(--webp) center / cover no-repeat;
+  background-image: image-set(var(--image-set));
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   opacity: 0;
   filter: blur(10px);
   transition: opacity 0.5s ease, filter 0.5s ease;
@@ -82,17 +91,6 @@ const onLoad = () => {
     transition: none;
     opacity: 1;
     filter: blur(0);
-  }
-
-  /* AVIF для современных браузеров, которые поддерживают AVIF */
-  @supports (background-image: image-set(url("test.avif") type("image/avif"))) {
-    background: image-set(var(--avif)) center / cover no-repeat;
-  }
-
-  /* WebP для браузеров, которые поддерживают WebP, но не AVIF */
-  @supports (background-image: image-set(url("test.webp") type("image/webp")))
-    and (not (background-image: image-set(url("test.avif") type("image/avif")))) {
-    background: image-set(var(--webp)) center / cover no-repeat;
   }
 }
 
