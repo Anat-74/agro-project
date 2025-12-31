@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { Category } from "@/types/types";
 import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
-import UBackgroundImage from "~/components/UBackgroundImage.vue";
 
 const { find } = useStrapi();
 const { currentLocale } = useLocale();
@@ -62,12 +61,18 @@ const getCategoryLink = (category: Category) => {
 <template>
   <Loader v-if="pending" />
   <section class="category" aria-labelledby="category-page">
-    <UBackgroundImage
+    <!-- <UBackgroundImage
       class="category__image-background"
       src="/image/Image-background.png"
       alt="фоновое изображение"
       :from-strapi="false"
-    />
+    /> -->
+    <SmartBackground
+      name="avif-image"
+      path="/image"
+      :preload="false"
+      class="category__image-background"
+    ></SmartBackground>
     <h1 id="category-page" class="visually-hidden">
       {{ visuallyHiddenTranslations[currentLocale].sectionLangTitle }}
     </h1>
@@ -109,6 +114,11 @@ const getCategoryLink = (category: Category) => {
   position: relative;
 
   &__image-background {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
   }
   &__title {
   }

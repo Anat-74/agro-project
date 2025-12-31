@@ -90,7 +90,7 @@ const onImageLoad = (event: Event) => {
       'app-background-image',
       {
         'app-background-image_smooth-load': smoothLoad && props.smoothLoad,
-        'app-background-image': loaded,
+        'app-background-image_loaded': loaded,
       },
     ]"
     :style="backgroundStyles"
@@ -108,5 +108,14 @@ const onImageLoad = (event: Event) => {
   z-index: -1;
   width: 100%;
   height: 100%;
+
+    &_smooth-load {
+    filter: blur(4px);
+    transition: filter 0.4s ease;
+  }
+
+  &_loaded {
+      filter: blur(0);
+    }
 }
 </style>

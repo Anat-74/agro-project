@@ -196,11 +196,11 @@ const computedLoading = computed(() => {
   &_smooth-load {
     filter: blur(4px);
     transition: filter 0.4s ease;
+  }
 
-    &.app-image_loaded {
+  &_loaded {
       filter: blur(0);
     }
-  }
 
   &__img {
     display: block;
