@@ -1,31 +1,3 @@
-<template>
-  <div 
-    :class="[
-      'smart-bg',
-      variantClass,
-      effectClass,
-      loadingClass,
-      gradientClass,
-      filterClass,
-      interactiveClass
-    ]"
-    :style="backgroundStyle"
-    @mouseenter="isHovered = true"
-    @mouseleave="isHovered = false"
-    @click="isActive = !isActive"
-  >
-    <!-- Предзагрузка AVIF -->
-    <link
-      rel="preload"
-      :href="avifUrl"
-      as="image"
-      type="image/avif"
-    />
-    
-    <slot />
-  </div>
-</template>
-
 <script setup lang="ts">
 interface Props {
   name: string;
@@ -92,26 +64,63 @@ const backgroundStyle = computed(() => {
 });
 </script>
 
+<template>
+  <div 
+    :class="[
+      'smart-bg',
+      variantClass,
+      effectClass,
+      loadingClass,
+      gradientClass,
+      filterClass,
+      interactiveClass
+    ]"
+    :style="backgroundStyle"
+    @mouseenter="isHovered = true"
+    @mouseleave="isHovered = false"
+    @click="isActive = !isActive"
+  >
+    <!-- Предзагрузка AVIF -->
+    <link
+      rel="preload"
+      :href="avifUrl"
+      as="image"
+      type="image/avif"
+    />
+    
+    <slot />
+  </div>
+</template>
+
 <style lang="scss" scoped>
 .smart-bg {
-  position: relative;
+  /* ========== БАЗОВЫЕ СТИЛИ ========== */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
   overflow: hidden;
-  transition: all 0.3s ease;
   
   /* ========== АНИМАЦИЯ ПОЯВЛЕНИЯ ========== */
-  /* Современные браузеры (Chrome 111+, Edge 111+) */
+  opacity: 1;
+  transition: opacity 0.3s ease;
+  animation: smart-bg-fade-in 0.3s ease;
+  
   @starting-style {
     opacity: 0;
   }
-  opacity: 1;
-  transition: opacity 2.3s ease;
   
   /* ========== ВАРИАНТЫ КОМПОНЕНТА ========== */
+  /* Clean (по умолчанию) - только фон */
+  &.variant-clean {
+    /* Без дополнительных стилей */
+  }
+  
+  /* Hero вариант */
   &.variant-hero {
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     
     &::after {
       content: '';
@@ -125,25 +134,21 @@ const backgroundStyle = computed(() => {
     }
   }
   
+  /* Card вариант */
   &.variant-card {
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    border-radius: inherit;
   }
   
+  /* Modal вариант */
   &.variant-modal {
-    border-radius: 24px;
+    border-radius: inherit;
     border: 1px solid rgba(255,255,255,0.15);
     backdrop-filter: blur(12px);
   }
   
-  &.variant-clean {
-  }
-  
+  /* Feature вариант */
   &.variant-feature {
-    border-radius: 16px;
-    padding: 40px;
-    text-align: center;
+    border-radius: inherit;
   }
   
   /* ========== ЭФФЕКТЫ ФОНА ========== */
@@ -232,7 +237,10 @@ const backgroundStyle = computed(() => {
   &::after {
     content: '';
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     pointer-events: none;
     z-index: 1;
   }
@@ -284,6 +292,11 @@ const backgroundStyle = computed(() => {
 }
 
 /* ========== АНИМАЦИИ ========== */
+@keyframes smart-bg-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @keyframes kenburns {
   0% { transform: scale(1); }
   50% { transform: scale(1.05); }
@@ -309,372 +322,10 @@ const backgroundStyle = computed(() => {
   100% { mask-position: -200% 0; }
 }
 
-/* Улучшенное позиционирование контента */
+/* ========== ГЛОБАЛЬНЫЕ СТИЛИ ДЛЯ КОНТЕНТА ========== */
+.smart-bg + *,
 .smart-bg > :slotted(*) {
   position: relative;
-  z-index: 2;
-}
-
-/* Доступность */
-@media (prefers-reduced-motion: reduce) {
-  .smart-bg {
-    animation: none !important;
-    @starting-style {
-      opacity: 1;
-    }
-    opacity: 1;
-  }
+  z-index: 1;
 }
 </style>
-//=============================================
-
-
-
-<!-- <template>
-  <div 
-    :class="['smart-bg', { loaded }]"
-    :style="backgroundStyle"
-  >
-    <link
-      v-if="preload"
-      rel="preload"
-      :href="avifUrl"
-      as="image"
-      type="image/avif"
-      @load="loaded = true"
-    />
-    
-    <slot />
-  </div>
-</template>
-
-<script setup lang="ts">
-interface Props {
-  name: string;
-  path?: string;
-  preload?: boolean;
-  sizes?: boolean;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  path: "/image",
-  preload: false,
-  sizes: false
-});
-
-const loaded = ref(!props.preload);
-
-const baseUrl = computed(() => `${props.path}/${props.name}`);
-const avifUrl = computed(() => `${baseUrl.value}.avif`);
-const webpUrl = computed(() => `${baseUrl.value}.webp`);
-
-// ИСПРАВЛЕННАЯ ЛОГИКА: добавляем WebP перед image-set
-const backgroundStyle = computed(() => {
-  // Ключевое изменение: добавляем WebP перед image-set
-  const background = `
-    url('${webpUrl.value}') center / cover no-repeat,
-    image-set(
-      url('${avifUrl.value}') type("image/avif"),
-      url('${webpUrl.value}') type("image/webp")
-    ) center / cover no-repeat
-  `.replace(/\s+/g, ' ').trim();
-  
-  const style: any = {
-    background,
-    opacity: loaded.value ? '1' : '0',
-    transition: 'opacity 0.3s ease'
-  };
-  
-  if (props.sizes) {
-    style['--avif-2x-url'] = `${baseUrl.value}@2x.avif`;
-    style['--webp-2x-url'] = `${baseUrl.value}@2x.webp`;
-  }
-  
-  return style;
-});
-</script>
-
-<style lang="scss" scoped>
-.smart-bg {
-  @media (min-resolution: 2dppx) {
-    &[style*="--avif-2x-url"] {
-      background: 
-        url(var(--webp-2x-url)) center / cover no-repeat,
-        image-set(
-          url(var(--avif-2x-url)) type("image/avif") 2x,
-          url(var(--webp-2x-url)) type("image/webp") 2x
-        ) center / cover no-repeat;
-    }
-  }
-}
-</style> -->
-//=============================================
-
-
-
-<!-- <template>
-  <div 
-    :class="['smart-bg', { loaded }]"
-    :style="backgroundStyle"
-  >
-    <link
-      v-if="preload"
-      rel="preload"
-      :href="avifUrl"
-      as="image"
-      type="image/avif"
-      @load="loaded = true"
-    />
-    
-    <slot />
-  </div>
-</template>
-
-<script setup lang="ts">
-interface Props {
-  name: string;
-  path?: string;
-  preload?: boolean;
-  sizes?: boolean;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  path: "/image",
-  preload: false,
-  sizes: false
-});
-
-const loaded = ref(!props.preload);
-
-const baseUrl = computed(() => `${props.path}/${props.name}`);
-const avifUrl = computed(() => `${baseUrl.value}.avif`);
-const webpUrl = computed(() => `${baseUrl.value}.webp`);
-
-const backgroundStyle = computed(() => {
-  // ТОЛЬКО image-set - без дублирования WebP
-  const background = `
-    image-set(
-      url('${avifUrl.value}') type("image/avif"),
-      url('${webpUrl.value}') type("image/webp")
-    ) center / cover no-repeat
-  `.replace(/\s+/g, ' ').trim();
-  
-  const style: any = {
-    background,
-    opacity: loaded.value ? '1' : '0',
-    transition: 'opacity 0.3s ease'
-  };
-  
-  if (props.sizes) {
-    style['--avif-2x-url'] = `${baseUrl.value}@2x.avif`;
-    style['--webp-2x-url'] = `${baseUrl.value}@2x.webp`;
-  }
-  
-  return style;
-});
-</script>
-
-<style lang="scss" scoped>
-.smart-bg {
-  @media (min-resolution: 2dppx) {
-    &[style*="--avif-2x-url"] {
-      background: 
-        image-set(
-          url(var(--avif-2x-url)) type("image/avif") 2x,
-          url(var(--webp-2x-url)) type("image/webp") 2x
-        ) center / cover no-repeat;
-    }
-  }
-}
-</style> -->
-//======================================================
-
-
-
-<!-- <template>
-  <div 
-    :class="['smart-bg', { loaded }]"
-    :style="backgroundStyle"
-  >
-    <link
-      v-if="preload"
-      rel="preload"
-      :href="avifUrl"
-      as="image"
-      type="image/avif"
-      @load="loaded = true"
-    />
-    
-    <slot />
-  </div>
-</template>
-
-<script setup lang="ts">
-interface Props {
-  name: string;      // Имя файла без расширения
-  path?: string;     // Путь к папке
-  preload?: boolean; // Предзагрузка AVIF
-  sizes?: boolean;   // Включить ретина (@2x) изображения
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  path: "/image",
-  preload: false,
-  sizes: false
-});
-
-const loaded = ref(!props.preload);
-
-// Базовые URL
-const baseUrl = computed(() => `${props.path}/${props.name}`);
-const avifUrl = computed(() => `${baseUrl.value}.avif`);
-const webpUrl = computed(() => `${baseUrl.value}.webp`);
-
-// Генерируем background
-const backgroundStyle = computed(() => {
-  // Базовый background (WebP + AVIF через image-set)
-  const baseBackground = `
-    url('${webpUrl.value}') center / cover no-repeat,
-    image-set(
-      url('${avifUrl.value}') type("image/avif"),
-      url('${webpUrl.value}') type("image/webp")
-    ) center / cover no-repeat
-  `.replace(/\s+/g, ' ').trim();
-  
-  const style: any = {
-    background: baseBackground,
-    opacity: loaded.value ? '1' : '0',
-    transition: 'opacity 0.3s ease'
-  };
-  
-  // Добавляем ретина URL если включено
-  if (props.sizes) {
-    style['--avif-2x-url'] = `${baseUrl.value}@2x.avif`;
-    style['--webp-2x-url'] = `${baseUrl.value}@2x.webp`;
-  }
-  
-  return style;
-});
-
-
-
-</script>
-
-<style lang="scss" scoped>
-.smart-bg {
-  /* Базовые стили уже в inline-style */
-  
-  /* Ретина поддержка (2x DPI экраны) */
-  /* Если в элементе есть переменные --avif-2x-url и --webp-2x-url */
-  @media (min-resolution: 2dppx) {
-    &[style*="--avif-2x-url"] {
-      background: 
-        url(var(--webp-2x-url)) center / cover no-repeat,
-        image-set(
-          url(var(--avif-2x-url)) type("image/avif") 2x,
-          url(var(--webp-2x-url)) type("image/webp") 2x
-        ) center / cover no-repeat;
-    }
-  }
-}
-</style> -->
-
-//==========================================
-
-<!-- <template>
-  <div 
-    :class="['smart-bg', { loaded }]"
-    :style="backgroundStyle"
-  >
-    <link
-      v-if="preload"
-      rel="preload"
-      :href="avifUrl"
-      as="image"
-      type="image/avif"
-      @load="loaded = true"
-    />
-    
-    <slot />
-  </div>
-</template>
-
-<script setup lang="ts">
-interface Props {
-  name: string;
-  path?: string;
-  preload?: boolean;
-  sizes?: boolean; // Включить ретина поддержку
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  path: "/image",
-  preload: false,
-  sizes: false
-});
-
-const loaded = ref(!props.preload);
-
-// Базовые URL
-const avifUrl = computed(() => `${props.path}/${props.name}.avif`);
-const webpUrl = computed(() => `${props.path}/${props.name}.webp`);
-
-// Ретина URL (если включено)
-const avif2xUrl = computed(() => `${props.path}/${props.name}@2x.avif`);
-const webp2xUrl = computed(() => `${props.path}/${props.name}@2x.webp`);
-
-// Генерируем background с учетом ретина
-const backgroundStyle = computed(() => {
-  if (props.sizes) {
-    // С ретина поддержкой
-    return {
-      // Базовый вариант
-      background: `
-        url('${webpUrl.value}') center / cover no-repeat,
-        image-set(
-          url('${avifUrl.value}') type("image/avif"),
-          url('${webpUrl.value}') type("image/webp")
-        ) center / cover no-repeat
-      `.replace(/\s+/g, ' ').trim(),
-      opacity: loaded.value ? '1' : '0',
-      transition: 'opacity 0.3s ease',
-      // Добавляем переменные для CSS медиа-запроса
-      '--avif-url': avifUrl.value,
-      '--webp-url': webpUrl.value,
-      '--avif-2x-url': avif2xUrl.value,
-      '--webp-2x-url': webp2xUrl.value
-    };
-  } else {
-    // Без ретина поддержки
-    return {
-      background: `
-        url('${webpUrl.value}') center / cover no-repeat,
-        image-set(
-          url('${avifUrl.value}') type("image/avif"),
-          url('${webpUrl.value}') type("image/webp")
-        ) center / cover no-repeat
-      `.replace(/\s+/g, ' ').trim(),
-      opacity: loaded.value ? '1' : '0',
-      transition: 'opacity 0.3s ease'
-    };
-  }
-});
-</script>
-
-<style lang="scss" scoped>
-.smart-bg {
-  /* Базовые стили уже в inline-style */
-  
-  /* Ретина поддержка через CSS медиа-запрос */
-  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    & {
-      background: 
-        url('var(--webp-2x-url)') center / cover no-repeat,
-        image-set(
-          url('var(--avif-2x-url)') type("image/avif") 2x,
-          url('var(--webp-2x-url)') type("image/webp") 2x
-        ) center / cover no-repeat;
-    }
-  }
-}
-</style> -->
