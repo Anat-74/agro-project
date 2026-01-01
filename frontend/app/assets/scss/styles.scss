@@ -1,30 +1,39 @@
 // ===================================================================
-//! GLOBAL CSS VARIABLES FOR COLOR THEMES
+//! GLOBAL CSS VARIABLES FOR COLOR THEMES WITH TRANSPARENCY SUPPORT
 // ===================================================================
+// Глобальные переменные
+:root {
+  --min-height: 777px; // Минимальная высота
+}
 
 // Светлая тема (на основе цветов из Figma)
 :root,
 .light-mode {
-    --transition-duration: .2s ease;     // Длительность переходов
+  --transition-duration: 0.2s ease; // Длительность переходов
   // Основные цвета
-  --color: #274C5B;                    // Основной цвет текста (темно-синий)
-  --bg: #F9F8F8;                      // Основной цвет фона (почти белый)
-  --primary-color: #7EB693;            // Основной акцентный цвет (зеленовато-серый)
-  --secondary-color: #FFFFFF;          // Вторичный цвет (желтый)
-  
+  --color: #274c5b; // Основной цвет текста (темно-синий)
+  --bg: #f9f8f8; // Основной цвет фона (почти белый)
+  --primary-color: #7eb693; // Основной акцентный цвет (зеленовато-серый)
+  --secondary-color: #ffffff; // Вторичный цвет (желтый)
+
   // Цвета для элементов интерфейса
-  --light-color: #ffffff;              // Белый цвет
-  --dark-color: #274C5B;               // Темный цвет (тот же что и --color)
-  --border-color: #D4D4D4;             // Цвет границ (светло-серый)
-  --gray-color: #808080;               // Стандартный серый
-  --bg-product: #EFF6F1;               // Цвет фона для карточек товаров (светлый зеленоватый)
+  --light-color: #ffffff; // Белый цвет
+  --light-color-transparent: color-mix(
+    in srgb,
+    #ffffff 32%,
+    transparent
+  ); // Белый цвет с возможностью регулирования прозрачности (70% непрозрачности)
+  --dark-color: #274c5b; // Темный цвет (тот же что и --color)
+  --border-color: #d4d4d4; // Цвет границ (светло-серый)
+  --gray-color: #808080; // Стандартный серый
+  --bg-product: #eff6f1; // Цвет фона для карточек товаров (светлый зеленоватый)
   --bg-navigation: #fdf5e6;
   --bg-footer: #778899;
-  --active-color: #FA8072;
-  --danger-color: #DC143C;
-  --danger-hover: #F08080;
-  --warning-color: #FF8C00;
-  --warning-hover: #F4A460;
+  --active-color: #fa8072;
+  --danger-color: #dc143c;
+  --danger-hover: #f08080;
+  --warning-color: #ff8c00;
+  --warning-hover: #f4a460;
   --success-color: #9acd32;
   --sky-blue: #afeeee;
   --transparent-color: transparent;
@@ -33,58 +42,68 @@
 
 // Темная тема (контрастная к светлой)
 .dark-mode {
-   filter: brightness(95%);
+  filter: brightness(95%);
   // Основные цвета
-  --color: #F9F8F8;                    // Основной цвет текста (почти белый)
-  --bg: #274C5B;                       // Основной цвет фона (темно-синий)
-  --primary-color: #7EB693;            // Основной акцентный цвет (зеленовато-серый)
-  --secondary-color: #274C5B;          // Вторичный цвет (желтый)
-  
+  --color: #f9f8f8; // Основной цвет текста (почти белый)
+  --bg: #274c5b; // Основной цвет фона (темно-синий)
+  --primary-color: #7eb693; // Основной акцентный цвет (зеленовато-серый)
+  --secondary-color: #274c5b; // Вторичный цвет (желтый)
+
   // Цвета для элементов интерфейса
-  --light-color: #F9F8F8;              // Светлый цвет (вместо белого)
-  --dark-color: #000000;               // Темный цвет (светло-серый в темной теме)
-  --border-color: #525C60;             // Цвет границ (серо-синий)
-  --gray-color: #a9A9a9;               // Светлый серый
-  --bg-product: #525C60;               // Цвет фона для карточек товаров (серо-синий)
-  --bg-navigation: #C0C0C0;
-  --bg-footer: #274C5B;
-  --active-color: #FA8072;
-  --danger-color: #DC143C;
-  --danger-hover: #F08080;
-  --warning-color: #FF8C00;
-  --warning-hover: #F4A460;
-   --success-color: #9acd32;
-   --sky-blue: #afeeee;
-   --whitesmoke-color: whitesmoke;
-   --transparent-color: transparent;
+  --light-color: #f9f8f8; // Светлый цвет (вместо белого)
+  --light-color-transparent: color-mix(
+    in srgb,
+    #f9f8f8 70%,
+    transparent
+  ); // Светлый цвет с возможностью регулирования прозрачности (70% непрозрачности)
+  --dark-color: #000000; // Темный цвет (светло-серый в темной теме)
+  --border-color: #525c60; // Цвет границ (серо-синий)
+  --gray-color: #a9a9a9; // Светлый серый
+  --bg-product: #525c60; // Цвет фона для карточек товаров (серо-синий)
+  --bg-navigation: #c0c0c0;
+  --bg-footer: #274c5b;
+  --active-color: #fa8072;
+  --danger-color: #dc143c;
+  --danger-hover: #f08080;
+  --warning-color: #ff8c00;
+  --warning-hover: #f4a460;
+  --success-color: #9acd32;
+  --sky-blue: #afeeee;
+  --whitesmoke-color: whitesmoke;
+  --transparent-color: transparent;
 }
 
 // Произвольная тема (альтернативная комбинация цветов из Figma)
 .custom-mode {
-  --transition-duration: .2s ease;
+  --transition-duration: 0.2s ease;
   // Основные цвета
-  --color: #525C60;                    // Основной цвет текста (серо-синий)
-  --bg: #f0e8c5;                       // Основной цвет фона (светлый зеленоватый)
-  --primary-color: #274C5B;            // Основной акцентный цвет (темно-синий)
-  --secondary-color: #808080;          // Вторичный цвет (желтый)
-  
+  --color: #525c60; // Основной цвет текста (серо-синий)
+  --bg: #f0e8c5; // Основной цвет фона (светлый зеленоватый)
+  --primary-color: #274c5b; // Основной акцентный цвет (темно-синий)
+  --secondary-color: #808080; // Вторичный цвет (желтый)
+
   // Цвета для элементов интерфейса
-  --light-color: #F9F8F8;              // Светлый цвет (почти белый)
-  --dark-color: #274C5B;               // Темный цвет (темно-синий)
-  --border-color: #7EB693;             // Цвет границ (зеленовато-серый)
-  --gray-color: #808080;               // Стандартный серый
-  --bg-product: #F9F8F8;               // Цвет фона для карточек товаров (почти белый)
-  --bg-navigation: #C0C0C0;
-  --bg-footer: #274C5B;
-  --active-color: #FA8072;
-  --danger-color: #DC143C;
-  --danger-hover: #F08080;
-  --warning-color: #FF8C00;
-  --warning-hover: #F4A460;
-   --success-color: #9acd32;
-   --sky-blue: #afeeee;
-   --whitesmoke-color: whitesmoke;
-   --transparent-color: transparent;
+  --light-color: #f9f8f8; // Светлый цвет (почти белый)
+  --light-color-transparent: color-mix(
+    in srgb,
+    #f9f8f8 70%,
+    transparent
+  ); // Светлый цвет с возможностью регулирования прозрачности (70% непрозрачности)
+  --dark-color: #274c5b; // Темный цвет (темно-синий)
+  --border-color: #7eb693; // Цвет границ (зеленовато-серый)
+  --gray-color: #808080; // Стандартный серый
+  --bg-product: #f9f8f8; // Цвет фона для карточек товаров (почти белый)
+  --bg-navigation: #c0c0c0;
+  --bg-footer: #274c5b;
+  --active-color: #fa8072;
+  --danger-color: #dc143c;
+  --danger-hover: #f08080;
+  --warning-color: #ff8c00;
+  --warning-hover: #f4a460;
+  --success-color: #9acd32;
+  --sky-blue: #afeeee;
+  --whitesmoke-color: whitesmoke;
+  --transparent-color: transparent;
 }
 
 // ===================================================================

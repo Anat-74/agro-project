@@ -68,9 +68,8 @@ const getCategoryLink = (category: Category) => {
       :from-strapi="false"
     /> -->
     <SmartBackground
-      name="webp-image"
-      path="/image"
-      :preload="false"
+      name="avif-image"
+
       class="category__image-background"
    />
     <h1 id="category-page" class="visually-hidden">
@@ -111,6 +110,7 @@ const getCategoryLink = (category: Category) => {
 
 <style lang="scss" scoped>
 .category {
+   min-height: var(--min-height);
   position: relative;
 
   &__image-background {

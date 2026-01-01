@@ -324,7 +324,7 @@ watch(currentLocale, () => {
     left: toRem(15);
     background-color: transparent;
     border-radius: toEm(4);
-    border: toEm(3) solid var(--secondary-color);
+    border: toEm(3) solid var(--light-color-transparent);
     transition: scale .1s linear;
     @include adaptiveValue("width", 320, 235);
   }
@@ -345,14 +345,14 @@ watch(currentLocale, () => {
   //   }
 
   &__items {
-    min-height: toRem(400);
+    min-height: var(--min-height);
     display: flex;
     flex-direction: column;
     row-gap: toEm(16);
     padding-inline: toEm(8);
-    padding-block-start: toEm(4);
-    padding-block-end: toEm(16);
-    backdrop-filter: blur(16px);
+    padding-block-start: toEm(22);
+    padding-block-end: toEm(22);
+    backdrop-filter: blur(7px);
 
     @media (max-width: $mobile) {
       min-height: 100dvh;
@@ -373,6 +373,9 @@ watch(currentLocale, () => {
 
   &__accordion {
     flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    row-gap: toRem(18);
   }
 
   &__phones {
@@ -432,6 +435,8 @@ watch(currentLocale, () => {
     font-weight: 600;
     font-size: toEm(22);
     color: var(--primary-color);
+    border-radius: toEm(6);
+    background-color: var(--light-color-transparent);
     transition: color var(--transition-duration);
 
       // outline: toRem(2) var(--success-color) outset;
@@ -478,8 +483,7 @@ watch(currentLocale, () => {
     align-items: center;
     font-size: toEm(20);
     border-radius: toRem(8);
-    margin-block-start: 0;
-    margin-block-end: toRem(6);
+    padding-block-start: toRem(16);
     transition: all var(--transition-duration);
 
     &_is-discount {
@@ -493,13 +497,13 @@ watch(currentLocale, () => {
     }
   }
 
-  &__product-image {
-    margin-inline-start: toRem(-12);
+//   &__product-image {
+//     margin-inline-start: toRem(-12);
 
-    @media (max-width: $mobile) {
-      width: toRem(77);
-    }
-  }
+//     @media (max-width: $mobile) {
+//       width: toRem(77);
+//     }
+//   }
 
   .router-link-active {
     color: var(--danger-hover);
