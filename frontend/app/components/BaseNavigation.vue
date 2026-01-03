@@ -104,11 +104,11 @@ defineProps<{
 <style lang="scss" scoped>
    .nav {
       &__list {
-         font-size: toEm(18);
+         font-size: toEm(20);
          padding-inline-end: toEm(16);
          display: flex;
          align-items: center;
-         column-gap: toRem(36);
+         @include adaptiveValue("column-gap", 36, 25);
       }
 
       &__item {
@@ -116,7 +116,6 @@ defineProps<{
          align-items: center;
          column-gap: toRem(4);
          font-weight: 500;
-         color: var(--primary-color);
 
          .iconify--material-symbols {
             font-size: toRem(20);
@@ -141,6 +140,7 @@ defineProps<{
       align-items: center;
       column-gap: toRem(5);
       padding-block: toRem(3);
+      color: var(--primary-color);
 
       &:not(.router-link-active) {
          @include hover {
@@ -154,10 +154,10 @@ defineProps<{
             position: absolute;
             top: 0;
             right: toRem(-20);
-            width: toRem(4);
+            width: toRem(7);
             height: 100%;
             border-radius: toRem(25);
-            background-color: currentColor;
+            background-color: var(--bg);
       }
 
       &::after {
@@ -202,13 +202,13 @@ defineProps<{
 
       &__viber-link {
          svg {
-            color: var(--indigo-color);
+            color: var(--bg-footer);
          }
       }
 
    &__mail-link {
       svg {
-         color: var(--deep-sky-blue);
+         color: var(--sky-blue);
       }
    }
 }

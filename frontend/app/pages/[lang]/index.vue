@@ -60,7 +60,10 @@ const getCategoryLink = (category: Category) => {
 
 <template>
   <Loader v-if="pending" />
-  <section class="category" aria-labelledby="category-page">
+  <section 
+  class="category" 
+  aria-labelledby="category-page"
+  >
     <!-- <UBackgroundImage
       class="category__image-background"
       src="/image/Image-background.png"
@@ -68,7 +71,8 @@ const getCategoryLink = (category: Category) => {
       :from-strapi="false"
     /> -->
     <UBackground 
-    src="avif-image" 
+    src="avif-image"
+    :from-strapi="false"
     class="category__image-background"
      />
     <h1 id="category-page" class="visually-hidden">
@@ -85,7 +89,11 @@ const getCategoryLink = (category: Category) => {
           <UImage
             class="category__image"
             v-if="
-              category.image && category.image.length > 0 && category.image[0]
+            category.image
+            &&
+            category.image.length > 0
+            &&
+            category.image[0]
             "
             :src="category.image[0].url"
             :alt="category.name"

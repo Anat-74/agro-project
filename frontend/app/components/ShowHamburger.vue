@@ -280,8 +280,8 @@ watch(currentLocale, () => {
   grid-template-columns: auto 1fr;
   justify-items: center;
   align-items: center;
-  border-left: toEm(3) solid var(--secondary-color);
-  border-right: toEm(3) solid var(--secondary-color);
+  border-left: toEm(7) solid var(--bg);
+  border-right: toEm(7) solid var(--bg);
   background-color: var(--light-color);
   @include adaptiveValue("width", 320, 235);
 
@@ -319,12 +319,14 @@ watch(currentLocale, () => {
   @media (min-width: $mobile) {
     scale: 0;
     translate: 0;
-    top: 100%;
+    top: calc(100% + toRem(22));
     margin-inline-end: 0;
     left: toRem(15);
     background-color: transparent;
     border-radius: toEm(4);
-    border: toEm(3) solid var(--light-color-transparent);
+    border-width: toEm(0) toEm(2) toEm(2) toEm(0);
+    border-style: solid;
+    border-color: var(--border-color-transparent);
     transition: scale .1s linear;
     @include adaptiveValue("width", 320, 235);
   }
@@ -346,22 +348,24 @@ watch(currentLocale, () => {
 
   &__items {
     min-height: var(--min-height);
-    display: flex;
-    flex-direction: column;
+    display: grid;
     row-gap: toEm(16);
-    padding-inline: toEm(8);
+    padding-inline: toEm(16);
     padding-block-start: toEm(22);
     padding-block-end: toEm(22);
     backdrop-filter: blur(7px);
 
     @media (max-width: $mobile) {
+      justify-items: center;
+      align-items: center;
       min-height: 100dvh;
-      padding-inline: toEm(18);
-      padding-block: toEm(12);
+      // @include adaptiveValue("padding-inline", 299, 12);
+      // @include adaptiveValue("padding-block", 222, 32);
     }
   }
 
   &__top {
+    width: 90%;
     display: grid;
     grid-template-columns: auto 1fr;
     align-items: center;
@@ -372,14 +376,14 @@ watch(currentLocale, () => {
   }
 
   &__accordion {
-    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     row-gap: toRem(18);
+    @include adaptiveValue("width", 350, 240);
   }
 
   &__phones {
-    align-self: center;
+    align-self: end;
     display: flex;
     align-items: center;
     column-gap: toEm(4);

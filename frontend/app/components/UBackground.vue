@@ -14,7 +14,7 @@ interface Props {
 const config = useRuntimeConfig();
 
 const props = withDefaults(defineProps<Props>(), {
-  fromStrapi: false,
+  fromStrapi: true,
   sizes: false,
   variant: "clean",
   effect: "none",

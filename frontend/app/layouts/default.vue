@@ -127,7 +127,7 @@ watch(currentLocale, () => {
 
 <style lang="scss" scoped>
 .header {
-  padding-block-end: toRem(22);
+  margin-block-end: toRem(22);
 
   &__banner {
   }
@@ -171,7 +171,7 @@ watch(currentLocale, () => {
   }
 
   &__bottom {
-    background-color: var(--bg-navigation);
+    background-color: var(--light-color);
   }
 
   &__container-bottom {
