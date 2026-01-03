@@ -24,10 +24,6 @@
         }
       }
     },
-    "slug": {
-      "type": "uid",
-      "targetField": "name"
-    },
     "image": {
       "type": "media",
       "multiple": true,
@@ -48,6 +44,10 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::product.product"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name"
     },
     "seoTitle": {
       "type": "string",

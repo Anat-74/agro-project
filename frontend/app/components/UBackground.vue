@@ -115,7 +115,7 @@ const backgroundStyle = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-.smart-bg {
+.app-bg {
   /* ========== БАЗОВЫЕ СТИЛИ ========== */
   position: absolute;
   top: 0;
@@ -128,7 +128,7 @@ const backgroundStyle = computed(() => {
   /* ========== АНИМАЦИЯ ПОЯВЛЕНИЯ ========== */
   opacity: 1;
   transition: opacity 0.3s ease;
-  animation: smart-bg-fade-in 0.3s ease;
+  animation: app-bg-fade-in 0.4s ease;
 
   @starting-style {
     opacity: 0;
@@ -183,11 +183,11 @@ const backgroundStyle = computed(() => {
   }
 
   &.effect-kenburns {
-    animation: kenburns 20s ease infinite, smart-bg-fade-in 0.3s ease;
+    animation: kenburns 20s ease infinite, app-bg-fade-in 0.3s ease;
   }
 
   &.effect-zoom {
-    animation: zoom 15s ease infinite, smart-bg-fade-in 0.3s ease;
+    animation: zoom 15s ease infinite, app-bg-fade-in 0.3s ease;
   }
 
   /* ========== ЭФФЕКТЫ ЗАГРУЗКИ ========== */
@@ -209,13 +209,13 @@ const backgroundStyle = computed(() => {
   }
 
   &.loading-pulse {
-    animation: pulse 2.5s ease-in-out infinite, smart-bg-fade-in 0.3s ease;
+    animation: pulse 2.5s ease-in-out infinite, app-bg-fade-in 0.3s ease;
   }
 
   &.loading-wave {
     mask: linear-gradient(90deg, #000 25%, #0005 50%, #000 75%);
     mask-size: 200% 100%;
-    animation: wave 2s infinite linear, smart-bg-fade-in 0.3s ease;
+    animation: wave 2s infinite linear, app-bg-fade-in 0.3s ease;
   }
 
   /* ========== HOVER ЭФФЕКТЫ ========== */
@@ -325,7 +325,7 @@ const backgroundStyle = computed(() => {
 }
 
 /* ========== АНИМАЦИИ ========== */
-@keyframes smart-bg-fade-in {
+@keyframes app-bg-fade-in {
   from {
     opacity: 0;
   }
