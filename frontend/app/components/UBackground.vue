@@ -89,7 +89,7 @@ const backgroundStyle = computed(() => {
 <template>
   <div
     :class="[
-      'smart-bg',
+      'app-bg',
       variantClass,
       effectClass,
       loadingClass,
