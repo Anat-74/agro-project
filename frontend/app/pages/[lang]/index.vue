@@ -67,11 +67,10 @@ const getCategoryLink = (category: Category) => {
       alt="фоновое изображение"
       :from-strapi="false"
     /> -->
-    <UBackground
-      name="avif-image"
-
-      class="category__image-background"
-   />
+    <UBackground 
+    src="avif-image" 
+    class="category__image-background"
+     />
     <h1 id="category-page" class="visually-hidden">
       {{ visuallyHiddenTranslations[currentLocale].sectionLangTitle }}
     </h1>
@@ -110,7 +109,7 @@ const getCategoryLink = (category: Category) => {
 
 <style lang="scss" scoped>
 .category {
-   min-height: var(--min-height);
+  min-height: var(--min-height);
   position: relative;
 
   &__image-background {
