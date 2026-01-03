@@ -67,7 +67,7 @@ const getCategoryLink = (category: Category) => {
       alt="фоновое изображение"
       :from-strapi="false"
     /> -->
-    <SmartBackground
+    <UBackground
       name="avif-image"
 
       class="category__image-background"
