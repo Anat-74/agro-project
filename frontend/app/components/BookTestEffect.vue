@@ -12,7 +12,7 @@
   </div>
 </template>
 
-<style>
+<style scoped>
 /* ========== ОСНОВНЫЕ СТИЛИ КНИГИ ========== */
 .book-app {
   position: relative;
