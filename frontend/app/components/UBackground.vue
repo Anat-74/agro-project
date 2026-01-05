@@ -118,20 +118,28 @@ const backgroundStyle = computed(() => {
 .app-bg {
   /* ========== БАЗОВЫЕ СТИЛИ ========== */
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   z-index: 0;
   overflow: hidden;
 
   /* ========== АНИМАЦИЯ ПОЯВЛЕНИЯ ========== */
   opacity: 1;
   transition: opacity 0.3s ease;
-  animation: app-bg-fade-in 0.4s ease;
+  animation: app-bg-fade-in .4s ease;
 
   @starting-style {
     opacity: 0;
+  }
+
+    /* ========== RETINA ПОДДЕРЖКА ========== */
+  @media (min-resolution: 2dppx) {
+    &[style*="--avif-2x-url"] {
+      background: image-set(
+          url(var(--avif-2x-url)) type("image/avif") 2x,
+          url(var(--png-2x-url)) type("image/png") 2x
+        )
+        center / cover no-repeat;
+    }
   }
 
   /* ========== ВАРИАНТЫ КОМПОНЕНТА ========== */
@@ -241,17 +249,6 @@ const backgroundStyle = computed(() => {
   &.is-active {
     filter: brightness(0.7);
     transform: scale(0.98);
-  }
-
-  /* ========== RETINA ПОДДЕРЖКА ========== */
-  @media (min-resolution: 2dppx) {
-    &[style*="--avif-2x-url"] {
-      background: image-set(
-          url(var(--avif-2x-url)) type("image/avif") 2x,
-          url(var(--png-2x-url)) type("image/png") 2x
-        )
-        center / cover no-repeat;
-    }
   }
 
   /* ========== ГРАДИЕНТНЫЕ ОВЕРЛЕИ ========== */

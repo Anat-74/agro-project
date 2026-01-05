@@ -105,7 +105,7 @@ watch(currentLocale, () => {
     </div>
   </header>
 
-  <main :class="['main', { backdrop: isContacts }]">
+  <main :class="['main', { 'backdrop': isContacts }]">
     <div class="main__container">
       <slot />
     </div>
@@ -180,8 +180,8 @@ watch(currentLocale, () => {
    //  grid-template-columns: auto 1fr;
    display: flex;
    justify-content: space-between;
-    align-items: center;
-    @include adaptiveValue("height", 62, 44);
+   align-items: center;
+   @include adaptiveValue("height", 62, 44);
 
     @media (min-width:$mobile){
     position: relative;
@@ -243,6 +243,7 @@ watch(currentLocale, () => {
 }
 
 .main {
+  position: relative;
   transition: opacity var(--transition-duration);
 }
 </style>

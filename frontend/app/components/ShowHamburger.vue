@@ -280,8 +280,8 @@ watch(currentLocale, () => {
   grid-template-columns: auto 1fr;
   justify-items: center;
   align-items: center;
-  border-left: toEm(7) solid var(--bg);
-  border-right: toEm(7) solid var(--bg);
+  border-left: toEm(9) solid var(--bg);
+  border-right: toEm(9) solid var(--bg);
   background-color: var(--light-color);
   @include adaptiveValue("width", 320, 235);
 
@@ -324,11 +324,11 @@ watch(currentLocale, () => {
     left: toRem(15);
     background-color: transparent;
     border-radius: toEm(4);
-    border-width: toEm(0) toEm(2) toEm(2) toEm(0);
+    border-width: 0 toEm(3) 0 toEm(3);
     border-style: solid;
     border-color: var(--border-color-transparent);
     transition: scale .1s linear;
-    @include adaptiveValue("width", 320, 235);
+    @include adaptiveValue("width", 316, 235);
   }
 
   &[open] {
@@ -375,14 +375,35 @@ watch(currentLocale, () => {
     background-color: var(--light-color);
   }
 
-  &__accordion {
-    display: flex;
-    flex-direction: column;
-    row-gap: toRem(18);
-    @include adaptiveValue("width", 350, 240);
+//   &__accordion {
+//     width: 100%;
+//     display: flex;
+//     flex-direction: column;
+//     row-gap: toEm(22);
+
+//     @media (min-width:$mobileSmall){
+//          width: 60%;
+//     }
+
+//     @media (min-width:$mobile){
+//         width: 100%;
+//     }
+//   }
+
+&__accordion {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  row-gap: toEm(22);
+
+    @media ($mobileSmall <= width <= $mobile) {
+      width: 60%;
   }
 
+}
+
   &__phones {
+    justify-self: center;
     align-self: end;
     display: flex;
     align-items: center;
@@ -520,7 +541,7 @@ watch(currentLocale, () => {
   grid-template-rows: repeat(2, auto) 1fr;
   justify-items: center;
   row-gap: toEm(18);
-  padding-inline: toEm(8);
+  padding-inline: toEm(4);
   padding-block: toEm(12);
   border-left: toEm(2) solid var(--success-color);
   background-color: var(--secondary-color);

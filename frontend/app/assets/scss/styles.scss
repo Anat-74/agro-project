@@ -3,7 +3,7 @@
 // ===================================================================
 // Глобальные переменные
 :root {
-  --min-height: 677px; // Минимальная высота
+  --min-height: 655px; // Минимальная высота
 }
 
 // Светлая тема (на основе цветов из Figma)
@@ -18,14 +18,12 @@
 
   // Цвета для элементов интерфейса
   --light-color: #ffffff; // Белый цвет
-  --light-color-transparent: color-mix(
-    in srgb,
+  --light-color-transparent: color-mix( in srgb,
     #ffffff 32%,
     transparent
   );
 
-    --border-color-transparent: color-mix(
-    in srgb,
+    --border-color-transparent: color-mix( in srgb,
     whitesmoke 27%,
     transparent
   );

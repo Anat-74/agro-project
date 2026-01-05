@@ -139,7 +139,7 @@ const finalSrc = computed(() => {
   }
 
   // Локальные изображения
-  return props.src.startsWith("/") ? props.src : `/images/${props.src}`;
+  return props.src.startsWith("/") ? props.src : `/image/${props.src}`;
 });
 
 // Приоритетная загрузка

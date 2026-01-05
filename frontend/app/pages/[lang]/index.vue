@@ -64,17 +64,18 @@ const getCategoryLink = (category: Category) => {
   class="category" 
   aria-labelledby="category-page"
   >
+     <UBackground 
+    src="avif-image"
+    :from-strapi="false"
+    class="category__image-background"
+     />
     <!-- <UBackgroundImage
       class="category__image-background"
       src="/image/Image-background.png"
       alt="фоновое изображение"
       :from-strapi="false"
     /> -->
-    <UBackground 
-    src="avif-image"
-    :from-strapi="false"
-    class="category__image-background"
-     />
+
     <h1 id="category-page" class="visually-hidden">
       {{ visuallyHiddenTranslations[currentLocale].sectionLangTitle }}
     </h1>
@@ -85,7 +86,10 @@ const getCategoryLink = (category: Category) => {
         v-for="(category, index) in categories"
         :key="category.id"
       >
-        <NuxtLink class="category__link" :to="getCategoryLink(category)">
+        <NuxtLink 
+        class="category__link" 
+        :to="getCategoryLink(category)"
+        >
           <UImage
             class="category__image"
             v-if="
@@ -97,11 +101,11 @@ const getCategoryLink = (category: Category) => {
             "
             :src="category.image[0].url"
             :alt="category.name"
+            :smoothLoad="true"
             :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
             :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
             width="94"
             height="94"
-            :smoothLoad="true"
           />
 
           <h3 class="category__card-title">{{ category.name }}</h3>
@@ -118,7 +122,6 @@ const getCategoryLink = (category: Category) => {
 <style lang="scss" scoped>
 .category {
   min-height: var(--min-height);
-  position: relative;
 
   &__image-background {
     position: absolute;

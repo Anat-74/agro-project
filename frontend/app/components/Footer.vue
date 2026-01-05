@@ -106,7 +106,6 @@ defineProps<Props>();
 
 <style lang="scss" scoped>
 .base-footer {
-  margin-block-start: toEm(16);
   background-color: var(--bg-footer);
   @include adaptiveValue("padding-block", 22, 12);
 
