@@ -4,7 +4,7 @@ const searchStore = useSearchStore();
 const { products, totalPages, currentPage } = storeToRefs(searchStore);
 const { currentLocale } = useLocale();
 const config = useRuntimeConfig();
-const { isContacts } = useVisibilityProvider();
+const { isContacts, hideContacts } = inject("visible");
 
 const {
   data: global,
@@ -49,26 +49,26 @@ watch(currentLocale, () => {
 <template>
   <header class="header">
     <BannerLayouts class="header__banner" />
-    <div :class="['header__container-top', { backdrop: isContacts }]">
+    <div class="header__container-top">
       <Logo
         class="header__logo hidden-mobile"
         :global="global"
         :currentLocale="currentLocale"
         :config="config"
       />
-         <AnimateTitle class="hidden-mobile" />
+      <AnimateTitle class="hidden-mobile" />
       <ProductFilter class="header__search" />
       <Basket class="header__cart" />
     </div>
     <div class="header__bottom">
       <div class="header__container-bottom">
-         <Logo
-        class="header__logo visible-mobile"
-        :global="global"
-        :currentLocale="currentLocale"
-        width="48"
-        height="48"
-      />
+        <Logo
+          class="header__logo visible-mobile"
+          :global="global"
+          :currentLocale="currentLocale"
+          width="48"
+          height="48"
+        />
         <ShowHamburger
           v-if="global"
           :phones="global.phones"
@@ -105,7 +105,7 @@ watch(currentLocale, () => {
     </div>
   </header>
 
-  <main :class="['main', { 'backdrop': isContacts }]">
+  <main :class="['main', { backdrop: isContacts }]">
     <div class="main__container">
       <slot />
     </div>
@@ -139,11 +139,11 @@ watch(currentLocale, () => {
     column-gap: toRem(22);
     padding-block: toEm(16);
     transition: opacity var(--transition-duration);
-     @include adaptiveValue("height", 65, 55);
+    @include adaptiveValue("height", 65, 55);
 
-     @media (max-width:$mobile){
-         grid-template-columns: auto 1fr;
-     }
+    @media (max-width: $mobile) {
+      grid-template-columns: auto 1fr;
+    }
   }
 
   &__logo {
@@ -154,7 +154,7 @@ watch(currentLocale, () => {
     justify-self: end;
     width: 80%;
 
-    @media (max-width:$mobile){
+    @media (max-width: $mobile) {
       width: 100%;
       grid-column: 2/3;
       grid-row: 1/2;
@@ -162,12 +162,12 @@ watch(currentLocale, () => {
   }
 
   &__cart {
-   translate: 0 toRem(3);
+    translate: 0 toRem(3);
 
-   @media (max-width:$mobile){
-      grid-column: 1/2; 
+    @media (max-width: $mobile) {
+      grid-column: 1/2;
       grid-row: 1/2;
-   }
+    }
   }
 
   &__bottom {
@@ -175,21 +175,21 @@ watch(currentLocale, () => {
   }
 
   &__container-bottom {
-   //  position: relative;
-   //  display: grid;
-   //  grid-template-columns: auto 1fr;
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-   @include adaptiveValue("height", 62, 44);
+    //  position: relative;
+    //  display: grid;
+    //  grid-template-columns: auto 1fr;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    @include adaptiveValue("height", 62, 44);
 
-    @media (min-width:$mobile){
-    position: relative;
-    display: grid;
-    grid-template-columns: auto 1fr;
+    @media (min-width: $mobile) {
+      position: relative;
+      display: grid;
+      grid-template-columns: auto 1fr;
     }
 
-    @media (max-width:$mobile){
+    @media (max-width: $mobile) {
       // grid-template-columns: auto 1fr;
       padding-block: toRem(6);
     }

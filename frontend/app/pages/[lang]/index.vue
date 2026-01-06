@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Category } from "@/types/types";
 import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
+const { isContacts } = inject("visible");
 
 const { find } = useStrapi();
 const { currentLocale } = useLocale();
@@ -60,15 +61,12 @@ const getCategoryLink = (category: Category) => {
 
 <template>
   <Loader v-if="pending" />
-  <section 
-  class="category" 
-  aria-labelledby="category-page"
-  >
-     <UBackground 
-    src="avif-image"
-    :from-strapi="false"
-    class="category__image-background"
-     />
+  <section class="category" aria-labelledby="category-page">
+    <UBackground
+      src="avif-image"
+      :from-strapi="false"
+      class="category__image-background"
+    />
     <!-- <UBackgroundImage
       class="category__image-background"
       src="/image/Image-background.png"
@@ -86,18 +84,15 @@ const getCategoryLink = (category: Category) => {
         v-for="(category, index) in categories"
         :key="category.id"
       >
-        <NuxtLink 
-        class="category__link" 
-        :to="getCategoryLink(category)"
+        <NuxtLink
+          class="category__link"
+          :class="['category__link', { category__link_blur: isContacts }]"
+          :to="getCategoryLink(category)"
         >
           <UImage
             class="category__image"
             v-if="
-            category.image
-            &&
-            category.image.length > 0
-            &&
-            category.image[0]
+              category.image && category.image.length > 0 && category.image[0]
             "
             :src="category.image[0].url"
             :alt="category.name"
@@ -157,6 +152,10 @@ const getCategoryLink = (category: Category) => {
     justify-items: center;
     row-gap: toEm(18);
     margin-block-end: toEm(12);
+
+    &_blur {
+      filter:blur(7px);
+    }
 
     @include hover {
       .category__image {
