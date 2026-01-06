@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import type { Email, Phone } from "../types/types";
+import type { Email, Phone, VisibilityState } from "../types/types";
 import { baseNavigationTranslations } from "~/locales/baseNavigation";
 
-const { isContacts, visibleIsContacts, hideContacts } = inject("visible");
+const { isContacts, visibleIsContacts, hideContacts } = inject<VisibilityState>("visible")!;
 const { formatPhone } = useFormatPhone();
 const { currentLocale } = useLocale();
 

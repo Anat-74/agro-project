@@ -1,10 +1,11 @@
 <script setup lang="ts">
+   import type { VisibilityState } from "../types/types";
 const { find } = useStrapi();
 const searchStore = useSearchStore();
 const { products, totalPages, currentPage } = storeToRefs(searchStore);
 const { currentLocale } = useLocale();
 const config = useRuntimeConfig();
-const { isContacts, hideContacts } = inject("visible");
+const { isContacts } = inject<VisibilityState>("visible")!;
 
 const {
   data: global,

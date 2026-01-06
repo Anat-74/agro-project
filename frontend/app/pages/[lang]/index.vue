@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { Category } from "@/types/types";
+import type { Category, VisibilityState } from "@/types/types";
 import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
-const { isContacts } = inject("visible");
+const { isContacts } = inject<VisibilityState>("visible")!;
 
 const { find } = useStrapi();
 const { currentLocale } = useLocale();
