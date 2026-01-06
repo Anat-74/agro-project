@@ -154,7 +154,8 @@ const getCategoryLink = (category: Category) => {
     margin-block-end: toEm(12);
 
     &_blur {
-      filter:blur(7px);
+      transition: filter .3s;
+      filter:blur(6px);
     }
 
     @include hover {

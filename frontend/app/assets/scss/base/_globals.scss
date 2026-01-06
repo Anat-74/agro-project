@@ -94,7 +94,7 @@ p {
 blockquote {
   font-weight: 700;
   color: var(--color);
-   @include m.containerAdaptive("font-size", 20, 18, 2);
+  @include m.containerAdaptive("font-size", 20, 18, 2);
 }
 
 // ===================================================================

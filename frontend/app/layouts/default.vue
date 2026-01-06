@@ -1,5 +1,5 @@
 <script setup lang="ts">
-   import type { VisibilityState } from "../types/types";
+import type { VisibilityState } from "../types/types";
 const { find } = useStrapi();
 const searchStore = useSearchStore();
 const { products, totalPages, currentPage } = storeToRefs(searchStore);
@@ -106,7 +106,7 @@ watch(currentLocale, () => {
     </div>
   </header>
 
-  <main :class="['main', { backdrop: isContacts }]">
+  <main :class="['main', { 'backdrop-visible': isContacts }]">
     <div class="main__container">
       <slot />
     </div>
@@ -245,6 +245,6 @@ watch(currentLocale, () => {
 
 .main {
   position: relative;
-  transition: opacity var(--transition-duration);
+  transition: background-color .3s ease;
 }
 </style>

@@ -1,100 +1,100 @@
-@use './functions' as *;
-@use './container' as c;
+@use "./functions" as *;
+@use "./container" as c;
 
-.backdrop {
-   opacity: .7;
+.backdrop-visible {
+  background-color: var(--back-drop-main);
 }
 
 .hidden-tablet {
-   @media (max-width: c.$tablet){
-      display: none !important;
-   }
+  @media (max-width: c.$tablet) {
+    display: none !important;
+  }
 }
 
 .hidden-mobile {
-   @media (max-width: c.$mobile){
-      display: none !important;
-   }
+  @media (max-width: c.$mobile) {
+    display: none !important;
+  }
 }
 
 .hidden-mobilesmall {
-   @media (max-width: c.$mobileSmall){
-      display: none !important;
-   }
+  @media (max-width: c.$mobileSmall) {
+    display: none !important;
+  }
 }
 
 .visible-tablet {
-   @media (min-width: c.$tablet){
-       display: none !important;
-   }
+  @media (min-width: c.$tablet) {
+    display: none !important;
+  }
 }
 
 .visible-mobile {
-   @media (min-width: c.$mobile){
-       display: none !important;
-   }
+  @media (min-width: c.$mobile) {
+    display: none !important;
+  }
 }
 
 .iconify--my-icon {
-   translate: 0 toRem(2);
-   color: var(--secondary-color);
+  translate: 0 toRem(2);
+  color: var(--secondary-color);
 }
 
 .loader {
-   translate: 0 100%;
+  translate: 0 100%;
 }
 
 .select-wrapper {
-   position: relative;
+  position: relative;
 
- &::before,
-   &::after{
-      content: '';
-      pointer-events: none;
-      position: absolute;
-      top: calc(50% - toRem(1));
-      width: toRem(6);
-      height: toRem(2);
-      background-color: var(--warning-color);
-   }
-   &::before {
-      right: toRem(9);
-      transform: rotate(-125deg);
-   }
-   &::after {
-      right: toRem(6);
-      transform: rotate(125deg);
-   }
+  &::before,
+  &::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    top: calc(50% - toRem(1));
+    width: toRem(6);
+    height: toRem(2);
+    background-color: var(--warning-color);
+  }
+  &::before {
+    right: toRem(9);
+    transform: rotate(-125deg);
+  }
+  &::after {
+    right: toRem(6);
+    transform: rotate(125deg);
+  }
 }
 .select {
-   width: toEm(154);
-   padding-inline: toEm(4);
-   padding-block: toRem(1);
-   border: toRem(2) solid var(--warning-color);
-   border-radius: toEm(4, 16);
-   outline: none;
-   appearance: none;
-   cursor: pointer;
-   background-color: var(--light-color);
+  width: toEm(154);
+  padding-inline: toEm(4);
+  padding-block: toRem(1);
+  border: toRem(2) solid var(--warning-color);
+  border-radius: toEm(4, 16);
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  background-color: var(--light-color);
 
-   @media (max-width:c.$mobile){
-      width: toEm(112);
-   }
+  @media (max-width: c.$mobile) {
+    width: toEm(112);
+  }
 }
 .option {
-   border-radius: toRem(6);
+  border-radius: toRem(6);
 }
 
 // Класс для визуального скрытия элемента, но сохранения доступности для скринридеров
 .visually-hidden {
-   position: absolute !important;
-   width: 1px !important;
-   height: 1px !important;
-   margin: -1px !important;
-   border: 0 !important;
-   padding: 0 !important;
-   white-space: nowrap !important;
-   clip-path: inset(100%) !important;
-   clip: rect(0 0 0 0) !important;
-   overflow: hidden !important;
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  border: 0 !important;
+  padding: 0 !important;
+  white-space: nowrap !important;
+  clip-path: inset(100%) !important;
+  clip: rect(0 0 0 0) !important;
+  overflow: hidden !important;
 }
