@@ -133,7 +133,6 @@ const isContacts = ref<boolean>(false);
 const visibleIsContacts = () => (isContacts.value = true);
 const hideContacts = () => (isContacts.value = false);
 
-// Предоставляем глобальное состояние
 const VISIBILITY_KEY = "visible";
 provide(VISIBILITY_KEY, {
   isContacts,

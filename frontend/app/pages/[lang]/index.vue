@@ -57,6 +57,8 @@ const getCategoryLink = (category: Category) => {
     return `/${currentLocale.value}/${category.slug}`;
   }
 };
+
+// почему не вычислительное свойство computed???
 </script>
 
 <template>
@@ -154,7 +156,7 @@ const getCategoryLink = (category: Category) => {
     margin-block-end: toEm(12);
 
     &_blur {
-      transition: filter .3s;
+      transition: filter var(--transition-duration);
       filter:blur(6px);
     }
 
