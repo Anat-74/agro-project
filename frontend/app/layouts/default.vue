@@ -243,8 +243,4 @@ watch(currentLocale, () => {
   }
 }
 
-.main {
-  position: relative;
-  transition: background-color var(--transition-duration);
-}
 </style>

@@ -154,7 +154,9 @@ provide(VISIBILITY_KEY, {
   flex-direction: column;
 
   main {
-    flex: 1 1 auto;
+   flex: 1 1 auto;
+   position: relative;
+   transition: background-color var(--transition-duration);
   }
 }
 </style>

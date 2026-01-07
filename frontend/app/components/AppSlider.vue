@@ -4,7 +4,6 @@ const slides = ref([
   { id: 2, content: 'Слайд 2' },
   { id: 3, content: 'Слайд 3' },
   { id: 4, content: 'Слайд 4' },
-  // Добавьте больше слайдов по необходимости
 ])
 </script>
 
@@ -138,7 +137,6 @@ const slides = ref([
 //=====================
 
 <script setup lang="ts">
-import { ref, onUnmounted } from 'vue'
 
 const slides = [1, 2, 3, 4]
 const container = ref<HTMLElement>()
