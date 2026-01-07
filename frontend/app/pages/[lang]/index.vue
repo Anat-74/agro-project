@@ -75,7 +75,7 @@ const getCategoryLink = (category: Category) => {
       alt="фоновое изображение"
       :from-strapi="false"
     /> -->
-
+<AppSlider />
     <h1 id="category-page" class="visually-hidden">
       {{ visuallyHiddenTranslations[currentLocale].sectionLangTitle }}
     </h1>
