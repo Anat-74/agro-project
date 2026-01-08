@@ -63,8 +63,14 @@ const getCategoryLink = (category: Category) => {
 
 <template>
   <Loader v-if="pending" />
-  <AppSlider />
-
+  <AppSlider
+    :slides="[
+      { id: 1, content: 'Слайд 1' },
+      { id: 2, content: 'Слайд 2' },
+      { id: 3, content: 'Слайд 3' },
+      { id: 4, content: 'Слайд 4' },
+    ]"
+  />
 
   <section class="category" aria-labelledby="category-page">
     <UBackground
@@ -153,7 +159,7 @@ const getCategoryLink = (category: Category) => {
 
     &_blur {
       transition: filter var(--transition-duration);
-      filter:blur(6px);
+      filter: blur(6px);
     }
 
     @include hover {

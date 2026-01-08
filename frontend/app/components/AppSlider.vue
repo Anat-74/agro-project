@@ -1,102 +1,129 @@
 <script setup lang="ts">
-const container = useTemplateRef("container");
-const slides = [1, 2, 3, 4]
-const active = ref(1)
+interface Slide {
+  id: number;
+  content: any;
+}
 
-let rafId: number
+interface Props {
+  slides: Slide[];
+  height?: string;
+  showPagination?: boolean;
+  showNavigation?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  height: "300px",
+  showPagination: true,
+  showNavigation: true,
+});
+
+const container = useTemplateRef("container");
+const active = ref(1);
+
+let rafId: number;
 
 const go = (n: number) => {
-  const width = container.value?.clientWidth || 0
-  container.value?.scrollTo({ 
-    left: (n - 1) * width, 
-    behavior: 'smooth' 
-  })
-  active.value = n
-}
+  const width = container.value?.clientWidth || 0;
+  container.value?.scrollTo({
+    left: (n - 1) * width,
+    behavior: "smooth",
+  });
+  active.value = n;
+};
 
 const handleScroll = () => {
-  cancelAnimationFrame(rafId)
+  cancelAnimationFrame(rafId);
   rafId = requestAnimationFrame(() => {
-    const width = container.value?.clientWidth || 1
-    const newActive = Math.round((container.value?.scrollLeft || 0) / width) + 1
-    
+    const width = container.value?.clientWidth || 1;
+    const newActive =
+      Math.round((container.value?.scrollLeft || 0) / width) + 1;
+
     if (newActive !== active.value) {
-      active.value = newActive
+      active.value = newActive;
     }
-  })
-}
+  });
+};
 
-const next = () => active.value < slides.length && go(active.value + 1)
-const prev = () => active.value > 1 && go(active.value - 1)
+const next = () => active.value < props.slides.length && go(active.value + 1);
+const prev = () => active.value > 1 && go(active.value - 1);
 
-onUnmounted(() => cancelAnimationFrame(rafId))
+onUnmounted(() => cancelAnimationFrame(rafId));
 </script>
 
 <template>
-   <section class="slider">
+  <div class="slider">
     <div 
-      ref="container"
-      class="slider__container"
-      @scroll="handleScroll"
+    ref="container" 
+    class="slider__container" 
+    @scroll="handleScroll"
     >
-        <div 
-          v-for="slide in slides"
-          :key="slide"
-          class="slider__slide"
+      <div 
+      v-for="slide in props.slides" 
+      :key="slide.id" 
+      class="slider__slide"
+      >
+        <slot 
+        :slide="slide" 
+        :index="slide.id"
         >
-          Слайд {{ slide }}
-        </div>
+          {{ slide.content }}
+        </slot>
+      </div>
     </div>
-    
+
     <UButton
-    @click="prev"
-    :disabled="active === 1"
-    icon="mdi:chevron-left"
-    variant="slide-prev"
-    aria-label="Предыдущий слайд"
+      v-if="props.showNavigation"
+      @click="prev"
+      :disabled="active === 1"
+      icon="mdi:chevron-left"
+      variant="slide-prev"
+      aria-label="Предыдущий слайд"
     />
 
-   <UButton
-    @click="next"
-    :disabled="active === slides.length"
-    icon="mdi:chevron-left"
-    variant="slide-next"
-    aria-label="Следующий слайд"
+    <UButton
+      v-if="props.showNavigation"
+      @click="next"
+      :disabled="active === props.slides.length"
+      icon="mdi:chevron-left"
+      variant="slide-next"
+      aria-label="Следующий слайд"
     />
-    
-    <div class="slider__pagination">
+
+    <div v-if="props.showPagination" class="slider__pagination">
       <button
-        v-for="slide in slides"
-        :key="slide"
+        v-for="slide in props.slides"
+        :key="slide.id"
         class="slider__pagination-dot"
-        :class="{ 'active': active === slide }"
-        @click="go(slide)"
-        :aria-label="`Перейти к слайду ${slide}`"
-        :aria-current="active === slide ? 'true' : undefined"
+        :class="{ active: active === slide.id }"
+        @click="go(slide.id)"
+        :aria-label="`Перейти к слайду ${slide.id}`"
+        :aria-current="active === slide.id ? 'true' : undefined"
       />
     </div>
-    </section>
+   </div>
 </template>
 
 <style lang="scss" scoped>
+.slider {
+  position: relative;
+  width: 100%;
+  height: v-bind("props.height");
+  padding: 12px;
 
-  .slider {
-    width: 100%;
-    height: 300px;
-    padding: 12px;
-
-    &__container {
+  &__container {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     display: flex;
     height: 100%;
 
-    &::-webkit-scrollbar { display: none; }
+    &::-webkit-scrollbar {
+      display: none;
+    }
     -ms-overflow-style: none;
     scrollbar-width: none;
-   }
-    
+  }
+
   &__slide {
     flex: 0 0 100%;
     scroll-snap-align: start;
@@ -127,14 +154,16 @@ onUnmounted(() => cancelAnimationFrame(rafId))
     cursor: pointer;
     transition: all 0.3s;
     padding: 0;
-    
-    &:hover { background: #999; }
-    
+
+    &:hover {
+      background: #999;
+    }
+
     &.active {
       background: var(--primary-color);
       transform: scale(1.2);
       border-color: white;
-      }
-   }
+    }
   }
+}
 </style>
