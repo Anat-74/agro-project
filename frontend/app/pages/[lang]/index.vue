@@ -63,19 +63,15 @@ const getCategoryLink = (category: Category) => {
 
 <template>
   <Loader v-if="pending" />
+  <AppSlider />
+
+
   <section class="category" aria-labelledby="category-page">
     <UBackground
       src="avif-image"
       :from-strapi="false"
       class="category__image-background"
     />
-    <!-- <UBackgroundImage
-      class="category__image-background"
-      src="/image/Image-background.png"
-      alt="фоновое изображение"
-      :from-strapi="false"
-    /> -->
-<AppSlider />
     <h1 id="category-page" class="visually-hidden">
       {{ visuallyHiddenTranslations[currentLocale].sectionLangTitle }}
     </h1>

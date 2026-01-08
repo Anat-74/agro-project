@@ -22,7 +22,9 @@ interface Props {
     | "go-to-top"
     | "pagination"
     | "close"
-    | "color-theme";
+    | "color-theme"
+    | "slide-prev"
+    | "slide-next"
   size?: "small" | "normal" | "large";
   isLoading?: boolean;
   isDisabled?: boolean;
@@ -268,13 +270,43 @@ defineEmits<Emits>();
     }
   }
 
+  &_slide-prev,
+  &_slide-next{
+    position: absolute;
+    top: 50%;
+    translate: 0 -50%;
+    width: toRem(44);
+    height: toRem(44);
+    border-radius: 50%;
+    background-color: var(--light-color);
+    transition: background-color var(--transition-duration);
+
+    @include hover {
+      &:not(:disabled) {
+       background-color: var(--warning-hover);
+      }
+    }
+  }
+
+  &_slide-prev {
+   left: 0;
+  }
+
+    &_slide-next {
+      right: 0;
+
+      svg {
+         rotate: 180deg;
+      }
+  }
+
   &_go-forward-back {
     align-self: start;
     padding: toRem(4);
     border-radius: toRem(6);
     border: 1px solid var(--secondary-color);
     transition: color var(--transition-duration),
-      scale var(--transition-duration);
+    scale var(--transition-duration);
 
     svg {
       color: var(--warning-color);
