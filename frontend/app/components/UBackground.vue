@@ -1,7 +1,7 @@
 <script setup lang="ts">
 interface Props {
-  src: string; // Объединяем name и path в один пропс src
-  fromStrapi?: boolean; // Флаг для определения, загружается ли изображение из Strapi
+  src: string;
+  fromStrapi?: boolean;
   sizes?: boolean;
   variant?: "hero" | "card" | "modal" | "clean" | "feature";
   effect?: "parallax" | "kenburns" | "zoom" | "none";
@@ -124,8 +124,7 @@ const backgroundStyle = computed(() => {
 
   /* ========== АНИМАЦИЯ ПОЯВЛЕНИЯ ========== */
   opacity: 1;
-  transition: opacity 0.3s ease;
-  animation: app-bg-fade-in .4s ease;
+  transition: opacity 2s ease;
 
   @starting-style {
     opacity: 0;
@@ -143,10 +142,7 @@ const backgroundStyle = computed(() => {
   }
 
   /* ========== ВАРИАНТЫ КОМПОНЕНТА ========== */
-  /* Clean (по умолчанию) - только фон */
-  &.variant-clean {
-    /* Без дополнительных стилей */
-  }
+  /*.variant-clean - Clean (по умолчанию) - только фон */
 
   /* Hero вариант */
   &.variant-hero {
@@ -322,14 +318,6 @@ const backgroundStyle = computed(() => {
 }
 
 /* ========== АНИМАЦИИ ========== */
-@keyframes app-bg-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
 
 @keyframes kenburns {
   0% {

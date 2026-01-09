@@ -107,9 +107,7 @@ watch(currentLocale, () => {
   </header>
 
   <main :class="['main', { 'backdrop-visible': isContacts }]">
-    <div class="main__container">
       <slot />
-    </div>
   </main>
 
   <Footer

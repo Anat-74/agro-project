@@ -1,0 +1,42 @@
+{
+  "collectionName": "components_sliders_hero_sliders",
+  "info": {
+    "displayName": "Hero-slider"
+  },
+  "options": {},
+  "attributes": {
+    "BgImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "Image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "TextTop": {
+      "type": "string"
+    },
+    "Heading": {
+      "type": "string"
+    },
+    "SaleText": {
+      "type": "string"
+    },
+    "TextBottom": {
+      "type": "string"
+    },
+    "Text": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

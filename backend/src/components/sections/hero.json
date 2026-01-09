@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_sections_heroes",
+  "info": {
+    "displayName": "Hero"
+  },
+  "options": {},
+  "attributes": {
+    "IconShipping": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "TitleShipping": {
+      "type": "string"
+    },
+    "TextShipping": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

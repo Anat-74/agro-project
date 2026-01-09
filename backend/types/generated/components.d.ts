@@ -77,6 +77,18 @@ export interface LegalBankDetails extends Struct.ComponentSchema {
   };
 }
 
+export interface SectionsHero extends Struct.ComponentSchema {
+  collectionName: 'components_sections_heroes';
+  info: {
+    displayName: 'Hero';
+  };
+  attributes: {
+    IconShipping: Schema.Attribute.Media<'images'>;
+    TextShipping: Schema.Attribute.String;
+    TitleShipping: Schema.Attribute.String;
+  };
+}
+
 export interface SeoSeo extends Struct.ComponentSchema {
   collectionName: 'components_seo_seos';
   info: {
@@ -90,6 +102,22 @@ export interface SeoSeo extends Struct.ComponentSchema {
   };
 }
 
+export interface SlidersHeroSlider extends Struct.ComponentSchema {
+  collectionName: 'components_sliders_hero_sliders';
+  info: {
+    displayName: 'Hero-slider';
+  };
+  attributes: {
+    BgImage: Schema.Attribute.Media<'images'>;
+    Heading: Schema.Attribute.String;
+    Image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    SaleText: Schema.Attribute.String;
+    Text: Schema.Attribute.String;
+    TextBottom: Schema.Attribute.String;
+    TextTop: Schema.Attribute.String;
+  };
+}
+
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
@@ -98,7 +126,9 @@ declare module '@strapi/strapi' {
       'contacts.social': ContactsSocial;
       'layout.footer': LayoutFooter;
       'legal.bank-details': LegalBankDetails;
+      'sections.hero': SectionsHero;
       'seo.seo': SeoSeo;
+      'sliders.hero-slider': SlidersHeroSlider;
     }
   }
 }

@@ -279,25 +279,35 @@ defineEmits<Emits>();
     height: toRem(44);
     border-radius: 50%;
     background-color: var(--light-color);
-    transition: background-color var(--transition-duration);
+    transition: all var(--transition-duration);
+
+    svg {
+      font-size: toEm(24);
+      color: var(--success-color);
+    }
 
     @include hover {
       &:not(:disabled) {
-       background-color: var(--warning-hover);
+       background-color: var(--success-color);
+
+       svg {
+         scale: 1.2;
+         color: var(--light-color);
+       }
       }
     }
   }
 
   &_slide-prev {
-   left: 0;
+   left: 10%;
   }
 
-    &_slide-next {
-      right: 0;
+   &_slide-next {
+   right: 10%;
 
-      svg {
-         rotate: 180deg;
-      }
+    svg {
+       rotate: 180deg;
+    }
   }
 
   &_go-forward-back {

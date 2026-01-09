@@ -43,7 +43,7 @@ const handleScroll = () => {
     }
   });
 };
-// Почему не используется computed???
+
 const next = () => active.value < props.slides.length && go(active.value + 1);
 const prev = () => active.value > 1 && go(active.value - 1);
 
@@ -66,9 +66,9 @@ onUnmounted(() => cancelAnimationFrame(rafId));
         :slide="slide" 
         :index="slide.id"
         >
-         <div 
-         class="slider__slide-content"
-         >{{ slide.content }}
+            <div 
+            class="slider__slide-content"
+            >{{ slide.content }}
          </div>
         </slot>
       </div>
@@ -114,7 +114,6 @@ onUnmounted(() => cancelAnimationFrame(rafId));
   position: relative;
   width: 100%;
   height: v-bind("props.height");
-  background-color: var(--primary-color);
 //   height: 100%;
 
   &__container {
@@ -137,6 +136,7 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     display: grid;
     place-items: center;
     font-size: toRem(32);
+    background-color: var(--border-color);
     color: var(--color);
 
     &:first-child {
@@ -171,12 +171,12 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     border-radius: 50%;
     cursor: pointer;
     padding: 0;
-    background-color: var(--light-color);
     transition: background-color var(--transition-duration);
+    background-color: var(--light-color);
 
     &_active {
       cursor: default;
-      scale: 1.3;
+      scale: 1.2;
       border-color: var(--light-color);
       background-color: var(--primary-color);
     }

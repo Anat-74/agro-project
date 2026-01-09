@@ -78,6 +78,7 @@ const getCategoryLink = (category: Category) => {
       :from-strapi="false"
       class="category__image-background"
     />
+    <div class="category__container">
     <h1 id="category-page" class="visually-hidden">
       {{ visuallyHiddenTranslations[currentLocale].sectionLangTitle }}
     </h1>
@@ -113,6 +114,7 @@ const getCategoryLink = (category: Category) => {
         </NuxtLink>
       </li>
     </ul>
+    </div>
   </section>
 
   <span v-if="error" class="error">
@@ -130,8 +132,6 @@ const getCategoryLink = (category: Category) => {
     z-index: -1;
     width: 100%;
     height: 100%;
-  }
-  &__title {
   }
 
   &__list {
