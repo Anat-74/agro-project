@@ -55,8 +55,8 @@ defineEmits<Emits>();
     :class="[
       'btn',
       `btn_${variant}`,
-      { btn_loading: isLoading, btn_disabled: isDisabled },
-      { btn_selected: !colorMode.unknown && theme === colorMode.value },
+      { 'btn_loading': isLoading, btn_disabled: isDisabled },
+      { 'btn_selected': !colorMode.unknown && theme === colorMode.value },
       { 'btn_hamburger--is-open': isOpen && variant === 'hamburger' },
       size === 'large' ? 'btn_large' : '',
       icon ? 'btn_icon' : '',

@@ -96,7 +96,9 @@ const getCategoryLink = (category: Category) => {
           <UImage
             class="category__image"
             v-if="
-              category.image && category.image.length > 0 && category.image[0]
+            category.image
+            && category.image.length > 0
+            && category.image[0]
             "
             :src="category.image[0].url"
             :alt="category.name"

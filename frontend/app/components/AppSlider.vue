@@ -12,7 +12,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  height: "300px",
+  height: "500px",
   showPagination: true,
   showNavigation: true,
 });
@@ -57,16 +57,19 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     class="slider__container" 
     @scroll="handleScroll"
     >
-      <div 
+      <div
+      class="slider__slide"
       v-for="slide in props.slides" 
       :key="slide.id" 
-      class="slider__slide"
       >
         <slot 
         :slide="slide" 
         :index="slide.id"
         >
-          {{ slide.content }}
+            <div 
+            class="slider__slide-content"
+            >{{ slide.content }}
+         </div>
         </slot>
       </div>
     </div>
@@ -74,7 +77,6 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     <UButton
       v-if="props.showNavigation"
       @click="prev"
-      :disabled="active === 1"
       icon="mdi:chevron-left"
       variant="slide-prev"
       aria-label="Предыдущий слайд"
@@ -89,18 +91,22 @@ onUnmounted(() => cancelAnimationFrame(rafId));
       aria-label="Следующий слайд"
     />
 
-    <div v-if="props.showPagination" class="slider__pagination">
+    <div 
+    class="slider__pagination" 
+    v-if="props.showPagination"
+    >
       <button
         v-for="slide in props.slides"
         :key="slide.id"
-        class="slider__pagination-dot"
-        :class="{ active: active === slide.id }"
+        :class="[
+      'slider__pagination-dot', { 'slider__pagination-dot_active': active === slide.id }
+      ]"
         @click="go(slide.id)"
         :aria-label="`Перейти к слайду ${slide.id}`"
         :aria-current="active === slide.id ? 'true' : undefined"
       />
     </div>
-   </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -108,7 +114,6 @@ onUnmounted(() => cancelAnimationFrame(rafId));
   position: relative;
   width: 100%;
   height: v-bind("props.height");
-  padding: 12px;
 
   &__container {
     overflow-x: auto;
@@ -126,44 +131,60 @@ onUnmounted(() => cancelAnimationFrame(rafId));
 
   &__slide {
     flex: 0 0 100%;
-    scroll-snap-align: start;
+    scroll-snap-align: center;
     display: grid;
     place-items: center;
     font-size: 2rem;
     background-color: var(--border-color);
     color: var(--color);
+
+    &:first-child {
+      scroll-snap-align: start;
+      .slider__slide-content {
+         translate: toRem(16);
+   }
+}
+
+    &:last-child {
+      scroll-snap-align: end;
+      .slider__slide-content {
+         translate: toRem(-16);
+      }
+    }
   }
 
   &__pagination {
     display: flex;
     justify-content: center;
-    gap: 0.5rem;
-    padding: 1rem;
+    column-gap: toRem(9);
     position: absolute;
     left: 50%;
     translate: -50% 0;
-    bottom: 0;
+    bottom: toRem(12);
   }
 
   &__pagination-dot {
-    width: 0.75rem;
-    height: 0.75rem;
-    background: #ccc;
-    border: 2px solid transparent;
+    width: toRem(12);
+    height: toRem(12);
+    border: toRem(2) solid var(--transparent-color);
     border-radius: 50%;
     cursor: pointer;
-    transition: all 0.3s;
     padding: 0;
+    transition: background-color var(--transition-duration);
+    background-color: var(--light-color);
 
-    &:hover {
-      background: #999;
+    &_active {
+      cursor: default;
+      scale: 1.2;
+      border-color: var(--light-color);
+      background-color: var(--primary-color);
     }
 
-    &.active {
-      background: var(--primary-color);
-      transform: scale(1.2);
-      border-color: white;
-    }
+      @include hover {
+         &:not(.slider__pagination-dot_active) {
+         background-color: var(--warning-color);
+      }
+   }
   }
 }
 </style>
