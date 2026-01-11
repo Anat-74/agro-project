@@ -14,25 +14,6 @@ const {
 } = useAsyncData<any>(`global-${currentLocale.value}`, async () => {
   const response = await find("global", {
     filters: { locale: currentLocale.value },
-    populate: {
-      footer: {
-        populate: {
-          logo: {
-            fields: ["alternativeText", "url"],
-          },
-        },
-      },
-      socials: {
-        populate: {
-          icon: {
-            fields: ["alternativeText", "url"],
-          },
-        },
-      },
-      legal: true,
-      phones: true,
-      email: true,
-    },
   });
 
   if (!response.data) {
@@ -45,6 +26,7 @@ const {
 watch(currentLocale, () => {
   refresh();
 });
+console.debug('global', global.value)
 </script>
 
 <template>
@@ -107,7 +89,7 @@ watch(currentLocale, () => {
   </header>
 
   <main :class="['main', { 'backdrop-visible': isContacts }]">
-      <slot />
+    <slot />
   </main>
 
   <Footer
@@ -126,8 +108,8 @@ watch(currentLocale, () => {
 
 <style lang="scss" scoped>
 .header {
-//   background-color: var(--success-color);
-padding-block-end: toRem(22);
+  //   background-color: var(--success-color);
+  padding-block-end: toRem(22);
 
   &__banner {
   }
@@ -175,7 +157,7 @@ padding-block-end: toRem(22);
   }
 
   &__container-bottom {
-   //   position: relative;
+    //   position: relative;
     //  display: grid;
     //  grid-template-columns: auto 1fr;
     display: flex;
@@ -241,5 +223,4 @@ padding-block-end: toRem(22);
     background-color: var(--active-color);
   }
 }
-
 </style>
