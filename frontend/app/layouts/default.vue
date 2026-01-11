@@ -42,8 +42,6 @@ const {
   return response.data;
 });
 
-console.debug("Global:", global.value)
-
 watch(currentLocale, () => {
   refresh();
 });

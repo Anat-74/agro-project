@@ -61,41 +61,27 @@ const getCategoryLink = (category: Category) => {
 
 //==========================================================
 
-const { data: homePage, refresh } = useAsyncData(`home-page-${currentLocale.value}`, async () => {
-  const response = await find("home-page", {
-    filters: { locale: currentLocale.value },
-    populate: {
-       sections: {
-          on: {
-            'sliders.hero-slider': {
-               populate: {
-               image: {
-               fields: ["alternativeText", "url"],
-               },
-               bgImage: {
-               fields: ["alternativeText", "url"],
-                  },
-               }
-            }
-         }
-       }
+const { data: homePage, refresh } = useAsyncData(
+  `home-page-${currentLocale.value}`,
+  async () => {
+    const response = await find("home-page", {
+      filters: { locale: currentLocale.value },
+    });
+
+    if (!response) {
+      throw createError({ statusCode: 404, message: "Home page not found" });
     }
-  })
-
-  if (!response) {
-    throw createError({statusCode: 404, message: "Home page not found"})
+    return response.data;
   }
-  return response.data;
-})
+);
 
-console.debug('Home page data:', homePage.value);
-
+console.debug("Home page data:", homePage.value);
 </script>
 
 <template>
   <Loader v-if="pending" />
   <AppSlider
-  class="category-slider"
+    class="category-slider"
     :slides="[
       { id: 1, content: 'Слайд 1' },
       { id: 2, content: 'Слайд 2' },
@@ -104,51 +90,46 @@ console.debug('Home page data:', homePage.value);
     ]"
   />
 
-  <section 
-  class="category" 
-  aria-labelledby="category-page"
-  >
+  <section class="category" aria-labelledby="category-page">
     <UBackground
       src="avif-image"
       :from-strapi="false"
       class="category__image-background"
     />
-      <h1 id="category-page" class="visually-hidden">
+    <h1 id="category-page" class="visually-hidden">
       {{ visuallyHiddenTranslations[currentLocale].sectionLangTitle }}
     </h1>
     <div class="category__container">
-    <h2 class="category__title">Топ категории</h2>
-    <ul class="category__list" v-if="categories">
-      <li
-        class="category__item"
-        v-for="(category, index) in categories"
-        :key="category.id"
-      >
-        <NuxtLink
-          class="category__link"
-          :class="['category__link', { category__link_blur: isContacts }]"
-          :to="getCategoryLink(category)"
+      <h2 class="category__title">Топ категории</h2>
+      <ul class="category__list" v-if="categories">
+        <li
+          class="category__item"
+          v-for="(category, index) in categories"
+          :key="category.id"
         >
-          <UImage
-            class="category__image"
-            v-if="
-            category.image
-            && category.image.length > 0
-            && category.image[0]
-            "
-            :src="category.image[0].url"
-            :alt="category.name"
-            :smoothLoad="true"
-            :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
-            :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
-            width="94"
-            height="94"
-          />
+          <NuxtLink
+            class="category__link"
+            :class="['category__link', { category__link_blur: isContacts }]"
+            :to="getCategoryLink(category)"
+          >
+            <UImage
+              class="category__image"
+              v-if="
+                category.image && category.image.length > 0 && category.image[0]
+              "
+              :src="category.image[0].url"
+              :alt="category.name"
+              :smoothLoad="true"
+              :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
+              :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
+              width="94"
+              height="94"
+            />
 
-          <h3 class="category__card-title">{{ category.name }}</h3>
-        </NuxtLink>
-      </li>
-    </ul>
+            <h3 class="category__card-title">{{ category.name }}</h3>
+          </NuxtLink>
+        </li>
+      </ul>
     </div>
   </section>
 
@@ -158,8 +139,8 @@ console.debug('Home page data:', homePage.value);
 </template>
 
 <style lang="scss" scoped>
-   .category-slider {
-   }
+.category-slider {
+}
 
 .category {
   min-height: var(--min-height);
