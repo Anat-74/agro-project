@@ -47,28 +47,49 @@ const updateHead = () => {
       // Подключение шрифтов с preload
       {
         rel: "preload",
-        href: "/fonts/Montserrat-Medium.woff2",
+        href: "/fonts/Yellowtail-Regular.woff2",
         as: "font",
         type: "font/woff2",
         crossorigin: "anonymous",
       },
       {
         rel: "preload",
-        href: "/fonts/Montserrat-MediumItalic.woff2",
+        href: "/fonts/Roboto-Regular.woff2",
         as: "font",
         type: "font/woff2",
         crossorigin: "anonymous",
       },
       {
         rel: "preload",
-        href: "/fonts/Montserrat-Regular.woff2",
+        href: "/fonts/Roboto-Bold.woff2",
         as: "font",
         type: "font/woff2",
         crossorigin: "anonymous",
       },
       {
         rel: "preload",
-        href: "/fonts/RubikBurned-Regular.woff2",
+        href: "/fonts/Roboto-ExtraBold.woff2",
+        as: "font",
+        type: "font/woff2",
+        crossorigin: "anonymous",
+      },
+      {
+        rel: "preload",
+        href: "/fonts/OpenSans-Regular.woff2",
+        as: "font",
+        type: "font/woff2",
+        crossorigin: "anonymous",
+      },
+      {
+        rel: "preload",
+        href: "/fonts/OpenSans-SemiBold.woff2",
+        as: "font",
+        type: "font/woff2",
+        crossorigin: "anonymous",
+      },
+      {
+        rel: "preload",
+        href: "/fonts/OpenSans-Bold.woff2",
         as: "font",
         type: "font/woff2",
         crossorigin: "anonymous",
@@ -154,8 +175,8 @@ provide(VISIBILITY_KEY, {
   flex-direction: column;
 
   main {
-   flex: 1 1 auto;
-   transition: background-color var(--transition-duration);
+    flex: 1 1 auto;
+    transition: background-color var(--transition-duration);
   }
 }
 </style>

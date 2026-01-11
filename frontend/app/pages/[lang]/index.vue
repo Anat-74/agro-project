@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Category, VisibilityState } from "@/types/types";
-import { populate } from "dotenv";
 import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
 const { isContacts } = inject<VisibilityState>("visible")!;
 

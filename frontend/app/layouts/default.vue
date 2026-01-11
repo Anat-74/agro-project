@@ -26,7 +26,8 @@ const {
 watch(currentLocale, () => {
   refresh();
 });
-console.debug('global', global.value)
+
+console.debug("global data:", global.value)
 </script>
 
 <template>
