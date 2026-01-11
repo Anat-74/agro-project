@@ -42,6 +42,8 @@ const {
   return response.data;
 });
 
+console.debug("Global:", global.value)
+
 watch(currentLocale, () => {
   refresh();
 });
@@ -126,7 +128,8 @@ watch(currentLocale, () => {
 
 <style lang="scss" scoped>
 .header {
-  margin-block-end: toRem(22);
+//   background-color: var(--success-color);
+padding-block-end: toRem(22);
 
   &__banner {
   }
@@ -170,17 +173,17 @@ watch(currentLocale, () => {
   }
 
   &__bottom {
-    background-color: var(--light-color);
+    background-color: var(--bg-navigation);
   }
 
   &__container-bottom {
-    //  position: relative;
+   //   position: relative;
     //  display: grid;
     //  grid-template-columns: auto 1fr;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    @include adaptiveValue("height", 62, 44);
+    @include adaptiveValue("height", 64, 44);
 
     @media (min-width: $mobile) {
       position: relative;

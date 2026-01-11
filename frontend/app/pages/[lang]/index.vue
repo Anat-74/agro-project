@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Category, VisibilityState } from "@/types/types";
+import { populate } from "dotenv";
 import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
 const { isContacts } = inject<VisibilityState>("visible")!;
 
@@ -56,14 +57,45 @@ const getCategoryLink = (category: Category) => {
   else {
     return `/${currentLocale.value}/${category.slug}`;
   }
-};
+}; // почему не вычислительное свойство computed???
 
-// почему не вычислительное свойство computed???
+//==========================================================
+
+const { data: homePage, refresh } = useAsyncData(`home-page-${currentLocale.value}`, async () => {
+  const response = await find("home-page", {
+    filters: { locale: currentLocale.value },
+    populate: {
+       sections: {
+          on: {
+            'sliders.hero-slider': {
+               populate: {
+               image: {
+               fields: ["alternativeText", "url"],
+               },
+               bgImage: {
+               fields: ["alternativeText", "url"],
+                  },
+               }
+            }
+         }
+       }
+    }
+  })
+
+  if (!response) {
+    throw createError({statusCode: 404, message: "Home page not found"})
+  }
+  return response.data;
+})
+
+console.debug('Home page data:', homePage.value);
+
 </script>
 
 <template>
   <Loader v-if="pending" />
   <AppSlider
+  class="category-slider"
     :slides="[
       { id: 1, content: 'Слайд 1' },
       { id: 2, content: 'Слайд 2' },
@@ -72,16 +104,19 @@ const getCategoryLink = (category: Category) => {
     ]"
   />
 
-  <section class="category" aria-labelledby="category-page">
+  <section 
+  class="category" 
+  aria-labelledby="category-page"
+  >
     <UBackground
       src="avif-image"
       :from-strapi="false"
       class="category__image-background"
     />
-    <div class="category__container">
-    <h1 id="category-page" class="visually-hidden">
+      <h1 id="category-page" class="visually-hidden">
       {{ visuallyHiddenTranslations[currentLocale].sectionLangTitle }}
     </h1>
+    <div class="category__container">
     <h2 class="category__title">Топ категории</h2>
     <ul class="category__list" v-if="categories">
       <li
@@ -123,6 +158,9 @@ const getCategoryLink = (category: Category) => {
 </template>
 
 <style lang="scss" scoped>
+   .category-slider {
+   }
+
 .category {
   min-height: var(--min-height);
 

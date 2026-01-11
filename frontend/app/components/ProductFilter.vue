@@ -133,7 +133,7 @@ onUnmounted(() => {
          right: 0;
          width: toRem(55);
          height: 100%;
-         border: toRem(1) solid whitesmoke;
+         border: toEm(2) solid var(--success-color);
          border-radius: 0 toRem(25) toRem(25) 0;
          background-color: var(--success-color);
       }
@@ -145,10 +145,10 @@ onUnmounted(() => {
       height: 100%;
       padding-inline-start: toRem(42);
       border-radius: toEm(25);
-      border: toRem(2) solid whitesmoke;
+      border: toEm(2) solid var(--bg-navigation);
       font-size: toEm(18);
       color: var(--color);
-      background-color: var(--light-color);
+      background-color: var(--bg-product);
 
       &::placeholder {
       color: var(--success-color);

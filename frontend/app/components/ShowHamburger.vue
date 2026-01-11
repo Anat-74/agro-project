@@ -282,7 +282,7 @@ watch(currentLocale, () => {
   align-items: center;
   border-left: toEm(9) solid var(--bg);
   border-right: toEm(9) solid var(--bg);
-  background-color: var(--light-color);
+  background-color: var(--whitesmoke-color);
   @include adaptiveValue("width", 320, 235);
 
   @media (max-width: $mobile) {
@@ -348,11 +348,13 @@ watch(currentLocale, () => {
 
   &__items {
     min-height: var(--min-height);
-    display: grid;
+    display: flex;
+    flex-direction: column;
+    align-items: end;
     row-gap: toEm(16);
     padding-inline: toEm(16);
     padding-block-start: toEm(22);
-    padding-block-end: toEm(22);
+    padding-block-end: toEm(12);
     backdrop-filter: blur(7px);
 
     @media (max-width: $mobile) {
@@ -368,7 +370,7 @@ watch(currentLocale, () => {
     width: 90%;
     display: grid;
     grid-template-columns: auto 1fr;
-    align-items: center;
+    align-items: end;
     padding-inline: toEm(12);
     padding-block: toEm(2);
     border-radius: toEm(25);
@@ -391,6 +393,7 @@ watch(currentLocale, () => {
 //   }
 
 &__accordion {
+  flex: 1 1 auto;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -403,18 +406,20 @@ watch(currentLocale, () => {
 }
 
   &__phones {
-    justify-self: center;
-    align-self: end;
     display: flex;
     align-items: center;
     column-gap: toEm(4);
-    color: var(--warning-color);
+    padding-inline: toEm(8);
+    padding-block: toEm(4);
+    border-radius: toRem(4);
     font-weight: 600;
+    color: var(--light-color);
+    background-color: var(--border-color-transparent);
     transition: all var(--transition-duration);
 
     svg {
       font-size: toRem(22);
-      color: var(--warning-color);
+         color: var(--light-color);
     }
 
     @include hover {

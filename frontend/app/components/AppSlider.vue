@@ -114,7 +114,7 @@ onUnmounted(() => cancelAnimationFrame(rafId));
   position: relative;
   width: 100%;
   height: v-bind("props.height");
-  background-color: var(--primary-color);
+  background-color: var(--bg-product);
 //   height: 100%;
 
   &__container {
@@ -165,8 +165,8 @@ onUnmounted(() => cancelAnimationFrame(rafId));
   }
 
   &__pagination-dot {
-    width: toRem(12);
-    height: toRem(12);
+    width: toEm(14);
+    height: toEm(14);
     border: toRem(2) solid var(--transparent-color);
     border-radius: 50%;
     cursor: pointer;
@@ -178,7 +178,7 @@ onUnmounted(() => cancelAnimationFrame(rafId));
       cursor: default;
       scale: 1.3;
       border-color: var(--light-color);
-      background-color: var(--primary-color);
+      background-color: var(--warning-color);
     }
 
       @include hover {

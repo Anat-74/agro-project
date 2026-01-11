@@ -5,17 +5,17 @@
   },
   "options": {},
   "attributes": {
-    "IconShipping": {
+    "icon": {
       "type": "media",
       "multiple": false,
       "allowedTypes": [
         "images"
       ]
     },
-    "TitleShipping": {
+    "heading": {
       "type": "string"
     },
-    "TextShipping": {
+    "text": {
       "type": "string"
     }
   },

@@ -83,9 +83,9 @@ export interface SectionsHero extends Struct.ComponentSchema {
     displayName: 'Hero';
   };
   attributes: {
-    IconShipping: Schema.Attribute.Media<'images'>;
-    TextShipping: Schema.Attribute.String;
-    TitleShipping: Schema.Attribute.String;
+    heading: Schema.Attribute.String;
+    icon: Schema.Attribute.Media<'images'>;
+    text: Schema.Attribute.String;
   };
 }
 
@@ -108,13 +108,13 @@ export interface SlidersHeroSlider extends Struct.ComponentSchema {
     displayName: 'Hero-slider';
   };
   attributes: {
-    BgImage: Schema.Attribute.Media<'images'>;
-    Heading: Schema.Attribute.String;
-    Image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
-    SaleText: Schema.Attribute.String;
-    Text: Schema.Attribute.String;
-    TextBottom: Schema.Attribute.String;
-    TextTop: Schema.Attribute.String;
+    bgImage: Schema.Attribute.Media<'images'>;
+    heading: Schema.Attribute.String;
+    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    isDiscount: Schema.Attribute.Boolean;
+    saleText: Schema.Attribute.String;
+    textBottom: Schema.Attribute.String;
+    textTop: Schema.Attribute.String;
   };
 }
 

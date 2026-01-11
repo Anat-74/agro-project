@@ -99,8 +99,8 @@ defineProps<{
       position: relative;
       padding-inline: toRem(16);
       margin-inline: toRem(-16);
-      padding-block-end: toRem(56);
-      margin-block-end: toRem(-56);
+      padding-block-end: toRem(60);
+      margin-block-end: toRem(-60);
 
       svg {
         transition: color var(--transition-duration);
@@ -160,8 +160,8 @@ defineProps<{
     padding-block-end: toRem(6);
     white-space: nowrap;
     position: absolute;
-    z-index: 999;
-    top: calc(100% + toRem(22));
+    z-index: 9999;
+    top: calc(100% + toRem(32));
     right: 0;
     translate: 0 -50%;
     border-radius: toRem(4);
