@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T = any">
-interface  Props<T = any> {
+interface Props<T = any> {
   slides: T[];
   slideKey?: keyof T | string;
   height?: string;
@@ -9,7 +9,6 @@ interface  Props<T = any> {
 
 const props = withDefaults(defineProps<Props>(), {
   slideKey: 'id' as keyof T | string,
-  height: "640px",
   showPagination: true,
   showNavigation: true,
 });
@@ -48,9 +47,7 @@ onUnmounted(() => cancelAnimationFrame(rafId));
 </script>
 
 <template>
-  <div 
-  class="slider"
-  :style="{ height: props.height }"
+  <div class="slider"
   >
     <div 
     ref="container" 

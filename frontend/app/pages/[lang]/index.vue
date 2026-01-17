@@ -88,7 +88,9 @@ console.debug("Home page data:", homePage.value);
   <HeroSection 
   v-if="homePage?.sections" 
   :slides="homePage.sections" 
-  />
+  > 
+</HeroSection>
+
 
   <section 
   class="category" 

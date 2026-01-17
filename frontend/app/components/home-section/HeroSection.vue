@@ -12,45 +12,64 @@ const props = withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
+   <section>
   <AppSlider
-    class="category-slider"
     v-if="props.slides && props.slides.length > 0"
+    class="hero-slider"
     :slides="props.slides"
     item-key="id"
   >
     <template #default="{ slide }">
-      <div class="hero-slide">
-        <div class="hero-slide__content">
-          <div class="hero-slide__text-content">
-            <h2 v-if="slide.heading" class="hero-slide__title">
-              {{ slide.heading }}
-            </h2>
-            <span v-if="slide.textTop" class="hero-slide__subtitle">
-              {{ slide.textTop }}
-            </span>
-            <strong
-              v-if="slide.saleText && slide.isDiscount"
-              class="hero-slide__sale"
-            >
-              {{ slide.saleText }}
-            </strong>
-            <span v-if="slide.textBottom" class="hero-slide__description">
-              {{ slide.textBottom }}
-            </span>
-          </div>
-          <UImage
+            <UBackground
+         v-if="slide.bgImage?.url"
+         :src="slide.bgImage.url"
+         :sizes="true"
+      />
+         <UImage
             v-if="slide.image?.url"
-            class="hero-slide__image"
+            class="hero-slider__image"
             :src="slide.image.url"
             :alt="slide.heading"
             :smooth-load="true"
             width="742"
             height="498"
           />
-        </div>
-      </div>
+          <div class="hero-slider__text-content">
+            <h2 
+            v-if="slide.heading" 
+            class="hero-slider__title"
+            >
+              {{ slide.heading }}
+            </h2>
+            <span 
+            v-if="slide.textTop" 
+            class="hero-slider__text-top"
+            >
+              {{ slide.textTop }}
+            </span>
+            <strong
+              v-if="slide.saleText && slide.isDiscount"
+              class="hero-slider__sale"
+            >
+              {{ slide.saleText }}
+            </strong>
+            <span 
+            v-if="slide.textBottom" 
+            class="hero-slider__text-bottom"
+            >
+              {{ slide.textBottom }}
+            </span>
+          </div>
     </template>
   </AppSlider>
+  </section>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.hero-slider {
+   &__image {
+      position: relative;
+      z-index: 100;
+   }
+}
+</style>
