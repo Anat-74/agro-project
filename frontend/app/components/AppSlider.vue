@@ -71,6 +71,7 @@ onUnmounted(() => cancelAnimationFrame(rafId));
          >{{ slide.content }}
          </div>
         </slot>
+
       </div>
     </div>
 

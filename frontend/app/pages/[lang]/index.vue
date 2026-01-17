@@ -17,7 +17,6 @@ const visibleImagesCount = computed(() => {
 const {
   data: categories,
   pending,
-  error,
 } = useAsyncData(`category-${currentLocale.value}`, async () => {
   const response = await find<Category>("categories", {
     filters: { locale: currentLocale.value },
@@ -60,7 +59,7 @@ const getCategoryLink = (category: Category) => {
 
 //==========================================================
 
-const { data: homePage, refresh } = useAsyncData(
+const { data: homePage, error, refresh } = useAsyncData(
   `home-page-${currentLocale.value}`,
   async () => {
     const response = await find("home-page", {
@@ -85,9 +84,51 @@ console.debug("Home page data:", homePage.value);
       { id: 1, content: 'Слайд 1' },
       { id: 2, content: 'Слайд 2' },
       { id: 3, content: 'Слайд 3' },
-      { id: 4, content: 'Слайд 4' },
     ]"
-  />
+  >
+
+    <div 
+    v-if="homePage && homePage.sections" 
+    class="hero-slider-container"
+    >
+    <div
+      v-for="(slide, index) in homePage.sections"
+      :key="slide.id"
+      class="hero-slide"
+    >
+      <div class="hero-slide__content">
+        <div class="hero-slide__text-content">
+          <h2 v-if="slide.heading" class="hero-slide__title">
+            {{ slide.heading }}
+          </h2>
+          <p v-if="slide.textTop" class="hero-slide__subtitle">
+            {{ slide.textTop }}
+          </p>
+            <strong v-if="slide.isDiscount" class="hero-slide__discount-badge">
+            Скидка
+            </strong>
+          <p v-if="slide.saleText" class="hero-slide__sale">
+            {{ slide.saleText }}
+          </p>
+          <p v-if="slide.textBottom" class="hero-slide__description">
+            {{ slide.textBottom }}
+          </p>
+        </div>
+            <UImage
+             v-if="slide.image && slide.image.url"
+              class="hero-slide__image"
+              :src="slide.image.url"
+              alt="slide.image.alternativeText || ''"
+              :smoothLoad="true"
+              :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
+              :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
+              width="94"
+              height="94"
+            />
+      </div>
+    </div>
+  </div>
+  </AppSlider>
 
   <section class="category" aria-labelledby="category-page">
     <UBackground
