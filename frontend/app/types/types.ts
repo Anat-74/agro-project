@@ -211,6 +211,10 @@ export interface HeroSlide {
     url: string;
     alternativeText?: string;
   };
+  retinaBgImage?: {
+    url: string;
+    alternativeText?: string;
+  };
   image?: {
     url: string;
     alternativeText?: string;

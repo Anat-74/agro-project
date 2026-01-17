@@ -1,27 +1,28 @@
 <script setup lang="ts">
 interface Props {
-  src: string;
+  src?: string;
+  retinaSrc?: string; // Новое поле для ретина-изображения
   fromStrapi?: boolean;
-  sizes?: boolean;
   variant?: "hero" | "card" | "modal" | "clean" | "feature";
   effect?: "parallax" | "kenburns" | "zoom" | "none";
   loading?: "shimmer" | "pulse" | "wave" | "none";
   gradient?: "rainbow" | "sunset" | "ocean" | "violet" | "none";
   filter?: "brightness" | "contrast" | "saturate" | "darken" | "none";
   hoverEffect?: "zoom" | "darken" | "glow" | "lift" | "none";
+  shouldPreload?: boolean; // Новый пропс для контроля предзагрузки
 }
 
 const config = useRuntimeConfig();
 
 const props = withDefaults(defineProps<Props>(), {
   fromStrapi: true,
-  sizes: false,
   variant: "clean",
   effect: "none",
   loading: "shimmer",
   gradient: "none",
   filter: "none",
   hoverEffect: "none",
+  shouldPreload: false,
 });
 
 // Только интерактивные состояния
@@ -30,15 +31,15 @@ const isActive = ref(false);
 
 // Формирование URL в зависимости от источника
 const finalSrc = computed(() => {
-  if (props.src.startsWith("http") || props.src.startsWith("//")) {
+  if (props.src?.startsWith("http") || props.src?.startsWith("//")) {
     return props.src;
   }
 
-  if (props.fromStrapi || props.src.includes("uploads")) {
+  if (props.fromStrapi || props.src?.includes("uploads")) {
     return `${config.public.strapi.url}${props.src}`;
   }
 
-  return props.src.startsWith("/") ? props.src : `/image/${props.src}`;
+  return props.src?.startsWith("/") ? props.src : `/image/${props.src}`;
 });
 
 // URL вычисления
@@ -47,6 +48,18 @@ const baseUrl = computed(() =>
 );
 const avifUrl = computed(() => `${baseUrl.value}.avif`);
 const pngUrl = computed(() => `${baseUrl.value}.png`);
+
+// Вычисляем ретина URL, если они предоставлены
+const retinaBaseUrl = computed(() => {
+  if (props.retinaSrc) {
+    const cleanRetinaSrc = props.retinaSrc.replace(
+      /[\s\u00A0\u1680\u2000-\u200B\u2028\u2029\u202F\u205F\u3000]/g,
+      ""
+    );
+    return cleanRetinaSrc.replace(/\.(avif|webp|png|jpg|jpeg)$/i, "");
+  }
+  return null;
+});
 
 // Классы для эффектов
 const variantClass = computed(() => `variant-${props.variant}`);
@@ -66,23 +79,39 @@ const interactiveClass = computed(() => ({
     isHovered.value && props.hoverEffect !== "none",
 }));
 
-// Стиль фона (без opacity, он теперь в CSS)
 const backgroundStyle = computed(() => {
-  const background = `image-set(
-    url('${avifUrl.value}') type("image/avif"),
-    url('${pngUrl.value}') type("image/png")
-  ) center / cover no-repeat`;
+  // Формируем image-set с учетом ретина-изображения
+  let imageSet = `image-set(
+    url('${avifUrl.value}') type("image/avif") 1x,
+    url('${pngUrl.value}') type("image/png") 1x
+  )`;
 
-  const style: any = {
-    background,
+  // Если есть ретина-изображение, добавляем 2x варианты
+if (props.retinaSrc) {
+  const retinaBaseUrl = props.retinaSrc.replace(
+    /\.(avif|webp|png|jpg|jpeg)$/i,
+    ""
+  );
+  
+  const retinaFullUrl =
+    props.fromStrapi || retinaBaseUrl.includes("uploads")
+      ? `${config.public.strapi.url}${retinaBaseUrl}`
+      : retinaBaseUrl;
+
+  imageSet = `image-set(
+    url('${retinaFullUrl}.avif') type("image/avif") 2x,
+    url('${retinaFullUrl}.png') type("image/png") 2x,
+    url('${avifUrl.value}') type("image/avif") 1x,
+    url('${pngUrl.value}') type("image/png") 1x
+  )`;
+}
+
+  return {
+    backgroundImage: imageSet,
+    backgroundPosition: "center",
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
   };
-
-  if (props.sizes) {
-    style["--avif-2x-url"] = `${baseUrl.value}@2x.avif`;
-    style["--png-2x-url"] = `${baseUrl.value}@2x.png`;
-  }
-
-  return style;
 });
 </script>
 
@@ -102,14 +131,20 @@ const backgroundStyle = computed(() => {
     @mouseleave="isHovered = false"
     @click="isActive = !isActive"
   >
-    <!-- Предзагрузка AVIF -->
-    <link 
+  <link 
     rel="preload" 
+    v-if="shouldPreload && retinaSrc"
+    :href="`${config.public.strapi.url}${retinaSrc.replace(/\.(avif|webp|png|jpg|jpeg)$/i, '')}.avif`" 
+    as="image" 
+    type="image/avif" 
+  />
+  <link 
+    rel="preload" 
+    v-else-if="shouldPreload"
     :href="avifUrl" 
     as="image" 
-    type="image/avif"
-     />
-
+    type="image/avif" 
+  />
     <slot />
   </div>
 </template>
@@ -128,17 +163,6 @@ const backgroundStyle = computed(() => {
 
   @starting-style {
     opacity: 0;
-  }
-
-    /* ========== RETINA ПОДДЕРЖКА ========== */
-  @media (min-resolution: 2dppx) {
-    &[style*="--avif-2x-url"] {
-      background: image-set(
-          url(var(--avif-2x-url)) type("image/avif") 2x,
-          url(var(--png-2x-url)) type("image/png") 2x
-        )
-        center / cover no-repeat;
-    }
   }
 
   /* ========== ВАРИАНТЫ КОМПОНЕНТА ========== */
@@ -194,6 +218,16 @@ const backgroundStyle = computed(() => {
     animation: zoom 15s ease infinite, app-bg-fade-in 0.3s ease;
   }
 
+  /* ========== ГЛОБАЛЬНЫЕ АНИМАЦИИ ========== */
+  @keyframes app-bg-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
   /* ========== ЭФФЕКТЫ ЗАГРУЗКИ ========== */
   &.loading-shimmer::before {
     content: "";
@@ -217,7 +251,7 @@ const backgroundStyle = computed(() => {
   }
 
   &.loading-wave {
-    mask: linear-gradient(90deg, #000 25%, #0005 50%, #000 75%);
+    mask: linear-gradient(90deg, #000 25%, #000 50%, #fff 75%);
     mask-size: 200% 100%;
     animation: wave 2s infinite linear, app-bg-fade-in 0.3s ease;
   }
@@ -362,6 +396,16 @@ const backgroundStyle = computed(() => {
 @keyframes wave {
   100% {
     mask-position: -200% 0;
+  }
+}
+
+/* ========== ГЛОБАЛЬНЫЕ АНИМАЦИИ ========== */
+@keyframes app-bg-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 

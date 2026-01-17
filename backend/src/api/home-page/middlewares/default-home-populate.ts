@@ -15,6 +15,9 @@ export default (config: unknown, { strapi }: { strapi: Core.Strapi }) => {
                 },
                 bgImage: {
                   fields: ['alternativeText', 'url', 'formats'],
+                  },
+                  retinaBgImage: {
+                  fields: ['alternativeText', 'url', 'formats'],
                 },
                },
               },

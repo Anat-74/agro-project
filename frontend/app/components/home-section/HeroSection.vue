@@ -19,11 +19,12 @@ const props = withDefaults(defineProps<Props>(), {
     :slides="props.slides"
     item-key="id"
   >
-    <template #default="{ slide }">
-            <UBackground
+    <template #default="{ slide, index }">
+       <UBackground
          v-if="slide.bgImage?.url"
          :src="slide.bgImage.url"
-         :sizes="true"
+         :retina-src="slide.retinaBgImage?.url"
+         :should-preload="index === 0"
       />
          <UImage
             v-if="slide.image?.url"
@@ -35,14 +36,14 @@ const props = withDefaults(defineProps<Props>(), {
             height="498"
           />
           <div class="hero-slider__text-content">
-            <h2 
-            v-if="slide.heading" 
+            <h2
+            v-if="slide.heading"
             class="hero-slider__title"
             >
               {{ slide.heading }}
             </h2>
-            <span 
-            v-if="slide.textTop" 
+            <span
+            v-if="slide.textTop"
             class="hero-slider__text-top"
             >
               {{ slide.textTop }}
@@ -53,12 +54,12 @@ const props = withDefaults(defineProps<Props>(), {
             >
               {{ slide.saleText }}
             </strong>
-            <span 
-            v-if="slide.textBottom" 
+            <p
+            v-if="slide.textBottom"
             class="hero-slider__text-bottom"
             >
               {{ slide.textBottom }}
-            </span>
+         </p>
           </div>
     </template>
   </AppSlider>

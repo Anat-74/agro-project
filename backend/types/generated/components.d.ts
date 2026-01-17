@@ -112,6 +112,9 @@ export interface SlidersHeroSlider extends Struct.ComponentSchema {
     heading: Schema.Attribute.String;
     image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     isDiscount: Schema.Attribute.Boolean;
+    retinaBgImage: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
     saleText: Schema.Attribute.String;
     textBottom: Schema.Attribute.String;
     textTop: Schema.Attribute.String;
