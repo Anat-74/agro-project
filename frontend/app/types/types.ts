@@ -185,7 +185,7 @@ export interface LegalInfo {
 }
 
 // Основной тип для Global
-export interface GlobalData {
+export type GlobalData = {
   id: number;
   documentId: string;
   createdAt: string;
@@ -197,7 +197,7 @@ export interface GlobalData {
   socials: SocialLink[];
   footer: FooterData;
   legal: LegalInfo;
-}
+};
 
 export interface StrapiResponse<T> {
   data: T;
@@ -221,3 +221,22 @@ export interface HeroSlide {
   textBottom?: string;
   isDiscount?: boolean;
 }
+
+// Тип для домашней страницы (HomePage)
+export type HomePage = {
+  id: number;
+  title?: string;
+  description?: string;
+  sections: HeroSlide[];
+  locale?: string;
+  documentId?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  publishedAt?: string;
+  // Дополнительные поля можно добавлять по мере развития
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    structuredData?: any;
+  };
+};

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { VisibilityState } from "../types/types";
+import type { VisibilityState, GlobalData } from "../types/types";
 const { find } = useStrapi();
 const searchStore = useSearchStore();
 const { products, totalPages, currentPage } = storeToRefs(searchStore);
@@ -11,7 +11,7 @@ const {
   data: global,
   error,
   refresh,
-} = useAsyncData<any>(`global-${currentLocale.value}`, async () => {
+} = useAsyncData(`global-${currentLocale.value}`, async () => {
   const response = await find("global", {
     filters: { locale: currentLocale.value },
   });
@@ -20,14 +20,14 @@ const {
     throw createError({ statusCode: 404, message: "Global not found" });
   }
 
-  return response.data;
+  return response.data as unknown as GlobalData;
 });
 
 watch(currentLocale, () => {
   refresh();
 });
 
-console.debug("global data:", global.value)
+console.debug("global data:", global.value);
 </script>
 
 <template>
@@ -111,9 +111,6 @@ console.debug("global data:", global.value)
 .header {
   //   background-color: var(--success-color);
   padding-block-end: toRem(22);
-
-  &__banner {
-  }
 
   &__container-top {
     display: grid;

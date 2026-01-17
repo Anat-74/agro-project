@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import type { Category, VisibilityState } from "@/types/types";
+import type {
+  Category,
+  VisibilityState,
+  HomePage
+} from "@/types/types";
 import HeroSection from "~/components/home-section/HeroSection.vue";
 import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
 const { isContacts } = inject<VisibilityState>("visible")!;
@@ -15,32 +19,32 @@ const visibleImagesCount = computed(() => {
   return 10;
 });
 
-const {
-  data: categories,
-  pending,
-} = useAsyncData(`category-${currentLocale.value}`, async () => {
-  const response = await find<Category>("categories", {
-    filters: { locale: currentLocale.value },
-    populate: {
-      image: {
-        fields: ["alternativeText", "url"],
+const { data: categories, pending } = useAsyncData(
+  `category-${currentLocale.value}`,
+  async () => {
+    const response = await find<Category>("categories", {
+      filters: { locale: currentLocale.value },
+      populate: {
+        image: {
+          fields: ["alternativeText", "url"],
+        },
+        subcategories: {
+          fields: ["id"],
+        },
+        products: {
+          fields: ["id"],
+        },
       },
-      subcategories: {
-        fields: ["id"],
-      },
-      products: {
-        fields: ["id"],
-      },
-    },
-  });
-  if (!response.data || response.data.length === 0) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: "Category - Not Found",
     });
+    if (!response.data || response.data.length === 0) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: "Category - Not Found",
+      });
+    }
+    return response.data;
   }
-  return response.data;
-});
+);
 
 // Функция для определения типа ссылки для категории
 const getCategoryLink = (category: Category) => {
@@ -60,19 +64,20 @@ const getCategoryLink = (category: Category) => {
 
 //==========================================================
 
-const { data: homePage, error, refresh } = useAsyncData(
-  `home-page-${currentLocale.value}`,
-  async () => {
-    const response = await find("home-page", {
-      filters: { locale: currentLocale.value },
-    });
+const {
+  data: homePage,
+  error,
+  refresh,
+} = useAsyncData(`home-page-${currentLocale.value}`, async () => {
+  const response = await find("home-page", {
+    filters: { locale: currentLocale.value },
+  });
 
-    if (!response) {
-      throw createError({ statusCode: 404, message: "Home page not found" });
-    }
-    return response.data;
+  if (!response) {
+    throw createError({ statusCode: 404, message: "Home page not found" });
   }
-);
+  return response.data as unknown as HomePage;
+});
 
 console.debug("Home page data:", homePage.value);
 </script>
@@ -81,49 +86,13 @@ console.debug("Home page data:", homePage.value);
   <Loader v-if="pending" />
 
   <HeroSection 
-      v-if="homePage?.sections"
-      :slides="homePage.sections"
+  v-if="homePage?.sections" 
+  :slides="homePage.sections" 
   />
-  <!-- <AppSlider
-    class="category-slider"
-    v-if="homePage?.sections"
-    :items="homePage.sections"
-    item-key="id"
-  >
-   <template #default="{ item, index }">
-      <div class="hero-slide">
-        <div class="hero-slide__content">
-          <div class="hero-slide__text-content">
-            <h2 v-if="item.heading" class="hero-slide__title">
-              {{ item.heading }}
-            </h2>
-            <span v-if="item.textTop" class="hero-slide__subtitle">
-              {{ item.textTop }}
-            </span>
-            <strong v-if="item.saleText && item.isDiscount" class="hero-slide__sale">
-              {{ item.saleText }}
-            </strong>
-            <span v-if="item.textBottom" class="hero-slide__description">
-              {{ item.textBottom }}
-            </span>
-          </div>
-          <UImage
-            v-if="item.image?.url"
-            class="hero-slide__image"
-            :src="item.image.url"
-            :alt="item.heading"
-            :smooth-load="true"
-            :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
-            :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
-            width="742"
-            height="498"
-          />
-        </div>
-      </div>
-   </template>
-  </AppSlider> -->
 
-  <section class="category" aria-labelledby="category-page">
+  <section 
+  class="category" 
+  aria-labelledby="category-page">
     <UBackground
       src="avif-image"
       :from-strapi="false"
