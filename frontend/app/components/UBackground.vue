@@ -1,7 +1,7 @@
 <script setup lang="ts">
 interface Props {
   src?: string;
-  retinaSrc?: string; // Новое поле для ретина-изображения
+  retinaSrc?: string;
   fromStrapi?: boolean;
   variant?: "hero" | "card" | "modal" | "clean" | "feature";
   effect?: "parallax" | "kenburns" | "zoom" | "none";
@@ -9,7 +9,7 @@ interface Props {
   gradient?: "rainbow" | "sunset" | "ocean" | "violet" | "none";
   filter?: "brightness" | "contrast" | "saturate" | "darken" | "none";
   hoverEffect?: "zoom" | "darken" | "glow" | "lift" | "none";
-  shouldPreload?: boolean; // Новый пропс для контроля предзагрузки
+  shouldPreload?: boolean;
 }
 
 const config = useRuntimeConfig();
@@ -29,6 +29,10 @@ const props = withDefaults(defineProps<Props>(), {
 const isHovered = ref(false);
 const isActive = ref(false);
 
+// Функция для удаления расширения файла
+const removeExtension = (url: string) =>
+  url.replace(/\.(avif|webp|png|jpg|jpeg)$/i, "");
+
 // Формирование URL в зависимости от источника
 const finalSrc = computed(() => {
   if (props.src?.startsWith("http") || props.src?.startsWith("//")) {
@@ -43,23 +47,9 @@ const finalSrc = computed(() => {
 });
 
 // URL вычисления
-const baseUrl = computed(() =>
-  finalSrc.value.replace(/\.(avif|webp|png|jpg|jpeg)$/, "")
-);
+const baseUrl = computed(() => removeExtension(finalSrc.value));
 const avifUrl = computed(() => `${baseUrl.value}.avif`);
 const pngUrl = computed(() => `${baseUrl.value}.png`);
-
-// Вычисляем ретина URL, если они предоставлены
-const retinaBaseUrl = computed(() => {
-  if (props.retinaSrc) {
-    const cleanRetinaSrc = props.retinaSrc.replace(
-      /[\s\u00A0\u1680\u2000-\u200B\u2028\u2029\u202F\u205F\u3000]/g,
-      ""
-    );
-    return cleanRetinaSrc.replace(/\.(avif|webp|png|jpg|jpeg)$/i, "");
-  }
-  return null;
-});
 
 // Классы для эффектов
 const variantClass = computed(() => `variant-${props.variant}`);
@@ -87,24 +77,22 @@ const backgroundStyle = computed(() => {
   )`;
 
   // Если есть ретина-изображение, добавляем 2x варианты
-if (props.retinaSrc) {
-  const retinaBaseUrl = props.retinaSrc.replace(
-    /\.(avif|webp|png|jpg|jpeg)$/i,
-    ""
-  );
-  
-  const retinaFullUrl =
-    props.fromStrapi || retinaBaseUrl.includes("uploads")
-      ? `${config.public.strapi.url}${retinaBaseUrl}`
-      : retinaBaseUrl;
+  if (props.retinaSrc) {
+    const retinaBaseUrl = removeExtension(props.retinaSrc);
 
-  imageSet = `image-set(
-    url('${retinaFullUrl}.avif') type("image/avif") 2x,
-    url('${retinaFullUrl}.png') type("image/png") 2x,
-    url('${avifUrl.value}') type("image/avif") 1x,
-    url('${pngUrl.value}') type("image/png") 1x
-  )`;
-}
+    // Формируем полный URL с учетом базового адреса Strapi
+    const retinaFullUrl =
+      props.fromStrapi || retinaBaseUrl.includes("uploads")
+        ? `${config.public.strapi.url}${retinaBaseUrl}`
+        : retinaBaseUrl;
+
+    imageSet = `image-set(
+      url('${retinaFullUrl}.avif') type("image/avif") 2x,
+      url('${retinaFullUrl}.png') type("image/png") 2x,
+      url('${avifUrl.value}') type("image/avif") 1x,
+      url('${pngUrl.value}') type("image/png") 1x
+    )`;
+  }
 
   return {
     backgroundImage: imageSet,
@@ -131,20 +119,21 @@ if (props.retinaSrc) {
     @mouseleave="isHovered = false"
     @click="isActive = !isActive"
   >
-  <link 
-    rel="preload" 
-    v-if="shouldPreload && retinaSrc"
-    :href="`${config.public.strapi.url}${retinaSrc.replace(/\.(avif|webp|png|jpg|jpeg)$/i, '')}.avif`" 
-    as="image" 
-    type="image/avif" 
-  />
-  <link 
-    rel="preload" 
-    v-else-if="shouldPreload"
-    :href="avifUrl" 
-    as="image" 
-    type="image/avif" 
-  />
+    <!-- Предзагрузка изображений - только если shouldPreload=true -->
+    <link
+      rel="preload"
+      v-if="shouldPreload && retinaSrc"
+      :href="`${config.public.strapi.url}${removeExtension(retinaSrc)}.avif`"
+      as="image"
+      type="image/avif"
+    />
+    <link
+      rel="preload"
+      v-else-if="shouldPreload"
+      :href="avifUrl"
+      as="image"
+      type="image/avif"
+    />
     <slot />
   </div>
 </template>
