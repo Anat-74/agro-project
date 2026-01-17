@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Category, VisibilityState } from "@/types/types";
+import HeroSection from "~/components/home-section/HeroSection.vue";
 import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
 const { isContacts } = inject<VisibilityState>("visible")!;
 
@@ -78,57 +79,49 @@ console.debug("Home page data:", homePage.value);
 
 <template>
   <Loader v-if="pending" />
-  <AppSlider
-    class="category-slider"
-    :slides="[
-      { id: 1, content: 'Слайд 1' },
-      { id: 2, content: 'Слайд 2' },
-      { id: 3, content: 'Слайд 3' },
-    ]"
-  >
 
-    <div 
-    v-if="homePage && homePage.sections" 
-    class="hero-slider-container"
-    >
-    <div
-      v-for="(slide, index) in homePage.sections"
-      :key="slide.id"
-      class="hero-slide"
-    >
-      <div class="hero-slide__content">
-        <div class="hero-slide__text-content">
-          <h2 v-if="slide.heading" class="hero-slide__title">
-            {{ slide.heading }}
-          </h2>
-          <p v-if="slide.textTop" class="hero-slide__subtitle">
-            {{ slide.textTop }}
-          </p>
-            <strong v-if="slide.isDiscount" class="hero-slide__discount-badge">
-            Скидка
+  <HeroSection 
+      v-if="homePage?.sections"
+      :slides="homePage.sections"
+  />
+  <!-- <AppSlider
+    class="category-slider"
+    v-if="homePage?.sections"
+    :items="homePage.sections"
+    item-key="id"
+  >
+   <template #default="{ item, index }">
+      <div class="hero-slide">
+        <div class="hero-slide__content">
+          <div class="hero-slide__text-content">
+            <h2 v-if="item.heading" class="hero-slide__title">
+              {{ item.heading }}
+            </h2>
+            <span v-if="item.textTop" class="hero-slide__subtitle">
+              {{ item.textTop }}
+            </span>
+            <strong v-if="item.saleText && item.isDiscount" class="hero-slide__sale">
+              {{ item.saleText }}
             </strong>
-          <p v-if="slide.saleText" class="hero-slide__sale">
-            {{ slide.saleText }}
-          </p>
-          <p v-if="slide.textBottom" class="hero-slide__description">
-            {{ slide.textBottom }}
-          </p>
+            <span v-if="item.textBottom" class="hero-slide__description">
+              {{ item.textBottom }}
+            </span>
+          </div>
+          <UImage
+            v-if="item.image?.url"
+            class="hero-slide__image"
+            :src="item.image.url"
+            :alt="item.heading"
+            :smooth-load="true"
+            :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
+            :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
+            width="742"
+            height="498"
+          />
         </div>
-            <UImage
-             v-if="slide.image && slide.image.url"
-              class="hero-slide__image"
-              :src="slide.image.url"
-              alt="slide.image.alternativeText || ''"
-              :smoothLoad="true"
-              :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
-              :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
-              width="94"
-              height="94"
-            />
       </div>
-    </div>
-  </div>
-  </AppSlider>
+   </template>
+  </AppSlider> -->
 
   <section class="category" aria-labelledby="category-page">
     <UBackground

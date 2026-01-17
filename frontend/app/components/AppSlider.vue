@@ -1,18 +1,15 @@
-<script setup lang="ts">
-interface Slide {
-  id: number;
-  content: any;
-}
-
-interface Props {
-  slides: Slide[];
+<script setup lang="ts" generic="T = any">
+interface  Props<T = any> {
+  slides: T[];
+  slideKey?: keyof T | string;
   height?: string;
   showPagination?: boolean;
   showNavigation?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  height: "400px",
+  slideKey: 'id' as keyof T | string,
+  height: "640px",
   showPagination: true,
   showNavigation: true,
 });
@@ -51,7 +48,10 @@ onUnmounted(() => cancelAnimationFrame(rafId));
 </script>
 
 <template>
-  <div class="slider">
+  <div 
+  class="slider"
+  :style="{ height: props.height }"
+  >
     <div 
     ref="container" 
     class="slider__container" 
@@ -59,16 +59,16 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     >
       <div
       class="slider__slide"
-      v-for="slide in props.slides" 
-      :key="slide.id" 
+      v-for="(slide, index) in props.slides" 
+      :key="slide[props.slideKey] || index"
       >
         <slot 
         :slide="slide" 
-        :index="slide.id"
+        :index="index"
         >
          <div 
          class="slider__slide-content"
-         >{{ slide.content }}
+         >{{ slide }}
          </div>
         </slot>
 
@@ -97,14 +97,14 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     v-if="props.showPagination"
     >
       <button
-        v-for="slide in props.slides"
-        :key="slide.id"
+        v-for="(slide, index) in props.slides"
+        :key="slide[props.slideKey] || index"
         :class="[
-      'slider__pagination-dot', { 'slider__pagination-dot_active': active === slide.id }
+      'slider__pagination-dot', { 'slider__pagination-dot_active': active === index + 1 }
       ]"
-        @click="go(slide.id)"
-        :aria-label="`Перейти к слайду ${slide.id}`"
-        :aria-current="active === slide.id ? 'true' : undefined"
+        @click="go(index + 1)"
+        :aria-label="`Перейти к слайду ${index + 1}`"
+        :aria-current="active === index + 1 ? 'true' : undefined"
       />
     </div>
   </div>
@@ -114,7 +114,6 @@ onUnmounted(() => cancelAnimationFrame(rafId));
 .slider {
   position: relative;
   width: 100%;
-  height: v-bind("props.height");
   background-color: var(--bg-product);
 //   height: 100%;
 

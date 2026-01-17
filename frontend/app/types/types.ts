@@ -203,3 +203,21 @@ export interface StrapiResponse<T> {
   data: T;
   meta?: object;
 }
+
+// Тип для слайдов в hero-секции
+export interface HeroSlide {
+  id: number;
+  bgImage?: {
+    url: string;
+    alternativeText?: string;
+  };
+  image?: {
+    url: string;
+    alternativeText?: string;
+  };
+  textTop?: string;
+  heading?: string;
+  saleText?: string;
+  textBottom?: string;
+  isDiscount?: boolean;
+}
