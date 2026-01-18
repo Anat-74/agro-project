@@ -5,13 +5,6 @@
   },
   "options": {},
   "attributes": {
-    "bgImage": {
-      "type": "media",
-      "multiple": false,
-      "allowedTypes": [
-        "images"
-      ]
-    },
     "retinaBgImage": {
       "type": "media",
       "multiple": false,

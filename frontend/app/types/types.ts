@@ -207,10 +207,6 @@ export interface StrapiResponse<T> {
 // Тип для слайдов в hero-секции
 export interface HeroSlide {
   id: number;
-  bgImage?: {
-    url: string;
-    alternativeText?: string;
-  };
   retinaBgImage?: {
     url: string;
     alternativeText?: string;

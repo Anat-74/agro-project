@@ -13,15 +13,12 @@ export default (config: unknown, { strapi }: { strapi: Core.Strapi }) => {
                 image: {
                   fields: ['alternativeText', 'url', 'formats'],
                 },
-                bgImage: {
-                  fields: ['alternativeText', 'url', 'formats'],
-                  },
                   retinaBgImage: {
                   fields: ['alternativeText', 'url', 'formats'],
                 },
                },
               },
-             
+
           },
         },
       };

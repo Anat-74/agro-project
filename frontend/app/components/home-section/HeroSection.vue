@@ -21,8 +21,7 @@ const props = withDefaults(defineProps<Props>(), {
     >
       <template #default="{ slide, index }">
         <UBackground
-          v-if="slide.bgImage?.url"
-          src="Bg-hero 1x"
+          src="Bg-hero 1x" 
           :retinaSrc="slide.retinaBgImage?.url"
           :shouldPreload="index === 0"
         />

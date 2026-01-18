@@ -85,7 +85,9 @@ console.debug("Home page data:", homePage.value);
   </HeroSection>
 
   <section class="category" aria-labelledby="category-page">
-    <UBackground src="avif-image" class="category__image-background" />
+    <UBackground 
+    src="Bg-hero 1x" 
+    class="category__image-background" />
     <h1 id="category-page" class="visually-hidden">
       {{ visuallyHiddenTranslations[currentLocale].sectionLangTitle }}
     </h1>

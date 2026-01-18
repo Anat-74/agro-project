@@ -41,10 +41,9 @@ const baseImageUrl = computed(() => {
   return props.src?.startsWith("/") ? props.src : `/image/${props.src}`;
 });
 
-// Вычисляем базовые URL для AVIF и PNG
+// Вычисляем базовый URL для WebP (единственный формат для базовых изображений)
 const baseBaseUrl = computed(() => removeExtension(baseImageUrl.value));
-const baseAvifUrl = computed(() => `${baseBaseUrl.value}.avif`);
-const basePngUrl = computed(() => `${baseBaseUrl.value}.png`);
+const baseWebpUrl = computed(() => `${baseBaseUrl.value}.webp`);
 
 // Формирование URL для ретина изображения (из Strapi)
 const retinaImageUrl = computed(() => {
@@ -70,12 +69,12 @@ const retinaAvifUrl = computed(() => {
 
 // Формирование CSS style с image-set
 const backgroundStyle = computed(() => {
-  // Начинаем с базовых изображений из public
-  let images = `url('${baseAvifUrl.value}') type('image/avif') 1x, url('${basePngUrl.value}') type('image/png') 1x`;
+  // Начинаем с базового WebP из public (единственный формат для 1x)
+  let images = `url('${baseWebpUrl.value}') type("image/webp") 1x`;
 
   // Если указано ретина изображение, добавляем его как 2x
   if (retinaAvifUrl.value) {
-    images = `url('${retinaAvifUrl.value}') type('image/avif') 2x, ${images}`;
+    images = `url('${retinaAvifUrl.value}') type("image/avif") 2x, ${images}`;
   }
 
   return {
@@ -131,9 +130,9 @@ const interactiveClass = computed(() => ({
     <link
       rel="preload"
       v-else-if="shouldPreload"
-      :href="baseAvifUrl"
+      :href="baseWebpUrl"
       as="image"
-      type="image/avif"
+      type="image/webp"
     />
     <slot />
   </div>
@@ -405,3 +404,4 @@ const interactiveClass = computed(() => ({
   z-index: 1;
 }
 </style>
+
