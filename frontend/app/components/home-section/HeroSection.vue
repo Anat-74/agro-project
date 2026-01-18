@@ -32,6 +32,8 @@ const props = withDefaults(defineProps<Props>(), {
             :src="slide.image.url"
             :alt="slide.heading"
             :smooth-load="true"
+            :loading="index === 0 ? 'eager' : 'lazy'"
+            :fetchpriority="index === 0"
             width="742"
             height="498"
           />
@@ -69,8 +71,6 @@ const props = withDefaults(defineProps<Props>(), {
 <style lang="scss" scoped>
 .hero-slider {
    &__image {
-      position: relative;
-      z-index: 100;
    }
 }
 </style>
