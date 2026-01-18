@@ -69,38 +69,31 @@ const interactiveClass = computed(() => ({
     isHovered.value && props.hoverEffect !== "none",
 }));
 
-const backgroundStyle = computed(() => {
-  // Формируем image-set с учетом ретина-изображения
-  let imageSet = `image-set(
-    url('${avifUrl.value}') type("image/avif") 1x,
-    url('${pngUrl.value}') type("image/png") 1x
-  )`;
 
-  // Если есть ретина-изображение, добавляем 2x варианты
+const backgroundStyle = computed(() => {
+  // Формируем основные 1x изображения
+  let images = `url('${avifUrl.value}') type("image/avif") 1x, url('${pngUrl.value}') type("image/png") 1x`;
+  
+  // Добавляем 2x ретина AVIF, если указано
   if (props.retinaSrc) {
     const retinaBaseUrl = removeExtension(props.retinaSrc);
+    const retinaFullUrl = props.fromStrapi || retinaBaseUrl.includes("uploads")
+      ? `${config.public.strapi.url}${retinaBaseUrl}`
+      : retinaBaseUrl;
 
-    // Формируем полный URL с учетом базового адреса Strapi
-    const retinaFullUrl =
-      props.fromStrapi || retinaBaseUrl.includes("uploads")
-        ? `${config.public.strapi.url}${retinaBaseUrl}`
-        : retinaBaseUrl;
-
-    imageSet = `image-set(
-      url('${retinaFullUrl}.avif') type("image/avif") 2x,
-      url('${retinaFullUrl}.png') type("image/png") 2x,
-      url('${avifUrl.value}') type("image/avif") 1x,
-      url('${pngUrl.value}') type("image/png") 1x
-    )`;
+    images = `url('${retinaFullUrl}.avif') type("image/avif") 2x, ` + images;
   }
-
+  
   return {
-    backgroundImage: imageSet,
+    backgroundImage: `image-set(${images})`,
     backgroundPosition: "center",
     backgroundSize: "cover",
     backgroundRepeat: "no-repeat",
   };
 });
+
+
+
 </script>
 
 <template>
