@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import type {
-  Category,
-  VisibilityState,
-  HomePage
-} from "@/types/types";
+import type { Category, VisibilityState, HomePage } from "@/types/types";
 import HeroSection from "~/components/home-section/HeroSection.vue";
 import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
 const { isContacts } = inject<VisibilityState>("visible")!;
@@ -85,21 +81,11 @@ console.debug("Home page data:", homePage.value);
 <template>
   <Loader v-if="pending" />
 
-  <HeroSection 
-  v-if="homePage?.sections" 
-  :slides="homePage.sections" 
-  > 
-</HeroSection>
+  <HeroSection v-if="homePage?.sections" :slides="homePage.sections">
+  </HeroSection>
 
-
-  <section 
-  class="category" 
-  aria-labelledby="category-page">
-    <UBackground
-      src="avif-image"
-      :from-strapi="false"
-      class="category__image-background"
-    />
+  <section class="category" aria-labelledby="category-page">
+    <UBackground src="avif-image" class="category__image-background" />
     <h1 id="category-page" class="visually-hidden">
       {{ visuallyHiddenTranslations[currentLocale].sectionLangTitle }}
     </h1>

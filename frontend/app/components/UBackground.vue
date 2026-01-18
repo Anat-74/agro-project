@@ -1,8 +1,7 @@
 <script setup lang="ts">
 interface Props {
-  src?: string;
-  retinaSrc?: string;
-  fromStrapi?: boolean;
+  src?: string; // Путь к базовому изображению (в public директории)
+  retinaSrc?: string; // Путь к ретина изображению (из Strapi)
   variant?: "hero" | "card" | "modal" | "clean" | "feature";
   effect?: "parallax" | "kenburns" | "zoom" | "none";
   loading?: "shimmer" | "pulse" | "wave" | "none";
@@ -15,7 +14,6 @@ interface Props {
 const config = useRuntimeConfig();
 
 const props = withDefaults(defineProps<Props>(), {
-  fromStrapi: true,
   variant: "clean",
   effect: "none",
   loading: "shimmer",
@@ -33,23 +31,60 @@ const isActive = ref(false);
 const removeExtension = (url: string) =>
   url.replace(/\.(avif|webp|png|jpg|jpeg)$/i, "");
 
-// Формирование URL в зависимости от источника
-const finalSrc = computed(() => {
+// Формирование URL для базовых изображений (из public)
+const baseImageUrl = computed(() => {
   if (props.src?.startsWith("http") || props.src?.startsWith("//")) {
     return props.src;
   }
 
-  if (props.fromStrapi || props.src?.includes("uploads")) {
-    return `${config.public.strapi.url}${props.src}`;
-  }
-
+  // Если начинается с /, используем как есть, иначе добавляем /image/
   return props.src?.startsWith("/") ? props.src : `/image/${props.src}`;
 });
 
-// URL вычисления
-const baseUrl = computed(() => removeExtension(finalSrc.value));
-const avifUrl = computed(() => `${baseUrl.value}.avif`);
-const pngUrl = computed(() => `${baseUrl.value}.png`);
+// Вычисляем базовые URL для AVIF и PNG
+const baseBaseUrl = computed(() => removeExtension(baseImageUrl.value));
+const baseAvifUrl = computed(() => `${baseBaseUrl.value}.avif`);
+const basePngUrl = computed(() => `${baseBaseUrl.value}.png`);
+
+// Формирование URL для ретина изображения (из Strapi)
+const retinaImageUrl = computed(() => {
+  if (!props.retinaSrc) return null;
+
+  if (props.retinaSrc.startsWith("http") || props.retinaSrc.startsWith("//")) {
+    return props.retinaSrc;
+  }
+
+  return `${config.public.strapi.url}${props.retinaSrc}`;
+});
+
+// Вычисляем ретина URL для AVIF
+const retinaBaseUrl = computed(() => {
+  if (!retinaImageUrl.value) return null;
+  return removeExtension(retinaImageUrl.value);
+});
+
+const retinaAvifUrl = computed(() => {
+  if (!retinaBaseUrl.value) return null;
+  return `${retinaBaseUrl.value}.avif`;
+});
+
+// Формирование CSS style с image-set
+const backgroundStyle = computed(() => {
+  // Начинаем с базовых изображений из public
+  let images = `url('${baseAvifUrl.value}') type('image/avif') 1x, url('${basePngUrl.value}') type('image/png') 1x`;
+
+  // Если указано ретина изображение, добавляем его как 2x
+  if (retinaAvifUrl.value) {
+    images = `url('${retinaAvifUrl.value}') type('image/avif') 2x, ${images}`;
+  }
+
+  return {
+    backgroundImage: `image-set(${images})`,
+    backgroundPosition: "center",
+    backgroundSize: "cover",
+    backgroundRepeat: "no-repeat",
+  };
+});
 
 // Классы для эффектов
 const variantClass = computed(() => `variant-${props.variant}`);
@@ -68,32 +103,6 @@ const interactiveClass = computed(() => ({
   [`hover-${props.hoverEffect}`]:
     isHovered.value && props.hoverEffect !== "none",
 }));
-
-
-const backgroundStyle = computed(() => {
-  // Формируем основные 1x изображения
-  let images = `url('${avifUrl.value}') type("image/avif") 1x, url('${pngUrl.value}') type("image/png") 1x`;
-  
-  // Добавляем 2x ретина AVIF, если указано
-  if (props.retinaSrc) {
-    const retinaBaseUrl = removeExtension(props.retinaSrc);
-    const retinaFullUrl = props.fromStrapi || retinaBaseUrl.includes("uploads")
-      ? `${config.public.strapi.url}${retinaBaseUrl}`
-      : retinaBaseUrl;
-
-    images = `url('${retinaFullUrl}.avif') type("image/avif") 2x, ` + images;
-  }
-  
-  return {
-    backgroundImage: `image-set(${images})`,
-    backgroundPosition: "center",
-    backgroundSize: "cover",
-    backgroundRepeat: "no-repeat",
-  };
-});
-
-
-
 </script>
 
 <template>
@@ -112,18 +121,17 @@ const backgroundStyle = computed(() => {
     @mouseleave="isHovered = false"
     @click="isActive = !isActive"
   >
-    <!-- Предзагрузка изображений - только если shouldPreload=true -->
     <link
       rel="preload"
-      v-if="shouldPreload && retinaSrc"
-      :href="`${config.public.strapi.url}${removeExtension(retinaSrc)}.avif`"
+      v-if="shouldPreload && retinaAvifUrl"
+      :href="retinaAvifUrl"
       as="image"
       type="image/avif"
     />
     <link
       rel="preload"
       v-else-if="shouldPreload"
-      :href="avifUrl"
+      :href="baseAvifUrl"
       as="image"
       type="image/avif"
     />
@@ -132,8 +140,8 @@ const backgroundStyle = computed(() => {
 </template>
 
 <style lang="scss" scoped>
+/* ========== БАЗОВЫЕ СТИЛИ ========== */
 .app-bg {
-  /* ========== БАЗОВЫЕ СТИЛИ ========== */
   position: absolute;
   inset: 0;
   z-index: 0;
@@ -193,11 +201,15 @@ const backgroundStyle = computed(() => {
   }
 
   &.effect-kenburns {
-    animation: kenburns 20s ease infinite, app-bg-fade-in 0.3s ease;
+    animation:
+      kenburns 20s ease infinite,
+      app-bg-fade-in 0.3s ease;
   }
 
   &.effect-zoom {
-    animation: zoom 15s ease infinite, app-bg-fade-in 0.3s ease;
+    animation:
+      zoom 15s ease infinite,
+      app-bg-fade-in 0.3s ease;
   }
 
   /* ========== ГЛОБАЛЬНЫЕ АНИМАЦИИ ========== */
@@ -229,13 +241,17 @@ const backgroundStyle = computed(() => {
   }
 
   &.loading-pulse {
-    animation: pulse 2.5s ease-in-out infinite, app-bg-fade-in 0.3s ease;
+    animation:
+      pulse 2.5s ease-in-out infinite,
+      app-bg-fade-in 0.3s ease;
   }
 
   &.loading-wave {
     mask: linear-gradient(90deg, #000 25%, #000 50%, #fff 75%);
     mask-size: 200% 100%;
-    animation: wave 2s infinite linear, app-bg-fade-in 0.3s ease;
+    animation:
+      wave 2s infinite linear,
+      app-bg-fade-in 0.3s ease;
   }
 
   /* ========== HOVER ЭФФЕКТЫ ========== */
@@ -248,7 +264,8 @@ const backgroundStyle = computed(() => {
   }
 
   &.hover-glow.is-hovered {
-    box-shadow: 0 0 40px rgba(255, 255, 255, 0.3),
+    box-shadow:
+      0 0 40px rgba(255, 255, 255, 0.3),
       0 20px 60px rgba(0, 0, 0, 0.2);
   }
 
@@ -378,16 +395,6 @@ const backgroundStyle = computed(() => {
 @keyframes wave {
   100% {
     mask-position: -200% 0;
-  }
-}
-
-/* ========== ГЛОБАЛЬНЫЕ АНИМАЦИИ ========== */
-@keyframes app-bg-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
   }
 }
 
