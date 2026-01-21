@@ -83,10 +83,8 @@ const backgroundStyle = computed(() => {
     backgroundRepeat: "no-repeat",
   };
 
-  // Проверяем наличие изображений для формирования backgroundImage
-  const hasImages = baseWebpUrl.value || retinaAvifUrl.value;
-
-  if (hasImages) {
+  // Если есть базовое или ретина изображение, добавляем backgroundImage
+  if (baseWebpUrl.value || retinaAvifUrl.value) {
     let images = "";
 
     // Добавляем базовое изображение, если оно есть
@@ -104,8 +102,6 @@ const backgroundStyle = computed(() => {
     }
 
     styles.backgroundImage = `image-set(${images})`;
-  } else {
-    styles.backgroundImage = undefined;
   }
 
   return styles;

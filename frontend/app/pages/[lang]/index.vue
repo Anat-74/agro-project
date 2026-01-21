@@ -81,7 +81,10 @@ console.debug("Home page data:", homePage.value);
 <template>
   <Loader v-if="pending" />
 
-  <HeroSection v-if="homePage?.sections" :slides="homePage.sections">
+  <HeroSection 
+  v-if="homePage?.sections" 
+  :slides="homePage.sections"
+  >
   </HeroSection>
 
   <section class="category" aria-labelledby="category-page">

@@ -3,25 +3,21 @@ import type { HeroSlide } from "@/types/types";
 
 interface Props {
   slides: HeroSlide[];
-  slideKey?: string;
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  slideKey: "id",
-});
+const { slides } = defineProps<Props>();
 </script>
 
 <template>
   <section>
     <AppSlider
-      v-if="props.slides && props.slides.length > 0"
+      v-if="slides && slides.length > 0"
       class="hero-slider"
-      :slides="props.slides"
-      item-key="id"
+      :slides="slides"
     >
       <template #default="{ slide, index }">
         <UBackground
-          src="Bg-hero 1x" 
+          src="Bg-hero 1x"
           :retinaSrc="slide.retinaBgImage?.url"
           :shouldPreload="index === 0"
         />

@@ -8,9 +8,10 @@ interface Props<T = any> {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  slideKey: 'id' as keyof T | string,
+  slideKey: "id" as keyof T | string,
   showPagination: true,
   showNavigation: true,
+  height: "var(--min-height)"
 });
 
 const container = useTemplateRef("container");
@@ -47,28 +48,19 @@ onUnmounted(() => cancelAnimationFrame(rafId));
 </script>
 
 <template>
-  <div class="slider"
+  <div 
+  class="slider" 
+  :style="{ minHeight: props.height }"
   >
-    <div 
-    ref="container" 
-    class="slider__container" 
-    @scroll="handleScroll"
-    >
+    <div ref="container" class="slider__container" @scroll="handleScroll">
       <div
-      class="slider__slide"
-      v-for="(slide, index) in props.slides" 
-      :key="slide[props.slideKey] || index"
+        class="slider__slide"
+        v-for="(slide, index) in props.slides"
+        :key="slide[props.slideKey] || index"
       >
-        <slot 
-        :slide="slide" 
-        :index="index"
-        >
-         <div 
-         class="slider__slide-content"
-         >{{ slide }}
-         </div>
+        <slot :slide="slide" :index="index">
+          <div class="slider__slide-content">{{ slide }}</div>
         </slot>
-
       </div>
     </div>
 
@@ -89,16 +81,14 @@ onUnmounted(() => cancelAnimationFrame(rafId));
       aria-label="Следующий слайд"
     />
 
-    <div 
-    class="slider__pagination" 
-    v-if="props.showPagination"
-    >
+    <div class="slider__pagination" v-if="props.showPagination">
       <button
         v-for="(slide, index) in props.slides"
         :key="slide[props.slideKey] || index"
         :class="[
-      'slider__pagination-dot', { 'slider__pagination-dot_active': active === index + 1 }
-      ]"
+          'slider__pagination-dot',
+          { 'slider__pagination-dot_active': active === index + 1 },
+        ]"
         @click="go(index + 1)"
         :aria-label="`Перейти к слайду ${index + 1}`"
         :aria-current="active === index + 1 ? 'true' : undefined"
@@ -112,7 +102,6 @@ onUnmounted(() => cancelAnimationFrame(rafId));
   position: relative;
   width: 100%;
   background-color: var(--bg-product);
-//   height: 100%;
 
   &__container {
     overflow-x: auto;
@@ -139,14 +128,14 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     &:first-child {
       scroll-snap-align: start;
       .slider__slide-content {
-         translate: toRem(16);
-   }
-}
+        translate: toRem(16);
+      }
+    }
 
     &:last-child {
       scroll-snap-align: end;
       .slider__slide-content {
-         translate: toRem(-16);
+        translate: toRem(-16);
       }
     }
   }
@@ -178,11 +167,11 @@ onUnmounted(() => cancelAnimationFrame(rafId));
       background-color: var(--warning-color);
     }
 
-      @include hover {
-         &:not(.slider__pagination-dot_active) {
-         background-color: var(--warning-color);
+    @include hover {
+      &:not(.slider__pagination-dot_active) {
+        background-color: var(--warning-color);
       }
-   }
+    }
   }
 }
 </style>
