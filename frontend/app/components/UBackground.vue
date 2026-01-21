@@ -16,7 +16,7 @@ const config = useRuntimeConfig();
 const props = withDefaults(defineProps<Props>(), {
   variant: "clean",
   effect: "none",
-  loading: "shimmer",
+  loading: "none",
   gradient: "none",
   filter: "none",
   hoverEffect: "none",
@@ -33,6 +33,8 @@ const removeExtension = (url: string) =>
 
 // Формирование URL для базовых изображений (из public)
 const baseImageUrl = computed(() => {
+  if (!props.src) return null;
+
   if (props.src?.startsWith("http") || props.src?.startsWith("//")) {
     return props.src;
   }
@@ -42,8 +44,14 @@ const baseImageUrl = computed(() => {
 });
 
 // Вычисляем базовый URL для WebP (единственный формат для базовых изображений)
-const baseBaseUrl = computed(() => removeExtension(baseImageUrl.value));
-const baseWebpUrl = computed(() => `${baseBaseUrl.value}.webp`);
+const baseBaseUrl = computed(() => {
+  if (!baseImageUrl.value) return null;
+  return removeExtension(baseImageUrl.value);
+});
+const baseWebpUrl = computed(() => {
+  if (!baseBaseUrl.value) return null;
+  return `${baseBaseUrl.value}.webp`;
+});
 
 // Формирование URL для ретина изображения (из Strapi)
 const retinaImageUrl = computed(() => {
@@ -69,20 +77,38 @@ const retinaAvifUrl = computed(() => {
 
 // Формирование CSS style с image-set
 const backgroundStyle = computed(() => {
-  // Начинаем с базового WebP из public (единственный формат для 1x)
-  let images = `url('${baseWebpUrl.value}') type("image/webp") 1x`;
-
-  // Если указано ретина изображение, добавляем его как 2x
-  if (retinaAvifUrl.value) {
-    images = `url('${retinaAvifUrl.value}') type("image/avif") 2x, ${images}`;
-  }
-
-  return {
-    backgroundImage: `image-set(${images})`,
+  const styles: any = {
     backgroundPosition: "center",
     backgroundSize: "cover",
     backgroundRepeat: "no-repeat",
   };
+
+  // Проверяем наличие изображений для формирования backgroundImage
+  const hasImages = baseWebpUrl.value || retinaAvifUrl.value;
+
+  if (hasImages) {
+    let images = "";
+
+    // Добавляем базовое изображение, если оно есть
+    if (baseWebpUrl.value) {
+      images = `url('${baseWebpUrl.value}') type("image/webp") 1x`;
+    }
+
+    // Если указано ретина изображение, добавляем его как 2x
+    if (retinaAvifUrl.value) {
+      if (images) {
+        images = `url('${retinaAvifUrl.value}') type("image/avif") 2x, ${images}`;
+      } else {
+        images = `url('${retinaAvifUrl.value}') type("image/avif") 2x`;
+      }
+    }
+
+    styles.backgroundImage = `image-set(${images})`;
+  } else {
+    styles.backgroundImage = undefined;
+  }
+
+  return styles;
 });
 
 // Классы для эффектов
@@ -129,7 +155,7 @@ const interactiveClass = computed(() => ({
     />
     <link
       rel="preload"
-      v-else-if="shouldPreload"
+      v-else-if="shouldPreload && baseWebpUrl"
       :href="baseWebpUrl"
       as="image"
       type="image/webp"
@@ -404,4 +430,3 @@ const interactiveClass = computed(() => ({
   z-index: 1;
 }
 </style>
-
