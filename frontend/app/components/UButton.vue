@@ -275,11 +275,16 @@ defineEmits<Emits>();
     position: absolute;
     top: 50%;
     translate: 0 -50%;
-    width: toRem(44);
-    height: toRem(44);
+    width: toEm(36);
+    height: toEm(36);
     border-radius: 50%;
     background-color: var(--light-color);
     transition: all var(--transition-duration);
+
+    @media (max-width:$mobile){
+      top: 66%;
+      translate: 0 -66%;
+    }
 
     svg {
       font-size: toEm(24);
@@ -299,11 +304,11 @@ defineEmits<Emits>();
   }
 
   &_slide-prev {
-   left: 10%;
+   left: 3%;
   }
 
    &_slide-next {
-   right: 10%;
+   right: 3%;
 
     svg {
        rotate: 180deg;

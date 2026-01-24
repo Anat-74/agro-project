@@ -24,7 +24,7 @@ const { slides } = defineProps<Props>();
         />
         <UImage
           v-if="slide.image?.url"
-          class="hero-slider__image"
+          type="hero"
           :src="slide.image.url"
           :alt="slide.heading"
           :smooth-load="true"
@@ -61,6 +61,7 @@ const { slides } = defineProps<Props>();
           :to="`/${currentLocale}/contacts`"
           >
           {{ slide.textLink }}
+            <Icon name="mingcute:arrow-right-line" />
           </NuxtLink>
         </div>
       </template>
@@ -73,16 +74,18 @@ const { slides } = defineProps<Props>();
 .hero-slider {
 		&__text-content {
          max-width: toRem(596);
+         display: grid;
+         row-gap: toEm(12);
 
          @media (max-width:$tablet){
-            text-align: center;
+            justify-items: center;
+            // padding-inline: toEm(44);
          }
 		}
 
       &__text-top {
          display: inline-flex;
          column-gap: toRem(2);
-         margin-block-end: toEm(4);
          text-transform: uppercase;
          font-size: toEm(14);
          color: var(--green-color);
@@ -95,13 +98,17 @@ const { slides } = defineProps<Props>();
 		}
 
 		&__title {
-         margin-block-end: toEm(8);
+         margin-block-end: toEm(4);
+
+         @media (max-width:$tablet){
+            // max-width: toRem(518);
+            text-align: center;
+         }
 		}
 
 		&__sale {
          display: inline-flex;
          column-gap: toRem(2);
-         margin-block-end: toEm(8);
          font-size: toEm(26);
          font-family: $font-family-content;
          font-weight: 400;
@@ -114,13 +121,31 @@ const { slides } = defineProps<Props>();
 		}
 
 		&__text-bottom {
+         text-align: center;
          font-size: toRem(14);
-         margin-block-end: toEm(8);
+         margin-block-end: toEm(48);
 		}
 
       &__link {
+         justify-self: start;
          position: relative;
          z-index: 999;
+         height: toEm(48);
+         display: inline-flex;
+         align-items: center;
+         column-gap: toEm(8);
+         padding-inline: toEm(25);
+         border-radius: toEm(25);
+         color: var(--light-color);
+         background-color: var(--success-color);
+
+         @media (max-width:$tablet){
+            justify-self: end;
+         }
+
+         svg {
+            font-size: toEm(20);
+         }
       }
 }
 

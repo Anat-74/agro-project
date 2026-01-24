@@ -56,7 +56,7 @@ const getCategoryLink = (category: Category) => {
   else {
     return `/${currentLocale.value}/${category.slug}`;
   }
-}; // почему не вычислительное свойство computed???
+};
 
 //==========================================================
 

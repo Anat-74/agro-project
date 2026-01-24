@@ -116,7 +116,7 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     scroll-behavior: smooth;
     display: flex;
     column-gap: toRem(14);
-    padding-block-end: toEm(44);
+    padding-block-end: toEm(54);
 
     &::-webkit-scrollbar {
       display: none;

@@ -82,7 +82,7 @@ defineProps<{
     padding-inline-end: toEm(16);
     display: flex;
     align-items: center;
-    @include adaptiveValue("column-gap", 36, 25);
+    @include adaptiveValue("column-gap", 36, 22);
   }
 
   &__item {
@@ -203,10 +203,8 @@ defineProps<{
   border-radius: toRem(4);
   font-size: toRem(18);
   font-weight: 500;
+   border: 2px solid currentColor;
 
-  &:not(:last-child) {
-    border: 2px solid currentColor;
-  }
 
   svg {
     font-size: toRem(18);
@@ -214,7 +212,7 @@ defineProps<{
 
   @include hover {
     color: var(--light-color);
-    border-color: var(--gold-color);
+    border-color: var(--success-color);
     background-color: var(--danger-color);
     transition: background-color var(--transition-duration);
   }

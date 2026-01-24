@@ -78,12 +78,9 @@ type ImageTypeConfig = {
 
 // Конфигурация по типам
 const typeConfigs: Record<string, ImageTypeConfig> = {
-  // Главное изображение на странице, обычно крупный баннер в шапке
+  // Главное изображение на странице
   hero: {
-    loading: "eager",
-    quality: 75,
-    sizes: "100vw",
-    priority: true,
+    sizes: "100vw sm:100vw md:90vw lg:80vw xl:1200px",
   },
   // Изображение-обложка для элементов (подкатегории, продукты и т.д.)
   cover: {
@@ -144,7 +141,7 @@ const finalSrc = computed(() => {
 
 // Приоритетная загрузка
 const computedLoading = computed(() => {
-  if (props.priority || props.type === "hero") return "eager";
+  if (props.priority || props.type === "cover") return "eager";
   return props.loading || configForType.value?.loading || "lazy";
 });
 </script>
@@ -170,7 +167,7 @@ const computedLoading = computed(() => {
       :format="props.format"
       :quality="quality"
       :loading="computedLoading"
-      :fetchpriority="props.priority || props.type === 'hero' ? 'high' : 'auto'"
+      :fetchpriority="props.priority || props.type === 'cover' ? 'high' : 'auto'"
       :class="['app-image__img', `app-image__img_${type}`]"
       decoding="async"
       v-bind="{ ...$attrs, class: undefined }"
@@ -221,6 +218,12 @@ const computedLoading = computed(() => {
         object-fit: contain;
       }
     }
+  }
+
+  &_hero {
+   @media (max-width:$tablet){
+      max-width: toRem(540);
+   }
   }
 }
 </style>
