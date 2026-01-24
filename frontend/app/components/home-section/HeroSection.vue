@@ -101,14 +101,13 @@ const { slides } = defineProps<Props>();
          margin-block-end: toEm(4);
 
          @media (max-width:$tablet){
-            // max-width: toRem(518);
             text-align: center;
          }
 		}
 
 		&__sale {
          display: inline-flex;
-         column-gap: toRem(2);
+         column-gap: toEm(2);
          font-size: toEm(26);
          font-family: $font-family-content;
          font-weight: 400;
@@ -116,14 +115,17 @@ const { slides } = defineProps<Props>();
 
          &::after {
             content: '%';
-            color: var(--warning-color);
+            color: var(--danger-color);
          }
 		}
 
 		&__text-bottom {
-         text-align: center;
          font-size: toRem(14);
-         margin-block-end: toEm(48);
+         @include adaptiveValue("margin-block-end", 48, 16);
+
+         @media (max-width:$tablet){
+            text-align: center;
+         }
 		}
 
       &__link {

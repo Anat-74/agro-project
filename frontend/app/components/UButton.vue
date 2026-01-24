@@ -281,9 +281,8 @@ defineEmits<Emits>();
     background-color: var(--light-color);
     transition: all var(--transition-duration);
 
-    @media (max-width:$mobile){
-      top: 66%;
-      translate: 0 -66%;
+    @media (max-width:$mobileSmall){
+      display: none;
     }
 
     svg {
@@ -362,8 +361,7 @@ defineEmits<Emits>();
     box-shadow: 0 toRem(4) toRem(0) rgba(0, 0, 0, 0.2);
     color: var(--danger-hover);
     background-color: var(--secondary-color);
-    transition: background-color var(--transition-duration),
-      color var(--transition-duration);
+    transition: background-color var(--transition-duration), color var(--transition-duration);
 
     &:disabled,
     &.btn_disabled {

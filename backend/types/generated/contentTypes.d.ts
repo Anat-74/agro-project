@@ -574,7 +574,9 @@ export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
       'api::home-page.home-page'
     >;
     publishedAt: Schema.Attribute.DateTime;
-    sections: Schema.Attribute.DynamicZone<['sliders.hero-slider']> &
+    sections: Schema.Attribute.DynamicZone<
+      ['sliders.hero-slider', 'sections.hero']
+    > &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;

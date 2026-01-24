@@ -116,7 +116,7 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     scroll-behavior: smooth;
     display: flex;
     column-gap: toRem(14);
-    padding-block-end: toEm(54);
+    padding-block-end: toEm(68);
 
     &::-webkit-scrollbar {
       display: none;
@@ -142,11 +142,15 @@ onUnmounted(() => cancelAnimationFrame(rafId));
   &__pagination {
     display: flex;
     justify-content: center;
-    column-gap: toRem(9);
+    column-gap: toRem(12);
     position: absolute;
     left: 50%;
     translate: -50% 0;
-    bottom: toRem(9);
+    bottom: toRem(12);
+
+    @media (max-width:$mobileSmall){
+       column-gap: toRem(38); 
+    }
   }
 
   &__pagination-dot {
@@ -158,6 +162,12 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     padding: 0;
     background-color: var(--light-color);
     transition: background-color var(--transition-duration);
+
+    @media (max-width:$mobileSmall){
+      width: toEm(22);
+      height: toEm(22);
+      border-color: var(--warning-color);
+    }
 
     &_active {
       cursor: default;

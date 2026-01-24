@@ -23,7 +23,8 @@
         }
       },
       "components": [
-        "sliders.hero-slider"
+        "sliders.hero-slider",
+        "sections.hero"
       ]
     },
     "title": {

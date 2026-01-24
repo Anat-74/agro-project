@@ -80,7 +80,7 @@ export interface LegalBankDetails extends Struct.ComponentSchema {
 export interface SectionsHero extends Struct.ComponentSchema {
   collectionName: 'components_sections_heroes';
   info: {
-    displayName: 'Hero';
+    displayName: 'Hero-bottom';
   };
   attributes: {
     heading: Schema.Attribute.String;
