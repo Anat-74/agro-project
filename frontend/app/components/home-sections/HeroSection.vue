@@ -51,7 +51,7 @@ const { slides } = defineProps<Props>();
             {{ slide.saleText }}
           </strong>
           <p 
-          v-if="slide.textBottom && slide.isShipping" 
+          v-if="slide.textBottom && slide.isTextBottom" 
           class="hero-slider__text-bottom"
           >
             {{ slide.textBottom }}
@@ -66,6 +66,8 @@ const { slides } = defineProps<Props>();
         </div>
       </template>
     </AppSlider>
+
+    
   </section>
 </template>
 

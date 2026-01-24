@@ -221,7 +221,7 @@ export interface HeroSlide {
   textBottom?: string;
   textLink?: string;
   isDiscount?: boolean;
-  isShipping?: boolean;
+  isTextBottom?: boolean;
 }
 
 // Тип для домашней страницы (HomePage)
@@ -229,7 +229,7 @@ export type HomePage = {
   id: number;
   title?: string;
   description?: string;
-  sections: HeroSlide[];
+  heroSlider: HeroSlide[];
   locale?: string;
   documentId?: string;
   createdAt?: string;

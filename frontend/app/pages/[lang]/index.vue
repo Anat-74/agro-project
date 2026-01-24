@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Category, VisibilityState, HomePage } from "@/types/types";
-import HeroSection from "~/components/home-section/HeroSection.vue";
+import HeroSection from "~/components/home-sections/HeroSection.vue";
 import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
 const { isContacts } = inject<VisibilityState>("visible")!;
 
@@ -82,8 +82,8 @@ console.debug("Home page data:", homePage.value);
   <Loader v-if="pending" />
 
   <HeroSection 
-  v-if="homePage?.sections" 
-  :slides="homePage.sections"
+  v-if="homePage?.heroSlider" 
+  :slides="homePage.heroSlider"
   >
   </HeroSection>
 

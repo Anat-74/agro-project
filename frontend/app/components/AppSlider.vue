@@ -116,7 +116,7 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     scroll-behavior: smooth;
     display: flex;
     column-gap: toRem(14);
-    padding-block-end: toEm(68);
+    padding-block-end: toEm(78);
 
     &::-webkit-scrollbar {
       display: none;
@@ -146,7 +146,7 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     position: absolute;
     left: 50%;
     translate: -50% 0;
-    bottom: toRem(12);
+    bottom: toRem(16);
 
     @media (max-width:$mobileSmall){
        column-gap: toRem(38); 
@@ -167,11 +167,13 @@ onUnmounted(() => cancelAnimationFrame(rafId));
       width: toEm(22);
       height: toEm(22);
       border-color: var(--warning-color);
+      outline: toRem(2) solid var(--warning-color);
+      outline-offset: toRem(3);
     }
 
     &_active {
       cursor: default;
-      scale: 1.3;
+      outline-color: var(--warning-color);
       border-color: var(--light-color);
       background-color: var(--warning-color);
     }

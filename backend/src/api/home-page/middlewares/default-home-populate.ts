@@ -6,21 +6,32 @@ export default (config: unknown, { strapi }: { strapi: Core.Strapi }) => {
 
     if (!originalPopulate || Object.keys(originalPopulate).length === 0) {
       ctx.request.query.populate = {
-        sections: {
+        heroSlider: {
           on: {
-            'sliders.hero-slider': {
+            "sliders.hero-slider": {
               populate: {
                 image: {
-                  fields: ['alternativeText', 'url', 'formats'],
+                  fields: ['alternativeText', 'url'],
                 },
                   retinaBgImage: {
-                  fields: ['alternativeText', 'url', 'formats'],
+                  fields: ['alternativeText', 'url'],
                 },
                },
               },
+            },
+         },
+         heroGrids: {
+            on: {
+               "sections.hero-grids": {
+               populate: {
+                  icons: {
+                     fields: ['alternativeText', 'url'],
+                     }
+                  }
+               }
+            }
+         }
 
-          },
-        },
       };
     }
 

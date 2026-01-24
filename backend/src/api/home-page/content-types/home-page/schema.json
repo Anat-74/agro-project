@@ -15,7 +15,7 @@
     }
   },
   "attributes": {
-    "sections": {
+    "heroSlider": {
       "type": "dynamiczone",
       "pluginOptions": {
         "i18n": {
@@ -23,8 +23,7 @@
         }
       },
       "components": [
-        "sliders.hero-slider",
-        "sections.hero"
+        "sliders.hero-slider"
       ]
     },
     "title": {
@@ -42,6 +41,17 @@
           "localized": true
         }
       }
+    },
+    "heroGrids": {
+      "type": "dynamiczone",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "components": [
+        "sections.hero-grids"
+      ]
     }
   }
 }

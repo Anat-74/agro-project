@@ -40,7 +40,7 @@
     "isDiscount": {
       "type": "boolean"
     },
-    "isShipping": {
+    "isTextBottom": {
       "type": "boolean"
     },
     "textLink": {

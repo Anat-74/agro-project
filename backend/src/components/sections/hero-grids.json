@@ -1,11 +1,11 @@
 {
-  "collectionName": "components_sections_heroes",
+  "collectionName": "components_sections_hero_grids",
   "info": {
-    "displayName": "Hero-bottom"
+    "displayName": "Hero-grids"
   },
   "options": {},
   "attributes": {
-    "icon": {
+    "icons": {
       "type": "media",
       "multiple": false,
       "allowedTypes": [
@@ -17,6 +17,9 @@
     },
     "text": {
       "type": "string"
+    },
+    "isVisible": {
+      "type": "boolean"
     }
   },
   "config": {}
