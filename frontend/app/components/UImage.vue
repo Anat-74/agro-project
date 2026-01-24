@@ -10,7 +10,7 @@ const props = withDefaults(
   defineProps<{
     // Обязательные
     src: string;
-    alt: string;
+    alt?: string;
 
     // Размеры
     width?: string | number;
@@ -73,6 +73,8 @@ type ImageTypeConfig = {
   loading?: "lazy" | "eager";
   quality?: number;
   sizes?: string;
+  width?: string | number;
+  height?: string | number;
   priority?: boolean;
 };
 
@@ -112,6 +114,8 @@ const typeConfigs: Record<string, ImageTypeConfig> = {
   icon: {
     quality: 100,
     sizes: "64px",
+    width: "40",
+    height: "40"
   },
 };
 
@@ -192,7 +196,7 @@ const computedLoading = computed(() => {
 .app-image {
   &_smooth-load {
     filter: blur(4px);
-    transition: filter 0.4s ease;
+    transition: filter .4s ease;
   }
 
   &_loaded {

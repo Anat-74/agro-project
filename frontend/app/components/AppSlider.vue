@@ -107,6 +107,7 @@ onUnmounted(() => cancelAnimationFrame(rafId));
 <style lang="scss" scoped>
 .slider {
   position: relative;
+  z-index: 100;
   width: 100%;
   background-color: var(--bg-product);
 
@@ -164,8 +165,8 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     transition: background-color var(--transition-duration);
 
     @media (max-width:$mobileSmall){
-      width: toEm(22);
-      height: toEm(22);
+      width: toEm(20);
+      height: toEm(20);
       border-color: var(--warning-color);
       outline: toRem(2) solid var(--warning-color);
       outline-offset: toRem(3);

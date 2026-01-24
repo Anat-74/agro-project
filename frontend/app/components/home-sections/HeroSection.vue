@@ -1,16 +1,19 @@
 <script setup lang="ts">
-import type { HeroSlide } from "@/types/types";
+import type { HeroSlide, HeroGrid } from "@/types/types";
+import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
+import HeroGrids from "../HeroGrids.vue";
 const { currentLocale } = useLocale();
 
 interface Props {
   slides: HeroSlide[];
+  heroGrids?: HeroGrid[];
 }
 
-const { slides } = defineProps<Props>();
+const { slides, heroGrids } = defineProps<Props>();
 </script>
 
 <template>
-  <section aria-labelledby="hero-title">
+  <section aria-labelledby="hero">
     <AppSlider
       v-if="slides && slides.length > 0"
       class="hero-slider"
@@ -40,7 +43,7 @@ const { slides } = defineProps<Props>();
           <h1 
           v-if="slide.heading" 
           class="hero-slider__title"
-          id="hero-title"
+          id="hero"
           >
             {{ slide.heading }}
           </h1>
@@ -67,7 +70,10 @@ const { slides } = defineProps<Props>();
       </template>
     </AppSlider>
 
-    
+    <HeroGrids 
+      v-if="heroGrids && heroGrids.length > 0"
+      :grids="heroGrids"
+    />
   </section>
 </template>
 
@@ -75,13 +81,14 @@ const { slides } = defineProps<Props>();
 
 .hero-slider {
 		&__text-content {
+         position: relative;
+         z-index: 10;
          max-width: toRem(596);
          display: grid;
          row-gap: toEm(12);
 
          @media (max-width:$tablet){
             justify-items: center;
-            // padding-inline: toEm(44);
          }
 		}
 

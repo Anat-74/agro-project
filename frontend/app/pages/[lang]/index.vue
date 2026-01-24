@@ -82,12 +82,13 @@ console.debug("Home page data:", homePage.value);
   <Loader v-if="pending" />
 
   <HeroSection 
-  v-if="homePage?.heroSlider" 
+  v-if="homePage?.heroSlider || homePage?.heroGrids" 
   :slides="homePage.heroSlider"
+  :hero-grids="homePage.heroGrids"
   >
   </HeroSection>
 
-  <section class="category" aria-labelledby="category-page">
+  <!-- <section class="category" aria-labelledby="category-page">
     <UBackground 
     src="Bg-hero 1x" 
     class="category__image-background" />
@@ -126,7 +127,7 @@ console.debug("Home page data:", homePage.value);
         </li>
       </ul>
     </div>
-  </section>
+  </section> -->
 
   <span v-if="error" class="error">
     {{ error.message }}

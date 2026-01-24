@@ -165,7 +165,6 @@ const interactiveClass = computed(() => ({
 .app-bg {
   position: absolute;
   inset: 0;
-  z-index: 0;
   overflow: hidden;
   /* ========== АНИМАЦИЯ ПОЯВЛЕНИЯ ========== */
   opacity: 1;

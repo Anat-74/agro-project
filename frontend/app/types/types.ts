@@ -204,16 +204,20 @@ export interface StrapiResponse<T> {
   meta?: object;
 }
 
-// Тип для слайдов в hero-секции
+// Тип для слайдов в hero-slider
 export interface HeroSlide {
   id: number;
   retinaBgImage?: {
+    id: number;
     url: string;
     alternativeText?: string;
+    documentId?: string;
   };
-  image?: {
+   image?: {
+    id: number;
     url: string;
     alternativeText?: string;
+    documentId?: string;
   };
   textTop?: string;
   heading?: string;
@@ -224,12 +228,27 @@ export interface HeroSlide {
   isTextBottom?: boolean;
 }
 
+// Тип для слайдов в hero-grids
+export interface HeroGrid {
+  id: number;
+  icons?: {
+  id: number;
+  url: string;
+  alternativeText?: string;
+  documentId?: string;
+  };
+  heading?: string;
+  text?: string;
+  isVisible?: boolean;
+}
+
 // Тип для домашней страницы (HomePage)
 export type HomePage = {
   id: number;
   title?: string;
   description?: string;
   heroSlider: HeroSlide[];
+  heroGrids: HeroGrid[];
   locale?: string;
   documentId?: string;
   createdAt?: string;
