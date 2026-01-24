@@ -40,7 +40,7 @@ const handleScroll = () => {
     }
   });
 };
-// Почему не используется computed???
+
 const next = () => active.value < props.slides.length && go(active.value + 1);
 const prev = () => active.value > 1 && go(active.value - 1);
 
@@ -52,14 +52,20 @@ onUnmounted(() => cancelAnimationFrame(rafId));
   class="slider" 
   :style="{ minHeight: props.height }"
   >
-    <div ref="container" class="slider__container" @scroll="handleScroll">
+    <div 
+    ref="container" 
+    class="slider__container" 
+    @scroll="handleScroll"
+    >
       <div
         class="slider__slide"
         v-for="(slide, index) in props.slides"
         :key="slide[props.slideKey] || index"
       >
         <slot :slide="slide" :index="index">
-          <div class="slider__slide-content">{{ slide }}</div>
+          <div class="slider__slide-content">
+            {{ slide }}
+         </div>
         </slot>
       </div>
     </div>
@@ -67,6 +73,7 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     <UButton
       v-if="props.showNavigation"
       @click="prev"
+      :disabled="active <= 1"
       icon="mdi:chevron-left"
       variant="slide-prev"
       aria-label="Предыдущий слайд"
@@ -108,7 +115,8 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     display: flex;
-    height: 100%;
+    column-gap: toRem(14);
+    padding-block-end: toEm(44);
 
     &::-webkit-scrollbar {
       display: none;
@@ -121,22 +129,13 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     flex: 0 0 100%;
     scroll-snap-align: center;
     display: grid;
+    grid-template-columns: auto 1fr;
     place-items: center;
-    font-size: toRem(32);
+    column-gap: toEm(32);
     color: var(--color);
 
-    &:first-child {
-      scroll-snap-align: start;
-      .slider__slide-content {
-        translate: toRem(16);
-      }
-    }
-
-    &:last-child {
-      scroll-snap-align: end;
-      .slider__slide-content {
-        translate: toRem(-16);
-      }
+    @media (max-width:$tablet){
+      grid-template-columns: 1fr;
     }
   }
 
@@ -147,7 +146,7 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     position: absolute;
     left: 50%;
     translate: -50% 0;
-    bottom: toRem(12);
+    bottom: toRem(9);
   }
 
   &__pagination-dot {

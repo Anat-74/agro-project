@@ -39,6 +39,12 @@
     },
     "isDiscount": {
       "type": "boolean"
+    },
+    "isShipping": {
+      "type": "boolean"
+    },
+    "textLink": {
+      "type": "string"
     }
   },
   "config": {}

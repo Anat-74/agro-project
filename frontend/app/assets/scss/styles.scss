@@ -3,7 +3,7 @@
 // ===================================================================
 // Глобальные переменные
 :root {
-  --min-height: 500px; // Минимальная высота
+  --min-height: 200px; // Минимальная высота
 
       --light-color-transparent: color-mix( in srgb,
     #ffffff 32%,
@@ -52,6 +52,7 @@
   --warning-color: #ff8c00;
   --warning-hover: #f4a460;
   --success-color: #9acd32;
+  --green-color: green;
   --sky-blue: #afeeee;
   --transparent-color: transparent;
   --whitesmoke-color: whitesmoke;
@@ -85,6 +86,7 @@
   --warning-color: #ff8c00;
   --warning-hover: #f4a460;
   --success-color: #9acd32;
+   --green-color: green;
   --sky-blue: #afeeee;
   --whitesmoke-color: whitesmoke;
   --transparent-color: transparent;
@@ -118,6 +120,7 @@
   --warning-color: #ff8c00;
   --warning-hover: #f4a460;
   --success-color: #9acd32;
+   --green-color: green;
   --sky-blue: #afeeee;
   --whitesmoke-color: whitesmoke;
   --transparent-color: transparent;

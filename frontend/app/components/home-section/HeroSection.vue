@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { HeroSlide } from "@/types/types";
+const { currentLocale } = useLocale();
 
 interface Props {
   slides: HeroSlide[];
@@ -9,7 +10,7 @@ const { slides } = defineProps<Props>();
 </script>
 
 <template>
-  <section>
+  <section aria-labelledby="hero-title">
     <AppSlider
       v-if="slides && slides.length > 0"
       class="hero-slider"
@@ -33,21 +34,34 @@ const { slides } = defineProps<Props>();
           height="498"
         />
         <div class="hero-slider__text-content">
-          <h2 v-if="slide.heading" class="hero-slider__title">
-            {{ slide.heading }}
-          </h2>
-          <span v-if="slide.textTop" class="hero-slider__text-top">
+            <span v-if="slide.textTop" class="hero-slider__text-top">
             {{ slide.textTop }}
           </span>
+          <h1 
+          v-if="slide.heading" 
+          class="hero-slider__title"
+          id="hero-title"
+          >
+            {{ slide.heading }}
+          </h1>
           <strong
             v-if="slide.saleText && slide.isDiscount"
             class="hero-slider__sale"
           >
             {{ slide.saleText }}
           </strong>
-          <p v-if="slide.textBottom" class="hero-slider__text-bottom">
+          <p 
+          v-if="slide.textBottom && slide.isShipping" 
+          class="hero-slider__text-bottom"
+          >
             {{ slide.textBottom }}
           </p>
+          <NuxtLink 
+          class="hero-slider__link"
+          :to="`/${currentLocale}/contacts`"
+          >
+          {{ slide.textLink }}
+          </NuxtLink>
         </div>
       </template>
     </AppSlider>
@@ -55,8 +69,59 @@ const { slides } = defineProps<Props>();
 </template>
 
 <style lang="scss" scoped>
+
 .hero-slider {
-  &__image {
-  }
+		&__text-content {
+         max-width: toRem(596);
+
+         @media (max-width:$tablet){
+            text-align: center;
+         }
+		}
+
+      &__text-top {
+         display: inline-flex;
+         column-gap: toRem(2);
+         margin-block-end: toEm(4);
+         text-transform: uppercase;
+         font-size: toEm(14);
+         color: var(--green-color);
+
+         &::before,
+         &::after {
+            content: '*';
+            color: var(--success-color);
+         }
+		}
+
+		&__title {
+         margin-block-end: toEm(8);
+		}
+
+		&__sale {
+         display: inline-flex;
+         column-gap: toRem(2);
+         margin-block-end: toEm(8);
+         font-size: toEm(26);
+         font-family: $font-family-content;
+         font-weight: 400;
+         color: var(--success-color);
+
+         &::after {
+            content: '%';
+            color: var(--warning-color);
+         }
+		}
+
+		&__text-bottom {
+         font-size: toRem(14);
+         margin-block-end: toEm(8);
+		}
+
+      &__link {
+         position: relative;
+         z-index: 999;
+      }
 }
+
 </style>

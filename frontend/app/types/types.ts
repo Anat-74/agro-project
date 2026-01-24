@@ -219,7 +219,9 @@ export interface HeroSlide {
   heading?: string;
   saleText?: string;
   textBottom?: string;
+  textLink?: string;
   isDiscount?: boolean;
+  isShipping?: boolean;
 }
 
 // Тип для домашней страницы (HomePage)

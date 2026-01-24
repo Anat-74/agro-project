@@ -21,6 +21,7 @@
          letter-spacing: 1.2px;
          font-weight: 600;
          font-size: toRem(26);
+         font-family: $font-family-cursive;
 
          @media (max-width:$mobile){
          left: 50%;

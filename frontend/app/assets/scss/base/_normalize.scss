@@ -1,6 +1,3 @@
-@use './globals';
-@use './container';
-
 /**
   Нормализация блочной модели
  */
@@ -125,8 +122,6 @@
  }
  
  body {
-   min-width: container.$minWidth + px;
-   font-family: globals.$font-family;
    /**
      Пригодится в большинстве ситуаций
      (когда, например, нужно будет "прижать" футер к низу сайта)
