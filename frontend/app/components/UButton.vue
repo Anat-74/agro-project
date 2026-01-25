@@ -273,6 +273,7 @@ defineEmits<Emits>();
   &_slide-prev,
   &_slide-next{
     position: absolute;
+    z-index: 100;
     top: 50%;
     translate: 0 -50%;
     width: toEm(36);

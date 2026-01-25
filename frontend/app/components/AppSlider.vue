@@ -117,7 +117,13 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     scroll-behavior: smooth;
     display: flex;
     column-gap: toRem(14);
+    padding-block-start: toRem(4);
     padding-block-end: toEm(78);
+
+    @media (min-width:$tablet){
+      padding-block-start: toEm(18);
+      padding-block-end: toEm(99);
+    }
 
     &::-webkit-scrollbar {
       display: none;
@@ -148,6 +154,10 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     left: 50%;
     translate: -50% 0;
     bottom: toRem(16);
+
+    @media (min-width:$tablet){
+        bottom: toRem(90);
+    }
 
     @media (max-width:$mobileSmall){
        column-gap: toRem(38); 

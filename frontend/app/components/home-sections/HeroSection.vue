@@ -13,10 +13,10 @@ const { slides, heroGrids } = defineProps<Props>();
 </script>
 
 <template>
-  <section aria-labelledby="hero">
+  <section class="hero-slider" aria-labelledby="hero">
     <AppSlider
       v-if="slides && slides.length > 0"
-      class="hero-slider"
+      class="hero-slider__slider"
       :slides="slides"
     >
       <template #default="{ slide, index }">
@@ -70,7 +70,7 @@ const { slides, heroGrids } = defineProps<Props>();
       </template>
     </AppSlider>
 
-    <HeroGrids 
+    <HeroGrids
       v-if="heroGrids && heroGrids.length > 0"
       :grids="heroGrids"
     />
@@ -80,15 +80,20 @@ const { slides, heroGrids } = defineProps<Props>();
 <style lang="scss" scoped>
 
 .hero-slider {
+   @media (min-width:$tablet){
+      position: relative;
+   }
 		&__text-content {
          position: relative;
          z-index: 10;
          max-width: toRem(596);
          display: grid;
          row-gap: toEm(12);
+         padding-block: toEm(25);
 
          @media (max-width:$tablet){
             justify-items: center;
+            padding-block: toRem(2);
          }
 		}
 
@@ -130,7 +135,6 @@ const { slides, heroGrids } = defineProps<Props>();
 
 		&__text-bottom {
          font-size: toRem(14);
-         @include adaptiveValue("margin-block-end", 48, 16);
 
          @media (max-width:$tablet){
             text-align: center;
@@ -149,6 +153,7 @@ const { slides, heroGrids } = defineProps<Props>();
          border-radius: toEm(25);
          color: var(--light-color);
          background-color: var(--success-color);
+         @include adaptiveValue("margin-block-start", 48, 16);
 
          @media (max-width:$tablet){
             justify-self: end;

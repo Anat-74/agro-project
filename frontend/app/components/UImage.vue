@@ -73,8 +73,6 @@ type ImageTypeConfig = {
   loading?: "lazy" | "eager";
   quality?: number;
   sizes?: string;
-  width?: string | number;
-  height?: string | number;
   priority?: boolean;
 };
 
@@ -114,8 +112,6 @@ const typeConfigs: Record<string, ImageTypeConfig> = {
   icon: {
     quality: 100,
     sizes: "64px",
-    width: "40",
-    height: "40"
   },
 };
 
