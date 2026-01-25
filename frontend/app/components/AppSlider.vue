@@ -120,17 +120,17 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     padding-block-start: toRem(4);
     padding-block-end: toEm(78);
 
-    @media (min-width:$tablet){
-      padding-block-start: toEm(18);
-      padding-block-end: toEm(99);
-    }
-
     &::-webkit-scrollbar {
       display: none;
     }
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+   @media (min-width:$tablet){
+      padding-block-start: toEm(18);
+      padding-block-end: toEm(99);
+    }
 
   &__slide {
     flex: 0 0 100%;
