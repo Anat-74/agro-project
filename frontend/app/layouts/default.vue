@@ -89,7 +89,7 @@ console.debug("global data:", global.value);
     </div>
   </header>
 
-  <main :class="['main', { 'backdrop-visible': isContacts }]">
+  <main :class="['main', { 'main_is-visible': isContacts }]">
     <slot />
   </main>
 
@@ -220,5 +220,11 @@ console.debug("global data:", global.value);
   .pagination-active {
     background-color: var(--active-color);
   }
+}
+
+.main {
+   &_is-visible {
+      background-image: linear-gradient(red, yellow, green);
+   }
 }
 </style>

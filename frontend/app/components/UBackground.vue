@@ -166,6 +166,7 @@ const interactiveClass = computed(() => ({
   position: absolute;
   inset: 0;
   overflow: hidden;
+  z-index: -1;
   /* ========== АНИМАЦИЯ ПОЯВЛЕНИЯ ========== */
   opacity: 1;
   transition: opacity 2s ease;

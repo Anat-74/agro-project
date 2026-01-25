@@ -84,8 +84,6 @@ const { slides, heroGrids } = defineProps<Props>();
       position: relative;
    }
 		&__text-content {
-         position: relative;
-         z-index: 10;
          max-width: toRem(596);
          display: grid;
          row-gap: toEm(12);
@@ -143,8 +141,6 @@ const { slides, heroGrids } = defineProps<Props>();
 
       &__link {
          justify-self: start;
-         position: relative;
-         z-index: 999;
          height: toEm(48);
          display: inline-flex;
          align-items: center;
