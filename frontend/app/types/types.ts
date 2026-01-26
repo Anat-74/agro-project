@@ -212,6 +212,12 @@ export interface HeroSlide {
     url: string;
     alternativeText?: string;
     documentId?: string;
+   };
+   fallbackBgImage?: {
+    id: number;
+    url: string;
+    alternativeText?: string;
+    documentId?: string;
   };
    image?: {
     id: number;

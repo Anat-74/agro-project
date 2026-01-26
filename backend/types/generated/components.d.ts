@@ -109,6 +109,7 @@ export interface SlidersHeroSlider extends Struct.ComponentSchema {
     displayName: 'Hero-slider';
   };
   attributes: {
+    fallbackBgImage: Schema.Attribute.Media<'images'>;
     heading: Schema.Attribute.String;
     image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     isDiscount: Schema.Attribute.Boolean;

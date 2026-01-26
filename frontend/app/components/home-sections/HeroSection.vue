@@ -22,9 +22,8 @@ const { slides, heroGrids } = defineProps<Props>();
       <template #default="{ slide, index }">
         <UBackground
           v-if="slide.retinaBgImage?.url"
-          src="Bg-hero 1x"
+          :src="slide.fallbackBgImage?.url"
           :retinaSrc="slide.retinaBgImage?.url"
-          :shouldPreload="index === 0"
         />
         <UImage
           v-if="slide.image?.url"

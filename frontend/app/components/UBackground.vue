@@ -8,7 +8,6 @@ interface Props {
   gradient?: "rainbow" | "sunset" | "ocean" | "violet" | "none";
   filter?: "brightness" | "contrast" | "saturate" | "darken" | "none";
   hoverEffect?: "zoom" | "darken" | "glow" | "lift" | "none";
-  shouldPreload?: boolean;
 }
 
 const config = useRuntimeConfig();
@@ -20,7 +19,6 @@ const props = withDefaults(defineProps<Props>(), {
   gradient: "none",
   filter: "none",
   hoverEffect: "none",
-  shouldPreload: false,
 });
 
 // Только интерактивные состояния
@@ -31,11 +29,15 @@ const isActive = ref(false);
 const removeExtension = (url: string) =>
   url.replace(/\.(avif|webp|png|jpg|jpeg)$/i, "");
 
-// Формирование URL для базовых изображений (из public)
 const baseImageUrl = computed(() => {
   if (!props.src) return null;
 
-  if (props.src?.startsWith("http") || props.src?.startsWith("//")) {
+  // Добавить проверку, является ли URL внешним (из Strapi)
+  if (props.src.startsWith("http") || props.src.startsWith("//") || props.src.startsWith("/uploads/")) {
+    // Если это URL из Strapi, добавить базовый URL
+    if (props.src.startsWith("/uploads/")) {
+      return `${config.public.strapi.url}${props.src}`;
+    }
     return props.src;
   }
 
@@ -48,6 +50,7 @@ const baseBaseUrl = computed(() => {
   if (!baseImageUrl.value) return null;
   return removeExtension(baseImageUrl.value);
 });
+
 const baseWebpUrl = computed(() => {
   if (!baseBaseUrl.value) return null;
   return `${baseBaseUrl.value}.webp`;
@@ -142,20 +145,6 @@ const interactiveClass = computed(() => ({
     @mouseleave="isHovered = false"
     @click="isActive = !isActive"
   >
-    <link
-      rel="preload"
-      v-if="shouldPreload && retinaAvifUrl"
-      :href="retinaAvifUrl"
-      as="image"
-      type="image/avif"
-    />
-    <link
-      rel="preload"
-      v-else-if="shouldPreload && baseWebpUrl"
-      :href="baseWebpUrl"
-      as="image"
-      type="image/webp"
-    />
     <slot />
   </div>
 </template>
