@@ -46,7 +46,7 @@ const copyLink = async () => {
 <style lang="scss" scoped>
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity .4s;
+  transition: opacity .3s;
 }
 
 .fade-enter-from,

@@ -62,8 +62,8 @@ const close = () => {
   }
 
   &_success {
-   background-color: var(--green-color);
    color: var(--light-color);
+   background-color: var(--success-color);
   }
 
   &__icon {
@@ -85,7 +85,7 @@ const close = () => {
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity .4s;
+  transition: opacity .3s;
 }
 
 .fade-enter-from,
