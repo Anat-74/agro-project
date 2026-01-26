@@ -16,7 +16,7 @@ const { categorySlug, productSlug } = route.params as {
 const { currentLocale } = useLocale()
 const { goBack } = useGoToForwardOrBack()
 
-
+const showTooltip = ref(false)
 const currentImage = ref('')
 
 const { data: product, error, pending } = useAsyncData
@@ -130,7 +130,7 @@ const handleAddToCart = (product: Product) => {
    <section 
    v-if="product"
    aria-labelledby="product-description"
-   class="product-review"
+   class="product-review product-review__container"
    >
    <h1
       class="visually-hidden"
@@ -204,9 +204,25 @@ const handleAddToCart = (product: Product) => {
      <span
       :class="['wrapper-right__price', {'wrapper-right__price_discount' :product.isDiscount}]"
      >
-      <Icon 
-      :class="{ 'wrapper-right__discount-icon' :product.isDiscount}"
-      name="my-icon:icon-by-regular" />
+     <div class="wrapper-right__tooltip-wrapper">
+     <button
+      class="wrapper-right__btn-tooltip"
+       aria-describedby="currency-tooltip"
+      @mouseenter="showTooltip = true"
+      @mouseleave="showTooltip = false"
+      @focus="showTooltip = true"
+      @blur="showTooltip = false"
+     >
+      <Icon name="my-icon:icon-by-regular" />
+      </button>
+      <span
+         class="wrapper-right__simple-tooltip"
+         v-show="showTooltip"
+         role="tooltip"
+         id="currency-tooltip">
+         Белорусский рубль
+      </span>
+      </div>
       {{ formatPrice(product.price) }}
      </span>
      <UButton
@@ -258,7 +274,7 @@ const handleAddToCart = (product: Product) => {
     }
 
     &__discount-icon {
-    color: var(--lime-color);
+    color: var(--success-color);
     font-size: toEm(32);
  }
 
@@ -266,16 +282,16 @@ const handleAddToCart = (product: Product) => {
     padding-inline: toEm(8);
     padding-block: toEm(4);
     border-radius: toRem(4);
-    background-color: var(--bg);
-    box-shadow: 0px 1px toRem(5) var(--shadow);
+    background-color: var(--whitesmoke-color);
  }
 
     &__image {
     align-self: center;
     border-radius: toEm(8);
-    box-shadow: 0 0 toRem(4) var(--shadow);
     margin-block-end: toEm(18);
-    background-color: var(--bg-product);
+    border: toRem(2) solid var(--whitesmoke-color);
+    max-width: 100%;
+    object-fit: contain;
  //    transition: opacity .2s ease-in-out;
    
  //   &:not([src]) {
@@ -302,11 +318,10 @@ const handleAddToCart = (product: Product) => {
    cursor: pointer;
    border: toRem(2) solid transparent;
    border-radius: toRem(4);
-   box-shadow: 0px 1px toRem(5) var(--shadow);
    transition: all var(--transition-duration);
 
     &_active {
-       border-color: var(--blue-color);
+       border-color: var(--sky-blue);
     }
 
     @include hover {
@@ -316,7 +331,6 @@ const handleAddToCart = (product: Product) => {
 
  &__thumbnail-image {
     border-radius: toRem(4);
-    background-color: var(--bg-product);
     transition: opacity var(--transition-duration);
  }
  }
@@ -332,7 +346,6 @@ const handleAddToCart = (product: Product) => {
     'charact charact'
     'price btn'
     ;
-   @include containerParent;
 
  &__title {
     grid-area: title;
@@ -341,8 +354,7 @@ const handleAddToCart = (product: Product) => {
     padding-block: toEm(4, 22);
     border-radius: toEm(4, 22);
     color: var(--dark-golden-color);
-    background-color: var(--bg-product);
-    box-shadow: 0px 1px toRem(5) var(--shadow);
+    background-color: var(--whitesmoke-color);
  }
 
  &:deep(.wrapper-right__description) {
@@ -351,8 +363,7 @@ const handleAddToCart = (product: Product) => {
     padding-block-start: toEm(16);
     padding-block-end: toEm(2);
     border-radius: toRem(4);
-    background-color: var(--bg-product);
-    box-shadow: 0px 1px toRem(5) var(--shadow);
+    background-color: var(--whitesmoke-color);
  }
 
  &:deep(.wrapper-right__characteristics) {
@@ -370,14 +381,43 @@ const handleAddToCart = (product: Product) => {
     padding-inline: toEm(8);
     padding-block: toEm(4);
     border-radius: toRem(4);
-    color: var(--dark-golden-color);
-    background-color: var(--bg-product);
-    box-shadow: 0px 1px toRem(5) var(--shadow);
+    color: var(--green-color);
+    background-color: var(--whitesmoke-color);
 
     &_discount {
        color: var(--green-color);
     }
  }
+
+ &__tooltip-wrapper {
+   position: relative;
+   z-index: 10;
+   display: inline-block;
+
+   button {
+      padding: toRem(12);
+      margin: toRem(-12);
+   }
+
+   svg {
+      position: relative;
+      z-index: -1;
+   }
+ }
+
+ &__simple-tooltip {
+  position: absolute;
+  z-index: 100;
+  bottom: 100%;
+  left: 35%;
+  translate: -35% -50%;
+  white-space: nowrap;
+  padding: toRem(4) toRem(8);
+  border-radius: toRem(4);
+  font-size: toRem(14);
+  color: var(--light-color);
+  background-color: var(--warning-color);
+}
 
  &__btn {
     grid-area: btn;

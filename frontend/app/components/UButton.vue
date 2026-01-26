@@ -81,13 +81,10 @@ defineEmits<Emits>();
   padding-block: toRem(8);
   border-radius: toRem(4);
   color: var(--color);
-  background-color: transparent;
-  border: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
 //   gap: 8px;
-  cursor: pointer;
   font-weight: 500;
   transition: all .2s ease;
 
@@ -273,7 +270,6 @@ defineEmits<Emits>();
   &_slide-prev,
   &_slide-next{
     position: absolute;
-    z-index: 100;
     top: 50%;
     translate: 0 -50%;
     width: toEm(36);

@@ -55,6 +55,7 @@ const { grids } = defineProps<Props>();
       top: 100%;
       width: 95%;
       border-radius: toRem(6);
+      background-color: var(--light-color);
       box-shadow: 0 8px 40px 0 rgba(0, 38, 3, 0.26);
    }
 

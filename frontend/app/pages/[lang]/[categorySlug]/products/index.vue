@@ -123,7 +123,7 @@ const handleAddToCart = (product: Product) => {
   />
   <section 
     v-show="!isLoading"
-    class="category-products"
+    class="category-products category-products__container"
     aria-labelledby="category-products"
   >
     <div class="category-products__row-top">
@@ -271,7 +271,6 @@ const handleAddToCart = (product: Product) => {
 <style lang="scss" scoped>
 .category-products {
    padding-block: toEm(12);
-   @include containerParent;
 
 &__row-top {
    display: grid;
@@ -288,7 +287,7 @@ const handleAddToCart = (product: Product) => {
 }
 
 &__category-title {
-   color: var(--dark-golden-color);
+   color: var(--warning-color);
    @include adaptiveValue("margin-block-end", 66, 32);
 }
 
@@ -320,7 +319,7 @@ const handleAddToCart = (product: Product) => {
    position: absolute;
    top: toEm(2);
    left: toEm(2);
-   color: var(--lime-color);
+   color: var(--success-color);
    font-size: toEm(27);
 }
 
@@ -374,7 +373,7 @@ const handleAddToCart = (product: Product) => {
 
    &_discount {
       font-weight: 600;
-      color: var(--lime-color);
+      color: var(--success-color);
    }
 }
 
@@ -397,3 +396,4 @@ const handleAddToCart = (product: Product) => {
    }
 }
 </style>
+

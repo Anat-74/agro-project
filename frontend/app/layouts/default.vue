@@ -222,9 +222,9 @@ console.debug("global data:", global.value);
   }
 }
 
-.main {
-   &_is-visible {
-      background-image: linear-gradient(red, yellow, green);
-   }
-}
+// .main {
+//    &_is-visible {
+//       background-image: linear-gradient(red, yellow, green);
+//    }
+// }
 </style>

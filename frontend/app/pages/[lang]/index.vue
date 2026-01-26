@@ -15,32 +15,32 @@ const visibleImagesCount = computed(() => {
   return 10;
 });
 
-// const { data: categories, pending } = useAsyncData(
-//   `category-${currentLocale.value}`,
-//   async () => {
-//     const response = await find<Category>("categories", {
-//       filters: { locale: currentLocale.value },
-//       populate: {
-//         image: {
-//           fields: ["alternativeText", "url"],
-//         },
-//         subcategories: {
-//           fields: ["id"],
-//         },
-//         products: {
-//           fields: ["id"],
-//         },
-//       },
-//     });
-//     if (!response.data || response.data.length === 0) {
-//       throw createError({
-//         statusCode: 404,
-//         statusMessage: "Category - Not Found",
-//       });
-//     }
-//     return response.data;
-//   }
-// );
+const { data: categories } = useAsyncData(
+  `category-${currentLocale.value}`,
+  async () => {
+    const response = await find<Category>("categories", {
+      filters: { locale: currentLocale.value },
+      populate: {
+        image: {
+          fields: ["alternativeText", "url"],
+        },
+        subcategories: {
+          fields: ["id"],
+        },
+        products: {
+          fields: ["id"],
+        },
+      },
+    });
+    if (!response.data || response.data.length === 0) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: "Category - Not Found",
+      });
+    }
+    return response.data;
+  }
+);
 
 // Функция для определения типа ссылки для категории
 const getCategoryLink = (category: Category) => {
@@ -89,15 +89,11 @@ console.debug("Home page data:", homePage.value);
   >
   </HeroSection>
 
-  <!-- <section class="category" aria-labelledby="category-page">
-    <UBackground 
-    src="Bg-hero 1x" 
-    class="category__image-background" />
-    <h1 id="category-page" class="visually-hidden">
-      {{ visuallyHiddenTranslations[currentLocale].sectionLangTitle }}
-    </h1>
+  
+
+  <section class="category" aria-labelledby="category-page">
     <div class="category__container">
-      <h2 class="category__title">Топ категории</h2>
+      <h2 class="category__title" id="category-page">Топ категории</h2>
       <ul class="category__list" v-if="categories">
         <li
           class="category__item"
@@ -128,7 +124,7 @@ console.debug("Home page data:", homePage.value);
         </li>
       </ul>
     </div>
-  </section> -->
+  </section>
 
   <span v-if="error" class="error">
     {{ error.message }}
@@ -137,70 +133,70 @@ console.debug("Home page data:", homePage.value);
 
 <style lang="scss" scoped>
 
-// .category {
-//   min-height: var(--min-height);
+.category {
+  min-height: var(--min-height);
 
-//   &__image-background {
-//     position: absolute;
-//     inset: 0;
-//     z-index: -1;
-//     width: 100%;
-//     height: 100%;
-//   }
+  &__image-background {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+  }
 
-//   &__list {
-//     justify-items: center;
-//     padding-block: toEm(16);
-//     @include gridCards;
-//     @include adaptiveValue("column-gap", 40, 12);
-//   }
+  &__list {
+    justify-items: center;
+    padding-block: toEm(16);
+    @include gridCards;
+    @include adaptiveValue("column-gap", 40, 12);
+  }
 
-//   &__item {
-//     display: grid;
-//     justify-items: center;
-//     padding-inline: toEm(28);
-//     padding-block-start: toEm(7);
-//     padding-block-end: toEm(16);
-//     box-shadow: 0px 1px 2px 0px var(--shadow);
-//     border-radius: toEm(4);
-//   }
+  &__item {
+    display: grid;
+    justify-items: center;
+    padding-inline: toEm(28);
+    padding-block-start: toEm(7);
+    padding-block-end: toEm(16);
+    box-shadow: 0px 1px 2px 0px var(--shadow);
+    border-radius: toEm(4);
+  }
 
-//   &__link {
-//     min-height: 100%;
-//     display: grid;
-//     align-items: center;
-//     justify-items: center;
-//     row-gap: toEm(18);
-//     margin-block-end: toEm(12);
+  &__link {
+    min-height: 100%;
+    display: grid;
+    align-items: center;
+    justify-items: center;
+    row-gap: toEm(18);
+    margin-block-end: toEm(12);
 
-//     &_blur {
-//       transition: filter var(--transition-duration);
-//       filter: blur(6px);
-//     }
+    &_blur {
+      transition: filter var(--transition-duration);
+      filter: blur(6px);
+    }
 
-//     @include hover {
-//       .category__image {
-//         outline: toRem(4) solid var(--secondary-color);
-//         outline-offset: toEm(4);
-//         border-radius: toRem(25);
-//       }
+    @include hover {
+      .category__image {
+        outline: toRem(4) solid var(--secondary-color);
+        outline-offset: toEm(4);
+        border-radius: toRem(25);
+      }
 
-//       .category__card-title {
-//         color: var(--danger-hover);
-//       }
-//     }
-//   }
+      .category__card-title {
+        color: var(--danger-hover);
+      }
+    }
+  }
 
-//   &__image {
-//     max-height: toRem(94);
-//     object-fit: cover;
-//     transition: border-radius var(--transition-duration);
-//   }
+  &__image {
+    max-height: toRem(94);
+    object-fit: cover;
+    transition: border-radius var(--transition-duration);
+  }
 
-//   &__card-title {
-//     align-self: end;
-//     text-align: center;
-//     transition: color var(--transition-duration);
-//   }
-// }
+  &__card-title {
+    align-self: end;
+    text-align: center;
+    transition: color var(--transition-duration);
+  }
+}
 </style>

@@ -7,7 +7,7 @@ import type {
   SocialLink,
   Phone,
 } from "../types/types";
-import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
+// import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
 import { discountProductTranslations } from "~/locales/discountProduct";
 
 interface Props {
@@ -109,7 +109,6 @@ const pending = computed(
   () => pendingCategories.value || pendingProducts.value
 );
 
-// Реакция на смену языка
 watch(currentLocale, () => {
   refreshCategory();
   refreshProduct();
@@ -139,9 +138,9 @@ watch(currentLocale, () => {
     aria-label="Catalog"
   >
     <Loader v-if="pending" />
-    <h1 class="visually-hidden">
+    <!-- <h2 class="visually-hidden">
       {{ visuallyHiddenTranslations[currentLocale].showModalMenuTitle }}
-    </h1>
+    </h2> -->
     <div class="dialog-hamburger__items">
       <div class="dialog-hamburger__top visible-mobile">
         <Logo
@@ -322,9 +321,8 @@ watch(currentLocale, () => {
     top: calc(100% + toRem(22));
     margin-inline-end: 0;
     left: toRem(15);
-    background-color: transparent;
     border-radius: toEm(4);
-    border-width: 0 toEm(3) 0 toEm(3);
+    border-width:0 toEm(3) toEm(3) toEm(3);
     border-style: solid;
     border-color: var(--border-color-transparent);
     transition: scale .1s linear;
@@ -355,7 +353,7 @@ watch(currentLocale, () => {
     padding-inline: toEm(16);
     padding-block-start: toEm(22);
     padding-block-end: toEm(12);
-    backdrop-filter: blur(7px);
+    backdrop-filter: blur(16px);
 
     @media (max-width: $mobile) {
       justify-items: center;
@@ -370,11 +368,14 @@ watch(currentLocale, () => {
     width: 90%;
     display: grid;
     grid-template-columns: auto 1fr;
-    align-items: end;
     padding-inline: toEm(12);
     padding-block: toEm(2);
     border-radius: toEm(25);
     background-color: var(--light-color);
+
+    @media (max-width:$mobileSmall){
+       width: 100%; 
+    }
   }
 
 //   &__accordion {
@@ -397,10 +398,11 @@ watch(currentLocale, () => {
   width: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   row-gap: toEm(22);
 
     @media ($mobileSmall <= width <= $mobile) {
-      width: 60%;
+      width: 70%;
   }
 
 }
@@ -413,13 +415,13 @@ watch(currentLocale, () => {
     padding-block: toEm(4);
     border-radius: toRem(4);
     font-weight: 600;
-    color: var(--light-color);
+    color: var(--warning-color);
     background-color: var(--border-color-transparent);
     transition: all var(--transition-duration);
 
     svg {
       font-size: toRem(22);
-         color: var(--light-color);
+         color: var(--danger-color);
     }
 
     @include hover {

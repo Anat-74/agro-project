@@ -47,20 +47,17 @@ defineProps({
    padding-inline: toEm(8, 18);
    padding-block: toEm(4, 18);
    border-radius: toEm(4, 18);
-   color: var(--dark-golden-color);
-   background-color: var(--bg-product);
-   box-shadow: 0px 1px toRem(5) var(--shadow);
+   background-color: var(--whitesmoke-color);
 }
 
 &__table {
    width: 100%;
    border-collapse: collapse;
-   box-shadow: 0px 1px toRem(5) var(--shadow);
 }
 
 &__row {
-   border-bottom: 1px solid var(--shadow);
-   background-color: var(--bg-product);
+   border-bottom: 1px solid var(--light-color);
+   background-color: var(--whitesmoke-color);
 
    &:last-child {
     border-bottom: none;
