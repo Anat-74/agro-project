@@ -2,36 +2,25 @@
 interface Props {
   text: string;
   position?: 'top' | 'bottom' | 'left' | 'right';
-  delay?: number; // Задержка в миллисекундах
+  tag?: 'button' | 'span' | 'div';
 }
 
 const props = withDefaults(defineProps<Props>(), {
   position: 'top',
-  delay: 0
+  tag: 'span',
 });
 
 const showTooltip = ref(false);
-let hideTimeout: number | null = null;
-
-const show = () => {
-  if (hideTimeout) clearTimeout(hideTimeout);
-  showTooltip.value = true;
-};
-
-const hide = () => {
-  hideTimeout = window.setTimeout(() => {
-    showTooltip.value = false;
-  }, props.delay);
-};
 </script>
 
 <template>
-  <div 
-  class="tooltip-trigger" 
-  @mouseenter="show" 
-  @mouseleave="hide" 
-  @focus="show" 
-  @blur="hide"
+  <component 
+    :is="tag"
+    class="tooltip-trigger"
+    @mouseenter="showTooltip = true"
+    @mouseleave="showTooltip = false"
+    @focus="showTooltip = true"
+    @blur="showTooltip = false"
   >
     <slot />
     <span 
@@ -41,95 +30,94 @@ const hide = () => {
     >
       {{ text }}
     </span>
-  </div>
+  </component>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .tooltip-trigger {
   position: relative;
   display: inline-block;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding:toRem(9);
+  margin: toRem(-9);
+}
+
+.tooltip-trigger_disabled {
+  cursor: default;
+  opacity: .6;
 }
 
 .tooltip-content {
   position: absolute;
-  background-color: #333;
-  color: white;
-  padding: 6px 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
+  padding: toRem(4) toRem(8);
+  border-radius: toRem(4);
+  font-size: toRem(14);
   z-index: 1000;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity .2s ease, visibility .2s ease;
-}
-
-.tooltip-content[role="tooltip"]:not([hidden]) {
-  opacity: 1;
-  visibility: visible;
+  white-space: nowrap;
+  color: var(--light-color);
+  background-color: var(--warning-color);
 }
 
 /* Позиционирование */
 .tooltip-top {
   bottom: 100%;
   left: 50%;
-  transform: translateX(-50%);
-  margin-bottom: 6px;
+  translate: -50% -50%;
 }
 
 .tooltip-bottom {
   top: 100%;
   left: 50%;
-  transform: translateX(-50%);
-  margin-top: 6px;
+  translate: -50% -50%;
 }
 
 .tooltip-left {
   right: 100%;
   top: 50%;
-  transform: translateY(-50%);
-  margin-right: 6px;
+  translate: 0 -50%;
 }
 
 .tooltip-right {
   left: 100%;
   top: 50%;
-  transform: translateY(-50%);
-  margin-left: 6px;
+  translate: 0 -50%;
 }
 
 /* Стрелка */
 .tooltip-content::after {
   content: "";
   position: absolute;
-  border: 5px solid transparent;
+  border: toRem(5) solid transparent;
 }
 
 .tooltip-top::after {
   top: 100%;
   left: 50%;
-  transform: translateX(-50%);
-  border-top-color: #333;
+  translate: -50% 0;
+  border-top-color: var(--warning-color);
 }
 
 .tooltip-bottom::after {
   bottom: 100%;
   left: 50%;
-  transform: translateX(-50%);
-  border-bottom-color: #333;
+  translate: -50% 0;
+  border-top-color: var(--warning-color);
 }
 
 .tooltip-left::after {
   left: 100%;
   top: 50%;
-  transform: translateY(-50%);
-  border-left-color: #333;
+  translate: 0 -50%;
+  border-top-color: var(--warning-color);
 }
 
 .tooltip-right::after {
   right: 100%;
   top: 50%;
-  transform: translateY(-50%);
-  border-right-color: #333;
+  translate: 0 -50%;
+  border-top-color: var(--warning-color);
 }
 </style>
+

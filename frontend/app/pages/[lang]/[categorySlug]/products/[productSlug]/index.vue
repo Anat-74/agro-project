@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { Product } from "@/types/types"
 import { visuallyHiddenTranslations } from '~/locales/visuallyHidden'
-import { formatPrice } from '~/utils/formatPrice'
 import { buttonTranslations } from '~/locales/button'
+import { tooltipTranslations } from '~/locales/tooltip'
+import { formatPrice } from '~/utils/formatPrice'
 
 const { find } = useStrapi()
 const route = useRoute()
@@ -204,25 +205,11 @@ const handleAddToCart = (product: Product) => {
      <span
       :class="['wrapper-right__price', {'wrapper-right__price_discount' :product.isDiscount}]"
      >
-     <div class="wrapper-right__tooltip-wrapper">
-     <button
-      class="wrapper-right__btn-tooltip"
-       aria-describedby="currency-tooltip"
-      @mouseenter="showTooltip = true"
-      @mouseleave="showTooltip = false"
-      @focus="showTooltip = true"
-      @blur="showTooltip = false"
-     >
-      <Icon name="my-icon:icon-by-regular" />
-      </button>
-      <span
-         class="wrapper-right__simple-tooltip"
-         v-show="showTooltip"
-         role="tooltip"
-         id="currency-tooltip">
-         Белорусский рубль
-      </span>
-      </div>
+      <UTooltip 
+      :text="tooltipTranslations[currentLocale].byRuble"
+      >
+        <Icon name="my-icon:icon-by-regular" />
+      </UTooltip>
       {{ formatPrice(product.price) }}
      </span>
      <UButton
@@ -231,7 +218,7 @@ const handleAddToCart = (product: Product) => {
       variant="add-to-cart"
       class="wrapper-right__btn"
      >
-     {{ isInCart(product.id) ? 'Товар в корзине' : buttonTranslations[currentLocale].label }}
+     {{ isInCart(product.id) ? buttonTranslations[currentLocale].addedIsCart : buttonTranslations[currentLocale].label }}
      </UButton>
    </div>
 </section>
@@ -388,36 +375,6 @@ const handleAddToCart = (product: Product) => {
        color: var(--green-color);
     }
  }
-
- &__tooltip-wrapper {
-   position: relative;
-   z-index: 10;
-   display: inline-block;
-
-   button {
-      padding: toRem(12);
-      margin: toRem(-12);
-   }
-
-   svg {
-      position: relative;
-      z-index: -1;
-   }
- }
-
- &__simple-tooltip {
-  position: absolute;
-  z-index: 100;
-  bottom: 100%;
-  left: 35%;
-  translate: -35% -50%;
-  white-space: nowrap;
-  padding: toRem(4) toRem(8);
-  border-radius: toRem(4);
-  font-size: toRem(14);
-  color: var(--light-color);
-  background-color: var(--warning-color);
-}
 
  &__btn {
     grid-area: btn;

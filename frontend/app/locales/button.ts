@@ -2,6 +2,7 @@ import type { LocaleCode } from "../types/types"
 
 export const buttonTranslations: Record<LocaleCode, {
    label: string
+   addedIsCart: string
    ariaLabelLang: string
    ariaLabelGoBack: string
    ariaLabelGoForward: string
@@ -19,9 +20,10 @@ export const buttonTranslations: Record<LocaleCode, {
  }> = {
    ru: {
        label: "Добавить в корзину",
+       addedIsCart: "Товар в корзине",
        ariaLabelAdded: "Добавлено в корзину",
-      ariaLabelLang: "Переключить язык",
-      ariaLabelGoBack: "Вернуться назад",
+       ariaLabelLang: "Переключить язык",
+       ariaLabelGoBack: "Вернуться назад",
        ariaLabelGoForward: "Идти вперед",
        ariaLabelPagination: "Перейти на следующую страницу",
        ariaLabelClosedSuccess: "Закрыть сообщение",
@@ -35,6 +37,7 @@ export const buttonTranslations: Record<LocaleCode, {
    },
    be: {
       label: "Дадаць у кошык",
+      addedIsCart: "Тавар у кошыку",
       ariaLabelAdded: "Паведамленні ў кошык",
       ariaLabelLang: "Пераключыць мову",
       ariaLabelGoBack: "Вярнуцца назад",
