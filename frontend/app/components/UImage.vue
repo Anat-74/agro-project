@@ -9,7 +9,7 @@ defineOptions({
 const props = withDefaults(
   defineProps<{
     // Обязательные
-    src: string;
+    src?: string;
     alt?: string;
 
     // Размеры
@@ -119,24 +119,24 @@ const configForType = computed(() => typeConfigs[props.type]);
 
 // Определяем, является ли изображение SVG
 const isSvg = computed(() => {
-  const ext = props.src.toLowerCase().split(".").pop();
+  const ext = props.src?.toLowerCase().split(".").pop();
   return ext === "svg";
 });
 
 // Обработка пути
 const finalSrc = computed(() => {
   // Если уже полный URL
-  if (props.src.startsWith("http") || props.src.startsWith("//")) {
+  if (props.src?.startsWith("http") || props.src?.startsWith("//")) {
     return props.src;
   }
 
   // Если из Strapi
-  if (props.fromStrapi || props.src.includes("uploads")) {
+  if (props.fromStrapi || props.src?.includes("uploads")) {
     return `${config.public.strapi.url}${props.src}`;
   }
 
   // Локальные изображения
-  return props.src.startsWith("/") ? props.src : `/image/${props.src}`;
+  return props.src?.startsWith("/") ? props.src : `/image/${props.src}`;
 });
 
 // Приоритетная загрузка

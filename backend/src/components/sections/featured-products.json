@@ -1,0 +1,35 @@
+{
+  "collectionName": "components_sections_featured_products",
+  "info": {
+    "displayName": "Featured-products"
+  },
+  "options": {},
+  "attributes": {
+    "heding": {
+      "type": "string"
+    },
+    "link": {
+      "type": "string"
+    },
+    "retinaBgImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "fallbackBgImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "products": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product.product"
+    }
+  },
+  "config": {}
+}

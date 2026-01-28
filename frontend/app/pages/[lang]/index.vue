@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Category, VisibilityState, HomePage } from "@/types/types";
+import FeaturedProductsSection from "~/components/home-sections/FeaturedProductsSection.vue";
 import HeroSection from "~/components/home-sections/HeroSection.vue";
-import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
 const { isContacts } = inject<VisibilityState>("visible")!;
 
 const { find } = useStrapi();
@@ -86,10 +86,12 @@ console.debug("Home page data:", homePage.value);
   v-if="homePage?.heroSlider || homePage?.heroGrids" 
   :slides="homePage.heroSlider"
   :hero-grids="homePage.heroGrids"
-  >
-  </HeroSection>
+  />
 
-  
+  <FeaturedProductsSection
+   v-if="homePage?.featuredProducts"
+   :featured-products="homePage.featuredProducts"
+  />
 
   <section class="category" aria-labelledby="category-page">
     <div class="category__container">

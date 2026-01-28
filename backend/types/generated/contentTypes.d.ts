@@ -568,6 +568,14 @@ export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
           localized: true;
         };
       }>;
+    featuredProducts: Schema.Attribute.DynamicZone<
+      ['sections.featured-products']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     heroGrids: Schema.Attribute.DynamicZone<['sections.hero-grids']> &
       Schema.Attribute.SetPluginOptions<{
         i18n: {

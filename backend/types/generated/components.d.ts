@@ -77,6 +77,20 @@ export interface LegalBankDetails extends Struct.ComponentSchema {
   };
 }
 
+export interface SectionsFeaturedProducts extends Struct.ComponentSchema {
+  collectionName: 'components_sections_featured_products';
+  info: {
+    displayName: 'Featured-products';
+  };
+  attributes: {
+    fallbackBgImage: Schema.Attribute.Media<'images'>;
+    heding: Schema.Attribute.String;
+    link: Schema.Attribute.String;
+    products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
+    retinaBgImage: Schema.Attribute.Media<'images'>;
+  };
+}
+
 export interface SectionsHeroGrids extends Struct.ComponentSchema {
   collectionName: 'components_sections_hero_grids';
   info: {
@@ -132,6 +146,7 @@ declare module '@strapi/strapi' {
       'contacts.social': ContactsSocial;
       'layout.footer': LayoutFooter;
       'legal.bank-details': LegalBankDetails;
+      'sections.featured-products': SectionsFeaturedProducts;
       'sections.hero-grids': SectionsHeroGrids;
       'seo.seo': SeoSeo;
       'sliders.hero-slider': SlidersHeroSlider;

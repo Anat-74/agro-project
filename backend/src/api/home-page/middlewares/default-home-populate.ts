@@ -33,7 +33,33 @@ export default (config: unknown, { strapi }: { strapi: Core.Strapi }) => {
                   }
                }
             }
+         },
+         featuredProducts: {
+           on: {
+             "sections.featured-products": {
+               populate: {
+                 retinaBgImage: {
+                   fields: ['alternativeText', 'url'],
+                 },
+                 fallbackBgImage: {
+                   fields: ['alternativeText', 'url'],
+                 },
+                   products: {
+                      fields: ['name', 'price', 'slug','isAvailable', 'isDiscount', 'locale'],
+                   populate: {
+                     image: {
+                       fields: ['alternativeText', 'url']
+                     },
+                     category: {
+                       fields: ['name', 'slug']
+                     },
+                   }
+                 }
+               },
+             },
+           },
          }
+
 
       };
     }

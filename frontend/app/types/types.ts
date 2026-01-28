@@ -248,6 +248,48 @@ export interface HeroGrid {
   isVisible?: boolean;
 }
 
+export interface FeaturedProduct {
+  id: number;
+  heading?: string;
+  link?: string;
+  retinaBgImage?: {
+    id: number;
+    url: string;
+    alternativeText?: string;
+    documentId?: string;
+  };
+  fallbackBgImage?: {
+    id: number;
+    url: string;
+    alternativeText?: string;
+    documentId?: string;
+  };
+  products: Array<{  // Уточним структуру продукта
+    id: number;
+    documentId: string;
+    name: string;
+    price: number;
+    slug: string;
+    isAvailable: boolean;
+    isDiscount: boolean;
+    locale: string;
+    image?: Array<{
+      id: number;
+      documentId: string;
+      alternativeText: string | null;
+      url: string;
+    }>;
+    category?: {
+      id: number;
+      documentId: string;
+      name: string;
+      slug: string;
+    };
+  }>;
+  __component: string;
+}
+
+
 // Тип для домашней страницы (HomePage)
 export type HomePage = {
   id: number;
@@ -255,6 +297,7 @@ export type HomePage = {
   description?: string;
   heroSlider: HeroSlide[];
   heroGrids: HeroGrid[];
+  featuredProducts: FeaturedProduct[];
   locale?: string;
   documentId?: string;
   createdAt?: string;

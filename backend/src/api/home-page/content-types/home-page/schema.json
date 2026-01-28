@@ -26,6 +26,17 @@
         "sliders.hero-slider"
       ]
     },
+    "heroGrids": {
+      "type": "dynamiczone",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "components": [
+        "sections.hero-grids"
+      ]
+    },
     "title": {
       "type": "string",
       "pluginOptions": {
@@ -42,7 +53,7 @@
         }
       }
     },
-    "heroGrids": {
+    "featuredProducts": {
       "type": "dynamiczone",
       "pluginOptions": {
         "i18n": {
@@ -50,7 +61,7 @@
         }
       },
       "components": [
-        "sections.hero-grids"
+        "sections.featured-products"
       ]
     }
   }
