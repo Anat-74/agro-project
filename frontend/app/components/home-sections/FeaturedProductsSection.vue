@@ -19,6 +19,7 @@ const { featuredProducts } = defineProps<Props>();
         v-if="section.retinaBgImage?.url"
         :retinaSrc="section.retinaBgImage?.url"
         :src="section.fallbackBgImage?.url"
+        bg-position="bottom left"
       />
       
       <div class="featured-products-block__content">

@@ -8,6 +8,8 @@ interface Props {
   gradient?: "rainbow" | "sunset" | "ocean" | "violet" | "none";
   filter?: "brightness" | "contrast" | "saturate" | "darken" | "none";
   hoverEffect?: "zoom" | "darken" | "glow" | "lift" | "none";
+  sizeMode?: "cover" | "contain" | "original";
+  bgPosition?: string;
 }
 
 const config = useRuntimeConfig();
@@ -19,6 +21,8 @@ const props = withDefaults(defineProps<Props>(), {
   gradient: "none",
   filter: "none",
   hoverEffect: "none",
+   sizeMode: "original",
+  bgPosition: "center"
 });
 
 // Только интерактивные состояния
@@ -27,7 +31,7 @@ const isActive = ref(false);
 
 // Функция для удаления расширения файла
 const removeExtension = (url: string) =>
-  url.replace(/\.(avif|webp|png|jpg|jpeg)$/i, "");
+  url.replace(/\.(avif|webp)$/i, "");
 
 const baseImageUrl = computed(() => {
   if (!props.src) return null;
@@ -78,13 +82,24 @@ const retinaAvifUrl = computed(() => {
   return `${retinaBaseUrl.value}.avif`;
 });
 
-// Формирование CSS style с image-set
 const backgroundStyle = computed(() => {
   const styles: any = {
-    backgroundPosition: "center",
-    backgroundSize: "cover",
+    backgroundPosition: props.bgPosition,
     backgroundRepeat: "no-repeat",
   };
+
+  // Установка backgroundSize в зависимости от режима
+  switch(props.sizeMode) {
+    case "cover":
+      styles.backgroundSize = "cover";
+      break;
+    case "contain":
+      styles.backgroundSize = "contain";
+      break;
+    case "original":
+      styles.backgroundSize = "auto";
+      break;
+  }
 
   // Если есть базовое или ретина изображение, добавляем backgroundImage
   if (baseWebpUrl.value || retinaAvifUrl.value) {
