@@ -3,6 +3,7 @@ import type { Category, Product, ProductsResponse } from "@/types/types"
 import { productFilterTranslations } from '~/locales/productFilter'
 import { visuallyHiddenTranslations } from '~/locales/visuallyHidden'
 import { buttonTranslations } from '~/locales/button'
+import { tooltipTranslations } from '~/locales/tooltip'
 import { formatPrice } from '~/utils/formatPrice'
 
 const { find } = useStrapi()
@@ -223,7 +224,11 @@ const handleAddToCart = (product: Product) => {
           <h3 class="category-products__title">
             {{ product.name }}
           </h3>
-          
+         <UTooltip 
+            :text="tooltipTranslations[currentLocale].byRuble"
+         >
+        <Icon name="my-icon:icon-by-regular" />
+      </UTooltip>
           <span
           :class="['category-products__price', {'category-products__price_discount': product.isDiscount}]"
           >

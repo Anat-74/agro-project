@@ -17,7 +17,6 @@ const { categorySlug, productSlug } = route.params as {
 const { currentLocale } = useLocale()
 const { goBack } = useGoToForwardOrBack()
 
-const showTooltip = ref(false)
 const currentImage = ref('')
 
 const { data: product, error, pending } = useAsyncData
