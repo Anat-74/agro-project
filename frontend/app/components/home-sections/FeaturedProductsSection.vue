@@ -6,14 +6,19 @@ interface Props {
 }
 
 const { featuredProducts } = defineProps<Props>();
+
+const MAX_PRODUCTS_TO_SHOW = 6;
 </script>
 
 <template>
-  <section class="featured-products-section">
+  <section 
+  class="featured-products"
+  aria-labelledby="featured-products"
+  >
     <div
       v-for="section in featuredProducts"
       :key="section.id"
-      class="featured-products-block"
+      class="featured-products-block featured__container"
     >
       <UBackground
         v-if="section.retinaBgImage?.url"
@@ -21,16 +26,19 @@ const { featuredProducts } = defineProps<Props>();
         :src="section.fallbackBgImage?.url"
         bg-position="bottom left"
       />
-      
+
       <div class="featured-products-block__content">
-        <h2 v-if="section.heading" class="featured-products-block__title">
+
+         <h2 
+        class="featured-products-block__title"
+        id="featured-products"
+        >
           {{ section.heading }}
         </h2>
-        
         <!-- Сетка продуктов -->
         <div class="featured-products-block__grid">
           <div
-            v-for="product in section.products"
+            v-for="product in section.products.slice(0, MAX_PRODUCTS_TO_SHOW)"
             :key="product.id"
             class="featured-products-block__item"
           >
@@ -62,41 +70,25 @@ const { featuredProducts } = defineProps<Props>();
             </div>
           </div>
         </div>
-        
-        <!-- Кнопка "Показать все" -->
-        <!-- <div class="featured-products-block__footer">
-          <UButton
-            :label="section.link || 'Показать все'"
-            variant="primary"
-            @click="$router.push('/products')"
-          />
-        </div> -->
       </div>
     </div>
   </section>
 </template>
 
 <style lang="scss" scoped>
-.featured-products-section {
+.featured-products {
   position: relative;
-  padding: 40px 0;
+  padding-top: 150px;
 }
 
 .featured-products-block {
   position: relative;
-  padding: 20px;
   
   &__content {
-    position: relative;
-    z-index: 1;
-    max-width: 1200px;
-    margin: 0 auto;
+
   }
   
   &__title {
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 2rem;
   }
   
   &__grid {

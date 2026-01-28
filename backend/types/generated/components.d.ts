@@ -84,7 +84,7 @@ export interface SectionsFeaturedProducts extends Struct.ComponentSchema {
   };
   attributes: {
     fallbackBgImage: Schema.Attribute.Media<'images'>;
-    heding: Schema.Attribute.String;
+    heading: Schema.Attribute.String;
     link: Schema.Attribute.String;
     products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
     retinaBgImage: Schema.Attribute.Media<'images'>;
