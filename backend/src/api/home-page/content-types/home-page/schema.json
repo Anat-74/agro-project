@@ -15,6 +15,22 @@
     }
   },
   "attributes": {
+    "name": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "description": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
     "heroSlider": {
       "type": "dynamiczone",
       "pluginOptions": {
@@ -36,22 +52,6 @@
       "components": [
         "sections.hero-grids"
       ]
-    },
-    "title": {
-      "type": "string",
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      }
-    },
-    "description": {
-      "type": "text",
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      }
     },
     "featuredProducts": {
       "type": "dynamiczone",

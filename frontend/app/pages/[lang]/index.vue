@@ -24,12 +24,12 @@ const { data: categories } = useAsyncData(
         image: {
           fields: ["alternativeText", "url"],
         },
-        subcategories: {
-          fields: ["id"],
-        },
-        products: {
-          fields: ["id"],
-        },
+      //   subcategories: {
+      //     fields: ["id"],
+      //   },
+      //   products: {
+      //     fields: ["id"],
+      //   },
       },
     });
     if (!response.data || response.data.length === 0) {

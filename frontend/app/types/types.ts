@@ -293,7 +293,7 @@ export interface FeaturedProduct {
 // Тип для домашней страницы (HomePage)
 export type HomePage = {
   id: number;
-  title?: string;
+  name?: string;
   description?: string;
   heroSlider: HeroSlide[];
   heroGrids: HeroGrid[];
