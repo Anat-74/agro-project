@@ -319,6 +319,14 @@ const handleAddToCart = (product: Product) => {
    padding-block: toEm(12);
    border: toEm(2) solid var(--whitesmoke-color);
    border-radius: toEm(6);
+
+   @media (max-width:$mobile){
+   @media (prefers-reduced-motion: no-preference) {
+   animation: scroll-animate;
+   animation-timeline: view();
+   animation-range: entry 0% entry 150%;
+   }
+}
 }
 
 &__card-top {
@@ -341,10 +349,10 @@ const handleAddToCart = (product: Product) => {
 &__card-eye {
    position: absolute;
    z-index: 10;
-   right: toRem(16);
-   top: toRem(20);
-   padding-block: toRem(12);
-   padding-inline: toRem(16);
+   right: toEm(6);
+   top: toRem(32);
+   padding-block: toEm(4);
+   padding-inline: toEm(6);
    border-radius: 50%;
 }
 

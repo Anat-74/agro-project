@@ -332,7 +332,7 @@ defineEmits<Emits>();
   }
 
   &_product-eye {
-   font-size: toRem(28);
+   font-size: toEm(26);
    background-color: var(--whitesmoke-color);
    transition: all var(--transition-duration);
 
@@ -588,6 +588,61 @@ defineEmits<Emits>();
   //     }
   //    }
   //   }
+
+     &_add {
+   @include adaptiveValue("padding", 16, 14);
+   position: relative;
+   opacity: .4;
+   border-radius: toRem(8);
+   box-shadow: 0px toEm(1, 15) toEm(1, 15) toRem(2) hsla(0, 0%, 0%, 0.09);
+
+       &::before,
+      &::after{
+         content: '';
+         @include adaptiveValue("right", 9, 6);
+         position: absolute;
+			width: toRem(15);
+			height: toRem(2);
+			background-color: var(--gray-color);
+         transition: .2s ease;
+      }
+      &::before {
+         top: calc(50% - toRem(1));
+         transform: rotate(-90deg);
+		}
+		&::after {
+         bottom: calc(50% - toRem(1));
+         transform: rotate(180deg);
+		}
+  }
+
+   &_is-added {
+   position: relative;
+   border: 1px solid var(--success-color);
+    background-color: var(--success-color);
+    opacity: .8;
+    transition: .1s ease-in;
+
+       &::before,
+      &::after{
+         content: '';
+         position: absolute;
+			height: toRem(2);
+			background-color: var(--light-color);
+      }
+      &::before {
+         @include adaptiveValue("right", 7, 5);
+         width: toRem(14);
+         top: 45%;
+         transform: rotate(-58deg);
+		}
+		&::after {
+         width: toRem(8);
+         right: 50%;
+         bottom: 40%;
+         transform: rotate(60deg);
+		}
+  }
 
   /* Состояние загрузки */
   &.loading {

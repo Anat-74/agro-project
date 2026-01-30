@@ -35,6 +35,18 @@ body:has(.dialog-hamburger[open]) {
   }
 }
 
+
+@media (min-width: c.$mobile) {
+  @media (any-hover: hover) {
+    ul:has(li:hover) {
+      li:not(:hover) {
+        opacity: .8;
+        filter: grayscale(77%);
+      }
+    }
+  }
+}
+
 // Стили для размытия main при открытом меню
 // main:has(.dialog-menu[open]) {
 //    transition: all .1s linear forwards;
