@@ -24,12 +24,12 @@ const { data: categories } = useAsyncData(
         image: {
           fields: ["alternativeText", "url"],
         },
-      //   subcategories: {
-      //     fields: ["id"],
-      //   },
-      //   products: {
-      //     fields: ["id"],
-      //   },
+        subcategories: {
+          fields: ["id"],
+        },
+        products: {
+          fields: ["id"],
+        },
       },
     });
     if (!response.data || response.data.length === 0) {
@@ -67,7 +67,7 @@ const {
   refresh,
 } = useAsyncData(`home-page-${currentLocale.value}`, async () => {
   const response = await find("home-page", {
-    filters: { locale: currentLocale.value },
+     filters: { locale: currentLocale.value },
   });
 
   if (!response) {

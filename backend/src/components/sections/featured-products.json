@@ -5,30 +5,30 @@
   },
   "options": {},
   "attributes": {
+    "products": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product.product"
+    },
     "heading": {
       "type": "string"
     },
     "link": {
       "type": "string"
     },
-    "retinaBgImage": {
+    "retinaBgImageAvif": {
       "type": "media",
       "multiple": false,
       "allowedTypes": [
         "images"
       ]
     },
-    "fallbackBgImage": {
+    "baseBgImageWebp": {
       "type": "media",
       "multiple": false,
       "allowedTypes": [
         "images"
       ]
-    },
-    "products": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::product.product"
     }
   },
   "config": {}

@@ -23,6 +23,7 @@ const { grids } = defineProps<Props>();
       v-if="grid.icons?.url"
       :src="grid.icons.url"
       :alt="grid.heading"
+      :smoothLoad="false"
       type="icon"
       width="44"
       height="44"

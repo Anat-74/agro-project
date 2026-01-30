@@ -124,10 +124,11 @@ const handleAddToCart = (product: Product) => {
   />
   <section 
     v-show="!isLoading"
-    class="category-products category-products__container"
-    aria-labelledby="category-products"
+    class="products-section"
+    aria-labelledby="products-section"
   >
-    <div class="category-products__row-top">
+  <div class="products-section__container">
+    <div class="products-section__row-top">
       <UButton
         @click="goBack"
         icon="material-symbols:arrow-back"
@@ -140,18 +141,18 @@ const handleAddToCart = (product: Product) => {
         :aria-label="buttonTranslations[currentLocale].ariaLabelGoForward"
         variant="go-forward-back"
       />
-      <div class="category-products__select-wrapper select-wrapper">
+      <div class="products-section__select-wrapper select-wrapper">
         <label 
           class="visually-hidden"
-          for="sort-category-product"
+          for="sort-product"
         >
           {{ productFilterTranslations[currentLocale].labelSelect }}
         </label>
         
         <select 
-          class="category-products__select select"
+          class="products-section__select select"
           v-model="sortOption"
-          id="sort-category-product"
+          id="sort-product"
         >
           <option 
             class="option"
@@ -179,58 +180,62 @@ const handleAddToCart = (product: Product) => {
         </select>
       </div>
     </div>
-    <h1 class="category-products__category-title"
-     id="category-products"
+    <h1 class="products-section__category-title"
+     id="products-section"
     >
          {{ category?.name }}
       </h1>
     <h2 class="visually-hidden">{{ visuallyHiddenTranslations[currentLocale].sectionSubcategorySlugList }}</h2>
     <ul
       v-if="products?.data.length"
-      class="category-products__list"
+      class="products-section__card-list"
     >
       <li 
         v-for="(product, index) in products.data" 
         :key="product.id"
-        class="category-products__item"
+        class="products-section__card-item"
       >
+      <div class="products-section__card-top">
       <Icon 
       v-if="product.isDiscount"
-      class="category-products__discount-icon"
+      class="products-section__card-discount"
       name="mdi:discount" />
       <ProductStatus 
       :product="product"
-      class="category-products__in-stock"
+      class="products-section__card-in-stock"
      />
+     <UButton
+     class="products-section__card-eye"
+     variant="product-eye"
+     icon="ph:eye-light"
+     />
+     </div>
         <NuxtLink 
-          class="category-products__link"
+          class="products-section__card-link"
           :to="`/${currentLocale}/${categorySlug}/products/${product.slug}`"
         >
-          <NuxtImg 
-            class="category-products__image"
+          <UImage
+          class="products-section__card-image"
             v-if="product.image?.length"
-            :src="`${config.public.strapi.url}${product.image[0]?.url}`"
+            :src="product.image[0]?.url"
             :alt="product.name"
             :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
             :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
-            decoding="async"
-            width="258"
-            height="194"
-            format="webp"
+            width="302"
+            height="302"
           />
-        </NuxtLink>
-        
-        <div class="category-products__items-bottom">
-          <h3 class="category-products__title">
+         <h3 class="products-section__card-title">
             {{ product.name }}
           </h3>
+        </NuxtLink>
+        <div class="products-section__card-bottom">
          <UTooltip 
             :text="tooltipTranslations[currentLocale].byRuble"
          >
         <Icon name="my-icon:icon-by-regular" />
       </UTooltip>
           <span
-          :class="['category-products__price', {'category-products__price_discount': product.isDiscount}]"
+          :class="['products-section__card-price', {'products-section__card-price_discount': product.isDiscount}]"
           >
             {{ formatPrice(product.price) }}
           </span>
@@ -238,14 +243,13 @@ const handleAddToCart = (product: Product) => {
           <UButton 
             v-if="!isInCart(product.id)"
             @click="handleAddToCart(product)"
-            class="category-products__add-to-cart"
+            class="products-section__card-add"
             variant="small-add-to-cart"
             icon="qlementine-icons:add-to-cart-16"
             :aria-label="buttonTranslations[currentLocale].label"
           />
-          
           <UButton 
-            class="category-products__add-to-cart"
+            class="products-section__card-add"
             v-else
             disabled
             variant="small-add-to-cart"
@@ -255,17 +259,18 @@ const handleAddToCart = (product: Product) => {
         </div>
       </li>
     </ul>
-    <div v-else-if="!pending" class="category-products__empty">
+    <div v-else-if="!pending" class="products-section__empty">
       {{ productFilterTranslations[currentLocale].noResults }}
     </div>
 
     <Pagination 
       v-if="pageCount > 1"
-      class="category-products__pagination"
+      class="products-section__pagination"
       :page="page"
       :pageCount="pageCount"
       :routeName="route.name?.toString() || ''"
     />
+    </div>
   </section>
 
   <span v-if="error" class="error">
@@ -274,7 +279,7 @@ const handleAddToCart = (product: Product) => {
 </template>
 
 <style lang="scss" scoped>
-.category-products {
+.products-section {
    padding-block: toEm(12);
 
 &__row-top {
@@ -296,98 +301,100 @@ const handleAddToCart = (product: Product) => {
    @include adaptiveValue("margin-block-end", 66, 32);
 }
 
-&__list {
-   display: grid;
-   grid-template-columns: repeat(auto-fill, minmax(toRem(262), 1fr));
+&__card-list {
    justify-items: center;
    row-gap: toEm(32);
    @include adaptiveValue("column-gap", 64, 7);
+   @include gridCards(fill);
 
    @media (max-width:toEm(568)){
       grid-template-columns: repeat(2, 1fr);
    }
 }
 
-&__item {
+&__card-item {
    position: relative;
-   justify-self: center;
    display: grid;
    min-height: 100%;
-   width: 100%;
-   padding-block-end: toEm(18);
-   box-shadow: 0px 1px 2px 0px var(--shadow);
-   border-radius: toEm(4);
-   background-color: var(--bg-product);
+   padding-block: toEm(12);
+   border: toEm(2) solid var(--whitesmoke-color);
+   border-radius: toEm(6);
 }
 
-&__discount-icon {
-   position: absolute;
-   top: toEm(2);
-   left: toEm(2);
+&__card-top {
+   display: flex;
+   align-items: center;
+   column-gap: toEm(4);
+   padding-inline: toEm(12);
+   padding-block-end: toRem(18);
+}
+
+&__card-discount {
    color: var(--success-color);
    font-size: toEm(27);
 }
 
-&__in-stock {
-   justify-self: end;
+&__card-in-stock {
    padding: toEm(4);
 }
 
-&__link {
+&__card-eye {
+   position: absolute;
+   z-index: 10;
+   right: toRem(16);
+   top: toRem(20);
+   padding-block: toRem(12);
+   padding-inline: toRem(16);
+   border-radius: 50%;
+}
+
+&__card-link {
    display: flex;
-   justify-content: center;
-   margin-block: toEm(4);
-   transition: scale var(--transition-duration);
+   flex-direction: column;
+   align-items: center;
+   row-gap: toEm(4);
+   padding-inline: toEm(6);
+   padding-block-end: toEm(18);
 
 @include hover {
-.category-products__image {
-   outline: toRem(3) solid var(--secondary-color);
-   outline-offset: toRem(1);
-   border-radius: toRem(12);
+   .products-section__card-image {
+      scale: 1.1;
+    }
+   .products-section__card-title {
+      color: var(--warning-color);
       }
    }
 }
 
-&__image {
-   @media (max-width: toEm(628)){
-      width: toRem(322);
-}
+&__card-image {
+   transition: scale var(--transition-duration);
 }
 
-&__items-bottom {
+&__card-bottom {
    display: flex;
-   flex-direction: column;
-   position: relative;
-   padding-inline: toEm(16);
-   @include adaptiveValue("padding-inline", 16, 2);
+   align-items: center;
+   padding-inline: toEm(12);
+   padding-block: toEm(4);
+   background-color: var(--whitesmoke-color);
 }
 
-&__title {
-   flex: 1 1 auto;
+&__card-title {
+   transition: color var(--transition-duration);
    text-align: center;
-   margin-block-end: toEm(18);
+
 }
 
-&__price {
-   padding-inline-start: toEm(12);
-   padding-block: toRem(7);
+&__card-price {
+   flex: 1 1 auto;
+   padding-inline-start: toEm(3);
    font-weight: 600;
    color: var(--warning-color);
-   background-color: var(--secondary-color);
-   border-radius: toRem(14);
 
    &_discount {
       font-weight: 600;
-      color: var(--success-color);
+      color: var(--green-color);
    }
 }
-
-&__add-to-cart {
-   position: absolute;
-   right: toRem(17);
-   bottom: toRem(3);
-   @include adaptiveValue("right", 17, 4);
-   }
 
    &__pagination {
       justify-self: end;

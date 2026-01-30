@@ -18,29 +18,34 @@ const MAX_PRODUCTS_TO_SHOW = 6;
     <div
       v-for="section in featuredProducts"
       :key="section.id"
-      class="featured-products-block featured__container"
+      class="featured-products__container"
     >
       <UBackground
-        v-if="section.retinaBgImage?.url"
-        :retinaSrc="section.retinaBgImage?.url"
-        :src="section.fallbackBgImage?.url"
+        v-if="section.retinaBgImageAvif?.url || section.baseBgImageWebp?.url"
+        :src="section.baseBgImageWebp?.url"
+        :retinaSrc="section.retinaBgImageAvif?.url"
         bg-position="bottom left"
       />
-
-      <div class="featured-products-block__content">
-
-         <h2 
-        class="featured-products-block__title"
+      <div class="featured-products__content-top">
+         <h2
+         v-if="section.heading"
+        class="featured-products__title"
         id="featured-products"
         >
           {{ section.heading }}
         </h2>
-        <!-- Сетка продуктов -->
-        <div class="featured-products-block__grid">
-          <div
+        <NuxtLink
+        v-if="section.link"
+        class="featured-products__link"
+        >
+         {{ section.link }}
+        </NuxtLink>
+        </div>
+        <ul class="featured-products__list">
+          <li
             v-for="product in section.products.slice(0, MAX_PRODUCTS_TO_SHOW)"
             :key="product.id"
-            class="featured-products-block__item"
+            class="featured-products__item"
           >
             <div class="product-card">
               <UImage
@@ -49,97 +54,23 @@ const MAX_PRODUCTS_TO_SHOW = 6;
                 :alt="product.image[0]?.alternativeText || product.name"
                 width="200"
                 height="200"
-                type="cover"
               />
               
               <div class="product-card__info">
                 <h3 class="product-card__name">{{ product.name }}</h3>
-                
-                <div v-if="product.category" class="product-card__category">
-                  {{ product.category.name }}
-                </div>
-                
-                <div class="product-card__price">
+                <div
+                v-if="product.price"
+                class="product-card__price">
                   {{ product.price }} руб.
-                </div>
-                
-                <div class="product-card__actions">
-                  <UButton label="Подробнее" variant="secondary" />
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+          </li>
+        </ul>
       </div>
-    </div>
   </section>
 </template>
 
 <style lang="scss" scoped>
-.featured-products {
-  position: relative;
-  padding-top: 150px;
-}
 
-.featured-products-block {
-  position: relative;
-  
-  &__content {
-
-  }
-  
-  &__title {
-  }
-  
-  &__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
-  }
-  
-  &__item {
-    background: var(--bg-card);
-    border-radius: 8px;
-    overflow: hidden;
-    transition: transform 0.3s ease;
-    
-    &:hover {
-      transform: translateY(-5px);
-    }
-  }
-  
-  &__footer {
-    text-align: center;
-  }
-}
-
-.product-card {
-  &__info {
-    padding: 15px;
-  }
-  
-  &__name {
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-  
-  &__category {
-    color: var(--text-muted);
-    font-size: 0.9em;
-    margin-bottom: 5px;
-  }
-  
-  &__price {
-    color: var(--accent-color);
-    font-weight: bold;
-    font-size: 1.1em;
-    margin-bottom: 10px;
-  }
-  
-  &__actions {
-    display: flex;
-    justify-content: center;
-  }
-}
 </style>

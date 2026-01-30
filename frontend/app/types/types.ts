@@ -207,13 +207,13 @@ export interface StrapiResponse<T> {
 // Тип для слайдов в hero-slider
 export interface HeroSlide {
   id: number;
-  retinaBgImage?: {
+  retinaBgImageAvif?: {
     id: number;
     url: string;
     alternativeText?: string;
     documentId?: string;
    };
-   fallbackBgImage?: {
+   baseBgImageWebp?: {
     id: number;
     url: string;
     alternativeText?: string;
@@ -252,13 +252,13 @@ export interface FeaturedProduct {
   id: number;
   heading?: string;
   link?: string;
-  retinaBgImage?: {
+  retinaBgImageAvif?: {
     id: number;
     url: string;
     alternativeText?: string;
     documentId?: string;
   };
-  fallbackBgImage?: {
+  baseBgImageWebp?: {
     id: number;
     url: string;
     alternativeText?: string;

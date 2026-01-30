@@ -25,6 +25,7 @@ interface Props {
     | "color-theme"
     | "slide-prev"
     | "slide-next"
+    | "product-eye"
   size?: "small" | "normal" | "large";
   isLoading?: boolean;
   isDisabled?: boolean;
@@ -328,6 +329,17 @@ defineEmits<Emits>();
         scale: 1.1;
       }
     }
+  }
+
+  &_product-eye {
+   font-size: toRem(28);
+   background-color: var(--whitesmoke-color);
+   transition: all var(--transition-duration);
+
+   @include hover {
+      color: var(--warning-color);
+      background-color: var(--light-color);
+   }
   }
 
   &_share {

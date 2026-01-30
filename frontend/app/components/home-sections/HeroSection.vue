@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { HeroSlide, HeroGrid } from "@/types/types";
-import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
 import HeroGrids from "../HeroGrids.vue";
 const { currentLocale } = useLocale();
 
@@ -21,16 +20,15 @@ const { slides, heroGrids } = defineProps<Props>();
     >
       <template #default="{ slide, index }">
         <UBackground
-          v-if="slide.retinaBgImage?.url"
-          :src="slide.fallbackBgImage?.url"
-          :retinaSrc="slide.retinaBgImage?.url"
+          v-if="slide.retinaBgImageAvif?.url || slide.baseBgImageWebp?.url"
+          :src="slide.baseBgImageWebp?.url"
+          :retinaSrc="slide.retinaBgImageAvif?.url"
         />
         <UImage
           v-if="slide.image?.url"
           type="hero"
           :src="slide.image.url"
           :alt="slide.heading"
-          :smooth-load="true"
           :loading="index === 0 ? 'eager' : 'lazy'"
           :fetchpriority="index === 0"
           width="742"
@@ -111,6 +109,7 @@ const { slides, heroGrids } = defineProps<Props>();
 
 		&__title {
          margin-block-end: toEm(4);
+         @include adaptiveValue("font-size", 62, 28);
 
          @media (max-width:$tablet){
             text-align: center;
@@ -120,7 +119,7 @@ const { slides, heroGrids } = defineProps<Props>();
 		&__sale {
          display: inline-flex;
          column-gap: toEm(2);
-         font-size: toEm(26);
+         font-size: toEm(24);
          font-family: $font-family-content;
          font-weight: 400;
          color: var(--success-color);

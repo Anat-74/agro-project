@@ -13,10 +13,10 @@ export default (config: unknown, { strapi }: { strapi: Core.Strapi }) => {
                 image: {
                   fields: ['alternativeText', 'url'],
                 },
-                  retinaBgImage: {
+                  retinaBgImageAvif: {
                   fields: ['alternativeText', 'url'],
                   },
-                  fallbackBgImage: {
+                  baseBgImageWebp: {
                   fields: ['alternativeText', 'url'],
                 },
                },
@@ -38,10 +38,10 @@ export default (config: unknown, { strapi }: { strapi: Core.Strapi }) => {
            on: {
              "sections.featured-products": {
                populate: {
-                 retinaBgImage: {
+                 retinaBgImageAvif: {
                    fields: ['alternativeText', 'url'],
                  },
-                 fallbackBgImage: {
+                 baseBgImageWebp: {
                    fields: ['alternativeText', 'url'],
                  },
                    products: {

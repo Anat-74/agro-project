@@ -57,7 +57,7 @@ h1 {
   font-family: $font-family-cursive;
   font-style: italic;
   color: var(--warning-color);
-  @include m.adaptiveValue("font-size", 62, 28);
+  @include m.adaptiveValue("font-size", 36, 28);
 }
 
 h2 {

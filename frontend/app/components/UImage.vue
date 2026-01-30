@@ -1,11 +1,6 @@
 <script setup lang="ts">
 const config = useRuntimeConfig();
 
-// Отключаем автоматическое наследование атрибутов
-defineOptions({
-  inheritAttrs: false,
-});
-
 const props = withDefaults(
   defineProps<{
     // Обязательные
@@ -36,7 +31,7 @@ const props = withDefaults(
     // Тип изображения
     type?:
       | "content"
-      | "cover"
+      | "product"
       | "hero"
       | "avatar"
       | "thumbnail"
@@ -47,9 +42,9 @@ const props = withDefaults(
     format: "avif",
     quality: 85,
     loading: "lazy",
-    type: "cover",
+    type: "product",
     fromStrapi: true,
-    smoothLoad: false,
+    smoothLoad: true,
   }
 );
 
@@ -83,10 +78,9 @@ const typeConfigs: Record<string, ImageTypeConfig> = {
     sizes: "100vw sm:100vw md:90vw lg:80vw xl:1200px",
   },
   // Изображение-обложка для элементов (подкатегории, продукты и т.д.)
-  cover: {
-    loading: "eager",
+  product: {
     quality: 80,
-    sizes: "100vw sm:100vw md:90vw lg:80vw xl:1200px",
+    sizes: "100vw xs:50vw sm:33.33vw md:25vw lg:20vw xl:20vw"
   },
   // Изображения пользователей/аватарки
   avatar: {
@@ -138,12 +132,6 @@ const finalSrc = computed(() => {
   // Локальные изображения
   return props.src?.startsWith("/") ? props.src : `/image/${props.src}`;
 });
-
-// Приоритетная загрузка
-const computedLoading = computed(() => {
-  if (props.priority || props.type === "cover") return "eager";
-  return props.loading || configForType.value?.loading || "lazy";
-});
 </script>
 
 <template>
@@ -153,7 +141,7 @@ const computedLoading = computed(() => {
       `app-image_${type}`,
       {
         'app-image_smooth-load': smoothLoad && props.smoothLoad,
-        'app-image_loaded': loaded,
+         'app-image_loaded': loaded
       },
     ]"
   >
@@ -165,12 +153,11 @@ const computedLoading = computed(() => {
       :height="height"
       :sizes="props.sizes || configForType?.sizes"
       :format="props.format"
-      :quality="quality"
-      :loading="computedLoading"
-      :fetchpriority="props.priority || props.type === 'cover' ? 'high' : 'auto'"
+      :quality="props.quality"
+      :loading="props.loading"
+      :fetchpriority="props.priority"
       :class="['app-image__img', `app-image__img_${type}`]"
       decoding="async"
-      v-bind="{ ...$attrs, class: undefined }"
       @load="onImageLoad"
     />
     <img
@@ -182,7 +169,6 @@ const computedLoading = computed(() => {
       :loading="'eager'"
       :class="['app-image__img', `app-image__img_${type}`]"
       decoding="async"
-      v-bind="{ ...$attrs, class: undefined }"
       @load="onImageLoad"
     />
   </div>
@@ -223,6 +209,14 @@ const computedLoading = computed(() => {
   &_hero {
    @media (max-width:$tablet){
       max-width: toRem(540);
+   }
+  }
+
+  &_product {
+   flex: 1 1 auto;
+
+   @media (max-width:$tablet){
+       max-width: toEm(244); 
    }
   }
 }
