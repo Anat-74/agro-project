@@ -110,12 +110,17 @@ watchEffect(() => {
 })
 
 const handleAddToCart = (product: Product) => {
-  cartStore.addToCart(
-    product,
-    categorySlug,
-    null // subcategorySlug - null, так как продукт принадлежит напрямую категории
-  )
+  if (isInCart(product.id)) {
+    cartStore.removeFromCart(product.id);
+  } else {
+    cartStore.addToCart(
+      product,
+      categorySlug,
+      null // subcategorySlug - null, так как продукт принадлежит напрямую категории
+    );
+  }
 }
+
 </script>
 
 <template>
