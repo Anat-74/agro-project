@@ -224,10 +224,10 @@ const handleAddToCart = (product: Product) => {
             width="302"
             height="302"
           />
+        </NuxtLink>
          <h3 class="products-section__card-title">
             {{ product.name }}
           </h3>
-        </NuxtLink>
         <div class="products-section__card-bottom">
          <UTooltip 
             :text="tooltipTranslations[currentLocale].byRuble"
@@ -240,22 +240,13 @@ const handleAddToCart = (product: Product) => {
             {{ formatPrice(product.price) }}
           </span>
 
-          <UButton 
-            v-if="!isInCart(product.id)"
-            @click="handleAddToCart(product)"
-            class="products-section__card-add"
-            variant="small-add-to-cart"
-            icon="qlementine-icons:add-to-cart-16"
-            :aria-label="buttonTranslations[currentLocale].label"
-          />
-          <UButton 
-            class="products-section__card-add"
-            v-else
-            disabled
-            variant="small-add-to-cart"
-            icon="emojione-v1:left-check-mark"
-            :aira-label="buttonTranslations[currentLocale].ariaLabelAdded"
-          />
+      <UButton 
+         @click="handleAddToCart(product)"
+         class="products-section__card-add"
+         variant="add"
+         :is-in-cart="isInCart(product.id)"
+         :aria-label="isInCart(product.id) ? buttonTranslations[currentLocale].ariaLabelAdded : buttonTranslations[currentLocale].label"
+         />
         </div>
       </li>
     </ul>
@@ -304,8 +295,8 @@ const handleAddToCart = (product: Product) => {
 &__card-list {
    justify-items: center;
    row-gap: toEm(32);
-   @include adaptiveValue("column-gap", 64, 7);
    @include gridCards(fill);
+   @include adaptiveValue("column-gap", 64, 7);
 
    @media (max-width:toEm(568)){
       grid-template-columns: repeat(2, 1fr);
@@ -319,6 +310,7 @@ const handleAddToCart = (product: Product) => {
    padding-block: toEm(12);
    border: toEm(2) solid var(--whitesmoke-color);
    border-radius: toEm(6);
+   transition: all var(--transition-duration);
 
    @media (max-width:$mobile){
    @media (prefers-reduced-motion: no-preference) {
@@ -349,7 +341,7 @@ const handleAddToCart = (product: Product) => {
 &__card-eye {
    position: absolute;
    z-index: 10;
-   right: toEm(6);
+   right: toEm(8);
    top: toRem(32);
    padding-block: toEm(4);
    padding-inline: toEm(6);
@@ -357,25 +349,11 @@ const handleAddToCart = (product: Product) => {
 }
 
 &__card-link {
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   row-gap: toEm(4);
    padding-inline: toEm(6);
-   padding-block-end: toEm(18);
-
-@include hover {
-   .products-section__card-image {
-      scale: 1.1;
-    }
-   .products-section__card-title {
-      color: var(--warning-color);
-      }
-   }
+   padding-block-end: toEm(4);
 }
 
 &__card-image {
-   transition: scale var(--transition-duration);
 }
 
 &__card-bottom {
@@ -387,8 +365,9 @@ const handleAddToCart = (product: Product) => {
 }
 
 &__card-title {
-   transition: color var(--transition-duration);
    text-align: center;
+   padding-block-end: toEm(18);
+   transition: color var(--transition-duration);
 
 }
 

@@ -35,13 +35,26 @@ body:has(.dialog-hamburger[open]) {
   }
 }
 
+//======================================================================
 
 @media (min-width: c.$mobile) {
   @media (any-hover: hover) {
-    ul:has(li:hover) {
+    ul:has(a:hover) {
       li:not(:hover) {
         opacity: .8;
         filter: grayscale(77%);
+      }
+    }
+  }
+}
+
+//=======================================================================
+
+@media (min-width: c.$mobile) {
+  @media (any-hover: hover) {
+    li:has(a:hover) {
+      h3 {
+         color: var(--warning-color);
       }
     }
   }

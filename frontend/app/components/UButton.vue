@@ -14,7 +14,8 @@ interface Props {
     | "share"
     | "switch-locale-cart"
     | "add-to-cart"
-    | "small-add-to-cart"
+    | "add"
+    | "is-added"
     | "remove-cart-item"
     | "remove-quantity-prod"
     | "add-quantity-prod"
@@ -33,6 +34,7 @@ interface Props {
   icon?: string;
   theme?: string;
   isOpen?: boolean;
+  isInCart?: boolean;
 }
 
 interface Emits {
@@ -45,7 +47,8 @@ withDefaults(defineProps<Props>(), {
   isLoading: false,
   isDisabled: false,
   type: "button",
-  isOpen: false,
+   isOpen: false,
+  isInCart: false
 });
 
 defineEmits<Emits>();
@@ -59,6 +62,7 @@ defineEmits<Emits>();
       { 'btn_loading': isLoading, btn_disabled: isDisabled },
       { 'btn_selected': !colorMode.unknown && theme === colorMode.value },
       { 'btn_hamburger--is-open': isOpen && variant === 'hamburger' },
+      { 'btn_add--is-added': isInCart && variant === 'add' },
       size === 'large' ? 'btn_large' : '',
       icon ? 'btn_icon' : '',
     ]"
@@ -390,34 +394,57 @@ defineEmits<Emits>();
     }
   }
 
-  &_small-add-to-cart {
-    padding: toRem(3);
-    outline: toRem(1) solid var(--primary-color);
-    border-radius: 50%;
-
-    &:disabled,
-    &.btn_disabled {
-      opacity: 1;
-    }
-
-    svg {
-      font-size: toEm(22, 24);
-      color: var(--primary-color);
-      transition: color var(--transition-duration);
-
-      @include hover {
-        color: var(--warning-color);
+       &_add {
+   position: relative;
+   opacity: .4;
+   border-radius: toEm(6);
+   border: toRem(1) solid var(--light-color);
+   background-color: var(--light-color);
+   @include adaptiveValue("padding", 16, 14);
+       &::before,
+      &::after{
+         content: '';
+         position: absolute;
+			width: toRem(15);
+			height: toRem(2);
+			background-color: var(--gray-color);
+         transition: .2s ease;
+         @include adaptiveValue("right", 9, 6);
       }
-    }
+      &::before {
+         top: calc(50% - toRem(1));
+         transform: rotate(-90deg);
+		}
+		&::after {
+         bottom: calc(50% - toRem(1));
+         transform: rotate(180deg);
+		}
 
-    .iconify--emojione-v1 {
-      padding: toRem(3);
-    }
+   &--is-added {
+    border-color: var(--success-color);
+    background-color: var(--success-color);
+    opacity: .8;
+    transition: all var(--transition-duration);
 
-    @media (max-width: $mobile) {
-      outline-width: 1px;
+      &::before,
+      &::after{
+			background-color: var(--light-color);
+      }
+      &::before {
+         width: toRem(14);
+         top: 45%;
+         transform: rotate(-58deg);
+         @include adaptiveValue("right", 7, 5);
+		}
+		&::after {
+         width: toRem(8);
+         right: 50%;
+         bottom: 40%;
+         transform: rotate(60deg);
+		}
     }
   }
+
 
   &_remove-cart-item {
     svg {
@@ -588,61 +615,6 @@ defineEmits<Emits>();
   //     }
   //    }
   //   }
-
-     &_add {
-   @include adaptiveValue("padding", 16, 14);
-   position: relative;
-   opacity: .4;
-   border-radius: toRem(8);
-   box-shadow: 0px toEm(1, 15) toEm(1, 15) toRem(2) hsla(0, 0%, 0%, 0.09);
-
-       &::before,
-      &::after{
-         content: '';
-         @include adaptiveValue("right", 9, 6);
-         position: absolute;
-			width: toRem(15);
-			height: toRem(2);
-			background-color: var(--gray-color);
-         transition: .2s ease;
-      }
-      &::before {
-         top: calc(50% - toRem(1));
-         transform: rotate(-90deg);
-		}
-		&::after {
-         bottom: calc(50% - toRem(1));
-         transform: rotate(180deg);
-		}
-  }
-
-   &_is-added {
-   position: relative;
-   border: 1px solid var(--success-color);
-    background-color: var(--success-color);
-    opacity: .8;
-    transition: .1s ease-in;
-
-       &::before,
-      &::after{
-         content: '';
-         position: absolute;
-			height: toRem(2);
-			background-color: var(--light-color);
-      }
-      &::before {
-         @include adaptiveValue("right", 7, 5);
-         width: toRem(14);
-         top: 45%;
-         transform: rotate(-58deg);
-		}
-		&::after {
-         width: toRem(8);
-         right: 50%;
-         bottom: 40%;
-         transform: rotate(60deg);
-		}
-  }
 
   /* Состояние загрузки */
   &.loading {
