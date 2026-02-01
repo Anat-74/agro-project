@@ -257,7 +257,7 @@ const handleAddToCart = (product: Product) => {
     <div v-else-if="!pending" class="products-section__empty">
       {{ productFilterTranslations[currentLocale].noResults }}
     </div>
-
+    <FrontBack />
     <Pagination 
       v-if="pageCount > 1"
       class="products-section__pagination"
