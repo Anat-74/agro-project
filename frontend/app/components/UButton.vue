@@ -26,7 +26,7 @@ interface Props {
     | "color-theme"
     | "slide-prev"
     | "slide-next"
-    | "product-eye"
+    | "product-details"
   size?: "small" | "normal" | "large";
   isLoading?: boolean;
   isDisabled?: boolean;
@@ -335,7 +335,7 @@ defineEmits<Emits>();
     }
   }
 
-  &_product-eye {
+  &_product-details {
    font-size: toEm(26);
    background-color: var(--whitesmoke-color);
    transition: all var(--transition-duration);
@@ -394,21 +394,23 @@ defineEmits<Emits>();
     }
   }
 
-       &_add {
+   &_add {
    position: relative;
    opacity: .4;
    border-radius: toEm(6);
-   border: toRem(1) solid var(--light-color);
+   border: toRem(1) solid var(--success-color);
    background-color: var(--light-color);
    @include adaptiveValue("padding", 16, 14);
+
+
        &::before,
-      &::after{
+       &::after{
          content: '';
          position: absolute;
 			width: toRem(15);
 			height: toRem(2);
-			background-color: var(--gray-color);
-         transition: .2s ease;
+			background-color: var(--green-color);
+         transition: all .2s ease;
          @include adaptiveValue("right", 9, 6);
       }
       &::before {
@@ -420,18 +422,24 @@ defineEmits<Emits>();
          transform: rotate(180deg);
 		}
 
+   @include hover {
+      border-color: var(--warning-hover);
+      &::before,
+      &::after {
+         background-color: var(--warning-hover);
+       }
+   }
+
    &--is-added {
+    opacity: .8;
     border-color: var(--success-color);
     background-color: var(--success-color);
-    opacity: .8;
-    transition: all var(--transition-duration);
 
       &::before,
       &::after{
 			background-color: var(--light-color);
       }
       &::before {
-         width: toRem(14);
          top: 45%;
          transform: rotate(-58deg);
          @include adaptiveValue("right", 7, 5);
@@ -442,9 +450,17 @@ defineEmits<Emits>();
          bottom: 40%;
          transform: rotate(60deg);
 		}
+
+      @include hover {
+         border-color: var(--green-color);
+         background-color: var(--green-color);
+         &::before,
+         &::after {
+            background-color: var(--light-color);
+       }
+      }
     }
   }
-
 
   &_remove-cart-item {
     svg {

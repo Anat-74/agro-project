@@ -210,8 +210,8 @@ const handleAddToCart = (product: Product) => {
       class="products-section__card-in-stock"
      />
      <UButton
-     class="products-section__card-eye"
-     variant="product-eye"
+     class="products-section__card-details"
+     variant="product-details"
      icon="ph:eye-light"
      />
      </div>
@@ -247,7 +247,6 @@ const handleAddToCart = (product: Product) => {
 
       <UButton 
          @click="handleAddToCart(product)"
-         class="products-section__card-add"
          variant="add"
          :is-in-cart="isInCart(product.id)"
          :aria-label="isInCart(product.id) ? buttonTranslations[currentLocale].ariaLabelAdded : buttonTranslations[currentLocale].label"
@@ -343,7 +342,7 @@ const handleAddToCart = (product: Product) => {
    padding: toEm(4);
 }
 
-&__card-eye {
+&__card-details {
    position: absolute;
    z-index: 10;
    right: toEm(8);
