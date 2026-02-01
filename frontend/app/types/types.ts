@@ -207,17 +207,20 @@ export interface StrapiResponse<T> {
 // Тип для слайдов в hero-slider
 export interface HeroSlide {
   id: number;
-  retinaBgImageAvif?: {
+   backgroundImage?: {
     id: number;
-    url: string;
-    alternativeText?: string;
-    documentId?: string;
-   };
-   baseBgImageWebp?: {
-    id: number;
-    url: string;
-    alternativeText?: string;
-    documentId?: string;
+    retinaBgImageAvif?: {
+      id: number;
+      url: string;
+      alternativeText?: string;
+      documentId?: string;
+    };
+    baseBgImageWebp?: {
+      id: number;
+      url: string;
+      alternativeText?: string;
+      documentId?: string;
+    };
   };
    image?: {
     id: number;
@@ -252,17 +255,20 @@ export interface FeaturedProduct {
   id: number;
   heading?: string;
   link?: string;
-  retinaBgImageAvif?: {
+   backgroundImage?: {
     id: number;
-    url: string;
-    alternativeText?: string;
-    documentId?: string;
-  };
-  baseBgImageWebp?: {
-    id: number;
-    url: string;
-    alternativeText?: string;
-    documentId?: string;
+    retinaBgImageAvif?: {
+      id: number;
+      url: string;
+      alternativeText?: string;
+      documentId?: string;
+    };
+    baseBgImageWebp?: {
+      id: number;
+      url: string;
+      alternativeText?: string;
+      documentId?: string;
+    };
   };
   products: Array<{  // Уточним структуру продукта
     id: number;

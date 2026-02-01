@@ -16,19 +16,10 @@
     "link": {
       "type": "string"
     },
-    "retinaBgImageAvif": {
-      "type": "media",
-      "multiple": false,
-      "allowedTypes": [
-        "images"
-      ]
-    },
-    "baseBgImageWebp": {
-      "type": "media",
-      "multiple": false,
-      "allowedTypes": [
-        "images"
-      ]
+    "backgroundImage": {
+      "type": "component",
+      "component": "background.background-image",
+      "repeatable": false
     }
   },
   "config": {}

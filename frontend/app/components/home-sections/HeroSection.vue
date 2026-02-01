@@ -19,11 +19,11 @@ const { slides, heroGrids } = defineProps<Props>();
       :slides="slides"
     >
       <template #default="{ slide, index }">
-        <UBackground
-          v-if="slide.retinaBgImageAvif?.url || slide.baseBgImageWebp?.url"
-          :src="slide.baseBgImageWebp?.url"
-          :retinaSrc="slide.retinaBgImageAvif?.url"
-        />
+         <UBackground
+           v-if="slide.backgroundImage?.retinaBgImageAvif?.url || slide.backgroundImage?.baseBgImageWebp?.url"
+           :src="slide.backgroundImage?.baseBgImageWebp?.url"
+           :retinaSrc="slide.backgroundImage?.retinaBgImageAvif?.url"
+         />
         <UImage
           v-if="slide.image?.url"
           type="hero"

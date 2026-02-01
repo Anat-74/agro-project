@@ -21,9 +21,9 @@ const MAX_PRODUCTS_TO_SHOW = 6;
       class="featured-products__container"
     >
       <UBackground
-        v-if="section.retinaBgImageAvif?.url || section.baseBgImageWebp?.url"
-        :src="section.baseBgImageWebp?.url"
-        :retinaSrc="section.retinaBgImageAvif?.url"
+        v-if="section.backgroundImage?.retinaBgImageAvif?.url || section.backgroundImage?.baseBgImageWebp?.url"
+        :src="section.backgroundImage?.baseBgImageWebp?.url"
+        :retinaSrc="section.backgroundImage?.retinaBgImageAvif?.url"
         bg-position="bottom left"
       />
       <div class="featured-products__content-top">

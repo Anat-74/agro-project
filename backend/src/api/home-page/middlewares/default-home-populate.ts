@@ -12,12 +12,16 @@ export default (config: unknown, { strapi }: { strapi: Core.Strapi }) => {
               populate: {
                 image: {
                   fields: ['alternativeText', 'url'],
-                },
-                  retinaBgImageAvif: {
-                  fields: ['alternativeText', 'url'],
                   },
-                  baseBgImageWebp: {
-                  fields: ['alternativeText', 'url'],
+                  backgroundImage: {
+                  populate: {
+                    retinaBgImageAvif: {
+                      fields: ['alternativeText', 'url'],
+                    },
+                    baseBgImageWebp: {
+                      fields: ['alternativeText', 'url'],
+                    },
+                  }
                 },
                },
               },
@@ -38,12 +42,16 @@ export default (config: unknown, { strapi }: { strapi: Core.Strapi }) => {
            on: {
              "sections.featured-products": {
                populate: {
-                 retinaBgImageAvif: {
-                   fields: ['alternativeText', 'url'],
-                 },
-                 baseBgImageWebp: {
-                   fields: ['alternativeText', 'url'],
-                 },
+                  backgroundImage: {
+                  populate: {
+                    retinaBgImageAvif: {
+                      fields: ['alternativeText', 'url'],
+                    },
+                    baseBgImageWebp: {
+                      fields: ['alternativeText', 'url'],
+                    },
+                  }
+                },
                    products: {
                       fields: ['name', 'price', 'slug','isAvailable', 'isDiscount', 'locale'],
                    populate: {
