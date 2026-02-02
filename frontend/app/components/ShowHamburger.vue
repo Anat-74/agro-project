@@ -7,7 +7,7 @@ import type {
   SocialLink,
   Phone,
 } from "../types/types";
-// import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
+import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
 import { discountProductTranslations } from "~/locales/discountProduct";
 
 interface Props {
@@ -48,12 +48,20 @@ const {
     filters: {
       locale: currentLocale.value,
     },
-    populate: {
+     populate: {
+      image: {
+      fields: ["alternativeText", "url"],
+      },
       subcategories: {
         fields: ["id", "name", "slug"],
       },
       products: {
-        fields: ["id", "name", "slug"],
+         fields: ["id", "name", "slug"],
+         populate: {
+         image: {
+          fields: ["alternativeText", "url"],
+        },
+        }
       },
     },
   });
@@ -113,6 +121,8 @@ watch(currentLocale, () => {
   refreshCategory();
   refreshProduct();
 });
+
+console.log('cat', category.value)
 </script>
 
 <template>
@@ -138,9 +148,9 @@ watch(currentLocale, () => {
     aria-label="Catalog"
   >
     <Loader v-if="pending" />
-    <!-- <h2 class="visually-hidden">
+    <h2 class="visually-hidden">
       {{ visuallyHiddenTranslations[currentLocale].showModalMenuTitle }}
-    </h2> -->
+    </h2>
     <div class="dialog-hamburger__items">
       <div class="dialog-hamburger__top visible-mobile">
         <Logo
@@ -153,17 +163,30 @@ watch(currentLocale, () => {
         <AnimateTitle />
       </div>
       <ul v-if="category?.length" class="dialog-hamburger__accordion accordion">
-        <li v-for="cat in category" :key="cat.id" class="accordion__item">
+        <li 
+        v-for="cat in category" 
+        :key="cat.id" 
+        class="accordion__item"
+        >
           <details name="faq" class="accordion__details">
             <summary class="accordion__summary">
-              <Icon name="mdi:chevron-left" />
-              <span>{{ cat.name }}</span>
+                  <UImage
+                  v-if="cat.image?.length"
+                  :src="cat.image[0]?.url"
+                  :alt="cat.name"
+                  class="accordion__product-image"
+                  width="44"
+                  height="44"
+                  type="icon"
+                />
+              <h3 class="accordion__product-title">{{ cat.name }}</h3>
+               <Icon name="mdi:chevron-left" />
             </summary>
           </details>
 
           <div class="accordion__content">
             <ul class="accordion__product-list">
-              <li
+              <!-- <li
                 v-for="sub in cat.subcategories"
                 :key="sub.id"
                 class="accordion__product-item"
@@ -172,9 +195,10 @@ watch(currentLocale, () => {
                   class="accordion__product-link"
                   @click="close()"
                   :to="`/${currentLocale}/${cat.slug}/${sub.slug}`"
-                  >{{ sub.name }}
+                  >
+                  {{ sub.name }}
                 </NuxtLink>
-              </li>
+              </li> -->
               <!-- Отображение продуктов, принадлежащих напрямую категории -->
               <li
                 v-for="prod in cat.products"
@@ -183,9 +207,18 @@ watch(currentLocale, () => {
               >
                 <NuxtLink
                   class="accordion__product-link"
-                  @click="close()"
-                  :to="`/${currentLocale}/${cat.slug}/products`"
-                  >{{ prod.name }}
+                  :to="`/${currentLocale}/${prod?.subcategory?.category?.slug}/products/${prod.slug}`"
+                  >
+                  <UImage
+                  v-if="prod.image?.length"
+                  :src="prod.image[0]?.url"
+                  :alt="prod.name"
+                  class="accordion__product-image-link"
+                  width="32"
+                  height="32"
+                  type="icon"
+                />
+                <h4 class="accordion__product-sub-title">{{ prod.name }}</h4>
                 </NuxtLink>
               </li>
             </ul>
@@ -195,15 +228,15 @@ watch(currentLocale, () => {
 
       <div v-if="product?.length" class="accordion">
         <details name="faq" class="accordion__details">
-          <summary class="accordion__summary">
-            <Icon name="mdi:chevron-left" />
-            <span>
-              <Icon
+          <summary class="accordion__summary accordion__summary_is-discount">
+               <Icon
                 class="accordion__discount-icon"
                 name="mdi:discount-outline"
               />
+            <h4 class="accordion__product-sub-title">
               {{ discountProductTranslations[currentLocale].discount }}
-            </span>
+            </h4>
+            <Icon name="mdi:chevron-left" />
           </summary>
         </details>
 
@@ -217,26 +250,25 @@ watch(currentLocale, () => {
               <NuxtLink
                 class="accordion__product-link accordion__product-link_is-discount"
                 @click="close()"
-                :to="`/${currentLocale}/${prod?.subcategory?.category?.slug}/${prod?.subcategory?.slug}/${prod.slug}`"
+                :to="`/${currentLocale}/${prod?.subcategory?.category?.slug}/products/${prod.slug}`"
               >
-                <NuxtImg
+                <UImage
                   v-if="prod.image?.length"
-                  :src="`${config.public.strapi.url}${prod.image[0]?.url}`"
+                  :src="prod.image[0]?.url"
                   :alt="prod.name"
-                  class="accordion__product-image"
-                  format="webp"
-                  loading="lazy"
-                  decoding="async"
-                  width="88"
-                  height="66"
+                  class="accordion__product-image-link"
+                  width="32"
+                  height="32"
+                  type="icon"
                 />
-                {{ prod.name }}
+                <h4 class="accordion__product-sub-title">{{ prod.name }}</h4>
               </NuxtLink>
             </li>
           </ul>
         </div>
       </div>
 
+      <div class="dialog-hamburger__contacts">
       <div
         class="dialog-hamburger__phones"
         v-for="item in phones"
@@ -250,6 +282,7 @@ watch(currentLocale, () => {
           class="company__link-phones"
           >{{ formatPhone(item.phoneNumber) }}
         </a>
+      </div>
       </div>
     </div>
     <div class="dialog-hamburger__sidebar sidebar visible-mobile">
@@ -339,13 +372,13 @@ watch(currentLocale, () => {
       }
   }
 
-  //   &:not([open]) {
-  //     scale: 0;
-  //     transition: scale .1s linear;
-  //   }
+   //  &:not([open]) {
+   //    scale: 0;
+   //    transition: scale .1s linear;
+   //  }
 
   &__items {
-    min-height: var(--min-height);
+    min-height: 100%;
     display: flex;
     flex-direction: column;
     align-items: end;
@@ -353,7 +386,7 @@ watch(currentLocale, () => {
     padding-inline: toEm(16);
     padding-block-start: toEm(22);
     padding-block-end: toEm(12);
-    backdrop-filter: blur(16px);
+    backdrop-filter: blur(22px);
 
     @media (max-width: $mobile) {
       justify-items: center;
@@ -378,21 +411,6 @@ watch(currentLocale, () => {
     }
   }
 
-//   &__accordion {
-//     width: 100%;
-//     display: flex;
-//     flex-direction: column;
-//     row-gap: toEm(22);
-
-//     @media (min-width:$mobileSmall){
-//          width: 60%;
-//     }
-
-//     @media (min-width:$mobile){
-//         width: 100%;
-//     }
-//   }
-
 &__accordion {
   flex: 1 1 auto;
   width: 100%;
@@ -401,10 +419,13 @@ watch(currentLocale, () => {
   justify-content: center;
   row-gap: toEm(22);
 
+@media (min-width:$mobile){
+   padding-block-end: toEm(16);
+}
+
     @media ($mobileSmall <= width <= $mobile) {
       width: 70%;
   }
-
 }
 
   &__phones {
@@ -418,6 +439,10 @@ watch(currentLocale, () => {
     color: var(--warning-color);
     background-color: var(--border-color-transparent);
     transition: all var(--transition-duration);
+
+    &:not(:last-child) {
+      margin-block-end: toEm(6);
+    }
 
     svg {
       font-size: toRem(22);
@@ -451,57 +476,62 @@ watch(currentLocale, () => {
       color: var(--danger-color);
 
       svg {
-        transform: rotate(-90deg);
-        transition: transform 0.3s;
+        rotate: -180deg;
+        transition: rotate var(--transition-duration);
+      }
+    }
+  }
+
+  &__details:not([open]) {
+       .accordion__summary {
+      svg {
+        transition: rotate var(--transition-duration);
       }
     }
   }
 
   &__summary {
-    position: relative;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    padding-block: toRem(4);
+    padding: toEm(4);
     font-weight: 600;
     font-size: toEm(22);
     color: var(--primary-color);
     border-radius: toEm(6);
+    outline: toRem(2) var(--whitesmoke-color) inset;
+    border-radius: toRem(4);
     background-color: var(--light-color-transparent);
-    transition: color var(--transition-duration);
-
-      // outline: toRem(2) var(--success-color) outset;
-      // border-radius: toRem(4);
-      // background-color: var(--light-color);
-
-   //  span {
-   //    padding: toRem(2) toRem(12);
-   //    outline: toRem(2) var(--success-color) inset;
-   //    border-radius: toRem(8);
-   //    background-color: var(--light-color);
-   //  }
 
     svg {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      translate: 0 -50%;
+      rotate: -90deg;
     }
 
-    @include hover {
+      @include hover {
       color: var(--warning-color);
     }
-  }
 
-  &__discount-icon {
-    translate: 0 toRem(7);
+    &_is-discount {
+      padding-inline: toEm(4);
+      padding-block: toRem(6);
+      outline: toRem(2) var(--light-color) outset;
+      color: var(--danger-color);
+
+      svg {
+         color: var(--green-color);
+      }
+
+      @include hover {
+         color: var(--danger-hover);
+      }
+    }
   }
 
   &__content {
     display: grid;
     grid-template-rows: 0fr;
-    transition: all 0.3s;
+    transition: all .3s;
   }
 
   &__product-list {
@@ -510,34 +540,32 @@ watch(currentLocale, () => {
   }
 
   &__product-link {
-    display: flex;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    justify-items: center;
     align-items: center;
-    font-size: toEm(20);
     border-radius: toRem(8);
     padding-block-start: toRem(16);
     transition: all var(--transition-duration);
 
     &_is-discount {
-      justify-content: start;
       column-gap: toEm(4);
     }
 
     @include hover {
-      color: var(--dark-color);
+      color: var(--gray-color);
       text-decoration: underline;
     }
   }
 
-//   &__product-image {
-//     margin-inline-start: toRem(-12);
-
-//     @media (max-width: $mobile) {
-//       width: toRem(77);
-//     }
-//   }
+  &__product-sub-title {
+       font-weight: 800;
+  }
 
   .router-link-active {
+   cursor: default;
+   text-decoration: none;
+   font-weight: 600;
     color: var(--danger-hover);
   }
 }

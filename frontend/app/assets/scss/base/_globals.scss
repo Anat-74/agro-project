@@ -39,7 +39,7 @@ body:has(.dialog-hamburger[open]) {
 
 @media (min-width: c.$mobile) {
   @media (any-hover: hover) {
-    ul:has(li:hover) {
+    .products-section__card-list:has(li:hover) {
       li:not(:hover) {
         opacity: .8;
         filter: grayscale(77%);
@@ -90,11 +90,11 @@ h2 {
 }
 
 h3 {
-  @include m.adaptiveValue("font-size", 18, 16);
+  @include m.adaptiveValue("font-size", 20, 18);
 }
 
 h4 {
-  @include m.adaptiveValue("font-size", 20, 16);
+  @include m.adaptiveValue("font-size", 18, 16);
 }
 
 h5 {

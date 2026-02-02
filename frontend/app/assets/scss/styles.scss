@@ -56,6 +56,10 @@
   --sky-blue: #afeeee;
   --transparent-color: transparent;
   --whitesmoke-color: whitesmoke;
+   --light-color-transparent: color-mix( in srgb,
+    #ffffff 72%,
+    transparent
+  );
 }
 
 // Темная тема (контрастная к светлой)
@@ -71,7 +75,7 @@
   --light-color: #f9f8f8; // Светлый цвет (вместо белого)
   --light-color-transparent: color-mix(
     in srgb,
-    #f9f8f8 70%,
+    #c0c0c0 50%,
     transparent
   ); // Светлый цвет с возможностью регулирования прозрачности (70% непрозрачности)
   --dark-color: #000000; // Темный цвет (светло-серый в темной теме)
