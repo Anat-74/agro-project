@@ -20,6 +20,12 @@ const sortOption = ref<string>('name:asc')
 const page = ref(route.query.page ? +route.query.page : 1) // Текущая страница из query-параметра
 const pageSize = 12 // Количество товаров на странице
 
+const flippedCards = ref<Record<number, boolean>>({});
+
+const toggleFlip = (productId: number) => {
+  flippedCards.value[productId] = !flippedCards.value[productId];
+};
+
 // Загрузка категории и продуктов напрямую
 const { data, pending, error, refresh } = useAsyncData(
   `category-products-${currentLocale.value}-${categorySlug}-${page.value}-${sortOption.value}`,
