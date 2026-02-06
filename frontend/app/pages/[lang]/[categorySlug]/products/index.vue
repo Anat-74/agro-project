@@ -160,7 +160,10 @@ watchEffect(() => {
           visuallyHiddenTranslations[currentLocale].sectionSubcategorySlugList
         }}
       </h2>
-      <ul v-if="products?.data.length" class="products-section__card-list">
+      <ul 
+      v-if="products?.data.length" 
+      class="products-section__card-list"
+      >
         <ProductCard
           v-for="(product, index) in products.data"
           :key="product.id"
@@ -172,7 +175,6 @@ watchEffect(() => {
       <div v-else-if="!pending" class="products-section__empty">
         {{ productFilterTranslations[currentLocale].noResults }}
       </div>
-      <FrontBack />
       <Pagination
         v-if="pageCount > 1"
         class="products-section__pagination"
