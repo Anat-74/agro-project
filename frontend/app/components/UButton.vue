@@ -338,11 +338,19 @@ defineEmits<Emits>();
   &_product-details {
    font-size: toEm(26);
    background-color: var(--whitesmoke-color);
+   padding-block: toEm(4);
+   padding-inline: toEm(6);
+   border-radius: 50%;
+   color: var(--green-color);
    transition: all var(--transition-duration);
 
    @include hover {
       color: var(--warning-color);
       background-color: var(--light-color);
+   }
+
+   svg {
+      font-size: toRem(30);
    }
   }
 
