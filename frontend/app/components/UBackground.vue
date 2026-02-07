@@ -1,7 +1,7 @@
 <script setup lang="ts">
 interface Props {
-  src?: string; // Путь к базовому изображению (в public директории)
-  retinaSrc?: string; // Путь к ретина изображению (из Strapi)
+  src?: string;
+  retinaSrc?: string;
   variant?: "hero" | "card" | "modal" | "clean" | "feature";
   effect?: "parallax" | "kenburns" | "zoom" | "none";
   loading?: "shimmer" | "pulse" | "wave" | "none";
@@ -21,8 +21,8 @@ const props = withDefaults(defineProps<Props>(), {
   gradient: "none",
   filter: "none",
   hoverEffect: "none",
-   sizeMode: "original",
-  bgPosition: "center"
+  sizeMode: "original",
+  bgPosition: "center",
 });
 
 // Только интерактивные состояния
@@ -30,56 +30,54 @@ const isHovered = ref(false);
 const isActive = ref(false);
 
 // Функция для удаления расширения файла
-const removeExtension = (url: string) =>
-  url.replace(/\.(avif|webp)$/i, "");
+const removeExtension = (url: string) => url.replace(/\.(avif|webp)$/i, "");
 
-const baseImageUrl = computed(() => {
-  if (!props.src) return null;
+// Оптимизированные вычисляемые свойства для изображений
+const imageUrls = computed(() => {
+  let baseImageUrl: string | null = null;
+  let retinaImageUrl: string | null = null;
 
-  // Добавить проверку, является ли URL внешним (из Strapi)
-  if (props.src.startsWith("http") || props.src.startsWith("//") || props.src.startsWith("/uploads/")) {
-    // Если это URL из Strapi, добавить базовый URL
-    if (props.src.startsWith("/uploads/")) {
-      return `${config.public.strapi.url}${props.src}`;
+  // Обработка базового изображения
+  if (props.src) {
+    if (
+      props.src.startsWith("http") ||
+      props.src.startsWith("//") ||
+      props.src.startsWith("/uploads/")
+    ) {
+      baseImageUrl = props.src.startsWith("/uploads/")
+        ? `${config.public.strapi.url}${props.src}`
+        : props.src;
+    } else {
+      baseImageUrl = props.src.startsWith("/")
+        ? props.src
+        : `/image/${props.src}`;
     }
-    return props.src;
   }
 
-  // Если начинается с /, используем как есть, иначе добавляем /image/
-  return props.src?.startsWith("/") ? props.src : `/image/${props.src}`;
-});
-
-// Вычисляем базовый URL для WebP (единственный формат для базовых изображений)
-const baseBaseUrl = computed(() => {
-  if (!baseImageUrl.value) return null;
-  return removeExtension(baseImageUrl.value);
-});
-
-const baseWebpUrl = computed(() => {
-  if (!baseBaseUrl.value) return null;
-  return `${baseBaseUrl.value}.webp`;
-});
-
-// Формирование URL для ретина изображения (из Strapi)
-const retinaImageUrl = computed(() => {
-  if (!props.retinaSrc) return null;
-
-  if (props.retinaSrc.startsWith("http") || props.retinaSrc.startsWith("//")) {
-    return props.retinaSrc;
+  // Обработка ретина изображения
+  if (props.retinaSrc) {
+    if (
+      props.retinaSrc.startsWith("http") ||
+      props.retinaSrc.startsWith("//")
+    ) {
+      retinaImageUrl = props.retinaSrc;
+    } else {
+      retinaImageUrl = `${config.public.strapi.url}${props.retinaSrc}`;
+    }
   }
 
-  return `${config.public.strapi.url}${props.retinaSrc}`;
-});
+  // Генерация URL для форматов
+  const baseWebpUrl = baseImageUrl
+    ? `${removeExtension(baseImageUrl)}.webp`
+    : null;
+  const retinaAvifUrl = retinaImageUrl
+    ? `${removeExtension(retinaImageUrl)}.avif`
+    : null;
 
-// Вычисляем ретина URL для AVIF
-const retinaBaseUrl = computed(() => {
-  if (!retinaImageUrl.value) return null;
-  return removeExtension(retinaImageUrl.value);
-});
-
-const retinaAvifUrl = computed(() => {
-  if (!retinaBaseUrl.value) return null;
-  return `${retinaBaseUrl.value}.avif`;
+  return {
+    baseWebpUrl,
+    retinaAvifUrl,
+  };
 });
 
 const backgroundStyle = computed(() => {
@@ -89,7 +87,7 @@ const backgroundStyle = computed(() => {
   };
 
   // Установка backgroundSize в зависимости от режима
-  switch(props.sizeMode) {
+  switch (props.sizeMode) {
     case "cover":
       styles.backgroundSize = "cover";
       break;
@@ -102,24 +100,21 @@ const backgroundStyle = computed(() => {
   }
 
   // Если есть базовое или ретина изображение, добавляем backgroundImage
-  if (baseWebpUrl.value || retinaAvifUrl.value) {
-    let images = "";
+  const { baseWebpUrl, retinaAvifUrl } = imageUrls.value;
+  if (baseWebpUrl || retinaAvifUrl) {
+    const imageParts = [];
 
     // Добавляем базовое изображение, если оно есть
-    if (baseWebpUrl.value) {
-      images = `url('${baseWebpUrl.value}') type("image/webp") 1x`;
+    if (baseWebpUrl) {
+      imageParts.push(`url('${baseWebpUrl}') type('image/webp') 1x`);
     }
 
     // Если указано ретина изображение, добавляем его как 2x
-    if (retinaAvifUrl.value) {
-      if (images) {
-        images = `url('${retinaAvifUrl.value}') type("image/avif") 2x, ${images}`;
-      } else {
-        images = `url('${retinaAvifUrl.value}') type("image/avif") 2x`;
-      }
+    if (retinaAvifUrl) {
+      imageParts.push(`url('${retinaAvifUrl}') type('image/avif') 2x`);
     }
 
-    styles.backgroundImage = `image-set(${images})`;
+    styles.backgroundImage = `image-set(${imageParts.join(", ")})`;
   }
 
   return styles;
@@ -130,10 +125,10 @@ const variantClass = computed(() => `variant-${props.variant}`);
 const effectClass = computed(() => `effect-${props.effect}`);
 const loadingClass = computed(() => `loading-${props.loading}`);
 const gradientClass = computed(() =>
-  props.gradient !== "none" ? `gradient-${props.gradient}` : ""
+  props.gradient !== "none" ? `gradient-${props.gradient}` : "",
 );
 const filterClass = computed(() =>
-  props.filter !== "none" ? `filter-${props.filter}` : ""
+  props.filter !== "none" ? `filter-${props.filter}` : "",
 );
 
 const interactiveClass = computed(() => ({
@@ -171,6 +166,8 @@ const interactiveClass = computed(() => ({
   position: absolute;
   inset: 0;
   z-index: -1;
+  /* ========== ОПТИМИЗАЦИЯ ПРОИЗВОДИТЕЛЬНОСТИ ========== */
+  will-change: transform, opacity;
   /* ========== АНИМАЦИЯ ПОЯВЛЕНИЯ ========== */
   opacity: 1;
   transition: opacity 2s ease;
@@ -228,12 +225,20 @@ const interactiveClass = computed(() => ({
     animation:
       kenburns 20s ease infinite,
       app-bg-fade-in 0.3s ease;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: app-bg-fade-in 0.3s ease;
+    }
   }
 
   &.effect-zoom {
     animation:
       zoom 15s ease infinite,
       app-bg-fade-in 0.3s ease;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: app-bg-fade-in 0.3s ease;
+    }
   }
 
   /* ========== ГЛОБАЛЬНЫЕ АНИМАЦИИ ========== */
@@ -262,12 +267,21 @@ const interactiveClass = computed(() => ({
     );
     animation: shimmer 3.8s infinite;
     z-index: 1;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+      display: none;
+    }
   }
 
   &.loading-pulse {
     animation:
       pulse 2.5s ease-in-out infinite,
       app-bg-fade-in 0.3s ease;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: app-bg-fade-in 0.3s ease;
+    }
   }
 
   &.loading-wave {
@@ -276,6 +290,10 @@ const interactiveClass = computed(() => ({
     animation:
       wave 2s infinite linear,
       app-bg-fade-in 0.3s ease;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: app-bg-fade-in 0.3s ease;
+    }
   }
 
   /* ========== HOVER ЭФФЕКТЫ ========== */
