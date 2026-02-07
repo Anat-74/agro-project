@@ -1,16 +1,8 @@
 <script setup lang="ts">
-import type {
-  FooterData,
-  LegalInfo,
-  SocialLink,
-  Email,
-  Phone,
-} from "@/types/types";
 import { baseFooterTranslations } from "~/locales/baseFooter";
 
 const { currentLocale } = useLocale();
 const config = useRuntimeConfig();
-const { formatPhone } = useFormatPhone();
 
 interface Props {
   footer: FooterData;
@@ -33,9 +25,7 @@ defineProps<Props>();
         :currentLocale="currentLocale"
         :config="config"
       />
-      <Socials 
-      class="base-footer__socials"
-      :socials="socials" />
+      <Socials class="base-footer__socials" :socials="socials" />
       <div class="base-footer__company company">
         <h2 class="company__title">
           {{ baseFooterTranslations[currentLocale].titleCompany }}

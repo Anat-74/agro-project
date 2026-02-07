@@ -1,5 +1,3 @@
-import type { LocaleCode } from "../types/types"
-
 export const buttonTranslations: Record<LocaleCode, {
    label: string
    addedIsCart: string

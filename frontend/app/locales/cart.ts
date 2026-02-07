@@ -1,5 +1,3 @@
-import type { LocaleCode } from "../types/types"
-
 export const cartTranslations: Record<LocaleCode, {
    title: string
    description: string

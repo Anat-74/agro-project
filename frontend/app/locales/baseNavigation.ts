@@ -1,5 +1,3 @@
-import type { LocaleCode } from "../types/types"
-
 export const baseNavigationTranslations: Record<LocaleCode, {
    home: string
    about: string

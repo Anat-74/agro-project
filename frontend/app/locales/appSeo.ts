@@ -1,5 +1,3 @@
-import type { LocaleCode } from "../types/types"
-
 export const seoTranslations: Record<LocaleCode, {
   title: string
   description: string

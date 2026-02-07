@@ -1,5 +1,3 @@
-import type { LocaleCode } from "@/types/types"
-
 export const useLocale = () => {
    const route = useRoute()
    const router = useRouter()

@@ -1,12 +1,4 @@
 <script setup lang="ts">
-import type {
-  Category,
-  Product,
-  PaginationMeta,
-  FooterData,
-  SocialLink,
-  Phone,
-} from "../types/types";
 import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
 import { discountProductTranslations } from "~/locales/discountProduct";
 
@@ -34,7 +26,6 @@ const { open, close, isOpen } = useDialog(dialogElement, {
 // })
 
 const { currentLocale } = useLocale();
-const { formatPhone } = useFormatPhone();
 const config = useRuntimeConfig();
 const { find } = useStrapi();
 
@@ -48,20 +39,20 @@ const {
     filters: {
       locale: currentLocale.value,
     },
-     populate: {
+    populate: {
       image: {
-      fields: ["alternativeText", "url"],
+        fields: ["alternativeText", "url"],
       },
       subcategories: {
         fields: ["id", "name", "slug"],
       },
       products: {
-         fields: ["id", "name", "slug"],
-         populate: {
-         image: {
-          fields: ["alternativeText", "url"],
+        fields: ["id", "name", "slug"],
+        populate: {
+          image: {
+            fields: ["alternativeText", "url"],
+          },
         },
-        }
       },
     },
   });
@@ -114,7 +105,7 @@ const {
 });
 
 const pending = computed(
-  () => pendingCategories.value || pendingProducts.value
+  () => pendingCategories.value || pendingProducts.value,
 );
 
 watch(currentLocale, () => {
@@ -122,7 +113,7 @@ watch(currentLocale, () => {
   refreshProduct();
 });
 
-console.log('cat', category.value)
+console.log("cat", category.value);
 </script>
 
 <template>
@@ -163,24 +154,20 @@ console.log('cat', category.value)
         <AnimateTitle />
       </div>
       <ul v-if="category?.length" class="dialog-hamburger__accordion accordion">
-        <li 
-        v-for="cat in category" 
-        :key="cat.id" 
-        class="accordion__item"
-        >
+        <li v-for="cat in category" :key="cat.id" class="accordion__item">
           <details name="faq" class="accordion__details">
             <summary class="accordion__summary">
-                  <UImage
-                  v-if="cat.image?.length"
-                  :src="cat.image[0]?.url"
-                  :alt="cat.name"
-                  class="accordion__product-image"
-                  width="44"
-                  height="44"
-                  type="icon"
-                />
+              <UImage
+                v-if="cat.image?.length"
+                :src="cat.image[0]?.url"
+                :alt="cat.name"
+                class="accordion__product-image"
+                width="44"
+                height="44"
+                type="icon"
+              />
               <h3 class="accordion__product-title">{{ cat.name }}</h3>
-               <Icon name="mdi:chevron-left" />
+              <Icon name="mdi:chevron-left" />
             </summary>
           </details>
 
@@ -208,17 +195,17 @@ console.log('cat', category.value)
                 <NuxtLink
                   class="accordion__product-link"
                   :to="`/${currentLocale}/${prod?.subcategory?.category?.slug}/products/${prod.slug}`"
-                  >
+                >
                   <UImage
-                  v-if="prod.image?.length"
-                  :src="prod.image[0]?.url"
-                  :alt="prod.name"
-                  class="accordion__product-image-link"
-                  width="32"
-                  height="32"
-                  type="icon"
-                />
-                <h4 class="accordion__product-sub-title">{{ prod.name }}</h4>
+                    v-if="prod.image?.length"
+                    :src="prod.image[0]?.url"
+                    :alt="prod.name"
+                    class="accordion__product-image-link"
+                    width="32"
+                    height="32"
+                    type="icon"
+                  />
+                  <h4 class="accordion__product-sub-title">{{ prod.name }}</h4>
                 </NuxtLink>
               </li>
             </ul>
@@ -229,10 +216,10 @@ console.log('cat', category.value)
       <div v-if="product?.length" class="accordion">
         <details name="faq" class="accordion__details">
           <summary class="accordion__summary accordion__summary_is-discount">
-               <Icon
-                class="accordion__discount-icon"
-                name="mdi:discount-outline"
-              />
+            <Icon
+              class="accordion__discount-icon"
+              name="mdi:discount-outline"
+            />
             <h4 class="accordion__product-sub-title">
               {{ discountProductTranslations[currentLocale].discount }}
             </h4>
@@ -269,20 +256,20 @@ console.log('cat', category.value)
       </div>
 
       <div class="dialog-hamburger__contacts">
-      <div
-        class="dialog-hamburger__phones"
-        v-for="item in phones"
-        :key="item.id"
-      >
-        <Icon v-if="item.isMobile" name="et:phone" />
+        <div
+          class="dialog-hamburger__phones"
+          v-for="item in phones"
+          :key="item.id"
+        >
+          <Icon v-if="item.isMobile" name="et:phone" />
 
-        <Icon v-if="!item.isMobile" name="carbon:phone-ip" />
-        <a
-          :href="`tel:${item.phoneNumber.replace(/[^0-9+]/g, '')}`"
-          class="company__link-phones"
-          >{{ formatPhone(item.phoneNumber) }}
-        </a>
-      </div>
+          <Icon v-if="!item.isMobile" name="carbon:phone-ip" />
+          <a
+            :href="`tel:${item.phoneNumber.replace(/[^0-9+]/g, '')}`"
+            class="company__link-phones"
+            >{{ formatPhone(item.phoneNumber) }}
+          </a>
+        </div>
       </div>
     </div>
     <div class="dialog-hamburger__sidebar sidebar visible-mobile">
@@ -290,7 +277,7 @@ console.log('cat', category.value)
       <ClientOnly>
         <ColorMode class="sidebar__color-mode" />
       </ClientOnly>
-         <UButton
+      <UButton
         @click="close()"
         :is-open="isOpen"
         class="sidebar__close"
@@ -300,9 +287,9 @@ console.log('cat', category.value)
       <Socials class="sidebar__socials" :is-open="isOpen" :socials="socials" />
     </div>
   </dialog>
-      <span v-if="error" class="error">
-      {{ error.message }}
-    </span>
+  <span v-if="error" class="error">
+    {{ error.message }}
+  </span>
 </template>
 
 <style lang="scss" scoped>
@@ -338,15 +325,15 @@ console.log('cat', category.value)
 }
 
 .dialog-hamburger {
-   display: grid;
-   grid-template-columns: 1fr auto;
-   z-index: 9999;
-   top: 0;
-   width: 100vw;
-   translate: -100%;
-   margin-inline-start: 0;
-   background-color: transparent;
-   transition: translate var(--transition-duration);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  z-index: 9999;
+  top: 0;
+  width: 100vw;
+  translate: -100%;
+  margin-inline-start: 0;
+  background-color: transparent;
+  transition: translate var(--transition-duration);
 
   @media (min-width: $mobile) {
     scale: 0;
@@ -355,27 +342,27 @@ console.log('cat', category.value)
     margin-inline-end: 0;
     left: toRem(15);
     border-radius: toEm(4);
-    border-width:0 toEm(3) toEm(3) toEm(3);
+    border-width: 0 toEm(3) toEm(3) toEm(3);
     border-style: solid;
     border-color: var(--border-color-transparent);
-    transition: scale .1s linear;
+    transition: scale 0.1s linear;
     @include adaptiveValue("width", 316, 235);
   }
 
   &[open] {
-      translate: 0;
-      transition: translate var(--transition-duration);
+    translate: 0;
+    transition: translate var(--transition-duration);
 
-      @media (min-width:$mobile){
-       scale: 1;
-       transition: scale .1s linear;
-      }
+    @media (min-width: $mobile) {
+      scale: 1;
+      transition: scale 0.1s linear;
+    }
   }
 
-   //  &:not([open]) {
-   //    scale: 0;
-   //    transition: scale .1s linear;
-   //  }
+  //  &:not([open]) {
+  //    scale: 0;
+  //    transition: scale .1s linear;
+  //  }
 
   &__items {
     min-height: 100%;
@@ -406,27 +393,27 @@ console.log('cat', category.value)
     border-radius: toEm(25);
     background-color: var(--light-color);
 
-    @media (max-width:$mobileSmall){
-       width: 100%; 
+    @media (max-width: $mobileSmall) {
+      width: 100%;
     }
   }
 
-&__accordion {
-  flex: 1 1 auto;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  row-gap: toEm(22);
+  &__accordion {
+    flex: 1 1 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    row-gap: toEm(22);
 
-@media (min-width:$mobile){
-   padding-block-end: toEm(16);
-}
+    @media (min-width: $mobile) {
+      padding-block-end: toEm(16);
+    }
 
     @media ($mobileSmall <= width <= $mobile) {
       width: 70%;
+    }
   }
-}
 
   &__phones {
     display: flex;
@@ -446,7 +433,7 @@ console.log('cat', category.value)
 
     svg {
       font-size: toRem(22);
-         color: var(--danger-color);
+      color: var(--danger-color);
     }
 
     @include hover {
@@ -460,7 +447,7 @@ console.log('cat', category.value)
 
 .accordion {
   &__details {
-   padding-block: toRem(2);
+    padding-block: toRem(2);
 
     svg {
       font-size: toRem(22);
@@ -483,7 +470,7 @@ console.log('cat', category.value)
   }
 
   &__details:not([open]) {
-       .accordion__summary {
+    .accordion__summary {
       svg {
         transition: rotate var(--transition-duration);
       }
@@ -508,7 +495,7 @@ console.log('cat', category.value)
       rotate: -90deg;
     }
 
-      @include hover {
+    @include hover {
       color: var(--warning-color);
     }
 
@@ -519,11 +506,11 @@ console.log('cat', category.value)
       color: var(--danger-color);
 
       svg {
-         color: var(--green-color);
+        color: var(--green-color);
       }
 
       @include hover {
-         color: var(--danger-hover);
+        color: var(--danger-hover);
       }
     }
   }
@@ -531,7 +518,7 @@ console.log('cat', category.value)
   &__content {
     display: grid;
     grid-template-rows: 0fr;
-    transition: all .3s;
+    transition: all 0.3s;
   }
 
   &__product-list {
@@ -559,13 +546,13 @@ console.log('cat', category.value)
   }
 
   &__product-sub-title {
-       font-weight: 800;
+    font-weight: 800;
   }
 
   .router-link-active {
-   cursor: default;
-   text-decoration: none;
-   font-weight: 600;
+    cursor: default;
+    text-decoration: none;
+    font-weight: 600;
     color: var(--danger-hover);
   }
 }
@@ -582,15 +569,15 @@ console.log('cat', category.value)
   background-color: var(--secondary-color);
 
   &__close {
-   position: absolute;
-   top: 50%;
-   left: 50%;
-   translate: -50% -50%;
-   height: auto;
-   width: 100%;
-   padding-inline: 0;
-   padding-block: toEm(28);
-   border-radius: toEm(2);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    height: auto;
+    width: 100%;
+    padding-inline: 0;
+    padding-block: toEm(28);
+    border-radius: toEm(2);
   }
 }
 </style>

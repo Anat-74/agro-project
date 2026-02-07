@@ -1,5 +1,3 @@
-import type { LocaleCode } from "../types/types"
-
 export const visuallyHiddenTranslations: Record<LocaleCode, {
    sectionProductSlugTitle: string
    sectionSubcategorySlugList: string

@@ -1,5 +1,3 @@
-import type { LocaleCode } from "../types/types"
-
 export const stockStatusTranslations: Record<LocaleCode, {
    inStock: string
    toOrder: string

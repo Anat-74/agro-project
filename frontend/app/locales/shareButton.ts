@@ -1,5 +1,3 @@
-import type { LocaleCode } from "../types/types"
-
 export const shareButtonTranslations: Record<LocaleCode, {
    successMessage: string
    errorMessage: string

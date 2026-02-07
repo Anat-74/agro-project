@@ -1,5 +1,3 @@
-import type { LocaleCode } from "../types/types"
-
 export const orderFormTranslations: Record<LocaleCode, {
    title: string
    email: string

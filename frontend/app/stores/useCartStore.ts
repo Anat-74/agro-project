@@ -1,5 +1,3 @@
-import type { Product } from "../types/types"
-
 export type CartProduct = Omit<Product, 'image'> & {
    image: string
    categorySlug: string

@@ -39,7 +39,7 @@ const { currentLocale } = useLocale()
       font-weight: 600;
       font-size: toEm(18, 16);
       color: var(--light-color);
-      background-color: var(--sky-blue-color);
+      background-color: var(--sky-blue);
    }
 }
 </style>

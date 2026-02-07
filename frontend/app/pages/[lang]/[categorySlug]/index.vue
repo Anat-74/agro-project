@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import type {
-  Category,
-  SubcategoriesResponse,
-  ProductsResponse,
-} from "@/types/types";
 import { buttonTranslations } from "~/locales/button";
 import { productFilterTranslations } from "~/locales/productFilter";
 
@@ -85,7 +80,7 @@ const { data, pending, error, refresh } = useAsyncData(
       subcategories: subcategoriesRes as SubcategoriesResponse,
       products: productsRes as ProductsResponse,
     };
-  }
+  },
 );
 
 const visibleImagesCount = computed(() => {
@@ -134,7 +129,7 @@ watch(
   (newPage) => {
     page.value = newPage ? +newPage : 1;
     refresh();
-  }
+  },
 );
 
 //SEO оптимизация
@@ -160,8 +155,8 @@ watchEffect(() => {
       ogImage: category.value.seoImage?.[0]?.url
         ? `${config.public.strapi.url}${category.value.seoImage[0].url}`
         : category.value.image?.[0]?.url
-        ? `${config.public.strapi.url}${category.value.image[0].url}`
-        : `${config.public.siteUrl}/default-category-image.jpg`,
+          ? `${config.public.strapi.url}${category.value.image[0].url}`
+          : `${config.public.siteUrl}/default-category-image.jpg`,
       ogUrl: `${config.public.siteUrl}${route.fullPath}`,
     });
 

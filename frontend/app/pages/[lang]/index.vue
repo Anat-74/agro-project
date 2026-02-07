@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { Category, VisibilityState, HomePage } from "@/types/types";
 import FeaturedProductsSection from "~/components/home-sections/FeaturedProductsSection.vue";
 import HeroSection from "~/components/home-sections/HeroSection.vue";
 const { isContacts } = inject<VisibilityState>("visible")!;
@@ -39,7 +38,7 @@ const { data: categories } = useAsyncData(
       });
     }
     return response.data;
-  }
+  },
 );
 
 // Функция для определения типа ссылки для категории
@@ -61,13 +60,13 @@ const getCategoryLink = (category: Category) => {
 //==========================================================
 
 const {
-   data: homePage,
+  data: homePage,
   pending,
   error,
   refresh,
 } = useAsyncData(`home-page-${currentLocale.value}`, async () => {
   const response = await find("home-page", {
-     filters: { locale: currentLocale.value },
+    filters: { locale: currentLocale.value },
   });
 
   if (!response) {
@@ -82,15 +81,15 @@ console.debug("Home page data:", homePage.value);
 <template>
   <Loader v-if="pending" />
 
-  <HeroSection 
-  v-if="homePage?.heroSlider || homePage?.heroGrids" 
-  :slides="homePage.heroSlider"
-  :hero-grids="homePage.heroGrids"
+  <HeroSection
+    v-if="homePage?.heroSlider || homePage?.heroGrids"
+    :slides="homePage.heroSlider"
+    :hero-grids="homePage.heroGrids"
   />
 
   <FeaturedProductsSection
-   v-if="homePage?.featuredProducts"
-   :featured-products="homePage.featuredProducts"
+    v-if="homePage?.featuredProducts"
+    :featured-products="homePage.featuredProducts"
   />
 
   <section class="category" aria-labelledby="category-page">
@@ -134,7 +133,6 @@ console.debug("Home page data:", homePage.value);
 </template>
 
 <style lang="scss" scoped>
-
 .category {
   min-height: var(--min-height);
 

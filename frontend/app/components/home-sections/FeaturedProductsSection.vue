@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { FeaturedProduct } from "@/types/types";
-
 interface Props {
   featuredProducts: FeaturedProduct[];
 }
@@ -11,66 +9,59 @@ const MAX_PRODUCTS_TO_SHOW = 6;
 </script>
 
 <template>
-  <section 
-  class="featured-products"
-  aria-labelledby="featured-products"
-  >
+  <section class="featured-products" aria-labelledby="featured-products">
     <div
       v-for="section in featuredProducts"
       :key="section.id"
       class="featured-products__container"
     >
       <UBackground
-        v-if="section.backgroundImage?.retinaBgImageAvif?.url || section.backgroundImage?.baseBgImageWebp?.url"
+        v-if="
+          section.backgroundImage?.retinaBgImageAvif?.url ||
+          section.backgroundImage?.baseBgImageWebp?.url
+        "
         :src="section.backgroundImage?.baseBgImageWebp?.url"
         :retinaSrc="section.backgroundImage?.retinaBgImageAvif?.url"
         bg-position="bottom left"
       />
       <div class="featured-products__content-top">
-         <h2
-         v-if="section.heading"
-        class="featured-products__title"
-        id="featured-products"
+        <h2
+          v-if="section.heading"
+          class="featured-products__title"
+          id="featured-products"
         >
           {{ section.heading }}
         </h2>
-        <NuxtLink
-        v-if="section.link"
-        class="featured-products__link"
-        >
-         {{ section.link }}
+        <NuxtLink v-if="section.link" class="featured-products__link">
+          {{ section.link }}
         </NuxtLink>
-        </div>
-        <ul class="featured-products__list">
-          <li
-            v-for="product in section.products.slice(0, MAX_PRODUCTS_TO_SHOW)"
-            :key="product.id"
-            class="featured-products__item"
-          >
-            <div class="product-card">
-              <UImage
-                v-if="product.image && product.image.length > 0"
-                :src="product.image[0]?.url"
-                :alt="product.image[0]?.alternativeText || product.name"
-                width="200"
-                height="200"
-              />
-              
-              <div class="product-card__info">
-                <h3 class="product-card__name">{{ product.name }}</h3>
-                <div
-                v-if="product.price"
-                class="product-card__price">
-                  {{ product.price }} руб.
-                </div>
+      </div>
+      <ul class="featured-products__list">
+        <li
+          v-for="product in section.products.slice(0, MAX_PRODUCTS_TO_SHOW)"
+          :key="product.id"
+          class="featured-products__item"
+        >
+          <div class="product-card">
+            <UImage
+              v-if="product.image && product.image.length > 0"
+              :src="product.image[0]?.url"
+              :alt="product.image[0]?.alternativeText || product.name"
+              width="200"
+              height="200"
+            />
+
+            <div class="product-card__info">
+              <h3 class="product-card__name">{{ product.name }}</h3>
+              <div v-if="product.price" class="product-card__price">
+                {{ product.price }} руб.
               </div>
             </div>
-          </li>
-        </ul>
-      </div>
+          </div>
+        </li>
+      </ul>
+    </div>
   </section>
 </template>
 
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

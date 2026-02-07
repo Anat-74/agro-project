@@ -110,8 +110,8 @@ export default defineNuxtConfig({
     },
   },
   image: {
-   //  domains: ["api.vh324.by3020.ihb.by"],
-      domains: ["http://127.0.0.1:1337"],
+    //  domains: ["api.vh324.by3020.ihb.by"],
+    domains: ["http://127.0.0.1:1337"],
     screens: {
       xs: 320,
       sm: 480,
@@ -187,5 +187,8 @@ export default defineNuxtConfig({
       include: ["sass"],
     },
     assetsInclude: ["**/*.avif"],
+  },
+  imports: {
+    dirs: ["shared/types/**", "shared/utils/**"],
   },
 });

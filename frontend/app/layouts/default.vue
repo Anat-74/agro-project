@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { VisibilityState, GlobalData } from "../types/types";
 const { find } = useStrapi();
 const searchStore = useSearchStore();
 const { products, totalPages, currentPage } = storeToRefs(searchStore);
@@ -68,8 +67,8 @@ console.debug("global data:", global.value);
         />
         <div v-if="searchStore.products.length" class="header__product-card">
           <ul class="header__product-card-list">
-            <ProductCard
-              v-for="product in products"
+            <ProductFilterCard 
+               v-for="product in products"
               :key="product.id"
               :product="product"
             />

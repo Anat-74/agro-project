@@ -1,0 +1,56 @@
+import type { Image } from "./image";
+import type { Product } from "./product";
+import type { PaginationMeta } from "./product";
+
+export type Category = {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  locale?: string;
+  documentId?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  publishedAt?: string;
+  image: Image[];
+  subcategories?: Subcategory[];
+  products?: Product[];
+  seoTitle?: string;
+  seoDescription?: string;
+  seoImage?: Image[];
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    structuredData?: any;
+  };
+};
+
+export type Subcategory = {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  price: string;
+  locale?: string;
+  documentId?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  publishedAt?: string;
+  image: Image[];
+  products?: Product[];
+  seoTitle?: string;
+  seoDescription?: string;
+  seoImage?: Image[];
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    structuredData?: any;
+  };
+};
+
+export type SubcategoriesResponse = {
+  data: Subcategory[];
+  meta: {
+    pagination: PaginationMeta;
+  };
+};

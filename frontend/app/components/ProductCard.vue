@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { Product } from "@/types/types";
 import { buttonTranslations } from "~/locales/button";
 import { tooltipTranslations } from "~/locales/tooltip";
 const { currentLocale } = useLocale();
@@ -9,9 +8,9 @@ const route = useRoute();
 const { width } = useViewport();
 
 interface Props {
-   product: Product;
-   index: number;
-   categorySlug: string;
+  product: Product;
+  index: number;
+  categorySlug: string;
 }
 const props = defineProps<Props>();
 
@@ -21,12 +20,12 @@ const toggleActive = () => {
 };
 
 const handleAddToCart = (product: Product) => {
-   if (isInCart(product.id)) {
-      cartStore.removeFromCart(product.id);
-   } else {
-      cartStore.addToCart(product, route.params.categorySlug as string, null);
-   }
-}
+  if (isInCart(product.id)) {
+    cartStore.removeFromCart(product.id);
+  } else {
+    cartStore.addToCart(product, route.params.categorySlug as string, null);
+  }
+};
 
 const visibleImagesCount = computed(() => {
   if (width.value < 565.98) return 2;
@@ -48,7 +47,7 @@ const visibleImagesCount = computed(() => {
           name="mdi:discount"
         />
         <ProductStatus :product="product" class="product-card__in-stock" />
-         <UButton
+        <UButton
           class="product-card__details"
           variant="product-details"
           icon="mdi:rotate-3d"
@@ -64,8 +63,8 @@ const visibleImagesCount = computed(() => {
           v-if="product.image?.length"
           :src="product.image[0]?.url"
           :alt="product.name"
-         :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
-         :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
+          :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
+          :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
           width="302"
           height="302"
         />
@@ -104,10 +103,7 @@ const visibleImagesCount = computed(() => {
           class="product-card__discount"
           name="mdi:discount"
         />
-        <ProductStatus 
-        :product="product" 
-        class="product-card__in-stock"
-         />
+        <ProductStatus :product="product" class="product-card__in-stock" />
         <UButton
           class="product-card__details"
           variant="product-details"
@@ -143,15 +139,15 @@ const visibleImagesCount = computed(() => {
         >
           {{ formatPrice(product.price) }}
         </span>
-         <UButton
+        <UButton
           @click="handleAddToCart(product)"
           variant="add"
           :is-in-cart="isInCart(product.id)"
           :aria-label="
-          isInCart(product.id)
-          ? buttonTranslations[currentLocale].ariaLabelAdded
-          : buttonTranslations[currentLocale].label
-           "
+            isInCart(product.id)
+              ? buttonTranslations[currentLocale].ariaLabelAdded
+              : buttonTranslations[currentLocale].label
+          "
         />
       </div>
     </div>
@@ -176,40 +172,40 @@ const visibleImagesCount = computed(() => {
     }
   }
 
-   &__front,
-   &__back {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      justify-items: center;
-      align-items: center;
-      row-gap: toEm(4);
-      padding-block: toEm(12);
-      border: toEm(2) solid var(--whitesmoke-color);
-      border-radius: toEm(6);
-      background-color: var(--light-color);
-      color: var(--gray-color);
-      backface-visibility: hidden;
-      transition: transform .7s;
-      box-shadow: 0px toEm(6, 15) toEm(18, 15) toRem(5) hsla(0, 0%, 0%, 0.07);
-   }
+  &__front,
+  &__back {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    justify-items: center;
+    align-items: center;
+    row-gap: toEm(4);
+    padding-block: toEm(12);
+    border: toEm(2) solid var(--whitesmoke-color);
+    border-radius: toEm(6);
+    background-color: var(--light-color);
+    color: var(--gray-color);
+    backface-visibility: hidden;
+    transition: transform 0.7s;
+    box-shadow: 0px toEm(6, 15) toEm(18, 15) toRem(5) hsla(0, 0%, 0%, 0.07);
+  }
 
-   &__front {
-      z-index: 100;
+  &__front {
+    z-index: 100;
 
-         &_front {
-         transform: rotateY(180deg);
-      }
-   }
-
-      &__back {
+    &_front {
       transform: rotateY(180deg);
+    }
+  }
 
-         &_back {
-         z-index: 110;
-         transform: rotateY(360deg);
-      }
-   }
+  &__back {
+    transform: rotateY(180deg);
+
+    &_back {
+      z-index: 110;
+      transform: rotateY(360deg);
+    }
+  }
 
   &__top {
     justify-self: start;

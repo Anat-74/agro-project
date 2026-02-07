@@ -1,5 +1,3 @@
-import type { LocaleCode } from "../types/types"
-
 export const productFilterTranslations: Record<LocaleCode, {
    labelInput: string
    placeholder: string

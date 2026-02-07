@@ -1,9 +1,8 @@
 <script lang="ts" setup>
-import type { Email, Phone, VisibilityState } from "../types/types";
 import { baseNavigationTranslations } from "~/locales/baseNavigation";
 
-const { isContacts, visibleIsContacts, hideContacts } = inject<VisibilityState>("visible")!;
-const { formatPhone } = useFormatPhone();
+const { isContacts, visibleIsContacts, hideContacts } =
+  inject<VisibilityState>("visible")!;
 const { currentLocale } = useLocale();
 
 defineProps<{
@@ -203,8 +202,7 @@ defineProps<{
   border-radius: toRem(4);
   font-size: toRem(18);
   font-weight: 500;
-   border: 2px solid currentColor;
-
+  border: 2px solid currentColor;
 
   svg {
     font-size: toRem(18);

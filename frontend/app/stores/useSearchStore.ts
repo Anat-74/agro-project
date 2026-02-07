@@ -1,6 +1,3 @@
-// Импорт типа Product для типизации товаров
-import type { Product } from "~/types/types"
-
 // Store для управления поиском продуктов
 export const useSearchStore = defineStore("search", () => {
   // Использование Strapi API для поиска
