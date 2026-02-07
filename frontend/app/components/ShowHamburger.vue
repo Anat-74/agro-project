@@ -113,7 +113,6 @@ watch(currentLocale, () => {
   refreshProduct();
 });
 
-console.log("cat", category.value);
 </script>
 
 <template>
