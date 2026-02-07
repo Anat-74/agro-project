@@ -3,7 +3,6 @@ import { orderFormTranslations } from '~/locales/orderForm'
 const { currentLocale } = useLocale()
 const cartStore = useCartStore()
 const orderStore = useOrderStore()
-import { formatPrice } from '~/utils/formatPrice'
 
 const emit = defineEmits(['order-success'])
 
