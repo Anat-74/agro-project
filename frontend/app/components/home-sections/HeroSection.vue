@@ -97,7 +97,7 @@ const { slides, heroGrids } = defineProps<Props>();
    transition: background-color .4s;
    &_is-visible {
       transition: background-color var(--transition-duration);
-      filter: blur(12px);
+      filter: blur(9px);
    }
   }
 
