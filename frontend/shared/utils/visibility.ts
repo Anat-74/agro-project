@@ -1,0 +1,1 @@
+export const VISIBILITY_KEY = "visible" as const;

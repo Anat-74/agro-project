@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import HeroGrids from "../HeroGrids.vue";
-import {
-  VISIBILITY_KEY,
-  type VisibilityState,
-} from "#shared/types/visibility";
+import { VISIBILITY_KEY } from "#shared/utils/visibility";
 const { currentLocale } = useLocale();
 const { isContacts } = inject<VisibilityState>(VISIBILITY_KEY)!;
 
@@ -16,7 +13,10 @@ const { slides, heroGrids } = defineProps<Props>();
 </script>
 
 <template>
-  <section class="hero-slider" aria-labelledby="hero">
+  <section 
+  :class="['hero-slider', {'hero-slider_is-visible' : isContacts}]" 
+  aria-labelledby="hero"
+  >
     <AppSlider
       v-if="slides && slides.length > 0"
       :class="[
@@ -27,10 +27,6 @@ const { slides, heroGrids } = defineProps<Props>();
     >
       <template #default="{ slide, index }">
         <UBackground
-          :class="[
-            'hero-slider__bg',
-            { 'hero-slider__bg_is-visible': isContacts },
-          ]"
           v-if="
             slide.backgroundImage?.retinaBgImageAvif?.url ||
             slide.backgroundImage?.baseBgImageWebp?.url
@@ -78,7 +74,10 @@ const { slides, heroGrids } = defineProps<Props>();
       </template>
     </AppSlider>
 
-    <HeroGrids v-if="heroGrids && heroGrids.length > 0" :grids="heroGrids" />
+    <HeroGrids
+    v-if="heroGrids && heroGrids.length > 0" 
+    :grids="heroGrids" 
+    />
   </section>
 </template>
 
@@ -86,14 +85,20 @@ const { slides, heroGrids } = defineProps<Props>();
 .hero-slider {
   @media (min-width: $tablet) {
     position: relative;
+    transition: filter .4s;
+
+      &_is-visible {
+         transition: filter var(--transition-duration);
+         filter: grayscale(90%);
+   }
   }
 
   &__slider {
-    transition: filter var(--transition-duration);
-    &_is-visible {
-      transition: filter var(--transition-duration);
-      filter: grayscale(88%);
-    }
+   transition: background-color .4s;
+   &_is-visible {
+      transition: background-color var(--transition-duration);
+      filter: blur(12px);
+   }
   }
 
   &__text-content {

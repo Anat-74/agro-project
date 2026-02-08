@@ -166,8 +166,7 @@ const interactiveClass = computed(() => ({
   position: absolute;
   inset: 0;
   z-index: -1;
-  /* ========== ОПТИМИЗАЦИЯ ПРОИЗВОДИТЕЛЬНОСТИ ========== */
-  will-change: transform, opacity;
+
   /* ========== АНИМАЦИЯ ПОЯВЛЕНИЯ ========== */
   opacity: 1;
   transition: opacity 1.8s ease;
@@ -295,6 +294,15 @@ const interactiveClass = computed(() => ({
       animation: app-bg-fade-in 0.3s ease;
     }
   }
+
+  /* ========== ОПТИМИЗАЦИЯ ПРОИЗВОДИТЕЛЬНОСТИ ========== */
+&.effect-kenburns,
+&.effect-zoom,
+&.loading-shimmer,
+&.loading-pulse,
+&.loading-wave {
+  will-change: transform, opacity;
+}
 
   /* ========== HOVER ЭФФЕКТЫ ========== */
   &.hover-zoom.is-hovered {

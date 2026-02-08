@@ -64,9 +64,9 @@ console.debug("global data:", global.value);
           :phones="global.phones"
           :email="global.email"
         />
-        <div v-if="searchStore.products.length" class="header__product-card">
+        <div v-if="searchStore.products.length" class="header__product-filter-card">
           <ul class="header__product-card-list">
-            <ProductFilterCard 
+            <ProductFilterCard
                v-for="product in products"
               :key="product.id"
               :product="product"
@@ -153,7 +153,6 @@ console.debug("global data:", global.value);
   }
 
   &__container-bottom {
-    //   position: relative;
     //  display: grid;
     //  grid-template-columns: auto 1fr;
     display: flex;
@@ -177,11 +176,11 @@ console.debug("global data:", global.value);
     justify-self: end;
   }
 
-  &__product-card {
+  &__product-filter-card {
     position: absolute;
     z-index: 9999;
     right: toEm(8);
-    top: toEm(186);
+    top: toEm(0);
     display: grid;
     grid-template-columns: 1fr;
     row-gap: toRem(12);
@@ -205,7 +204,7 @@ console.debug("global data:", global.value);
 
   &__product-card-list {
     overflow-y: auto;
-    @include adaptiveValue("height", 720, 390);
+    @include adaptiveValue("height", 620, 390);
   }
 
   &__pagination-product {

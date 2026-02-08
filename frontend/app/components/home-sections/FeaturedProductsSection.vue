@@ -64,4 +64,8 @@ const MAX_PRODUCTS_TO_SHOW = 6;
   </section>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.featured-products {
+   padding-block-start: toEm(94);
+}
+</style>

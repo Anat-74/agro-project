@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { seoTranslations } from "./locales/appSeo";
 import { useLocale } from "~/composables/useLocale";
-import { VISIBILITY_KEY } from "#shared/types/visibility";
+import { VISIBILITY_KEY } from "#shared/utils/visibility";
 
 const { currentLocale } = useLocale();
 const route = useRoute();

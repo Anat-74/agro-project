@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
 const { currentLocale } = useLocale();
+import { VISIBILITY_KEY } from "#shared/utils/visibility";
+const { isContacts } = inject<VisibilityState>(VISIBILITY_KEY)!;
 
 interface Props {
   grids: HeroGrid[];
@@ -13,7 +15,11 @@ const { grids } = defineProps<Props>();
   <h2 class="visually-hidden">
     {{ visuallyHiddenTranslations[currentLocale].heroGridsTitle }}
   </h2>
-  <ul class="hero-grids hero-grids__container">
+  <ul
+  :class="[
+   'hero-grids hero-grids__container', { 'hero-grids_is-visible': isContacts }
+   ]"
+  >
     <li
       v-for="grid in grids"
       :key="grid.id"
@@ -59,6 +65,12 @@ const { grids } = defineProps<Props>();
     border-radius: toRem(6);
     background-color: var(--light-color);
     box-shadow: 0 8px 40px 0 rgba(0, 38, 3, 0.26);
+    transition: background-color .4s;
+
+   &_is-visible {
+      transition: background-color var(--transition-duration);
+      filter: blur(9px);
+   }
   }
 
   &__item {
