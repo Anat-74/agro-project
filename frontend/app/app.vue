@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { seoTranslations } from "./locales/appSeo";
 import { useLocale } from "~/composables/useLocale";
+import { VISIBILITY_KEY } from "#shared/types/visibility";
 
 const { currentLocale } = useLocale();
 const route = useRoute();
@@ -25,7 +26,7 @@ const updateHead = () => {
     // Убираем текущий язык из URL и добавляем новый
     const pathWithoutCurrentLocale = route.path.replace(
       /^\/(ru|be)(\/|$)/,
-      "/"
+      "/",
     );
     const newUrl = `/${locale}${pathWithoutCurrentLocale}`;
     return {
@@ -154,7 +155,6 @@ const isContacts = ref<boolean>(false);
 const visibleIsContacts = () => (isContacts.value = true);
 const hideContacts = () => (isContacts.value = false);
 
-const VISIBILITY_KEY = "visible";
 provide(VISIBILITY_KEY, {
   isContacts,
   visibleIsContacts,

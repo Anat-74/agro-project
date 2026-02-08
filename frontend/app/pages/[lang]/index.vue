@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import FeaturedProductsSection from "~/components/home-sections/FeaturedProductsSection.vue";
 import HeroSection from "~/components/home-sections/HeroSection.vue";
-const { isContacts } = inject<VisibilityState>("visible")!;
 
 const { find } = useStrapi();
 const { currentLocale } = useLocale();
@@ -103,7 +102,6 @@ console.debug("Home page data:", homePage.value);
         >
           <NuxtLink
             class="category__link"
-            :class="['category__link', { category__link_blur: isContacts }]"
             :to="getCategoryLink(category)"
           >
             <UImage
@@ -133,6 +131,7 @@ console.debug("Home page data:", homePage.value);
 </template>
 
 <style lang="scss" scoped>
+
 .category {
   min-height: var(--min-height);
 
@@ -140,8 +139,6 @@ console.debug("Home page data:", homePage.value);
     position: absolute;
     inset: 0;
     z-index: -1;
-    width: 100%;
-    height: 100%;
   }
 
   &__list {

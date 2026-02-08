@@ -4,7 +4,6 @@ const searchStore = useSearchStore();
 const { products, totalPages, currentPage } = storeToRefs(searchStore);
 const { currentLocale } = useLocale();
 const config = useRuntimeConfig();
-const { isContacts } = inject<VisibilityState>("visible")!;
 
 const {
   data: global,
@@ -88,7 +87,7 @@ console.debug("global data:", global.value);
     </div>
   </header>
 
-  <main :class="['main', { 'main_is-visible': isContacts }]">
+  <main>
     <slot />
   </main>
 
@@ -220,10 +219,4 @@ console.debug("global data:", global.value);
     background-color: var(--active-color);
   }
 }
-
-// .main {
-//    &_is-visible {
-//       background-image: linear-gradient(red, yellow, green);
-//    }
-// }
 </style>

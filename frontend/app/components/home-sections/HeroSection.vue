@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import HeroGrids from "../HeroGrids.vue";
+import {
+  VISIBILITY_KEY,
+  type VisibilityState,
+} from "#shared/types/visibility";
 const { currentLocale } = useLocale();
+const { isContacts } = inject<VisibilityState>(VISIBILITY_KEY)!;
 
 interface Props {
   slides: HeroSlide[];
@@ -14,11 +19,18 @@ const { slides, heroGrids } = defineProps<Props>();
   <section class="hero-slider" aria-labelledby="hero">
     <AppSlider
       v-if="slides && slides.length > 0"
-      class="hero-slider__slider"
+      :class="[
+        'hero-slider__slider',
+        { 'hero-slider__slider_is-visible': isContacts },
+      ]"
       :slides="slides"
     >
       <template #default="{ slide, index }">
         <UBackground
+          :class="[
+            'hero-slider__bg',
+            { 'hero-slider__bg_is-visible': isContacts },
+          ]"
           v-if="
             slide.backgroundImage?.retinaBgImageAvif?.url ||
             slide.backgroundImage?.baseBgImageWebp?.url
@@ -75,6 +87,15 @@ const { slides, heroGrids } = defineProps<Props>();
   @media (min-width: $tablet) {
     position: relative;
   }
+
+  &__slider {
+    transition: filter var(--transition-duration);
+    &_is-visible {
+      transition: filter var(--transition-duration);
+      filter: grayscale(88%);
+    }
+  }
+
   &__text-content {
     max-width: toRem(596);
     display: grid;

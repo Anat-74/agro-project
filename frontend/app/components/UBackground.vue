@@ -170,7 +170,7 @@ const interactiveClass = computed(() => ({
   will-change: transform, opacity;
   /* ========== АНИМАЦИЯ ПОЯВЛЕНИЯ ========== */
   opacity: 1;
-  transition: opacity 2s ease;
+  transition: opacity 1.8s ease;
 
   @starting-style {
     opacity: 0;

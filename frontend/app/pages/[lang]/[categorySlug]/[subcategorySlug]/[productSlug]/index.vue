@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
-import { formatPrice } from "~/utils/formatPrice";
 import { buttonTranslations } from "~/locales/button";
 
 const { find } = useStrapi();
