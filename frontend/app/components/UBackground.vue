@@ -224,20 +224,12 @@ const interactiveClass = computed(() => ({
     animation:
       kenburns 20s ease infinite,
       app-bg-fade-in 0.3s ease;
-
-    @media (prefers-reduced-motion: reduce) {
-      animation: app-bg-fade-in 0.3s ease;
-    }
   }
 
   &.effect-zoom {
     animation:
       zoom 15s ease infinite,
       app-bg-fade-in 0.3s ease;
-
-    @media (prefers-reduced-motion: reduce) {
-      animation: app-bg-fade-in 0.3s ease;
-    }
   }
 
   /* ========== ГЛОБАЛЬНЫЕ АНИМАЦИИ ========== */
@@ -277,10 +269,6 @@ const interactiveClass = computed(() => ({
     animation:
       pulse 2.5s ease-in-out infinite,
       app-bg-fade-in 0.3s ease;
-
-    @media (prefers-reduced-motion: reduce) {
-      animation: app-bg-fade-in 0.3s ease;
-    }
   }
 
   &.loading-wave {
@@ -289,19 +277,17 @@ const interactiveClass = computed(() => ({
     animation:
       wave 2s infinite linear,
       app-bg-fade-in 0.3s ease;
-
-    @media (prefers-reduced-motion: reduce) {
-      animation: app-bg-fade-in 0.3s ease;
-    }
   }
 
   /* ========== ОПТИМИЗАЦИЯ ПРОИЗВОДИТЕЛЬНОСТИ ========== */
-&.effect-kenburns,
-&.effect-zoom,
-&.loading-shimmer,
-&.loading-pulse,
-&.loading-wave {
-  will-change: transform, opacity;
+@media (prefers-reduced-motion: no-preference) {
+  &.effect-kenburns,
+  &.effect-zoom,
+  &.loading-shimmer,
+  &.loading-pulse,
+  &.loading-wave {
+    will-change: transform, opacity;
+  }
 }
 
   /* ========== HOVER ЭФФЕКТЫ ========== */
@@ -449,8 +435,8 @@ const interactiveClass = computed(() => ({
 }
 
 /* ========== ГЛОБАЛЬНЫЕ СТИЛИ ДЛЯ КОНТЕНТА ========== */
-.smart-bg + *,
-.smart-bg > :slotted(*) {
+.app-bg + *,
+.app-bg > :slotted(*) {
   position: relative;
   z-index: 1;
 }
