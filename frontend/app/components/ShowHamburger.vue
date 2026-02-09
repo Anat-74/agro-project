@@ -328,10 +328,12 @@ watch(currentLocale, () => {
   grid-template-columns: 1fr auto;
   z-index: 9999;
   top: 0;
+  height: 100%;
   width: 100vw;
   translate: -100%;
   margin-inline-start: 0;
   background-color: transparent;
+  backdrop-filter: blur(22px);
   transition: translate var(--transition-duration);
 
   @media (min-width: $mobile) {
@@ -364,15 +366,14 @@ watch(currentLocale, () => {
   //  }
 
   &__items {
-    min-height: 100%;
     display: flex;
     flex-direction: column;
     align-items: end;
     row-gap: toEm(16);
+    overflow-y: auto;
     padding-inline: toEm(16);
     padding-block-start: toEm(22);
     padding-block-end: toEm(12);
-    backdrop-filter: blur(22px);
 
     @media (max-width: $mobile) {
       justify-items: center;
@@ -399,7 +400,6 @@ watch(currentLocale, () => {
 
   &__accordion {
     flex: 1 1 auto;
-    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -441,6 +441,10 @@ watch(currentLocale, () => {
         color: var(--danger-color);
       }
     }
+  }
+
+  &__sidebar {
+
   }
 }
 
@@ -562,6 +566,7 @@ watch(currentLocale, () => {
   grid-template-rows: repeat(2, auto) 1fr;
   justify-items: center;
   row-gap: toEm(18);
+  overflow-y: auto;
   padding-inline: toEm(4);
   padding-block: toEm(12);
   border-left: toEm(2) solid var(--success-color);
