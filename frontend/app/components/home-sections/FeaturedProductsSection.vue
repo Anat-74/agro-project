@@ -20,8 +20,8 @@ const MAX_PRODUCTS_TO_SHOW = 6;
           section.backgroundImage?.retinaBgImageAvif?.url ||
           section.backgroundImage?.baseBgImageWebp?.url
         "
-        :src="section.backgroundImage?.baseBgImageWebp?.url"
         :retinaSrc="section.backgroundImage?.retinaBgImageAvif?.url"
+        :src="section.backgroundImage?.baseBgImageWebp?.url"
         bg-position="bottom left"
       />
       <div class="featured-products__content-top">

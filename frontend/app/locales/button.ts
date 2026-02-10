@@ -25,7 +25,7 @@ export const buttonTranslations: Record<LocaleCode, {
        ariaLabelGoForward: "Идти вперед",
        ariaLabelPagination: "Перейти на следующую страницу",
        ariaLabelClosedSuccess: "Закрыть сообщение",
-       ariaLabelDialogOpen: "Открытое модное окно",
+       ariaLabelDialogOpen: "Открытое модальное окно",
        ariaLabelDialogClosed: "Закрыть модальное окно",
        ariaLabelCopyLink: "Скопировать ссылку на продукт",
        ariaLabelReduceQuantity: "Уменьшить количества",

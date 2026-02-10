@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
 import { discountProductTranslations } from "~/locales/discountProduct";
+import { buttonTranslations } from "~/locales/button";
+import { showHamburgerTranslations } from "~/locales/showHamburger";
 
 interface Props {
   footer: FooterData;
@@ -121,21 +123,20 @@ watch(currentLocale, () => {
       @click="isOpen ? close() : open()"
       :is-open="isOpen"
       variant="hamburger"
-      aria-label="Открыть - закрыть"
+      :aria-label="isOpen ? buttonTranslations[currentLocale].ariaLabelDialogClosed : buttonTranslations[currentLocale].ariaLabelDialogOpen"
     />
     <span
       :class="[
         'hamburger-menu__categories',
         { 'hamburger-menu__categories_is-open': isOpen },
       ]"
-      >{{ "Каталог" }}
+      >{{ showHamburgerTranslations[currentLocale].title }}
     </span>
   </div>
   <dialog
     class="dialog-hamburger"
     ref="dialog-hamburger"
     id="dialogHamburger"
-    aria-label="Catalog"
   >
     <Loader v-if="pending" />
     <h2 class="visually-hidden">
@@ -162,7 +163,7 @@ watch(currentLocale, () => {
                 :alt="cat.name"
                 class="accordion__product-image"
                 width="44"
-                height="44"
+                height="32"
                 type="icon"
               />
               <h3 class="accordion__product-title">{{ cat.name }}</h3>
@@ -272,18 +273,20 @@ watch(currentLocale, () => {
       </div>
     </div>
     <div class="dialog-hamburger__sidebar sidebar visible-mobile">
-      <LangSwitcher class="sidebar__lang" />
-      <ClientOnly>
-        <ColorMode class="sidebar__color-mode" />
-      </ClientOnly>
       <UButton
         @click="close()"
         :is-open="isOpen"
-        class="sidebar__close"
         variant="hamburger"
-        aria-label="Закрыть"
+        :aria-label="buttonTranslations[currentLocale].ariaLabelDialogClosed"
       />
-      <Socials class="sidebar__socials" :is-open="isOpen" :socials="socials" />
+      <LangSwitcher />
+      <ClientOnly>
+        <ColorMode />
+      </ClientOnly>
+      <Socials
+       :is-open="isOpen" 
+       :socials="socials" 
+       />
     </div>
   </dialog>
   <span v-if="error" class="error">
@@ -337,6 +340,7 @@ watch(currentLocale, () => {
   transition: translate var(--transition-duration);
 
   @media (min-width: $mobile) {
+    height: auto;
     scale: 0;
     translate: 0;
     top: calc(100% + toRem(22));
@@ -403,7 +407,7 @@ watch(currentLocale, () => {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    row-gap: toEm(22);
+    row-gap: toEm(16);
 
     @media (min-width: $mobile) {
       padding-block-end: toEm(16);
@@ -561,9 +565,8 @@ watch(currentLocale, () => {
 }
 
 .sidebar {
-  position: relative;
   display: grid;
-  grid-template-rows: repeat(2, auto) 1fr;
+  grid-template-rows: repeat(3, auto) 1fr;
   justify-items: center;
   row-gap: toEm(18);
   overflow-y: auto;
@@ -571,17 +574,5 @@ watch(currentLocale, () => {
   padding-block: toEm(12);
   border-left: toEm(2) solid var(--success-color);
   background-color: var(--secondary-color);
-
-  &__close {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    translate: -50% -50%;
-    height: auto;
-    width: 100%;
-    padding-inline: 0;
-    padding-block: toEm(28);
-    border-radius: toEm(2);
-  }
 }
 </style>

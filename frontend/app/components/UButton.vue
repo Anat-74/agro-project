@@ -209,8 +209,7 @@ defineEmits<Emits>();
       width: toRem(24);
       height: toRem(2);
       background-color: var(--secondary-color);
-      transition: rotate .4s,
-      opacity var(--transition-duration);
+      transition: rotate .4s, opacity var(--transition-duration);
     }
 
     &::before {
@@ -228,10 +227,15 @@ defineEmits<Emits>();
     }
 
     @include hover {
-      opacity: 0.8;
+      opacity: .7;
     }
 
     &--is-open {
+      width: 100%;
+      padding-inline: 0;
+      padding-block: toRem(18);
+      border-radius: toRem(2);
+
       span {
         width: 0;
       }
@@ -599,46 +603,6 @@ defineEmits<Emits>();
       color: var(--color);
     }
   }
-
-  //   &_close {
-  //    display: none;
-
-  //    @media (max-width:$mobile){
-  //     display: block;
-  //     position: absolute;
-  //     z-index: 10;
-  //     top: toEm(11);
-  //     right: toEm(7);
-  //     padding-inline: toEm(14);
-  //     padding-block: toEm(14);
-  //     border-radius: toRem(4);
-  //     border: toRem(2) solid var(--dark-color);
-
-  //     &::before,
-  //     &::after {
-  //       content: '';
-  //       position: absolute;
-  //       right: toRem(4);
-  //       width: toRem(20);
-  //       height: toRem(2);
-  //       background-color: var(--dark-color);
-  //     }
-
-  //     &::before {
-  //       top: calc(50% - toRem(1));
-  //       rotate: -45deg;
-  //     }
-
-  //     &::after {
-  //       bottom: calc(50% - toRem(1));
-  //       rotate: 45deg;
-  //     }
-
-  //     @include hover {
-  //       scale: 1.1;
-  //     }
-  //    }
-  //   }
 
   /* Состояние загрузки */
   &.loading {
