@@ -35,8 +35,8 @@ console.debug("global data:", global.value);
       <Logo
         class="header__logo hidden-mobile"
         :global="global"
-        :currentLocale="currentLocale"
-        :config="config"
+         width="48"
+         height="48"
       />
       <AnimateTitle class="hidden-mobile" />
       <ProductFilter class="header__search" />
@@ -47,9 +47,8 @@ console.debug("global data:", global.value);
         <Logo
           class="header__logo visible-mobile"
           :global="global"
-          :currentLocale="currentLocale"
-          width="48"
-          height="48"
+          width="36"
+          height="36"
         />
         <ShowHamburger
           v-if="global"

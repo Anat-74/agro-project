@@ -22,6 +22,7 @@ defineProps<Props>();
         v-if="link?.icon"
         :src="link.icon[0]?.url"
         :alt="link.label"
+        :smooth-load="false"
         width="26"
         height="26"
       />

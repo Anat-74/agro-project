@@ -1,7 +1,7 @@
 <script setup lang="ts">
+const { currentLocale } = useLocale();
 interface Props {
   global: any;
-  currentLocale: string;
   width?: string | number;
   height?: string | number;
 }
@@ -15,17 +15,17 @@ const props = withDefaults(defineProps<Props>(), {
 <template>
   <NuxtLink
     class="logo-link"
-    :to="`/${props.currentLocale}`"
+    :to="`/${currentLocale}`"
     aria-label="На главную"
   >
     <UImage
       class="logo-link__image"
       v-if="props.global?.footer?.logo?.length"
       :src="props.global?.footer?.logo[0]?.url"
+      :smooth-load="false"
       :width="props.width"
       :height="props.height"
       alt="logo"
-      aria-label="Логотип сайта"
     />
   </NuxtLink>
 </template>
@@ -39,9 +39,5 @@ const props = withDefaults(defineProps<Props>(), {
   @include hover {
    background-color: var(--warning-hover);
   }
-
-   &__image {
-      @include adaptiveValue("width", 45, 32);
-   }
 }
 </style>

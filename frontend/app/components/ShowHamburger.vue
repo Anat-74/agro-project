@@ -148,8 +148,8 @@ watch(currentLocale, () => {
           :global="global"
           :currentLocale="currentLocale"
           :config="config"
-          :width="40"
-          :height="40"
+          width="32"
+          height="32"
         />
         <AnimateTitle />
       </div>
