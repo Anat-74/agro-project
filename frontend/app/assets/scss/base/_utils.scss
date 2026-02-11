@@ -35,6 +35,10 @@
   }
 }
 
+.iconify {
+   font-size: toRem(25);
+}
+
 .iconify--my-icon {
   translate: 0 toRem(2);
   color: var(--warning-color);

@@ -159,7 +159,7 @@ watch(currentLocale, () => {
                 type="icon"
               />
               <h3 class="accordion__product-title">{{ cat.name }}</h3>
-              <Icon name="mdi:chevron-left" />
+              <Icon name="mingcute:down-line" />
             </summary>
           </details>
 
@@ -215,7 +215,7 @@ watch(currentLocale, () => {
             <h4 class="accordion__product-sub-title">
               {{ discountProductTranslations[currentLocale].discount }}
             </h4>
-            <Icon name="mdi:chevron-left" />
+            <Icon name="mingcute:down-line" />
           </summary>
         </details>
 
@@ -453,7 +453,7 @@ watch(currentLocale, () => {
       color: var(--danger-color);
 
       svg {
-        rotate: -180deg;
+        rotate: -90deg;
         transition: rotate var(--transition-duration);
       }
     }
@@ -480,10 +480,6 @@ watch(currentLocale, () => {
     outline: toRem(2) var(--whitesmoke-color) inset;
     border-radius: toRem(4);
     background-color: var(--light-color-transparent);
-
-    svg {
-      rotate: -90deg;
-    }
 
     @include hover {
       color: var(--warning-color);

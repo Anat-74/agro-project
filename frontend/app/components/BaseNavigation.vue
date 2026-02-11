@@ -41,9 +41,11 @@ defineProps<{
         @mouseenter="visibleIsContacts"
         @mouseleave="hideContacts"
       >
-        <NuxtLink class="nav__link" :to="`/${currentLocale}/contacts`"
-          ><Icon name="material-symbols:send-to-mobile-outline-rounded" />
-          {{ baseNavigationTranslations[currentLocale].contacts }}
+        <NuxtLink 
+        :class="['nav__link', {'nav__link_is-contacts' : isContacts}]" 
+        :to="`/${currentLocale}/contacts`"
+          >{{ baseNavigationTranslations[currentLocale].contacts }}
+          <Icon name="mingcute:down-line" />
         </NuxtLink>
         <div v-if="isContacts" class="nav__contacts contacts">
           <div
@@ -115,6 +117,13 @@ defineProps<{
     padding-block: toRem(3);
     color: var(--primary-color);
 
+    &_is-contacts {
+      svg {
+      transition: color var(--transition-duration);
+      color: var(--warning-color);
+      }
+    }
+
     &:not(.router-link-active) {
       @include hover {
         &::after {
@@ -122,6 +131,7 @@ defineProps<{
         }
       }
     }
+
     &::before {
       content: "";
       position: absolute;

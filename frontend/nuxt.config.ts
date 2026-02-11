@@ -139,7 +139,6 @@ export default defineNuxtConfig({
     ],
     // serverBundle: {
     //    collections: [
-    //       'material-symbols',
     //       'eos-icons',
     //       'ph',
     //       'cil',
