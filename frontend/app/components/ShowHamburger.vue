@@ -20,13 +20,6 @@ const { open, close, isOpen } = useDialog(dialogElement, {
   useShowMethod: true,
 });
 
-// onMounted(() => {
-//   if (dialogElement.value) {
-//     dialogElement.value.show()
-//     isOpen.value = true;
-//   }
-// })
-
 const { currentLocale } = useLocale();
 const config = useRuntimeConfig();
 const { find } = useStrapi();
@@ -332,7 +325,7 @@ watch(currentLocale, () => {
   z-index: 9999;
   top: 0;
   height: 100%;
-  width: 100vw;
+  width: 100dvw;
   translate: -100%;
   margin-inline-start: 0;
   background-color: transparent;
@@ -340,7 +333,7 @@ watch(currentLocale, () => {
   transition: translate var(--transition-duration);
 
   @media (min-width: $mobile) {
-    height: auto;
+    height: toEm(632);
     scale: 0;
     translate: 0;
     top: calc(100% + toRem(22));
@@ -364,20 +357,16 @@ watch(currentLocale, () => {
     }
   }
 
-  //  &:not([open]) {
-  //    scale: 0;
-  //    transition: scale .1s linear;
-  //  }
-
   &__items {
     display: flex;
     flex-direction: column;
-    align-items: end;
     row-gap: toEm(16);
-    overflow-y: auto;
     padding-inline: toEm(16);
     padding-block-start: toEm(22);
     padding-block-end: toEm(12);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--success-color) var( --whitesmoke-color);
 
     @media (max-width: $mobile) {
       justify-items: center;
@@ -406,12 +395,7 @@ watch(currentLocale, () => {
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     row-gap: toEm(16);
-
-    @media (min-width: $mobile) {
-      padding-block-end: toEm(16);
-    }
 
     @media ($mobileSmall <= width <= $mobile) {
       width: 70%;
@@ -419,6 +403,7 @@ watch(currentLocale, () => {
   }
 
   &__phones {
+    justify-self: end;
     display: flex;
     align-items: center;
     column-gap: toEm(4);

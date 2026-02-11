@@ -231,10 +231,12 @@ defineEmits<Emits>();
     }
 
     &--is-open {
-      width: 100%;
-      padding-inline: 0;
-      padding-block: toRem(18);
-      border-radius: toRem(2);
+      @media (max-width:$mobile){
+         width: 100%;
+         padding-inline: 0;
+         padding-block: toRem(18);
+         border-radius: toRem(2);
+      }
 
       span {
         width: 0;
@@ -570,13 +572,13 @@ defineEmits<Emits>();
     right: toRem(15);
     bottom: toRem(14);
     padding: toRem(4);
-    border: toRem(1) solid var(--dark-golden-color);
+    border: toRem(1) solid var(--success-color);
     transition: color var(--transition-duration);
     @include adaptiveValue("width", 36, 30);
     @include adaptiveValue("height", 36, 30);
 
     svg {
-      color: var(--dark-golden-color);
+      color: var(--success-color);
     }
 
     @include hover {

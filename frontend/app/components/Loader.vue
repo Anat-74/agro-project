@@ -17,9 +17,10 @@
    span {
    display: inline-block;
    position: absolute;
+    z-index: 9999;
    left: 8px;
    width: 16px;
-   background-color: var(--sky-blue-color);
+   background-color: var(--sky-blue);
    animation: loader-animate 1.2s cubic-bezier(0, .5, .5, 1) infinite;
    }
    span:nth-child(1) {
