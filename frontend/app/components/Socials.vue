@@ -1,23 +1,17 @@
 <script setup lang="ts">
 interface Props {
   socials: SocialLink[];
-  isOpen?: boolean;
 }
 
 defineProps<Props>();
+
+// Получаем isOpen из глобального состояния
+const { isOpen } = useDialog("hamburgerDialog");
 </script>
 
 <template>
-  <div 
-  v-if="socials" 
-  :class="['socials', { 'socials_is-open': isOpen }]"
-  >
-    <a 
-    v-for="link in socials" 
-    :key="link.id" 
-    :href="link.href" 
-    target="_blank"
-    >
+  <div v-if="socials" :class="['socials', { 'socials_is-open': isOpen }]">
+    <a v-for="link in socials" :key="link.id" :href="link.href" target="_blank">
       <UImage
         v-if="link?.icon"
         :src="link.icon[0]?.url"

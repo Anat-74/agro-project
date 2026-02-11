@@ -16,7 +16,7 @@ defineProps<Props>();
 const dialogElement = useTemplateRef<HTMLDialogElement>("dialog-hamburger");
 
 // Создаем отдельное состояние для изначальной видимости
-const { open, close, isOpen } = useDialog(dialogElement, {
+const { open, close, isOpen } = useDialog("hamburgerDialog", dialogElement, {
   useShowMethod: true,
 });
 
@@ -107,16 +107,19 @@ watch(currentLocale, () => {
   refreshCategory();
   refreshProduct();
 });
-
 </script>
 
 <template>
   <div class="hamburger-menu">
     <UButton
-      @click="isOpen ? close() : open()"
+      @click="isOpen ? close?.() : open?.()"
       :is-open="isOpen"
       variant="hamburger"
-      :aria-label="isOpen ? buttonTranslations[currentLocale].ariaLabelDialogClosed : buttonTranslations[currentLocale].ariaLabelDialogOpen"
+      :aria-label="
+        isOpen
+          ? buttonTranslations[currentLocale].ariaLabelDialogClosed
+          : buttonTranslations[currentLocale].ariaLabelDialogOpen
+      "
     />
     <span
       :class="[
@@ -126,11 +129,7 @@ watch(currentLocale, () => {
       >{{ showHamburgerTranslations[currentLocale].title }}
     </span>
   </div>
-  <dialog
-    class="dialog-hamburger"
-    ref="dialog-hamburger"
-    id="dialogHamburger"
-  >
+  <dialog class="dialog-hamburger" ref="dialog-hamburger" id="dialogHamburger">
     <Loader v-if="pending" />
     <h2 class="visually-hidden">
       {{ visuallyHiddenTranslations[currentLocale].showModalMenuTitle }}
@@ -229,7 +228,7 @@ watch(currentLocale, () => {
             >
               <NuxtLink
                 class="accordion__product-link accordion__product-link_is-discount"
-                @click="close()"
+                @click="close?.()"
                 :to="`/${currentLocale}/${prod?.subcategory?.category?.slug}/products/${prod.slug}`"
               >
                 <UImage
@@ -267,7 +266,7 @@ watch(currentLocale, () => {
     </div>
     <div class="dialog-hamburger__sidebar sidebar visible-mobile">
       <UButton
-        @click="close()"
+        @click="close?.()"
         :is-open="isOpen"
         variant="hamburger"
         :aria-label="buttonTranslations[currentLocale].ariaLabelDialogClosed"
@@ -276,10 +275,7 @@ watch(currentLocale, () => {
       <ClientOnly>
         <ColorMode />
       </ClientOnly>
-      <Socials
-       :is-open="isOpen" 
-       :socials="socials" 
-       />
+      <Socials :is-open="isOpen" :socials="socials" />
     </div>
   </dialog>
   <span v-if="error" class="error">
@@ -366,7 +362,7 @@ watch(currentLocale, () => {
     padding-block-end: toEm(12);
     overflow-y: auto;
     scrollbar-width: thin;
-    scrollbar-color: var(--success-color) var( --whitesmoke-color);
+    scrollbar-color: var(--success-color) var(--whitesmoke-color);
 
     @media (max-width: $mobile) {
       justify-items: center;
@@ -395,7 +391,13 @@ watch(currentLocale, () => {
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     row-gap: toEm(16);
+
+    @media (min-width: $mobile) {
+      justify-content: start;
+      padding-block-end: toRem(22);
+    }
 
     @media ($mobileSmall <= width <= $mobile) {
       width: 70%;
@@ -430,10 +432,6 @@ watch(currentLocale, () => {
         color: var(--danger-color);
       }
     }
-  }
-
-  &__sidebar {
-
   }
 }
 
