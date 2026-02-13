@@ -54,11 +54,8 @@ const visibleImagesCount = computed(() => {
           @click="toggleActive"
         />
       </div>
-      <NuxtLink
-        class="product-card__link"
-        :to="`/${currentLocale}/${categorySlug}/products/${product.slug}`"
-      >
-        <UImage
+      <div class="product-card__content">
+      <UImage
           class="product-card__image"
           v-if="product.image?.length"
           :src="product.image[0]?.url"
@@ -68,10 +65,15 @@ const visibleImagesCount = computed(() => {
           width="302"
           height="302"
         />
+      <NuxtLink
+        class="product-card__link"
+        :to="`/${currentLocale}/${categorySlug}/products/${product.slug}`"
+      > Подробнее
       </NuxtLink>
       <h3 class="product-card__title">
         {{ product.name }}
       </h3>
+      </div>
       <div class="product-card__bottom">
         <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
           <Icon name="my-icon:icon-by-regular" />
@@ -155,6 +157,25 @@ const visibleImagesCount = computed(() => {
 </template>
 
 <style lang="scss" scoped>
+
+// @media (min-width: $mobile) {
+//   @media (any-hover: hover) {
+//     .product-card:has(div:hover) {
+//       a {
+//          visibility: visible;
+//          opacity: 1;
+//          display: block;
+//          transition: opacity .9s, visibility .9s, background-color .5s;
+
+//          @starting-style {
+//            opacity: 0;
+//            visibility: hidden;
+//          }
+//       }
+//     }
+//   }
+// }
+
 .product-card {
   width: 100%;
   position: relative;
@@ -233,8 +254,24 @@ const visibleImagesCount = computed(() => {
   }
 
   &__link {
-    padding-inline: toEm(6);
-    padding-block-end: toEm(4);
+   //  padding-inline: toEm(6);
+   //  padding-block-end: toEm(4);
+
+      opacity: 0;
+      visibility: hidden;
+      display: none;
+      text-transform: uppercase;
+      padding-inline: toEm(30);
+      padding-block: toEm(8);
+      border: 1px solid var(--warning-color);
+      border-radius: toEm(4);
+      font-weight: 700;
+      color: var(--warning-color);
+
+   @include hover {
+      color: var(--light-color);
+      background-color: var(--warning-color);
+   }
   }
 
   &__title {

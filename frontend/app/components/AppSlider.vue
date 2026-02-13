@@ -155,7 +155,7 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     bottom: toRem(36);
 
     @media (min-width:$tablet){
-        bottom: toRem(90);
+        bottom: toRem(108);
     }
 
     @media (max-width:$mobileSmall){
@@ -168,8 +168,6 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     height: toEm(14);
     border: toRem(2) solid var(--transparent-color);
     border-radius: 50%;
-    cursor: pointer;
-    padding: 0;
     background-color: var(--light-color);
     transition: background-color var(--transition-duration);
 

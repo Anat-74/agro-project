@@ -31,8 +31,8 @@ const { slides, heroGrids } = defineProps<Props>();
             slide.backgroundImage?.retinaBgImageAvif?.url ||
             slide.backgroundImage?.baseBgImageWebp?.url
           "
-          :retinaSrc="slide.backgroundImage?.retinaBgImageAvif?.url"
           :src="slide.backgroundImage?.baseBgImageWebp?.url"
+          :retinaSrc="slide.backgroundImage?.retinaBgImageAvif?.url"
         />
         <UImage
           v-if="slide.image?.url"
