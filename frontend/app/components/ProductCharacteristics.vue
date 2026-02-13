@@ -37,22 +37,20 @@ defineProps({
  
  <style lang="scss" scoped>
 .product-characteristics {
-   margin-block: toEm(16);
 
 &__title {
    translate: toRem(2) 0;
-   font-weight: 600;
    justify-self: start;
-   margin-block-end: toEm(12, 18);
-   padding-inline: toEm(8, 18);
-   padding-block: toEm(4, 18);
-   border-radius: toEm(4, 18);
+   margin-block-end: toEm(6);
+   padding-inline: toEm(8);
+   padding-block: toEm(4);
+   border-radius: toEm(4);
    background-color: var(--whitesmoke-color);
 }
 
 &__table {
    width: 100%;
-   border-collapse: collapse;
+   // border-collapse: collapse;
 }
 
 &__row {
@@ -66,13 +64,13 @@ defineProps({
 
 &__param {
    width: 60%;
-   padding-inline: toEm(7);
-   padding-block: toEm(12);
+   padding-inline: toEm(8);
+   padding-block: toEm(8);
    font-weight: 600;
 }
 
 &__value {
-   padding-inline-start: toEm(5);
+   padding-inline: toEm(8);
 }
 }
 

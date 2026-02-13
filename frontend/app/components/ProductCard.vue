@@ -33,6 +33,14 @@ const visibleImagesCount = computed(() => {
   if (width.value < 1215.98) return 6;
   return 10;
 });
+
+ const characteristics = computed(() => {
+  try {
+    return JSON.parse(props.product?.characteristics || '[]')
+  } catch {
+    return []
+  }
+  })
 </script>
 
 <template>
@@ -71,7 +79,7 @@ const visibleImagesCount = computed(() => {
       <NuxtLink
         class="product-card__link"
         :to="`/${currentLocale}/${categorySlug}/products/${product.slug}`"
-      > Подробнее
+      ><span>Подробнее</span>
       </NuxtLink>
       </div>
       <div class="product-card__bottom">
@@ -115,15 +123,16 @@ const visibleImagesCount = computed(() => {
       </div>
       <div class="product-card__content">
          <p class="product-card__description">
-            {{ product.description }}hfhfhfhghfhfhfhf  hhhhhhhhh hhhhhhhhhhhh hhhhhhhhhhhh hhhhhhhh hhhhhhhhh hhhhh 
+            {{ product.description }}
          </p>
-      <!-- <h3 class="product-card__title">
-        {{ product.name }}
-      </h3> -->
+         <ProductCharacteristics
+            class="product-card__characteristics"
+            :specs="characteristics" 
+         />
        <NuxtLink
         class="product-card__link"
         :to="`/${currentLocale}/${categorySlug}/products/${product.slug}`"
-      >Подробнее
+      ><span>Подробнее</span>
       </NuxtLink>
       </div>
       <div class="product-card__bottom">
@@ -194,13 +203,21 @@ const visibleImagesCount = computed(() => {
   &__front {
     z-index: 100;
 
+    .product-card__details {
+      position: absolute;
+      z-index: 150;
+      right: toEm(14);
+      top: toEm(22);
+   }
+
     .product-card__content {
+      padding-block-end: toRem(2);
       @include hover {
       .product-card__link {
          visibility: visible;
          opacity: 1;
          display: block;
-         transition: opacity .9s, visibility .9s, background-color .4s;
+         transition: opacity .9s, visibility .9s, background-color .4s, color var(--transition-duration);
 
          @starting-style {
            opacity: 0;
@@ -221,7 +238,6 @@ const visibleImagesCount = computed(() => {
          opacity: 0;
          visibility: hidden;
          display: none;
-         transition: opacity var(--transition-duration), visibility var(--transition-duration);
       }
     }
 
@@ -231,25 +247,66 @@ const visibleImagesCount = computed(() => {
   }
 
   &__back {
-   padding-inline: toEm(9);
    transform: rotateY(180deg);
 
+    .product-card__top {
+      padding-block-end: 0;
+    }
+
    .product-card__content {
+      display: grid;
+      justify-items: center;
+      row-gap: toEm(12);
       overflow-y: auto;
       scrollbar-width: thin;
       scrollbar-color: var(--success-color) var(--whitesmoke-color);
-      padding-block-end: toRem(34);
+      padding-inline: toEm(9);
+      padding-block-start: toEm(5);
+      padding-block-end: toEm(12);
+
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 1s, visibility 1s;
+
+      &:not(:last-child) {
+      margin-block-end: toEm(9);
+      }
    }
 
     &_back {
       z-index: 110;
       transform: rotateY(360deg);
+
+      .product-card__content {
+         visibility: visible;
+         opacity: 1;
+         transition: opacity 2.5s, visibility 2.5s;
+
+         @starting-style {
+           opacity: 0;
+           visibility: hidden;
+      }
+    }
+
+      .product-card__link {
+         margin-block-start: toEm(12);
+         transition: background-color var(--transition-duration), color var(--transition-duration);
+      }
     }
   }
 
+  &:deep(.product-card__characteristics) {
+      width: 100%;
+      .product-characteristics {
+         &__title {
+            font-size: toEm(18);
+         }
+      }
+   }
+
   &__top {
-    justify-self: start;
     align-self: start;
+    width: 100%;
     display: flex;
     align-items: center;
     column-gap: toEm(4);
@@ -263,19 +320,12 @@ const visibleImagesCount = computed(() => {
   }
 
   &__in-stock {
-    padding: toEm(4);
-  }
-
-  &__details {
-    position: absolute;
-    z-index: 100;
-    right: toEm(14);
-    top: toRem(36);
+   flex: 1 1 auto;
+   padding: toEm(4);
   }
 
   &__content {
    flex: 1 1 auto;
-   position: relative;
   }
 
    &__title {
@@ -291,12 +341,10 @@ const visibleImagesCount = computed(() => {
       font-size: toEm(14);
       padding-inline: toEm(30);
       padding-block: toEm(8);
-      margin-block-start: toEm(12);
       border: 1px solid var(--warning-color);
       border-radius: toEm(4);
       font-weight: 700;
       color: var(--warning-color);
-      transition: background-color var(--transition-duration);
 
       @include hover {
          color: var(--light-color);
@@ -329,9 +377,9 @@ const visibleImagesCount = computed(() => {
 }
 
   @media (any-hover: hover) {
-    .product-card :has(.product-card__content:hover) {
+    .product-card__front:has(.product-card__content:hover) {
       .product-card__bottom {
-         margin-block-start: toRem(-22);
+         margin-block-start: toRem(-32);
       }
     }
   }

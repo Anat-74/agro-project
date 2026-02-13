@@ -345,14 +345,14 @@ defineEmits<Emits>();
    font-size: toEm(26);
    background-color: var(--whitesmoke-color);
    padding-block: toEm(4);
-   padding-inline: toEm(6);
+   padding-inline: toEm(5);
    border-radius: 50%;
    color: var(--warning-color);
    transition: all var(--transition-duration);
 
    @include hover {
-      color: var(--warning-hover);
-      background-color: var(--light-color);
+      color: var(--light-color);
+      background-color: var(--warning-color);
    }
 
    svg {

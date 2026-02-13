@@ -159,8 +159,8 @@ const handleAddToCart = (product: Product) => {
           :alt="product.name"
           format="webp"
           decoding="async"
-          width="580"
-          height="436"
+          width="380"
+          height="300"
           class="wrapper-left__image"
         />
      <ul
@@ -179,8 +179,8 @@ const handleAddToCart = (product: Product) => {
           :alt="`${product.name} - Image ${index + 1}`"
           format="webp"
           decoding="async"
-          width="133"
-          height="100"
+          width="80"
+          height="60"
           class="wrapper-left__thumbnail-image"
         />
       </li>
