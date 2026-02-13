@@ -14,10 +14,15 @@ interface Props {
 }
 const props = defineProps<Props>();
 
-const active = ref(false);
+const rotateActive = ref(false);
 const toggleActive = () => {
-  active.value = !active.value;
+  rotateActive.value = !rotateActive.value;
 };
+
+const isVisibleLink = ref(false);
+const toggleVisibleLink = () => {
+   isVisibleLink.value = !isVisibleLink.value
+}
 
 const handleAddToCart = (product: Product) => {
   if (isInCart(product.id)) {
@@ -46,7 +51,7 @@ const visibleImagesCount = computed(() => {
 <template>
   <li class="product-card">
     <div
-      :class="['product-card__front', { 'product-card__front_front': active }]"
+      :class="['product-card__front', { 'product-card__front_front': rotateActive }]"
     >
       <div class="product-card__top">
         <Icon
@@ -62,7 +67,10 @@ const visibleImagesCount = computed(() => {
           @click="toggleActive"
         />
       </div>
-      <div class="product-card__content">
+      <div 
+      class="product-card__content"
+      @click="toggleVisibleLink"
+      >
       <UImage
           class="product-card__image"
           v-if="product.image?.length"
@@ -73,11 +81,11 @@ const visibleImagesCount = computed(() => {
           width="240"
           height="220"
         />
-      <h3 class="product-card__title">
+      <h3 :class="['product-card__title', {'product-card__title_is-visible' : isVisibleLink}]">
         {{ product.name }}
       </h3>
       <NuxtLink
-        class="product-card__link"
+        :class="['product-card__link', { 'product-card__link_is-visible' : isVisibleLink}]"
         :to="`/${currentLocale}/${categorySlug}/products/${product.slug}`"
       ><span>Подробнее</span>
       </NuxtLink>
@@ -106,7 +114,7 @@ const visibleImagesCount = computed(() => {
         />
       </div>
     </div>
-    <div :class="['product-card__back', { 'product-card__back_back': active }]">
+    <div :class="['product-card__back', { 'product-card__back_back': rotateActive }]">
       <div class="product-card__top">
         <Icon
           v-if="product.isDiscount"
@@ -135,7 +143,7 @@ const visibleImagesCount = computed(() => {
       ><span>Подробнее</span>
       </NuxtLink>
       </div>
-      <div class="product-card__bottom">
+      <div :class="['product-card__bottom', {'product-card__bottom_is-visible' : isVisibleLink}]">
         <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
           <Icon name="my-icon:icon-by-regular" />
         </UTooltip>
@@ -212,6 +220,7 @@ const visibleImagesCount = computed(() => {
 
     .product-card__content {
       padding-block-end: toRem(2);
+
       @include hover {
       .product-card__link {
          visibility: visible;
@@ -238,6 +247,18 @@ const visibleImagesCount = computed(() => {
          opacity: 0;
          visibility: hidden;
          display: none;
+
+         &_is-visible {
+         visibility: visible;
+         opacity: 1;
+         display: block;
+         transition: opacity .9s, visibility .9s, background-color .4s, color var(--transition-duration);
+
+         @starting-style {
+           opacity: 0;
+           visibility: hidden;
+         }
+         }
       }
     }
 
@@ -334,6 +355,13 @@ const visibleImagesCount = computed(() => {
       text-align: center;
       margin-block-end: toEm(12);
       transition: color var(--transition-duration), margin-block-start .4s;
+
+      &_is-visible {
+         margin-block-start: toRem(-30);
+         color: var(--success-color);
+         background-color: var(--light-color);
+         transition: margin-block-start .4s, color var(--transition-duration);
+      }
   }
 
   &__link {
@@ -361,6 +389,10 @@ const visibleImagesCount = computed(() => {
     padding-inline: toEm(12);
     padding-block: toEm(8);
     background-color: var(--whitesmoke-color);
+
+    &_is-visible {
+      margin-block-start: toRem(-32);
+    }
   }
 
   &__price {
