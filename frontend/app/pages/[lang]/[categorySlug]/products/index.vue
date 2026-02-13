@@ -63,13 +63,6 @@ const { data, pending, error, refresh } = useAsyncData(
   },
 );
 
-const visibleImagesCount = computed(() => {
-  if (width.value < 565.98) return 2;
-  if (width.value < 878.98) return 4;
-  if (width.value < 1215.98) return 6;
-  return 10;
-});
-
 // Разделение данных
 const category = computed(() => data.value?.category);
 const products = computed(() => data.value?.products);
@@ -95,6 +88,8 @@ watch(
 watch(sortOption, () => {
   refresh(); // Перезагружаем данные
 });
+
+console.debug(products.value)
 
 // SEO
 watchEffect(() => {
@@ -209,7 +204,7 @@ watchEffect(() => {
 
   &__category-title {
     color: var(--warning-color);
-    @include adaptiveValue("margin-block-end", 66, 32);
+    margin-block-end: toEm(12);
   }
 
   &__card-list {
@@ -220,6 +215,10 @@ watchEffect(() => {
 
     @media (max-width: toEm(568)) {
       grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width:$mobileSmall){
+       grid-template-columns: 1fr; 
     }
   }
 

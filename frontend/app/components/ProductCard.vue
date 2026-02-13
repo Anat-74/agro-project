@@ -62,17 +62,17 @@ const visibleImagesCount = computed(() => {
           :alt="product.name"
           :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
           :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
-          width="302"
-          height="302"
+          width="240"
+          height="220"
         />
+      <h3 class="product-card__title">
+        {{ product.name }}
+      </h3>
       <NuxtLink
         class="product-card__link"
         :to="`/${currentLocale}/${categorySlug}/products/${product.slug}`"
       > Подробнее
       </NuxtLink>
-      <h3 class="product-card__title">
-        {{ product.name }}
-      </h3>
       </div>
       <div class="product-card__bottom">
         <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
@@ -113,22 +113,19 @@ const visibleImagesCount = computed(() => {
           @click="toggleActive"
         />
       </div>
-      <!-- <NuxtLink
+      <div class="product-card__content">
+         <p class="product-card__description">
+            {{ product.description }}hfhfhfhghfhfhfhf  hhhhhhhhh hhhhhhhhhhhh hhhhhhhhhhhh hhhhhhhh hhhhhhhhh hhhhh 
+         </p>
+      <!-- <h3 class="product-card__title">
+        {{ product.name }}
+      </h3> -->
+       <NuxtLink
         class="product-card__link"
         :to="`/${currentLocale}/${categorySlug}/products/${product.slug}`"
-      >
-        <UImage
-          class="product-card__image"
-          v-if="product.image?.length"
-          :src="product.image[0]?.url"
-          :alt="product.name"
-          width="302"
-          height="302"
-        />
-      </NuxtLink> -->
-      <h3 class="product-card__title">
-        {{ product.name }}
-      </h3>
+      >Подробнее
+      </NuxtLink>
+      </div>
       <div class="product-card__bottom">
         <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
           <Icon name="my-icon:icon-by-regular" />
@@ -158,32 +155,15 @@ const visibleImagesCount = computed(() => {
 
 <style lang="scss" scoped>
 
-// @media (min-width: $mobile) {
-//   @media (any-hover: hover) {
-//     .product-card:has(div:hover) {
-//       a {
-//          visibility: visible;
-//          opacity: 1;
-//          display: block;
-//          transition: opacity .9s, visibility .9s, background-color .5s;
 
-//          @starting-style {
-//            opacity: 0;
-//            visibility: hidden;
-//          }
-//       }
-//     }
-//   }
-// }
 
 .product-card {
   width: 100%;
   position: relative;
-  padding-block: toEm(12);
   border-radius: toEm(6);
   transition: all var(--transition-duration);
   perspective: toRem(500);
-  @include adaptiveValue("height", 500, 350);
+  @include adaptiveValue("height", 405, 340);
 
   @media (max-width: $mobile) {
     @media (prefers-reduced-motion: no-preference) {
@@ -197,8 +177,8 @@ const visibleImagesCount = computed(() => {
   &__back {
     position: absolute;
     inset: 0;
-    display: grid;
-    justify-items: center;
+    display: flex;
+    flex-direction: column;
     align-items: center;
     row-gap: toEm(4);
     padding-block: toEm(12);
@@ -214,13 +194,52 @@ const visibleImagesCount = computed(() => {
   &__front {
     z-index: 100;
 
+    .product-card__content {
+      @include hover {
+      .product-card__link {
+         visibility: visible;
+         opacity: 1;
+         display: block;
+         transition: opacity .9s, visibility .9s, background-color .4s;
+
+         @starting-style {
+           opacity: 0;
+           visibility: hidden;
+         }
+      }
+
+      .product-card__title {
+         margin-block-start: toRem(-30);
+         color: var(--success-color);
+         background-color: var(--light-color);
+         transition: margin-block-start .4s, color var(--transition-duration);
+         }
+      }
+
+      .product-card__link {
+         justify-self: center;
+         opacity: 0;
+         visibility: hidden;
+         display: none;
+         transition: opacity var(--transition-duration), visibility var(--transition-duration);
+      }
+    }
+
     &_front {
       transform: rotateY(180deg);
     }
   }
 
   &__back {
-    transform: rotateY(180deg);
+   padding-inline: toEm(9);
+   transform: rotateY(180deg);
+
+   .product-card__content {
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--success-color) var(--whitesmoke-color);
+      padding-block-end: toRem(34);
+   }
 
     &_back {
       z-index: 110;
@@ -235,6 +254,7 @@ const visibleImagesCount = computed(() => {
     align-items: center;
     column-gap: toEm(4);
     padding-inline: toEm(12);
+    padding-block-end: toEm(12);
   }
 
   &__discount {
@@ -253,35 +273,41 @@ const visibleImagesCount = computed(() => {
     top: toRem(36);
   }
 
-  &__link {
-   //  padding-inline: toEm(6);
-   //  padding-block-end: toEm(4);
+  &__content {
+   flex: 1 1 auto;
+   position: relative;
+  }
 
-      opacity: 0;
-      visibility: hidden;
-      display: none;
+   &__title {
+      position: relative;
+      z-index: 100;
+      text-align: center;
+      margin-block-end: toEm(12);
+      transition: color var(--transition-duration), margin-block-start .4s;
+  }
+
+  &__link {
       text-transform: uppercase;
+      font-size: toEm(14);
       padding-inline: toEm(30);
       padding-block: toEm(8);
+      margin-block-start: toEm(12);
       border: 1px solid var(--warning-color);
       border-radius: toEm(4);
       font-weight: 700;
       color: var(--warning-color);
+      transition: background-color var(--transition-duration);
 
-   @include hover {
-      color: var(--light-color);
-      background-color: var(--warning-color);
+      @include hover {
+         color: var(--light-color);
+         background-color: var(--warning-color);
    }
   }
 
-  &__title {
-    text-align: center;
-    transition: color var(--transition-duration);
-  }
-
   &__bottom {
+    position: relative;
+    z-index: 20;
     width: 100%;
-    align-self: end;
     display: flex;
     align-items: center;
     padding-inline: toEm(12);
@@ -301,4 +327,12 @@ const visibleImagesCount = computed(() => {
     }
   }
 }
+
+  @media (any-hover: hover) {
+    .product-card :has(.product-card__content:hover) {
+      .product-card__bottom {
+         margin-block-start: toRem(-22);
+      }
+    }
+  }
 </style>
