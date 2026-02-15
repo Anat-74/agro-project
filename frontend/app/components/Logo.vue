@@ -28,6 +28,7 @@ const props = withDefaults(defineProps<Props>(), {
       :width="props.width"
       :height="props.height"
       :alt="logoTranslations[currentLocale].alt"
+      type="icon"
     />
   </NuxtLink>
 </template>

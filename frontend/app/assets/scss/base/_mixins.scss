@@ -18,7 +18,7 @@
 }
 
 //* Grids
-@mixin gridCards($type: fit, $min: f.toRem(260), $max: 1fr, $gap: f.toEm(18)) {
+@mixin gridCards($type: fit, $min: f.toRem(220), $max: 1fr, $gap: f.toEm(18)) {
   display: grid;
   gap: $gap;
   grid-template-columns: repeat(auto-#{$type}, minmax($min, $max));

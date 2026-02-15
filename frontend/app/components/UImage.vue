@@ -80,7 +80,7 @@ const typeConfigs: Record<string, ImageTypeConfig> = {
   // Изображение-обложка для элементов (подкатегории, продукты и т.д.)
   product: {
     quality: 80,
-    sizes: "100vw xs:50vw sm:33.33vw md:25vw lg:20vw xl:20vw"
+    sizes: "100vw xs:100vw sm:33.33vw md:25vw lg:20vw xl:20vw"
   },
   // Изображения пользователей/аватарки
   avatar: {
@@ -215,8 +215,8 @@ const finalSrc = computed(() => {
   &_product {
    flex: 1 1 auto;
 
-   @media (max-width:$tablet){
-       max-width: toEm(244); 
+   @media (max-width:$mobile){
+       max-width: toRem(220); 
    }
   }
 }

@@ -49,11 +49,11 @@ const visibleImagesCount = computed(() => {
 </script>
 
 <template>
-  <li class="product-card">
+  <li :class="['product-card', {'product-card_rotate-active' : rotateActive}]">
     <div
       :class="['product-card__front', { 'product-card__front_front': rotateActive }]"
     >
-      <div class="product-card__top">
+      <div class="product-card__top-items">
         <Icon
           v-if="product.isDiscount"
           class="product-card__discount"
@@ -67,8 +67,7 @@ const visibleImagesCount = computed(() => {
           @click="toggleActive"
         />
       </div>
-      <div 
-      class="product-card__content"
+      <div class="product-card__content"
       @click="toggleVisibleLink"
       >
       <UImage
@@ -90,7 +89,7 @@ const visibleImagesCount = computed(() => {
       ><span>Подробнее</span>
       </NuxtLink>
       </div>
-      <div class="product-card__bottom">
+      <div class="product-card__bottom-items">
         <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
           <Icon name="my-icon:icon-by-regular" />
         </UTooltip>
@@ -115,7 +114,7 @@ const visibleImagesCount = computed(() => {
       </div>
     </div>
     <div :class="['product-card__back', { 'product-card__back_back': rotateActive }]">
-      <div class="product-card__top">
+      <div class="product-card__top-items">
         <Icon
           v-if="product.isDiscount"
           class="product-card__discount"
@@ -143,7 +142,7 @@ const visibleImagesCount = computed(() => {
       ><span>Подробнее</span>
       </NuxtLink>
       </div>
-      <div :class="['product-card__bottom', {'product-card__bottom_is-visible' : isVisibleLink}]">
+      <div class="product-card__bottom-items">
         <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
           <Icon name="my-icon:icon-by-regular" />
         </UTooltip>
@@ -171,16 +170,14 @@ const visibleImagesCount = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-
-
-
 .product-card {
   width: 100%;
   position: relative;
   border-radius: toEm(6);
   transition: all var(--transition-duration);
   perspective: toRem(500);
-  @include adaptiveValue("height", 405, 340);
+  transition: scale .4s;
+  @include adaptiveValue("height", 405, 320);
 
   @media (max-width: $mobile) {
     @media (prefers-reduced-motion: no-preference) {
@@ -190,6 +187,19 @@ const visibleImagesCount = computed(() => {
     }
   }
 
+  &_rotate-active {
+  transition: scale .4s;
+   z-index: 150;
+   scale: 1.1;
+
+
+   .product-card__front {
+      
+   }
+   .product-card__back {
+   }
+  }
+
   &__front,
   &__back {
     position: absolute;
@@ -197,14 +207,13 @@ const visibleImagesCount = computed(() => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    row-gap: toEm(4);
     padding-block: toEm(12);
     border: toEm(2) solid var(--whitesmoke-color);
     border-radius: toEm(6);
     background-color: var(--light-color);
     color: var(--gray-color);
     backface-visibility: hidden;
-    transition: transform 0.7s;
+    transition: transform 0.6s;
     box-shadow: 0px toEm(6, 15) toEm(18, 15) toRem(5) hsla(0, 0%, 0%, 0.07);
   }
 
@@ -219,8 +228,6 @@ const visibleImagesCount = computed(() => {
    }
 
     .product-card__content {
-      padding-block-end: toRem(2);
-
       @include hover {
       .product-card__link {
          visibility: visible;
@@ -239,10 +246,11 @@ const visibleImagesCount = computed(() => {
          color: var(--success-color);
          background-color: var(--light-color);
          transition: margin-block-start .4s, color var(--transition-duration);
-         }
       }
+   }
+}
 
-      .product-card__link {
+   .product-card__link {
          justify-self: center;
          opacity: 0;
          visibility: hidden;
@@ -254,13 +262,17 @@ const visibleImagesCount = computed(() => {
          display: block;
          transition: opacity .9s, visibility .9s, background-color .4s, color var(--transition-duration);
 
-         @starting-style {
-           opacity: 0;
-           visibility: hidden;
-         }
-         }
-      }
-    }
+      @starting-style {
+         opacity: 0;
+         visibility: hidden;
+     }
+   }
+}
+
+   .product-card__bottom-items {
+      position: absolute;
+      bottom: toEm(12);
+   }
 
     &_front {
       transform: rotateY(180deg);
@@ -270,7 +282,7 @@ const visibleImagesCount = computed(() => {
   &__back {
    transform: rotateY(180deg);
 
-    .product-card__top {
+    .product-card__top-items {
       padding-block-end: 0;
     }
 
@@ -301,7 +313,7 @@ const visibleImagesCount = computed(() => {
       .product-card__content {
          visibility: visible;
          opacity: 1;
-         transition: opacity 2.5s, visibility 2.5s;
+         transition: opacity 1.5s, visibility 1.5s;
 
          @starting-style {
            opacity: 0;
@@ -316,16 +328,7 @@ const visibleImagesCount = computed(() => {
     }
   }
 
-  &:deep(.product-card__characteristics) {
-      width: 100%;
-      .product-characteristics {
-         &__title {
-            font-size: toEm(18);
-         }
-      }
-   }
-
-  &__top {
+  &__top-items {
     align-self: start;
     width: 100%;
     display: flex;
@@ -353,14 +356,15 @@ const visibleImagesCount = computed(() => {
       position: relative;
       z-index: 100;
       text-align: center;
-      margin-block-end: toEm(12);
+      padding-block-start: toEm(2);
+      padding-block-end: toEm(12);
       transition: color var(--transition-duration), margin-block-start .4s;
 
       &_is-visible {
-         margin-block-start: toRem(-30);
+         margin-block-start: toRem(-32);
          color: var(--success-color);
          background-color: var(--light-color);
-         transition: margin-block-start .4s, color var(--transition-duration);
+         transition: margin-block-start var(--transition-duration), color var(--transition-duration);
       }
   }
 
@@ -380,7 +384,7 @@ const visibleImagesCount = computed(() => {
    }
   }
 
-  &__bottom {
+  &__bottom-items {
     position: relative;
     z-index: 20;
     width: 100%;
@@ -406,13 +410,14 @@ const visibleImagesCount = computed(() => {
       color: var(--green-color);
     }
   }
-}
 
-  @media (any-hover: hover) {
-    .product-card__front:has(.product-card__content:hover) {
-      .product-card__bottom {
-         margin-block-start: toRem(-32);
+    &:deep(.product-card__characteristics) {
+      width: 100%;
+      .product-characteristics {
+         &__title {
+            display: none;
+         }
       }
-    }
-  }
+   }
+}
 </style>

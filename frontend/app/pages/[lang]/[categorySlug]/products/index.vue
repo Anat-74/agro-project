@@ -208,18 +208,19 @@ watchEffect(() => {
   }
 
   &__card-list {
+   position: relative;
     justify-items: center;
     row-gap: toEm(32);
     @include gridCards(fill);
-    @include adaptiveValue("column-gap", 64, 7);
+    @include adaptiveValue("column-gap", 64, 5);
 
-    @media (max-width: toEm(568)) {
-      grid-template-columns: repeat(2, 1fr);
-    }
+   //  @media (max-width: toEm(588)) {
+   //    grid-template-columns: repeat(2, 1fr);
+   //  }
 
-    @media (max-width:$mobileSmall){
-       grid-template-columns: 1fr; 
-    }
+   //  @media (max-width:$mobileSmall){
+   //     grid-template-columns: 1fr; 
+   //  }
   }
 
   &__pagination {
