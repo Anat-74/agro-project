@@ -53,13 +53,13 @@ export default (config: unknown, { strapi }: { strapi: Core.Strapi }) => {
                   }
                 },
                    products: {
-                      fields: ['name', 'price', 'slug','isAvailable', 'isDiscount', 'locale'],
+                     //  fields: ['name', 'price', 'slug','isAvailable', 'isDiscount', 'locale'],
                    populate: {
                      image: {
                        fields: ['alternativeText', 'url']
-                     },
+                         },
                      category: {
-                       fields: ['name', 'slug']
+                     fields: ['name', 'slug']
                      },
                    }
                  }

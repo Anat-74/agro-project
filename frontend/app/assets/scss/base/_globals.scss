@@ -39,7 +39,8 @@ body:has(.dialog-hamburger[open]) {
 
 @media (min-width: c.$mobile) {
   @media (any-hover: hover) {
-    .products-section__card-list:has(li:hover) {
+    .products-section__card-list,
+    .featured-products__card-list:has(li:hover) {
       li:not(:hover) {
         opacity: .8;
         filter: grayscale(77%);

@@ -10,7 +10,7 @@ const { width } = useViewport();
 interface Props {
   product: Product;
   index: number;
-  categorySlug: string;
+  categorySlug?: string;
 }
 const props = defineProps<Props>();
 
@@ -191,7 +191,6 @@ const visibleImagesCount = computed(() => {
   transition: scale .4s;
    z-index: 150;
    scale: 1.1;
-
 
    .product-card__front {
       

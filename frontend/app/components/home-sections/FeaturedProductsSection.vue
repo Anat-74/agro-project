@@ -1,9 +1,9 @@
 <script setup lang="ts">
 interface Props {
-  featuredProducts: FeaturedProduct[];
+  products: FeaturedProduct[];
 }
 
-const { featuredProducts } = defineProps<Props>();
+const { products } = defineProps<Props>();
 
 const MAX_PRODUCTS_TO_SHOW = 6;
 </script>
@@ -11,11 +11,11 @@ const MAX_PRODUCTS_TO_SHOW = 6;
 <template>
   <section class="featured-products" aria-labelledby="featured-products">
     <div
-      v-for="section in featuredProducts"
+      v-for="section in products"
       :key="section.id"
       class="featured-products__container"
     >
-      <UBackground
+         <UBackground
         v-if="
           section.backgroundImage?.retinaBgImageAvif?.url ||
           section.backgroundImage?.baseBgImageWebp?.url
@@ -24,7 +24,6 @@ const MAX_PRODUCTS_TO_SHOW = 6;
         :retinaSrc="section.backgroundImage?.retinaBgImageAvif?.url"
         bg-position="bottom left"
       />
-      <div class="featured-products__content-top">
         <h2
           v-if="section.heading"
           class="featured-products__title"
@@ -32,33 +31,20 @@ const MAX_PRODUCTS_TO_SHOW = 6;
         >
           {{ section.heading }}
         </h2>
-        <NuxtLink v-if="section.link" class="featured-products__link">
+         <NuxtLink v-if="section.link" class="featured-products__link">
           {{ section.link }}
         </NuxtLink>
-      </div>
-      <ul class="featured-products__list">
-        <li
-          v-for="product in section.products.slice(0, MAX_PRODUCTS_TO_SHOW)"
-          :key="product.id"
-          class="featured-products__item"
-        >
-          <div class="product-card">
-            <UImage
-              v-if="product.image && product.image.length > 0"
-              :src="product.image[0]?.url"
-              :alt="product.image[0]?.alternativeText || product.name"
-              width="200"
-              height="200"
-            />
-
-            <div class="product-card__info">
-              <h3 class="product-card__name">{{ product.name }}</h3>
-              <div v-if="product.price" class="product-card__price">
-                {{ product.price }} руб.
-              </div>
-            </div>
-          </div>
-        </li>
+      <ul class="featured-products__card-list"
+      v-if="section.products?.length" 
+      >
+        <ProductCard
+        class="featured-products__item"
+          v-for="(prod, index) in section.products.slice(0, MAX_PRODUCTS_TO_SHOW)"
+          :key="prod.id"
+          :product="prod"
+          :index="index"
+          :categorySlug="categorySlug"
+       /> 
       </ul>
     </div>
   </section>
@@ -66,6 +52,60 @@ const MAX_PRODUCTS_TO_SHOW = 6;
 
 <style lang="scss" scoped>
 .featured-products {
-   padding-block-start: toEm(94);
+      position: relative;
+      padding-block-start: toEm(144);
+      background-color: var(--light-color);
+
+      @media (max-width:$tablet){
+      padding-block-start: toEm(8);
+      background-color: var(--bg-product);
+      }
+
+      &__container {
+      position: relative;
+      @include adaptiveValue("padding-block", 82, 60);
+
+      @media (max-width:$tablet){
+         grid-template-columns: 1fr auto;
+         display: grid;
+         align-items: center;
+         column-gap: toEm(22);
+         padding-inline: toRem(12);
+         overflow-x: auto;
+         scrollbar-width: thin;
+         scrollbar-color: yellow transparent;
+      }
+      }
+
+   &__title {
+      position: absolute;
+      left: toEm(9);
+      top: toEm(12);
+   }
+
+   &__link {
+      grid-row: 1/2;
+      grid-column: 2/3;
+
+      @media (min-width:$tablet){
+         position: absolute;
+         top: toEm(30);
+         right: toEm(15);
+      }
+   }
+
+   &__card-list {
+      display: flex;
+      align-items: center;
+      column-gap: toEm(18);
+   }
+
+   &__item {
+      transition: .4s;
+
+      @media (max-width:$tablet){
+         width: toEm(218);  
+      }
+   }
 }
 </style>

@@ -1,3 +1,5 @@
+import type { Product } from "./product";
+
 export interface HeroSlide {
   id: number;
   backgroundImage?: {
@@ -61,29 +63,8 @@ export interface FeaturedProduct {
       alternativeText?: string;
       documentId?: string;
     };
-  };
-  products: Array<{
-    id: number;
-    documentId: string;
-    name: string;
-    price: number;
-    slug: string;
-    isAvailable: boolean;
-    isDiscount: boolean;
-    locale: string;
-    image?: Array<{
-      id: number;
-      documentId: string;
-      alternativeText: string | null;
-      url: string;
-    }>;
-    category?: {
-      id: number;
-      documentId: string;
-      name: string;
-      slug: string;
-    };
-  }>;
+   };
+   products?: Product[];
   __component: string;
 }
 

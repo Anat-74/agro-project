@@ -8,7 +8,6 @@ const route = useRoute();
 const { categorySlug } = route.params as { categorySlug: string };
 const { currentLocale } = useLocale();
 const { goBack, goForward } = useGoToForwardOrBack();
-const { width } = useViewport();
 
 const sortOption = ref<string>("name:asc");
 const page = ref(route.query.page ? +route.query.page : 1); // Текущая страница из query-параметра
@@ -209,10 +208,10 @@ watchEffect(() => {
 
   &__card-list {
    position: relative;
-    justify-items: center;
-    row-gap: toEm(32);
-    @include gridCards(fill);
-    @include adaptiveValue("column-gap", 64, 5);
+   justify-items: center;
+   row-gap: toEm(32);
+   @include gridCards;
+   @include adaptiveValue("column-gap", 64, 5);
 
    //  @media (max-width: toEm(588)) {
    //    grid-template-columns: repeat(2, 1fr);

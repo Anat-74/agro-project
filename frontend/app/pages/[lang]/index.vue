@@ -4,57 +4,57 @@ import HeroSection from "~/components/home-sections/HeroSection.vue";
 
 const { find } = useStrapi();
 const { currentLocale } = useLocale();
-const { width } = useViewport();
+// const { width } = useViewport();
 
-const visibleImagesCount = computed(() => {
-  if (width.value < 565.98) return 2;
-  if (width.value < 878.98) return 4;
-  if (width.value < 1215.98) return 6;
-  return 10;
-});
+// const visibleImagesCount = computed(() => {
+//   if (width.value < 565.98) return 2;
+//   if (width.value < 878.98) return 4;
+//   if (width.value < 1215.98) return 6;
+//   return 10;
+// });
 
-const { data: categories } = useAsyncData(
-  `category-${currentLocale.value}`,
-  async () => {
-    const response = await find<Category>("categories", {
-      filters: { locale: currentLocale.value },
-      populate: {
-        image: {
-          fields: ["alternativeText", "url"],
-        },
-        subcategories: {
-          fields: ["id"],
-        },
-        products: {
-          fields: ["id"],
-        },
-      },
-    });
-    if (!response.data || response.data.length === 0) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: "Category - Not Found",
-      });
-    }
-    return response.data;
-  },
-);
+// const { data: categories } = useAsyncData(
+//   `category-${currentLocale.value}`,
+//   async () => {
+//     const response = await find<Category>("categories", {
+//       filters: { locale: currentLocale.value },
+//       populate: {
+//         image: {
+//           fields: ["alternativeText", "url"],
+//         },
+//         subcategories: {
+//           fields: ["id"],
+//         },
+//         products: {
+//           fields: ["id"],
+//         },
+//       },
+//     });
+//     if (!response.data || response.data.length === 0) {
+//       throw createError({
+//         statusCode: 404,
+//         statusMessage: "Category - Not Found",
+//       });
+//     }
+//     return response.data;
+//   },
+// );
 
-// Функция для определения типа ссылки для категории
-const getCategoryLink = (category: Category) => {
-  // Если у категории есть подкатегории, ведем к странице с подкатегориями
-  if (category.subcategories && category.subcategories.length > 0) {
-    return `/${currentLocale.value}/${category.slug}`;
-  }
-  // Если у категории есть продукты, ведем к странице с продуктами
-  else if (category.products && category.products.length > 0) {
-    return `/${currentLocale.value}/${category.slug}/products`;
-  }
-  // В противном случае ведем к странице категории (где будет отображено, что контента нет)
-  else {
-    return `/${currentLocale.value}/${category.slug}`;
-  }
-};
+// // Функция для определения типа ссылки для категории
+// const getCategoryLink = (category: Category) => {
+//   // Если у категории есть подкатегории, ведем к странице с подкатегориями
+//   if (category.subcategories && category.subcategories.length > 0) {
+//     return `/${currentLocale.value}/${category.slug}`;
+//   }
+//   // Если у категории есть продукты, ведем к странице с продуктами
+//   else if (category.products && category.products.length > 0) {
+//     return `/${currentLocale.value}/${category.slug}/products`;
+//   }
+//   // В противном случае ведем к странице категории (где будет отображено, что контента нет)
+//   else {
+//     return `/${currentLocale.value}/${category.slug}`;
+//   }
+// };
 
 //==========================================================
 
@@ -88,10 +88,11 @@ console.debug("Home page data:", homePage.value);
 
   <FeaturedProductsSection
     v-if="homePage?.featuredProducts"
-    :featured-products="homePage.featuredProducts"
+    :products="homePage.featuredProducts"
+    :categorySlug="categorySlug"
   />
 
-  <section class="category" aria-labelledby="category-page">
+  <!-- <section class="category" aria-labelledby="category-page">
     <div class="category__container">
       <h2 class="category__title" id="category-page">Топ категории</h2>
       <ul class="category__list" v-if="categories">
@@ -123,7 +124,7 @@ console.debug("Home page data:", homePage.value);
         </li>
       </ul>
     </div>
-  </section>
+  </section> -->
 
   <span v-if="error" class="error">
     {{ error.message }}
@@ -131,69 +132,4 @@ console.debug("Home page data:", homePage.value);
 </template>
 
 <style lang="scss" scoped>
-
-.category {
-  min-height: var(--min-height);
-
-  &__image-background {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-  }
-
-  &__list {
-    justify-items: center;
-    padding-block: toEm(16);
-    @include gridCards;
-    @include adaptiveValue("column-gap", 40, 12);
-  }
-
-  &__item {
-    display: grid;
-    justify-items: center;
-    padding-inline: toEm(28);
-    padding-block-start: toEm(7);
-    padding-block-end: toEm(16);
-    box-shadow: 0px 1px 2px 0px var(--shadow);
-    border-radius: toEm(4);
-  }
-
-  &__link {
-    min-height: 100%;
-    display: grid;
-    align-items: center;
-    justify-items: center;
-    row-gap: toEm(18);
-    margin-block-end: toEm(12);
-
-    &_blur {
-      transition: filter var(--transition-duration);
-      filter: blur(6px);
-    }
-
-    @include hover {
-      .category__image {
-        outline: toRem(4) solid var(--secondary-color);
-        outline-offset: toEm(4);
-        border-radius: toRem(25);
-      }
-
-      .category__card-title {
-        color: var(--danger-hover);
-      }
-    }
-  }
-
-  &__image {
-    max-height: toRem(94);
-    object-fit: cover;
-    transition: border-radius var(--transition-duration);
-  }
-
-  &__card-title {
-    align-self: end;
-    text-align: center;
-    transition: color var(--transition-duration);
-  }
-}
 </style>
