@@ -10,13 +10,6 @@ const MAX_PRODUCTS_TO_SHOW = 6;
 
 <template>
   <section class="featured-products" aria-labelledby="featured-products">
-           <h2
-           v-if="products?.[0]?.heading"
-          class="featured-products__title"
-          id="featured-products"
-        >
-          {{ products?.[0].heading }}
-        </h2>
     <div
       v-for="section in products"
       :key="section.id"
@@ -31,6 +24,14 @@ const MAX_PRODUCTS_TO_SHOW = 6;
         :retinaSrc="section.backgroundImage?.retinaBgImageAvif?.url"
         bg-position="bottom left"
       />
+         <h2
+           v-if="products?.[0]?.heading"
+          class="featured-products__title"
+          id="featured-products"
+        >
+          {{ products?.[0].heading }}
+        </h2>
+      <div class="featured-products__items">
          <NuxtLink v-if="section.link" class="featured-products__link">
             <span>{{ section.link }}</span>
              <Icon name="mingcute:arrow-right-line" />
@@ -47,13 +48,13 @@ const MAX_PRODUCTS_TO_SHOW = 6;
           :categorySlug="categorySlug"
        /> 
       </ul>
+      </div>
     </div>
   </section>
 </template>
 
 <style lang="scss" scoped>
 .featured-products {
-      position: relative;
       background-color: var(--light-color);
 
       @media (max-width:$tablet){
@@ -63,17 +64,6 @@ const MAX_PRODUCTS_TO_SHOW = 6;
 
       &__container {
       position: relative;
-      @include adaptiveValue("padding-block", 82, 54);
-
-      @media (max-width:$tablet){
-         grid-template-columns: 1fr auto;
-         display: grid;
-         column-gap: toEm(16);
-         padding-inline: toRem(12);
-         overflow-x: auto;
-         scrollbar-width: thin;
-         scrollbar-color: yellow transparent;
-      }
       }
 
    &__title {
@@ -82,7 +72,21 @@ const MAX_PRODUCTS_TO_SHOW = 6;
       top: toEm(14);
 
       @media (max-width:$tablet){
-         top: toEm(25);
+         top: toEm(9);
+      }
+   }
+
+      &__items {
+         @include adaptiveValue("padding-block", 82, 54);
+
+      @media (max-width:$tablet){
+         grid-template-columns: 1fr auto;
+         display: grid;
+         column-gap: toEm(16);
+         padding-inline: toRem(5);
+         overflow-x: auto;
+         scrollbar-width: thin;
+         scrollbar-color: yellow transparent;
       }
    }
 

@@ -369,7 +369,7 @@ const visibleImagesCount = computed(() => {
          margin-block-start: toRem(-32);
          color: var(--success-color);
          background-color: var(--light-color);
-         transition: margin-block-start var(--transition-duration), color var(--transition-duration);
+         transition: margin-block-start .4s, color var(--transition-duration);
       }
   }
 
