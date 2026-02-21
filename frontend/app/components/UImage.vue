@@ -214,9 +214,9 @@ const finalSrc = computed(() => {
 
   &_product {
    flex: 1 1 auto;
-
-   @media (max-width:$mobile){
-       max-width: toRem(220); 
+   
+   @media (max-width:$tablet){
+       max-width: toRem(200); 
    }
   }
 }

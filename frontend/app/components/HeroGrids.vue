@@ -50,7 +50,6 @@ const { grids } = defineProps<Props>();
   grid-template-columns: repeat(2, 1fr);
   align-items: center;
   column-gap: toEm(16);
-  padding-block: toEm(6);
   background-color: var(--light-color);
 
   @media (min-width: $tablet) {
@@ -81,7 +80,7 @@ const { grids } = defineProps<Props>();
     justify-items: center;
     row-gap: toEm(8);
     text-align: center;
-    padding-block: toRem(22);
+    padding-block: toEm(22);
   }
 
   &__title {

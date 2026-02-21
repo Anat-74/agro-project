@@ -14,7 +14,7 @@ const { slides, heroGrids } = defineProps<Props>();
 
 <template>
   <section 
-  :class="['hero-slider', {'hero-slider_is-visible' : isContacts}]" 
+  :class="['hero-slider', { 'hero-slider_is-visible': isContacts }, { 'hero-slider_is-margin': heroGrids?.[3]?.isVisible===false}]" 
   aria-labelledby="hero"
   >
     <AppSlider
@@ -86,6 +86,11 @@ const { slides, heroGrids } = defineProps<Props>();
   @media (min-width: $tablet) {
     position: relative;
     transition: filter .4s;
+    margin-block-end: toEm(132);
+
+    &_is-margin {
+      margin-block-end: toEm(42);
+    }
 
       &_is-visible {
          transition: filter var(--transition-duration);

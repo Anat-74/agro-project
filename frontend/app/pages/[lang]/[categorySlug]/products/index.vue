@@ -158,6 +158,7 @@ watchEffect(() => {
       class="products-section__card-list"
       >
         <ProductCard
+          class="products-section__item"
           v-for="(product, index) in products.data"
           :key="product.id"
           :product="product"
@@ -220,6 +221,10 @@ watchEffect(() => {
    //  @media (max-width:$mobileSmall){
    //     grid-template-columns: 1fr; 
    //  }
+  }
+
+  &__item {
+      @include adaptiveValue("height", 395, 320);
   }
 
   &__pagination {

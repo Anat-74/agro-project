@@ -177,7 +177,6 @@ const visibleImagesCount = computed(() => {
   transition: all var(--transition-duration);
   perspective: toRem(500);
   transition: scale .4s;
-  @include adaptiveValue("height", 405, 320);
 
   @media (max-width: $mobile) {
     @media (prefers-reduced-motion: no-preference) {
@@ -191,12 +190,6 @@ const visibleImagesCount = computed(() => {
   transition: scale .4s;
    z-index: 150;
    scale: 1.1;
-
-   .product-card__front {
-      
-   }
-   .product-card__back {
-   }
   }
 
   &__front,
@@ -282,7 +275,11 @@ const visibleImagesCount = computed(() => {
    transform: rotateY(180deg);
 
     .product-card__top-items {
-      padding-block-end: 0;
+      padding-block-end: toRem(2);
+    }
+
+    .product-card__in-stock {
+      font-size: toEm(14);
     }
 
    .product-card__content {
@@ -305,6 +302,10 @@ const visibleImagesCount = computed(() => {
       }
    }
 
+   .product-card__details {
+      font-size: toEm(18);
+  }
+
     &_back {
       z-index: 110;
       transform: rotateY(360deg);
@@ -323,6 +324,10 @@ const visibleImagesCount = computed(() => {
       .product-card__link {
          margin-block-start: toEm(12);
          transition: background-color var(--transition-duration), color var(--transition-duration);
+      
+      span {
+         font-size: toEm(14);
+       }
       }
     }
   }
@@ -355,6 +360,7 @@ const visibleImagesCount = computed(() => {
       position: relative;
       z-index: 100;
       text-align: center;
+      padding-inline: toEm(4);
       padding-block-start: toEm(2);
       padding-block-end: toEm(12);
       transition: color var(--transition-duration), margin-block-start .4s;
@@ -365,6 +371,10 @@ const visibleImagesCount = computed(() => {
          background-color: var(--light-color);
          transition: margin-block-start var(--transition-duration), color var(--transition-duration);
       }
+  }
+
+  &__description {
+   font-size: toEm(15);
   }
 
   &__link {
@@ -415,6 +425,10 @@ const visibleImagesCount = computed(() => {
       .product-characteristics {
          &__title {
             display: none;
+         }
+
+         &__table {
+            font-size: toEm(14);
          }
       }
    }
