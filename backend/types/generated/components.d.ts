@@ -101,8 +101,9 @@ export interface SectionsFeaturedProducts extends Struct.ComponentSchema {
     heading: Schema.Attribute.String;
     image: Schema.Attribute.Media<'images'>;
     link: Schema.Attribute.String;
+    percentDiscount: Schema.Attribute.String;
     products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
-    text: Schema.Attribute.String;
+    saleText: Schema.Attribute.String;
   };
 }
 
@@ -146,6 +147,7 @@ export interface SlidersHeroSlider extends Struct.ComponentSchema {
     image: Schema.Attribute.Media<'images'>;
     isDiscount: Schema.Attribute.Boolean;
     isTextBottom: Schema.Attribute.Boolean;
+    percentDiscount: Schema.Attribute.String;
     saleText: Schema.Attribute.String;
     textBottom: Schema.Attribute.String;
     textLink: Schema.Attribute.String;

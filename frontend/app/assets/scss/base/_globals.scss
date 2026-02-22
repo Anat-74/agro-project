@@ -43,7 +43,7 @@ body:has(.dialog-hamburger[open]) {
     .featured-products__card-list:has(li:hover) {
       li:not(:hover) {
         opacity: .8;
-        filter: grayscale(77%);
+        filter: grayscale(57%);
       }
     }
   }
@@ -91,18 +91,10 @@ h2 {
 }
 
 h3 {
-  @include m.adaptiveValue("font-size", 20, 18);
+  @include m.adaptiveValue("font-size", 18, 16);
 }
 
 h4 {
-  @include m.adaptiveValue("font-size", 18, 16);
-}
-
-h5 {
-  @include m.adaptiveValue("font-size", 18, 16);
-}
-
-h6 {
   @include m.adaptiveValue("font-size", 16, 14);
 }
 

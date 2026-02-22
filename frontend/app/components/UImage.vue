@@ -32,6 +32,7 @@ const props = withDefaults(
     type?:
       | "content"
       | "product"
+      | "discount-product"
       | "hero"
       | "avatar"
       | "thumbnail"
@@ -79,8 +80,12 @@ const typeConfigs: Record<string, ImageTypeConfig> = {
   },
   // Изображение-обложка для элементов (подкатегории, продукты и т.д.)
   product: {
-    quality: 80,
-    sizes: "100vw xs:100vw sm:33.33vw md:25vw lg:20vw xl:20vw"
+     quality: 80,
+   //  sizes: "100vw xs:100vw sm:33.33vw md:25vw lg:20vw xl:20vw"
+   },
+   discountProduct: {
+    quality: 85,
+    sizes: "120px",
   },
   // Изображения пользователей/аватарки
   avatar: {
@@ -95,12 +100,12 @@ const typeConfigs: Record<string, ImageTypeConfig> = {
   // Основные изображения в текстовом контенте
   content: {
     quality: 85,
-    sizes: "100vw",
+   //  sizes: "200px",
   },
   // Логотипы брендов и компаний
   logo: {
     quality: 100,
-    sizes: "200px",
+    sizes: "100px",
   },
   // Иконки интерфейса
   icon: {
@@ -209,6 +214,17 @@ const finalSrc = computed(() => {
   &_hero {
    @media (max-width:$tablet){
       max-width: toRem(540);
+   }
+  }
+
+  &_content {
+   // height: 100%;
+   // width: toEm(290);
+   // height: toEm(420);
+
+   img {
+      // height: 100%;
+      // object-fit: cover;
    }
   }
 

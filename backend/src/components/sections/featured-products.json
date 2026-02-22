@@ -13,7 +13,7 @@
     "heading": {
       "type": "string"
     },
-    "text": {
+    "saleText": {
       "type": "string"
     },
     "link": {
@@ -25,6 +25,9 @@
       "allowedTypes": [
         "images"
       ]
+    },
+    "percentDiscount": {
+      "type": "string"
     },
     "backgroundImage": {
       "type": "component",

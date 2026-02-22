@@ -55,7 +55,7 @@ const { slides, heroGrids } = defineProps<Props>();
             v-if="slide.saleText && slide.isDiscount"
             class="hero-slider__sale"
           >
-            {{ slide.saleText }}
+            {{ slide.saleText }} <span>{{ slide.percentDiscount }}</span>
           </strong>
           <p
             v-if="slide.textBottom && slide.isTextBottom"
@@ -149,8 +149,7 @@ const { slides, heroGrids } = defineProps<Props>();
     font-weight: 400;
     color: var(--success-color);
 
-    &::after {
-      content: "%";
+    span {
       color: var(--danger-color);
     }
   }

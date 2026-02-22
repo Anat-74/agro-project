@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import FeaturedProductsSection from "~/components/home-sections/FeaturedProductsSection.vue";
 import HeroSection from "~/components/home-sections/HeroSection.vue";
+import SaleProductsSection from "~/components/home-sections/SaleProductsSection.vue";
 
 const { find } = useStrapi();
 const { currentLocale } = useLocale();
@@ -89,7 +90,11 @@ console.debug("Home page data:", homePage.value);
   <FeaturedProductsSection
     v-if="homePage?.featuredProducts"
     :featured-prod="homePage.featuredProducts"
-    :category-slug="categorySlug"
+  />
+
+  <SaleProductsSection 
+   v-if="homePage?.featuredProducts"
+   :sale-prod="homePage.featuredProducts"
   />
 
   <!-- <section class="category" aria-labelledby="category-page">

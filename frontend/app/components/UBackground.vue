@@ -317,7 +317,7 @@ const interactiveClass = computed(() => ({
   &.is-active {
     transition: filter .6s, transform .5s;
     filter: brightness(0.7);
-    transform: scale(0.98);
+    transform: scale(0.95);
   }
 
   /* ========== ГРАДИЕНТНЫЕ ОВЕРЛЕИ ========== */

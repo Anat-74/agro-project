@@ -41,7 +41,10 @@ export default (config: unknown, { strapi }: { strapi: Core.Strapi }) => {
          featuredProducts: {
            on: {
              "sections.featured-products": {
-               populate: {
+                 populate: {
+                  image: {
+                  fields: ['alternativeText', 'url'],
+                  },
                   backgroundImage: {
                   populate: {
                     retinaBgImageAvif: {

@@ -46,7 +46,6 @@ const MAX_PRODUCTS_TO_SHOW = 6;
           :key="prod.id"
           :product="prod"
           :index="index"
-          :categorySlug="categorySlug"
        /> 
       </ul>
       </div>

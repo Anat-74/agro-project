@@ -29,7 +29,8 @@ export interface HeroSlide {
   textBottom?: string;
   textLink?: string;
   isDiscount?: boolean;
-  isTextBottom?: boolean;
+   isTextBottom?: boolean;
+   percentDiscount?: string;
 }
 
 export interface HeroGrid {
@@ -46,9 +47,11 @@ export interface HeroGrid {
 }
 
 export interface FeaturedProduct {
-  id: number;
-  heading?: string;
-  link?: string;
+id: number;
+heading?: string;
+saleText?: string;
+link?: string;
+percentDiscount?: string;
   backgroundImage?: {
     id: number;
     retinaBgImageAvif?: {
@@ -64,6 +67,12 @@ export interface FeaturedProduct {
       documentId?: string;
     };
    };
+   image?: {
+    id: number;
+    url: string;
+    alternativeText?: string;
+    documentId?: string;
+  };
    products?: Product[];
   __component: string;
 }

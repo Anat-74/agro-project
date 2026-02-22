@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { buttonTranslations } from "~/locales/button";
 import { tooltipTranslations } from "~/locales/tooltip";
+import { linkTranslations } from "~/locales/link";
 const { currentLocale } = useLocale();
 const { isInCart } = useIsInCart();
 const cartStore = useCartStore();
@@ -12,7 +13,7 @@ interface Props {
   index: number;
   categorySlug?: string;
 }
-const props = defineProps<Props>();
+const { product } = defineProps<Props>();
 
 const rotateActive = ref(false);
 const toggleActive = () => {
@@ -33,15 +34,14 @@ const handleAddToCart = (product: Product) => {
 };
 
 const visibleImagesCount = computed(() => {
-  if (width.value < 565.98) return 2;
-  if (width.value < 878.98) return 4;
-  if (width.value < 1215.98) return 6;
-  return 10;
+  if (width.value < 565.98) return 4;
+  if (width.value < 878.98) return 5;
+  return 6;
 });
 
  const characteristics = computed(() => {
   try {
-    return JSON.parse(props.product?.characteristics || '[]')
+    return JSON.parse(product?.characteristics || '[]')
   } catch {
     return []
   }
@@ -58,7 +58,9 @@ const visibleImagesCount = computed(() => {
           class="product-card__discount"
           name="mdi:discount"
         />
-        <ProductStatus :product="product" class="product-card__in-stock" />
+        <ProductStatus class="product-card__in-stock" 
+         :product="product"
+        />
         <UButton
           class="product-card__details"
           variant="product-details"
@@ -79,13 +81,15 @@ const visibleImagesCount = computed(() => {
           width="240"
           height="220"
         />
-      <h3 :class="['product-card__title', {'product-card__title_is-visible' : isVisibleLink}]">
+      <h3 :class="['product-card__title', {'product-card__title_is-visible' : isVisibleLink}]"
+      v-if="product?.name"
+      >
         {{ product.name }}
       </h3>
       <NuxtLink
         :class="['product-card__link', { 'product-card__link_is-visible' : isVisibleLink}]"
         :to="`/${currentLocale}/${categorySlug}/products/${product.slug}`"
-      ><span>Подробнее</span>
+      ><span>{{ linkTranslations[currentLocale].featuredProductLabel }}</span>
       </NuxtLink>
       </div>
       <div class="product-card__bottom-items">
@@ -138,7 +142,7 @@ const visibleImagesCount = computed(() => {
        <NuxtLink
         class="product-card__link"
         :to="`/${currentLocale}/${categorySlug}/products/${product.slug}`"
-      ><span>Подробнее</span>
+      ><span>{{ linkTranslations[currentLocale].featuredProductLabel }}</span>
       </NuxtLink>
       </div>
       <div class="product-card__bottom-items">
@@ -148,8 +152,9 @@ const visibleImagesCount = computed(() => {
         <span
           :class="[
             'product-card__price',
-            { 'product-card__price_discount': product.isDiscount },
+            { 'product-card__price_discount': product?.isDiscount },
           ]"
+          v-if="product?.price"
         >
           {{ formatPrice(product.price) }}
         </span>
