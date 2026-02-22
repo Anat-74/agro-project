@@ -88,8 +88,8 @@ console.debug("Home page data:", homePage.value);
 
   <FeaturedProductsSection
     v-if="homePage?.featuredProducts"
-    :products="homePage.featuredProducts"
-    :categorySlug="categorySlug"
+    :featured-prod="homePage.featuredProducts"
+    :category-slug="categorySlug"
   />
 
   <!-- <section class="category" aria-labelledby="category-page">

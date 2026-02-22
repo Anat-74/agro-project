@@ -99,8 +99,10 @@ export interface SectionsFeaturedProducts extends Struct.ComponentSchema {
       false
     >;
     heading: Schema.Attribute.String;
+    image: Schema.Attribute.Media<'images'>;
     link: Schema.Attribute.String;
     products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
+    text: Schema.Attribute.String;
   };
 }
 

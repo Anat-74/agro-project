@@ -165,7 +165,6 @@ const interactiveClass = computed(() => ({
   overflow: hidden;
   position: absolute;
   inset: 0;
-  z-index: -1;
 
   /* ========== АНИМАЦИЯ ПОЯВЛЕНИЯ ========== */
   opacity: 1;
@@ -177,6 +176,10 @@ const interactiveClass = computed(() => ({
 
   /* ========== ВАРИАНТЫ КОМПОНЕНТА ========== */
   /*.variant-clean - Clean (по умолчанию) - только фон */
+
+  &.variant-clean {
+   transition: filter .6s ease, transform .5s;
+  }
 
   /* Hero вариант */
   &.variant-hero {
@@ -312,6 +315,7 @@ const interactiveClass = computed(() => ({
 
   /* Active состояние */
   &.is-active {
+    transition: filter .6s, transform .5s;
     filter: brightness(0.7);
     transform: scale(0.98);
   }

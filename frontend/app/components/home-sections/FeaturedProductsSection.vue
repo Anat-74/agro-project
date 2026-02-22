@@ -1,47 +1,48 @@
 <script setup lang="ts">
 interface Props {
-  products: FeaturedProduct[];
+  featuredProd: FeaturedProduct[];
 }
 
-const { products } = defineProps<Props>();
+const { featuredProd } = defineProps<Props>();
 
 const MAX_PRODUCTS_TO_SHOW = 6;
 </script>
 
 <template>
   <section class="featured-products" aria-labelledby="featured-products">
-    <div
-      v-for="section in products"
-      :key="section.id"
-      class="featured-products__container"
-    >
-         <UBackground
+      <UBackground
         v-if="
-          section.backgroundImage?.retinaBgImageAvif?.url ||
-          section.backgroundImage?.baseBgImageWebp?.url
+         featuredProd?.[0]?.backgroundImage?.retinaBgImageAvif?.url ||
+          featuredProd?.[0]?.backgroundImage?.baseBgImageWebp?.url
         "
-        :src="section.backgroundImage?.baseBgImageWebp?.url"
-        :retinaSrc="section.backgroundImage?.retinaBgImageAvif?.url"
+        :src="featuredProd?.[0].backgroundImage.baseBgImageWebp?.url"
+        :retinaSrc="featuredProd?.[0].backgroundImage.retinaBgImageAvif?.url"
         bg-position="bottom left"
+        filter="brightness"
       />
+
+    <div class="featured-products__container"
+    >
          <h2
-         v-if="section?.heading"
+         v-if="featuredProd?.[0]?.heading"
          class="featured-products__title"
          id="featured-products"
         >
-          {{ section.heading }}
+          {{ featuredProd?.[0].heading }}
         </h2>
       <div class="featured-products__items">
-         <NuxtLink v-if="section.link" class="featured-products__link">
-            <span>{{ section.link }}</span>
+         <NuxtLink class="featured-products__link"
+         v-if="featuredProd?.[0]?.link" 
+         >
+            <span>{{ featuredProd?.[0].link }}</span>
              <Icon name="mingcute:arrow-right-line" />
         </NuxtLink>
       <ul class="featured-products__card-list"
-      v-if="section.products?.length" 
+      v-if="featuredProd?.[0]?.products?.length" 
       >
         <ProductCard
         class="featured-products__item"
-          v-for="(prod, index) in section.products.slice(0, MAX_PRODUCTS_TO_SHOW)"
+          v-for="(prod, index) in featuredProd?.[0].products.slice(0, MAX_PRODUCTS_TO_SHOW)"
           :key="prod.id"
           :product="prod"
           :index="index"
@@ -55,11 +56,12 @@ const MAX_PRODUCTS_TO_SHOW = 6;
 
 <style lang="scss" scoped>
 .featured-products {
-      background-color: var(--light-color);
+   background-color: var(--light-color);
 
       @media (max-width:$tablet){
-      padding-block-start: toEm(24);
-      background-color: var(--bg-product);
+      padding-block-start: toEm(32);
+      padding-block-end: toEm(12);
+      background-color: var(--whitesmoke-color);
       }
 
       &__container {
@@ -86,7 +88,7 @@ const MAX_PRODUCTS_TO_SHOW = 6;
          padding-inline: toRem(5);
          overflow-x: auto;
          scrollbar-width: thin;
-         scrollbar-color: yellow transparent;
+         scrollbar-color: yellow var(--light-color);
       }
    }
 

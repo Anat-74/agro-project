@@ -13,8 +13,18 @@
     "heading": {
       "type": "string"
     },
+    "text": {
+      "type": "string"
+    },
     "link": {
       "type": "string"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
     },
     "backgroundImage": {
       "type": "component",
