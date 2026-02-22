@@ -25,11 +25,11 @@ const MAX_PRODUCTS_TO_SHOW = 6;
         bg-position="bottom left"
       />
          <h2
-           v-if="products?.[0]?.heading"
-          class="featured-products__title"
-          id="featured-products"
+         v-if="section?.heading"
+         class="featured-products__title"
+         id="featured-products"
         >
-          {{ products?.[0].heading }}
+          {{ section.heading }}
         </h2>
       <div class="featured-products__items">
          <NuxtLink v-if="section.link" class="featured-products__link">

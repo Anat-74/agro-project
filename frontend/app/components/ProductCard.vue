@@ -279,7 +279,7 @@ const visibleImagesCount = computed(() => {
     }
 
     .product-card__in-stock {
-      font-size: toEm(14);
+      font-size: toEm(15);
     }
 
    .product-card__content {
@@ -303,7 +303,17 @@ const visibleImagesCount = computed(() => {
    }
 
    .product-card__details {
-      font-size: toEm(18);
+      font-size: toEm(16);
+  }
+
+   .product-card__link {
+         padding-block: toEm(6);
+         margin-block-start: toEm(12);
+         transition: background-color var(--transition-duration), color var(--transition-duration);
+      
+      span {
+         font-size: toEm(14);
+       }
   }
 
     &_back {
@@ -318,16 +328,7 @@ const visibleImagesCount = computed(() => {
          @starting-style {
            opacity: 0;
            visibility: hidden;
-      }
-    }
-
-      .product-card__link {
-         margin-block-start: toEm(12);
-         transition: background-color var(--transition-duration), color var(--transition-duration);
-      
-      span {
-         font-size: toEm(14);
-       }
+         }
       }
     }
   }
