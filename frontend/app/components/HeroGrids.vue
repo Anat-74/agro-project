@@ -23,12 +23,13 @@ const { grids } = defineProps<Props>();
     ]"
   >
     <li
+      class="hero-grids__item"
       v-for="grid in grids"
       :key="grid.id"
       v-show="grid.isVisible"
-      class="hero-grids__item"
     >
       <UImage
+        class="hero-grids__image"
         v-if="grid.icons?.url"
         :src="grid.icons.url"
         :alt="grid.heading"
@@ -71,7 +72,7 @@ const { grids } = defineProps<Props>();
 
     &_is-visible {
       transition: background-color var(--transition-duration);
-      filter: blur(9px);
+      filter: blur(4px);
     }
   }
 
@@ -83,7 +84,16 @@ const { grids } = defineProps<Props>();
     padding-block: toEm(22);
   }
 
+  &__image {
+   width: toEm(44);
+   height: toEm(44);
+  }
+
   &__title {
+   @media (max-width:$mobile){
+      font-size: toEm(18);
+   }
+
     @media (max-width: $mobileSmall) {
       max-width: toRem(160);
     }

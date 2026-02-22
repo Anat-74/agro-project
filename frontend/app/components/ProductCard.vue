@@ -50,8 +50,7 @@ const visibleImagesCount = computed(() => {
 
 <template>
   <li :class="['product-card', {'product-card_rotate-active' : rotateActive}]">
-    <div
-      :class="['product-card__front', { 'product-card__front_front': rotateActive }]"
+    <div :class="['product-card__front', { 'product-card__front_front': rotateActive }]"
     >
       <div class="product-card__top-items">
         <Icon
@@ -130,7 +129,7 @@ const visibleImagesCount = computed(() => {
       </div>
       <div class="product-card__content">
          <p class="product-card__description">
-            {{ product.description }}
+            <span class="product-card__name">{{ product.name }}</span> {{ product.description }}
          </p>
          <ProductCharacteristics
             class="product-card__characteristics"
@@ -376,6 +375,17 @@ const visibleImagesCount = computed(() => {
 
   &__description {
    font-size: toEm(15);
+
+      &::first-letter {
+         color: var(--danger-hover);
+         font-style: italic;
+         margin-inline-end: toRem(1);
+      }
+
+   span {
+      font-weight: 600;
+      color: var(--success-color);
+   }
   }
 
   &__link {
