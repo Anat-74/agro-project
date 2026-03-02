@@ -38,7 +38,7 @@ const visibleImagesCount = computed(() => {
           :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
           width="100"
           height="100"
-          type="discount-product"
+
         />
         <div class="discount-card__items">
         <h3 class="discount-card__title">{{ product.name }}</h3>
@@ -51,7 +51,7 @@ const visibleImagesCount = computed(() => {
         >
           {{ formatPrice(product.price) }}
         </span>
-            
+
         <UButton
           @click="handleAddToCart(product)"
           variant="add"
@@ -68,11 +68,12 @@ const visibleImagesCount = computed(() => {
 
 <style lang="scss" scoped>
 .discount-card {
-   display: flex;
-   flex-wrap: wrap;
+   display: grid;
+   grid-template-columns: auto 1fr;
+   justify-items: center;
    padding-inline: toEm(12);
    padding-block: toEm(6);
    border-radius: toEm(6);
-   background-color: var(--gray-color);
+   border: 1px solid var(--gray-color);
 }
 </style>

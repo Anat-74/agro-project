@@ -53,8 +53,8 @@ const { saleProd } = defineProps<Props>();
           v-if="saleProd?.[1]?.image?.url"
           :src="saleProd?.[1].image.url"
           :alt="saleProd?.[1]?.heading"
-          width="260"
-          height="380"
+          width="312"
+          height="430"
           type="content"
         />
         </div>
@@ -81,27 +81,17 @@ const { saleProd } = defineProps<Props>();
    }
 
       &__card-list {
-      height: 100%;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      row-gap: toEm(12);
+         // display: flex;
+         // flex-wrap: wrap;
+      row-gap: toEm(32);
       column-gap: toEm(9);
+      @include gridCards;
    }
 
    &__item {
-      transition: all .4s;
-      @include adaptiveValue("height", 385, 322);
-
-      @media ($tablet <= width <= toEm(1425)){
-         &:last-child {
-            display: none;
-         }
-      }
-
-      @media (max-width:$tablet){
-         width: toEm(216);
-      }
+  //display: block;        // блочный элемент
+  //width: fit-content;    // но ширина по контенту
+  //margin: 0 auto;        // центрируется сам!
    }
 }
 </style>

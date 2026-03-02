@@ -85,7 +85,7 @@ const typeConfigs: Record<string, ImageTypeConfig> = {
    },
    discountProduct: {
     quality: 85,
-    sizes: "120px",
+    sizes: "100px",
   },
   // Изображения пользователей/аватарки
   avatar: {
@@ -218,13 +218,8 @@ const finalSrc = computed(() => {
   }
 
   &_content {
-   // height: 100%;
-   // width: toEm(290);
-   // height: toEm(420);
-
    img {
-      // height: 100%;
-      // object-fit: cover;
+         border-radius: toRem(6);
    }
   }
 
