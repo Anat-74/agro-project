@@ -30,6 +30,10 @@ const visibleImagesCount = computed(() => {
 
 <template>
    <li class="discount-card">
+      <NuxtLink
+      class="discount-card__link"
+      :to="`/${currentLocale}/${product.category?.slug}/products/${product.slug}`"
+      >
       <UImage
           v-if="product.image?.length"
           :src="product.image[0]?.url"
@@ -38,21 +42,23 @@ const visibleImagesCount = computed(() => {
           :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
           width="100"
           height="100"
-
         />
-        <div class="discount-card__items">
+        </NuxtLink>
         <h3 class="discount-card__title">{{ product.name }}</h3>
         <span
           :class="[
             'discount-card__price',
             { 'discount-card__price_discount': product?.isDiscount },
           ]"
-          v-if="product?.price"
         >
           {{ formatPrice(product.price) }}
         </span>
-
         <UButton
+        class="discount-card__show"
+        icon="mdi:show-outline"
+        />
+        <UButton
+          class="discount-card__add"
           @click="handleAddToCart(product)"
           variant="add"
           :is-in-cart="isInCart(product.id)"
@@ -62,18 +68,47 @@ const visibleImagesCount = computed(() => {
           : buttonTranslations[currentLocale].label
           "
         />
-        </div>
    </li>
 </template>
 
 <style lang="scss" scoped>
 .discount-card {
    display: grid;
-   grid-template-columns: auto 1fr;
-   justify-items: center;
+   grid-template-columns: auto 1fr auto;
+   align-items: center;
+   column-gap: toEm(6);
+   grid-template-areas: 
+   "link title show"
+   "link price add"
+   ;
    padding-inline: toEm(12);
    padding-block: toEm(6);
    border-radius: toEm(6);
-   border: 1px solid var(--gray-color);
+   border: toRem(2) solid var(--whitesmoke-color);
+
+   &__link {
+      grid-area: link;
+   }
+
+	&__title {
+      grid-area: title;
+      font-weight: 500;
+      transition: color .4s;
+	}
+
+   &__price {
+      grid-area: price;
+   }
+
+	&__show {
+      grid-area: show;
+      align-self: start;
+	}
+
+	&__add {
+      grid-area: add;
+      align-self: end;
+	}
 }
+
 </style>

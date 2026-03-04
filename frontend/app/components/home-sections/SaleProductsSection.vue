@@ -36,25 +36,27 @@ const { saleProd } = defineProps<Props>();
       </ul>
       <div class="sale-products__sale-items">
          <div class="sale-products__hot-sale">
-            <p v-if="saleProd?.[1]?.saleText || saleProd?.[1]?.percentDiscount" >
+            <p class="sale-products__discount-text"
+            v-if="saleProd?.[1]?.saleText || saleProd?.[1]?.percentDiscount" >
                <span>
                   {{ saleProd?.[1].percentDiscount }}
                </span>
                {{ saleProd?.[1].saleText }}
             </p>
       <NuxtLink
-        class="sale-products__link"
+         class="sale-products__link"
       ><span v-if="saleProd?.[1]?.link">
          {{ saleProd?.[1].link }}
       </span>
+         <Icon name="mingcute:arrow-right-line" />
       </NuxtLink>
          </div>
        <UImage
           v-if="saleProd?.[1]?.image?.url"
           :src="saleProd?.[1].image.url"
           :alt="saleProd?.[1]?.heading"
-          width="312"
-          height="430"
+          width="302"
+          height="400"
           type="content"
         />
         </div>
@@ -64,34 +66,69 @@ const { saleProd } = defineProps<Props>();
 
 <style lang="scss" scoped>
 .sale-products {
-   padding-block-start: toEm(26);
+   padding-block-end: toEm(55);
 
    &__container {
       position: relative;
       display: grid;
       grid-template-columns: 1fr auto;
       align-items: center;
-      padding-block-start: toEm(75);
+      column-gap: toEm(27);
+      padding-block-start: toEm(55);
    }
 
    &__title {
       position: absolute;
       left: toEm(9);
-      top: toEm(8);
+      top: toRem(1);
    }
 
-      &__card-list {
-         // display: flex;
-         // flex-wrap: wrap;
-      row-gap: toEm(32);
-      column-gap: toEm(9);
+   &__card-list {
+      row-gap: toEm(25);
+      column-gap: toEm(12);
       @include gridCards;
    }
 
-   &__item {
-  //display: block;        // блочный элемент
-  //width: fit-content;    // но ширина по контенту
-  //margin: 0 auto;        // центрируется сам!
+   &__sale-items {
+      position: relative;
+   }
+
+   &__hot-sale {
+      width: 100%;
+      position: absolute;
+      z-index: 20;
+      top: toRem(70);
+      left: 50%;
+      translate: -50% 0;
+   }
+
+   &__discount-text {
+      text-align: center;
+      padding-inline: toEm(42);
+      margin-block-end: toEm(25);
+      font-size: toRem(20);
+
+      span {
+         font-weight: 600;
+      }
+   }
+
+   &__link {
+      display: flex;
+      align-items: center;
+      column-gap: toEm(6);
+      width: fit-content;
+      margin: 0 auto;
+      padding-inline: toEm(22);
+      padding-block: toEm(12);
+      border-radius: toRem(25);
+      font-weight: 600;
+      color: var(--green-color);
+      background-color: var(--light-color);
+
+      svg {
+         font-size: toEm(20);
+      }
    }
 }
 </style>

@@ -82,13 +82,12 @@ const visibleImagesCount = computed(() => {
           height="220"
         />
       <h3 :class="['product-card__title', {'product-card__title_is-visible' : isVisibleLink}]"
-      v-if="product?.name"
       >
         {{ product.name }}
       </h3>
       <NuxtLink
         :class="['product-card__link', { 'product-card__link_is-visible' : isVisibleLink}]"
-        :to="`/${currentLocale}/${categorySlug}/products/${product.slug}`"
+        :to="`/${currentLocale}/${product.category?.slug}/products/${product.slug}`"
       ><span>{{ linkTranslations[currentLocale].featuredProductLabel }}</span>
       </NuxtLink>
       </div>
@@ -154,7 +153,6 @@ const visibleImagesCount = computed(() => {
             'product-card__price',
             { 'product-card__price_discount': product?.isDiscount },
           ]"
-          v-if="product?.price"
         >
           {{ formatPrice(product.price) }}
         </span>

@@ -55,6 +55,7 @@ body:has(.dialog-hamburger[open]) {
   @media (any-hover: hover) {
     li:has(a:hover) {
       h3 {
+         transition: color var(--transition-duration);
          color: var(--warning-color);
       }
     }
@@ -113,9 +114,6 @@ h4 {
 //! PARAGRAPHS AND LISTS
 // ===================================================================
 
-p {
-   color: var(--gray-color);
-}
 
 // ===================================================================
 //! QUOTES

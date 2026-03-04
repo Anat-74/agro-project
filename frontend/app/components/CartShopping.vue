@@ -123,9 +123,10 @@ onMounted(() => {
     align-items: center;
     grid-template-areas:
       "link title controls price remove"
-      "link title controls price remove";
+      "link title controls price remove"
+      ;
     padding: toEm(7);
-    border: toRem(2) solid var(--bg);
+    border: toRem(2) solid var(--danger-color);
     border-radius: toRem(6);
 
     &:not(:last-child) {
@@ -138,7 +139,8 @@ onMounted(() => {
       grid-template-areas:
         "link price"
         "link title"
-        "remove controls";
+        "remove controls"
+        ;
     }
   }
 
@@ -152,7 +154,7 @@ onMounted(() => {
     align-items: center;
     gap: toEm(8);
     font-weight: 600;
-    background-color: var(--locale-warning-color);
+    background-color: var(--whitesmoke-color);
     color: var(--danger-color);
 
     svg {
