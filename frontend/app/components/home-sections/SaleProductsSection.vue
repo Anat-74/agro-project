@@ -8,14 +8,14 @@ const { saleProd } = defineProps<Props>();
 
 <template>
    <section class="sale-products" aria-labelledby="sale-products">
-      <UBackground
+      <!-- <UBackground
         v-if="
          saleProd?.[1]?.backgroundImage?.retinaBgImageAvif?.url ||
           saleProd?.[1]?.backgroundImage?.baseBgImageWebp?.url
         "
         :src="saleProd?.[1].backgroundImage.baseBgImageWebp?.url"
         :retinaSrc="saleProd?.[1].backgroundImage.retinaBgImageAvif?.url"
-      />
+      /> -->
       <div class="sale-products__container">
       <h2
          v-if="saleProd?.[1]?.heading"
@@ -56,7 +56,7 @@ const { saleProd } = defineProps<Props>();
           :src="saleProd?.[1].image.url"
           :alt="saleProd?.[1]?.heading"
           width="302"
-          height="400"
+          height="417"
           type="content"
         />
         </div>
@@ -67,54 +67,81 @@ const { saleProd } = defineProps<Props>();
 <style lang="scss" scoped>
 .sale-products {
    padding-block-end: toEm(55);
+   background-color: var(--light-color);
+
+   @media (max-width:$tablet){
+      background-color: var(--whitesmoke-color);
+   }
 
    &__container {
       position: relative;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: center;
-      column-gap: toEm(27);
       padding-block-start: toEm(55);
+
+      @media (min-width:$tablet){
+         display: grid;
+         grid-template-columns: 1fr auto;
+         align-items: center;
+         column-gap: toEm(27);
+      }
    }
 
    &__title {
       position: absolute;
       left: toEm(9);
       top: toRem(1);
+      font-style: italic;
+      font-family: $font-family-cursive;
+      color: var(--warning-color);
    }
 
    &__card-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       row-gap: toEm(25);
       column-gap: toEm(12);
-      @include gridCards;
+      @include adaptiveValue("row-gap", 25, 18, 0, $containerWidth, 1023.98);
+
+      @media (max-width:$mobile){
+          grid-template-columns: repeat(2, 1fr); 
+      }
    }
 
    &__sale-items {
-      position: relative;
+      @media (min-width:$tablet){
+         position: relative;
+      }
+
+   //    @media (max-width:$tablet){
+   //       display: none;
+   // }
    }
 
    &__hot-sale {
-      width: 100%;
-      position: absolute;
-      z-index: 20;
-      top: toRem(70);
-      left: 50%;
-      translate: -50% 0;
+      @media (min-width:$tablet){
+         width: 100%;
+         position: absolute;
+         z-index: 20;
+         top: toRem(50);
+         left: 50%;
+         translate: -50% 0;
+      }
    }
 
    &__discount-text {
       text-align: center;
-      padding-inline: toEm(42);
       margin-block-end: toEm(25);
-      font-size: toRem(20);
+      font-size: toEm(20);
+      @include adaptiveValue("padding-inline", 42, 6, 0, $containerWidth, 1023.98);
 
       span {
+         white-space: nowrap;
          font-weight: 600;
       }
    }
 
    &__link {
       display: flex;
+      justify-content: center;
       align-items: center;
       column-gap: toEm(6);
       width: fit-content;

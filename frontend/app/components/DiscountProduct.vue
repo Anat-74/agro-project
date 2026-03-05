@@ -76,15 +76,35 @@ const visibleImagesCount = computed(() => {
    display: grid;
    grid-template-columns: auto 1fr auto;
    align-items: center;
-   column-gap: toEm(6);
+   column-gap: toEm(12);
    grid-template-areas: 
    "link title show"
    "link price add"
    ;
    padding-inline: toEm(12);
-   padding-block: toEm(6);
+   padding-block: toEm(9);
    border-radius: toEm(6);
    border: toRem(2) solid var(--whitesmoke-color);
+
+   @media (max-width:$tablet){
+      border-color: var(--light-color);
+   }
+
+   @media (max-width:$mobile){
+      &:last-child {
+         display: none;
+      }
+   }
+
+   @media (max-width: $mobileSmall) {
+   grid-template-columns: auto 1fr;
+   row-gap: toEm(8);
+   grid-template-areas: 
+      "link show"
+      "title add"
+      "price add"
+   ;
+   }
 
    &__link {
       grid-area: link;
@@ -107,8 +127,8 @@ const visibleImagesCount = computed(() => {
 
 	&__add {
       grid-area: add;
+      justify-self: end;
       align-self: end;
 	}
 }
-
 </style>

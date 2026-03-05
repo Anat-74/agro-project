@@ -18,13 +18,13 @@
 }
 
 //* Grids
-@mixin gridCards($type: fit, $min: f.toRem(290), $max: 1fr) {
+@mixin gridCards($type: fit, $min: f.toRem(220), $max: 1fr) {
   display: grid;
   grid-template-columns: repeat(auto-#{$type}, minmax($min, $max));
 }
 
 //*containerParent
-@mixin containerParent($type: inline-size, $name: null) {
+@mixin containerParent($name: null, $type: inline-size) {
   @if ($name) {
     container: $name / $type;
   } @else {
@@ -40,7 +40,7 @@
   // Макс. значение в toRem
   $minSize,
   // Мин. значение в toRem
-  $percent: 3,
+  $percent: 2.5,
   // Процент роста
   $unit: "cqw" 
   // Единица по умолчанию cqw!

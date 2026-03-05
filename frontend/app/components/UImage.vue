@@ -218,8 +218,15 @@ const finalSrc = computed(() => {
   }
 
   &_content {
+   @media (max-width:$tablet){
+      display: none;
+   }
+
    img {
-         border-radius: toRem(6);
+      object-fit: cover;
+      height: toEm(417);
+      border-radius: toRem(6);
+      @include adaptiveValue("width", 302, 194, 0, $containerWidth, 1023.98);
    }
   }
 
