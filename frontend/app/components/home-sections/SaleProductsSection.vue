@@ -75,10 +75,10 @@ const { saleProd } = defineProps<Props>();
 
    &__container {
       position: relative;
+      display: grid;
       padding-block-start: toEm(55);
 
       @media (min-width:$tablet){
-         display: grid;
          grid-template-columns: 1fr auto;
          align-items: center;
          column-gap: toEm(27);
@@ -110,13 +110,10 @@ const { saleProd } = defineProps<Props>();
       @media (min-width:$tablet){
          position: relative;
       }
-
-   //    @media (max-width:$tablet){
-   //       display: none;
-   // }
    }
 
    &__hot-sale {
+
       @media (min-width:$tablet){
          width: 100%;
          position: absolute;
@@ -129,9 +126,17 @@ const { saleProd } = defineProps<Props>();
 
    &__discount-text {
       text-align: center;
-      margin-block-end: toEm(25);
       font-size: toEm(20);
       @include adaptiveValue("padding-inline", 42, 6, 0, $containerWidth, 1023.98);
+
+      @media (min-width:$tablet){
+         margin-block-end: toEm(25);
+      }
+
+      @media (max-width:$tablet){
+         position: absolute;
+         top: 22px;
+      }
 
       span {
          white-space: nowrap;
@@ -140,18 +145,23 @@ const { saleProd } = defineProps<Props>();
    }
 
    &__link {
+      justify-self: center;
       display: flex;
       justify-content: center;
       align-items: center;
       column-gap: toEm(6);
-      width: fit-content;
-      margin: 0 auto;
+      margin-inline-end: 0;
       padding-inline: toEm(22);
       padding-block: toEm(12);
       border-radius: toRem(25);
       font-weight: 600;
       color: var(--green-color);
       background-color: var(--light-color);
+
+      @media (max-width:$tablet){
+         justify-self: end;
+         margin-block-start: toEm(27);
+      }
 
       svg {
          font-size: toEm(20);
