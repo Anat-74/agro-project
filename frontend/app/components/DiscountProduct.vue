@@ -22,8 +22,7 @@ const handleAddToCart = (product: Product) => {
 };
 
 const visibleImagesCount = computed(() => {
-  if (width.value < 565.98) return 2;
-  if (width.value < 878.98) return 4;
+  if (width.value < 767.98) return 4;
   return 6;
 });
 </script>
@@ -42,6 +41,7 @@ const visibleImagesCount = computed(() => {
           :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
           width="100"
           height="100"
+          type="discount-product"
         />
         </NuxtLink>
         <h3 class="discount-card__title">{{ product.name }}</h3>

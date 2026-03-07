@@ -30,7 +30,7 @@ const props = withDefaults(
 
     // Тип изображения
     type?:
-      | "content"
+      | "discount-content"
       | "product"
       | "discount-product"
       | "hero"
@@ -84,8 +84,7 @@ const typeConfigs: Record<string, ImageTypeConfig> = {
    //  sizes: "100vw xs:100vw sm:33.33vw md:25vw lg:20vw xl:20vw"
    },
    discountProduct: {
-    quality: 85,
-    sizes: "100px",
+      sizes: "50vw md:50vw xl:33.33vw"
   },
   // Изображения пользователей/аватарки
   avatar: {
@@ -181,6 +180,10 @@ const finalSrc = computed(() => {
 
 <style lang="scss" scoped>
 .app-image {
+   img {
+      object-fit: cover;
+   }
+
   &_smooth-load {
     filter: blur(4px);
     transition: filter .4s ease;
@@ -217,13 +220,12 @@ const finalSrc = computed(() => {
    }
   }
 
-  &_content {
+  &_discount-content {
    @media (max-width:$tablet){
       display: none;
    }
 
    img {
-      object-fit: cover;
       height: toEm(417);
       border-radius: toRem(6);
       @include adaptiveValue("width", 302, 194, 0, $containerWidth, 1023.98);
@@ -236,6 +238,10 @@ const finalSrc = computed(() => {
    @media (max-width:$tablet){
        max-width: toRem(200); 
    }
+  }
+
+  &_discount-product {
+      max-width: toEm(100);
   }
 }
 </style>

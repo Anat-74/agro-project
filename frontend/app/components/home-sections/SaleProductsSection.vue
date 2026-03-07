@@ -8,14 +8,6 @@ const { saleProd } = defineProps<Props>();
 
 <template>
    <section class="sale-products" aria-labelledby="sale-products">
-      <!-- <UBackground
-        v-if="
-         saleProd?.[1]?.backgroundImage?.retinaBgImageAvif?.url ||
-          saleProd?.[1]?.backgroundImage?.baseBgImageWebp?.url
-        "
-        :src="saleProd?.[1].backgroundImage.baseBgImageWebp?.url"
-        :retinaSrc="saleProd?.[1].backgroundImage.retinaBgImageAvif?.url"
-      /> -->
       <div class="sale-products__container">
       <h2
          v-if="saleProd?.[1]?.heading"
@@ -36,6 +28,7 @@ const { saleProd } = defineProps<Props>();
       </ul>
       <div class="sale-products__sale-items">
          <div class="sale-products__hot-sale">
+            <div class="sale-products__items-text">
             <p class="sale-products__discount-text"
             v-if="saleProd?.[1]?.saleText || saleProd?.[1]?.percentDiscount" >
                <span>
@@ -43,13 +36,14 @@ const { saleProd } = defineProps<Props>();
                </span>
                {{ saleProd?.[1].saleText }}
             </p>
-      <NuxtLink
-         class="sale-products__link"
-      ><span v-if="saleProd?.[1]?.link">
-         {{ saleProd?.[1].link }}
-      </span>
-         <Icon name="mingcute:arrow-right-line" />
-      </NuxtLink>
+            </div>
+               <NuxtLink
+                  class="sale-products__link"
+               ><span v-if="saleProd?.[1]?.link">
+                  {{ saleProd?.[1].link }}
+               </span>
+                  <Icon name="mingcute:arrow-right-line" />
+               </NuxtLink>
          </div>
        <UImage
           v-if="saleProd?.[1]?.image?.url"
@@ -57,7 +51,7 @@ const { saleProd } = defineProps<Props>();
           :alt="saleProd?.[1]?.heading"
           width="302"
           height="417"
-          type="content"
+          type="discount-content"
         />
         </div>
       </div>
@@ -75,13 +69,17 @@ const { saleProd } = defineProps<Props>();
 
    &__container {
       position: relative;
-      display: grid;
       padding-block-start: toEm(55);
 
       @media (min-width:$tablet){
+         display: grid;
          grid-template-columns: 1fr auto;
          align-items: center;
          column-gap: toEm(27);
+      }
+
+      @media (max-width:$mobile){
+         padding-block-start: toEm(75);
       }
    }
 
@@ -113,7 +111,6 @@ const { saleProd } = defineProps<Props>();
    }
 
    &__hot-sale {
-
       @media (min-width:$tablet){
          width: 100%;
          position: absolute;
@@ -124,9 +121,29 @@ const { saleProd } = defineProps<Props>();
       }
    }
 
+   &__items-text {
+      @media (max-width:$tablet){
+         position: absolute;
+         top: toEm(16);
+         right: toRem(18);
+         white-space: nowrap;
+         overflow-x: auto;
+         width: toRem(280);
+
+         &::-webkit-scrollbar {
+            display: none;
+         }
+         -ms-overflow-style: none;
+         scrollbar-width: none;
+      }
+
+      @media (max-width:$mobile){
+         top: toEm(36);
+      }
+   }
    &__discount-text {
       text-align: center;
-      font-size: toEm(20);
+      font-size: toEm(18);
       @include adaptiveValue("padding-inline", 42, 6, 0, $containerWidth, 1023.98);
 
       @media (min-width:$tablet){
@@ -134,8 +151,7 @@ const { saleProd } = defineProps<Props>();
       }
 
       @media (max-width:$tablet){
-         position: absolute;
-         top: 22px;
+         width: toRem(330);
       }
 
       span {
@@ -145,12 +161,11 @@ const { saleProd } = defineProps<Props>();
    }
 
    &__link {
-      justify-self: center;
       display: flex;
       justify-content: center;
       align-items: center;
       column-gap: toEm(6);
-      margin-inline-end: 0;
+      width: fit-content;
       padding-inline: toEm(22);
       padding-block: toEm(12);
       border-radius: toRem(25);
@@ -158,8 +173,12 @@ const { saleProd } = defineProps<Props>();
       color: var(--green-color);
       background-color: var(--light-color);
 
+      @media (min-width:$tablet){
+         margin-inline: auto;
+      }
+
       @media (max-width:$tablet){
-         justify-self: end;
+         margin-inline-start: auto;
          margin-block-start: toEm(27);
       }
 
