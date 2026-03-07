@@ -2,8 +2,8 @@
 <template>
  <div class="animate-label">
 		<h2 class="animate-label__title">Organick</h2>
-		<h2 class="animate-label__title">Organick</h2>
-		<h2 class="animate-label__title">Organick</h2>
+		<h2 class="animate-label__title" aria-hidden="true">Organick</h2>
+		<h2 class="animate-label__title" aria-hidden="true">Organick</h2>
 		</div> 
 </template>
 

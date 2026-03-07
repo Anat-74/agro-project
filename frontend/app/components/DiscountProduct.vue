@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { buttonTranslations } from "~/locales/button";
+import { tooltipTranslations } from "~/locales/tooltip";
 
 const { currentLocale } = useLocale();
 const cartStore = useCartStore();
@@ -29,6 +30,11 @@ const visibleImagesCount = computed(() => {
 
 <template>
    <li class="discount-card">
+      <Icon
+          v-if="product.isDiscount"
+          class="discount-card__discount"
+          name="mdi:discount"
+        />
       <NuxtLink
       class="discount-card__link"
       :to="`/${currentLocale}/${product.category?.slug}/products/${product.slug}`"
@@ -45,7 +51,11 @@ const visibleImagesCount = computed(() => {
         />
         </NuxtLink>
         <h3 class="discount-card__title">{{ product.name }}</h3>
-        <span
+        <div class="discount-card__items-price">
+         <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
+          <Icon name="my-icon:icon-by-regular" />
+        </UTooltip>
+            <span
           :class="[
             'discount-card__price',
             { 'discount-card__price_discount': product?.isDiscount },
@@ -53,6 +63,7 @@ const visibleImagesCount = computed(() => {
         >
           {{ formatPrice(product.price) }}
         </span>
+        </div>
         <UButton
         class="discount-card__show"
         icon="mdi:show-outline"
@@ -73,8 +84,10 @@ const visibleImagesCount = computed(() => {
 
 <style lang="scss" scoped>
 .discount-card {
+   position: relative;
    display: grid;
    grid-template-columns: auto 1fr auto;
+   justify-items: start;
    align-items: center;
    column-gap: toEm(12);
    grid-template-areas: 
@@ -84,26 +97,36 @@ const visibleImagesCount = computed(() => {
    padding-inline: toEm(12);
    padding-block: toEm(9);
    border-radius: toEm(6);
-   border: toRem(2) solid var(--whitesmoke-color);
+   border: toEm(2) solid var(--whitesmoke-color);
 
    @media (max-width:$tablet){
-      border-color: var(--light-color);
+      background-color: var(--light-color);
    }
 
-   @media (max-width:$mobile){
+   @media (max-width:toEm(800)){
       &:last-child {
          display: none;
       }
    }
 
-   @media (max-width: $mobileSmall) {
-   grid-template-columns: auto 1fr;
+   @media (max-width: toEm(540)) {
+   grid-template-columns: repeat(2, auto);
    row-gap: toEm(8);
    grid-template-areas: 
       "link show"
       "title add"
       "price add"
    ;
+   }
+
+   &__discount {
+      position: absolute;
+      top: toRem(2);
+      left: toRem(2);
+      z-index: 10;
+      border-radius: 50%;
+      color: var(--success-color);
+      background-color: var(--light-color);
    }
 
    &__link {
@@ -116,13 +139,35 @@ const visibleImagesCount = computed(() => {
       transition: color .4s;
 	}
 
-   &__price {
+   &__items-price {
       grid-area: price;
+      display: flex;
+      align-items: center;
+      column-gap: toEm(2);
+   }
+
+   &__price {
+      border-radius: toEm(4);
+      font-weight: 600;
+      color: var(--gray-color);
+
+      &_discount {
+         color: var(--green-color);
+      }
    }
 
 	&__show {
       grid-area: show;
       align-self: start;
+      translate: toEm(-6) toRem(6);
+      padding-inline: toEm(5);
+      border-radius: 50%;
+      color: var(--gray-color);
+      background-color: var(--whitesmoke-color);
+
+      @media (max-width:toEm(540)){
+         translate: toEm(-4) toEm(16);
+      }
 	}
 
 	&__add {

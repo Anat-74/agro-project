@@ -146,7 +146,6 @@ defineEmits<Emits>();
 
   &_icon {
     padding: 0;
-    font-size: toEm(22);
   }
 
   &_color-theme {
@@ -163,6 +162,7 @@ defineEmits<Emits>();
 
     svg {
       color: var(--light-color);
+      font-size: toEm(15);
       @include adaptiveValue("font-size", 18, 20);
 
       @media (max-width: $tablet) {
@@ -271,10 +271,8 @@ defineEmits<Emits>();
       scale: 1.2;
     }
 
-    @media (max-width: $mobile) {
-      svg {
-        font-size: toRem(22);
-      }
+    svg {
+      font-size: toRem(22);
     }
   }
 

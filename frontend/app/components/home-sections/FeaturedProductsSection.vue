@@ -59,7 +59,6 @@ const MAX_PRODUCTS_TO_SHOW = 6;
 
       @media (max-width:$tablet){
       padding-block-start: toEm(32);
-      padding-block-end: toEm(12);
       background-color: var(--whitesmoke-color);
       }
 
@@ -87,7 +86,7 @@ const MAX_PRODUCTS_TO_SHOW = 6;
          padding-inline: toRem(5);
          overflow-x: auto;
          scrollbar-width: thin;
-         scrollbar-color: yellow var(--light-color);
+         scrollbar-color: var(--light-color) var(--light-color);
       }
    }
 

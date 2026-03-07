@@ -28,9 +28,26 @@ const { saleProd } = defineProps<Props>();
       </ul>
       <div class="sale-products__sale-items">
          <div class="sale-products__hot-sale">
-            <div class="sale-products__items-text">
-            <p class="sale-products__discount-text"
-            v-if="saleProd?.[1]?.saleText || saleProd?.[1]?.percentDiscount" >
+            <div class="sale-products__items-text"
+               v-if="saleProd?.[1]?.saleText || saleProd?.[1]?.percentDiscount"
+            >
+            <p class="sale-products__discount-text">
+               <span>
+                  {{ saleProd?.[1].percentDiscount }}
+               </span>
+               {{ saleProd?.[1].saleText }}
+            </p>
+               <p class="sale-products__discount-text visible-tablet"
+               aria-hidden="true"
+               >
+               <span>
+                  {{ saleProd?.[1].percentDiscount }}
+               </span>
+               {{ saleProd?.[1].saleText }}
+            </p>
+               <p class="sale-products__discount-text visible-tablet"
+               aria-hidden="true"
+               >
                <span>
                   {{ saleProd?.[1].percentDiscount }}
                </span>
@@ -78,8 +95,8 @@ const { saleProd } = defineProps<Props>();
          column-gap: toEm(27);
       }
 
-      @media (max-width:$mobile){
-         padding-block-start: toEm(75);
+      @media (max-width:$mobileSmall){
+         padding-block-start: toEm(80);
       }
    }
 
@@ -89,7 +106,7 @@ const { saleProd } = defineProps<Props>();
       top: toRem(1);
       font-style: italic;
       font-family: $font-family-cursive;
-      color: var(--warning-color);
+      color: var(--danger-hover);
    }
 
    &__card-list {
@@ -99,7 +116,7 @@ const { saleProd } = defineProps<Props>();
       column-gap: toEm(12);
       @include adaptiveValue("row-gap", 25, 18, 0, $containerWidth, 1023.98);
 
-      @media (max-width:$mobile){
+      @media (max-width:toEm(800)){
           grid-template-columns: repeat(2, 1fr); 
       }
    }
@@ -126,9 +143,10 @@ const { saleProd } = defineProps<Props>();
          position: absolute;
          top: toEm(16);
          right: toRem(18);
+         display: flex;
          white-space: nowrap;
          overflow-x: auto;
-         width: toRem(280);
+         width: 45%;
 
          &::-webkit-scrollbar {
             display: none;
@@ -138,7 +156,15 @@ const { saleProd } = defineProps<Props>();
       }
 
       @media (max-width:$mobile){
-         top: toEm(36);
+         top: toEm(18);
+      }
+
+      @media (max-width:$mobileSmall){
+         top: toEm(40);
+         width: 94%;
+         left: 50%;
+         translate: -50% 0;
+         background-color: var(--light-color);
       }
    }
    &__discount-text {
@@ -151,12 +177,20 @@ const { saleProd } = defineProps<Props>();
       }
 
       @media (max-width:$tablet){
-         width: toRem(330);
+         padding-block: toEm(4);
+         color: var(--warning-hover);
+         animation: scroll 9s infinite linear;
+         @include adaptiveValue("padding-inline-end", 8, 90);
       }
 
       span {
          white-space: nowrap;
          font-weight: 600;
+         color: var(--danger-hover);
+
+         @media (max-width:$tablet){
+            color: var(--warning-color);
+         }
       }
    }
 
@@ -185,6 +219,15 @@ const { saleProd } = defineProps<Props>();
       svg {
          font-size: toEm(20);
       }
+   }
+}
+
+@keyframes scroll {
+   0% {
+      translate: 0;
+   }
+   100% {
+      translate: -100%;
    }
 }
 </style>
