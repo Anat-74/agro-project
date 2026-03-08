@@ -1,9 +1,9 @@
 @use "./functions" as *;
 @use "./container" as c;
 
-.backdrop-visible {
-  background-color: var(--back-drop-main);
-}
+// .backdrop-visible {
+//   background-color: var(--back-drop-main);
+// }
 
 .hidden-tablet {
   @media (max-width: c.$tablet) {
@@ -41,7 +41,7 @@
 
 .iconify--my-icon {
   translate: 0 toRem(2);
-  font-size: toEm(18);
+  font-size: toEm(16);
   color: var(--warning-color);
 }
 

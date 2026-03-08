@@ -86,7 +86,7 @@ const { slides, heroGrids } = defineProps<Props>();
   @media (min-width: $tablet) {
     position: relative;
     transition: filter .4s;
-    margin-block-end: toEm(132);
+    margin-block-end: toEm(170);
 
     &_is-margin {
       margin-block-end: toEm(42);

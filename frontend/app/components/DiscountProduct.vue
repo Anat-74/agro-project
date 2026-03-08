@@ -109,6 +109,14 @@ const visibleImagesCount = computed(() => {
       }
    }
 
+     @media (max-width: $mobile) {
+      @media (prefers-reduced-motion: no-preference) {
+         animation: scroll-animate;
+         animation-timeline: view();
+         animation-range: entry 0% entry 150%;
+      }
+  }
+
    @media (max-width: toEm(540)) {
    grid-template-columns: repeat(2, auto);
    row-gap: toEm(8);
@@ -166,7 +174,7 @@ const visibleImagesCount = computed(() => {
       background-color: var(--whitesmoke-color);
 
       @media (max-width:toEm(540)){
-         translate: toEm(-4) toEm(16);
+         translate: toEm(-8) toEm(16);
       }
 	}
 

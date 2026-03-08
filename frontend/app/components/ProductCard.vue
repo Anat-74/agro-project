@@ -78,8 +78,8 @@ const visibleImagesCount = computed(() => {
           :alt="product.name"
           :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
           :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
-          width="240"
-          height="220"
+          width="180"
+          height="160"
         />
       <h3 :class="['product-card__title', {'product-card__title_is-visible' : isVisibleLink}]"
       >
@@ -178,18 +178,12 @@ const visibleImagesCount = computed(() => {
   border-radius: toEm(6);
   transition: all var(--transition-duration);
   perspective: toRem(500);
-  transition: scale .4s;
 
-  @media (max-width: $mobile) {
-    @media (prefers-reduced-motion: no-preference) {
-      animation: scroll-animate;
-      animation-timeline: view();
-      animation-range: entry 0% entry 150%;
-    }
+  @media (max-width:$tablet){
+     overflow: hidden;
   }
 
   &_rotate-active {
-  transition: scale .4s;
    z-index: 150;
    scale: 1.1;
   }
@@ -236,7 +230,7 @@ const visibleImagesCount = computed(() => {
       }
 
       .product-card__title {
-         margin-block-start: toRem(-30);
+         margin-block-start: toEm(-12);
          color: var(--success-color);
          background-color: var(--light-color);
          transition: margin-block-start .4s, color var(--transition-duration);
@@ -368,8 +362,8 @@ const visibleImagesCount = computed(() => {
       padding-block-end: toEm(12);
       transition: color var(--transition-duration), margin-block-start .4s;
 
-      &_is-visible {
-         margin-block-start: toRem(-32);
+   &_is-visible {
+         margin-block-start: toEm(-14);
          color: var(--success-color);
          background-color: var(--light-color);
          transition: margin-block-start .4s, color var(--transition-duration);
@@ -377,7 +371,7 @@ const visibleImagesCount = computed(() => {
   }
 
   &__description {
-   font-size: toEm(15);
+         font-size: toEm(15);
 
       &::first-letter {
          color: var(--danger-hover);

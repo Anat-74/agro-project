@@ -220,7 +220,15 @@ const finalSrc = computed(() => {
    }
   }
 
-  &_discount-content {
+  &_product {
+   flex: 1 1 auto;
+   
+
+       max-width: toEm(180); 
+
+  }
+
+    &_discount-content {
    @media (max-width:$tablet){
       display: none;
    }
@@ -229,14 +237,6 @@ const finalSrc = computed(() => {
       height: toEm(417);
       border-radius: toRem(6);
       @include adaptiveValue("width", 302, 194, 0, $containerWidth, 1023.98);
-   }
-  }
-
-  &_product {
-   flex: 1 1 auto;
-   
-   @media (max-width:$tablet){
-       max-width: toRem(200); 
    }
   }
 

@@ -144,6 +144,7 @@ const { saleProd } = defineProps<Props>();
          top: toEm(16);
          right: toRem(18);
          display: flex;
+         align-items: center;
          white-space: nowrap;
          overflow-x: auto;
          width: 45%;
@@ -173,14 +174,14 @@ const { saleProd } = defineProps<Props>();
       @include adaptiveValue("padding-inline", 42, 6, 0, $containerWidth, 1023.98);
 
       @media (min-width:$tablet){
-         margin-block-end: toEm(25);
+         margin-block-end: toEm(32);
       }
 
       @media (max-width:$tablet){
          padding-block: toEm(4);
          color: var(--warning-hover);
          animation: scroll 9s infinite linear;
-         @include adaptiveValue("padding-inline-end", 8, 90);
+         @include adaptiveValue("padding-inline-end", 32, 90);
       }
 
       span {

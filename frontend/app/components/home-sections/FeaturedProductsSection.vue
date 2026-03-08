@@ -18,6 +18,7 @@ const MAX_PRODUCTS_TO_SHOW = 6;
         :src="featuredProd?.[0].backgroundImage.baseBgImageWebp?.url"
         :retinaSrc="featuredProd?.[0].backgroundImage.retinaBgImageAvif?.url"
         bg-position="bottom left"
+        sizeMode="contain"
         filter="brightness"
       />
 
@@ -58,7 +59,7 @@ const MAX_PRODUCTS_TO_SHOW = 6;
    background-color: var(--light-color);
 
       @media (max-width:$tablet){
-      padding-block-start: toEm(32);
+      padding-block-start: toEm(40);
       background-color: var(--whitesmoke-color);
       }
 
@@ -69,15 +70,11 @@ const MAX_PRODUCTS_TO_SHOW = 6;
    &__title {
       position: absolute;
       left: toRem(15);
-      top: toEm(14);
-
-      @media (max-width:$tablet){
-         top: toEm(9);
-      }
+      top: 0;
    }
 
       &__items {
-         @include adaptiveValue("padding-block", 82, 54);
+         padding-block: toEm(50);
 
       @media (max-width:$tablet){
          grid-template-columns: 1fr auto;
@@ -86,7 +83,7 @@ const MAX_PRODUCTS_TO_SHOW = 6;
          padding-inline: toRem(5);
          overflow-x: auto;
          scrollbar-width: thin;
-         scrollbar-color: var(--light-color) var(--light-color);
+         scrollbar-color: var(--danger-color) var(--light-color);
       }
    }
 
@@ -102,7 +99,7 @@ const MAX_PRODUCTS_TO_SHOW = 6;
       @media (min-width:$tablet){
          height: auto;
          position: absolute;
-         top: toEm(30);
+         top: toEm(6);
          right: toEm(15);
          font-weight: 600;
          color: var(--green-color);
@@ -132,9 +129,9 @@ const MAX_PRODUCTS_TO_SHOW = 6;
 
    &__item {
       transition: all .4s;
-      @include adaptiveValue("height", 385, 322);
+      @include adaptiveValue("height", 350, 300);
 
-      @media ($tablet <= width <= toEm(1425)){
+      @media ($tablet <= width <= toEm(1250)){
          &:last-child {
             display: none;
          }
