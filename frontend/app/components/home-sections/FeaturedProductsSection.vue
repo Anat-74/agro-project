@@ -99,7 +99,7 @@ const MAX_PRODUCTS_TO_SHOW = 6;
       @media (min-width:$tablet){
          height: auto;
          position: absolute;
-         top: toEm(6);
+         top: toEm(7);
          right: toEm(15);
          font-weight: 600;
          color: var(--green-color);

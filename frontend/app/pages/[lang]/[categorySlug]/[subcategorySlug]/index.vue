@@ -2,7 +2,6 @@
 import { productFilterTranslations } from "~/locales/productFilter";
 import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
 import { buttonTranslations } from "~/locales/button";
-import { formatPrice } from "~/utils/formatPrice";
 
 const { find } = useStrapi();
 const route = useRoute();

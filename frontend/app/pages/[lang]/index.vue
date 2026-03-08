@@ -42,20 +42,20 @@ const { currentLocale } = useLocale();
 // );
 
 // // Функция для определения типа ссылки для категории
-// const getCategoryLink = (category: Category) => {
-//   // Если у категории есть подкатегории, ведем к странице с подкатегориями
-//   if (category.subcategories && category.subcategories.length > 0) {
-//     return `/${currentLocale.value}/${category.slug}`;
-//   }
-//   // Если у категории есть продукты, ведем к странице с продуктами
-//   else if (category.products && category.products.length > 0) {
-//     return `/${currentLocale.value}/${category.slug}/products`;
-//   }
-//   // В противном случае ведем к странице категории (где будет отображено, что контента нет)
-//   else {
-//     return `/${currentLocale.value}/${category.slug}`;
-//   }
-// };
+const getCategoryLink = (category: Category) => {
+  // Если у категории есть подкатегории, ведем к странице с подкатегориями
+  if (category.subcategories && category.subcategories.length > 0) {
+    return `/${currentLocale.value}/${category.slug}`;
+  }
+  // Если у категории есть продукты, ведем к странице с продуктами
+  else if (category.products && category.products.length > 0) {
+    return `/${currentLocale.value}/${category.slug}/products`;
+  }
+  // В противном случае ведем к странице категории (где будет отображено, что контента нет)
+  else {
+    return `/${currentLocale.value}/${category.slug}`;
+  }
+};
 
 //==========================================================
 

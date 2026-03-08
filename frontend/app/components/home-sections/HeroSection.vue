@@ -33,6 +33,8 @@ const { slides, heroGrids } = defineProps<Props>();
           "
           :src="slide.backgroundImage?.baseBgImageWebp?.url"
           :retinaSrc="slide.backgroundImage?.retinaBgImageAvif?.url"
+          sizeMode="contain"
+          bg-position="top center"
         />
         <UImage
           v-if="slide.image?.url"

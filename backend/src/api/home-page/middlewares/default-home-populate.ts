@@ -1,4 +1,5 @@
 import type { Core } from '@strapi/strapi';
+import category from '../../category/controllers/category';
 
 export default (config: unknown, { strapi }: { strapi: Core.Strapi }) => {
   return async (ctx: any, next: () => Promise<void>) => {
@@ -60,7 +61,15 @@ export default (config: unknown, { strapi }: { strapi: Core.Strapi }) => {
                    populate: {
                      image: {
                        fields: ['alternativeText', 'url']
-                         },
+                     },
+                     subcategory: {
+                        fields: ['name', 'slug'],
+                        populate: {
+                           category: {
+                           fields: ['name', 'slug']
+                           }
+                        }
+                     },
                      category: {
                      fields: ['name', 'slug']
                      },
