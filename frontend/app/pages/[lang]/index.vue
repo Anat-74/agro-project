@@ -5,89 +5,118 @@ import SaleProductsSection from "~/components/home-sections/SaleProductsSection.
 
 const { find } = useStrapi();
 const { currentLocale } = useLocale();
-// const { width } = useViewport();
 
-// const visibleImagesCount = computed(() => {
-//   if (width.value < 565.98) return 2;
-//   if (width.value < 878.98) return 4;
-//   if (width.value < 1215.98) return 6;
-//   return 10;
-// });
+// ========== 1. ХЕЛПЕРЫ ДЛЯ КЭША ==========
+const saveToCache = (key: string, data: any) => {
+  if (!import.meta.client) return;
+  try {
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        data,
+        timestamp: Date.now(),
+      }),
+    );
+  } catch (e) {
+    console.warn("Cache save failed:", e);
+  }
+};
 
-// const { data: categories } = useAsyncData(
-//   `category-${currentLocale.value}`,
-//   async () => {
-//     const response = await find<Category>("categories", {
-//       filters: { locale: currentLocale.value },
-//       populate: {
-//         image: {
-//           fields: ["alternativeText", "url"],
-//         },
-//         subcategories: {
-//           fields: ["id"],
-//         },
-//         products: {
-//           fields: ["id"],
-//         },
-//       },
-//     });
-//     if (!response.data || response.data.length === 0) {
-//       throw createError({
-//         statusCode: 404,
-//         statusMessage: "Category - Not Found",
-//       });
-//     }
-//     return response.data;
-//   },
-// );
+const loadFromCache = (key: string) => {
+  if (!import.meta.client) return null;
+  try {
+    const cached = localStorage.getItem(key);
+    if (!cached) return null;
 
-// // Функция для определения типа ссылки для категории
-// const getCategoryLink = (category: Category) => {
-//   // Если у категории есть подкатегории, ведем к странице с подкатегориями
-//   if (category.subcategories && category.subcategories.length > 0) {
-//     return `/${currentLocale.value}/${category.slug}`;
-//   }
-//   // Если у категории есть продукты, ведем к странице с продуктами
-//   else if (category.products && category.products.length > 0) {
-//     return `/${currentLocale.value}/${category.slug}/products`;
-//   }
-//   // В противном случае ведем к странице категории (где будет отображено, что контента нет)
-//   else {
-//     return `/${currentLocale.value}/${category.slug}`;
-//   }
-// };
+    const { data, timestamp } = JSON.parse(cached);
+    // Данные живут 7 дней
+    if (Date.now() - timestamp > 7 * 24 * 60 * 60 * 1000) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return { ...data, _offline: true };
+  } catch {
+    return null;
+  }
+};
 
-//======================================================================
+// ========== 2. ОНЛАЙН/ОФФЛАЙН СТАТУС ==========
+const isOnline = ref(true);
 
-// const getProductLink = (product: Product) => {
-//   if (product.subcategory?.slug) {
-//     // Сначала на страницу подкатегории
-//     const categorySlug = product.subcategory.category?.slug || product.category?.slug;
-//     return `/${currentLocale.value}/${categorySlug}/${product.subcategory.slug}`;
-//   } else if (product.category?.slug) {
-//     // Продукт связан с категорией напрямую
-//     return `/${currentLocale.value}/${product.category.slug}/products/${product.slug}`;
-//   }
-//   return `/${currentLocale.value}`;
-// };
+if (import.meta.client) {
+  isOnline.value = navigator.onLine;
 
-//==========================================================
+  const handleOnline = () => {
+    isOnline.value = true;
+  };
+  const handleOffline = () => {
+    isOnline.value = false;
+  };
+
+  window.addEventListener("online", handleOnline);
+  window.addEventListener("offline", handleOffline);
+
+  onUnmounted(() => {
+    window.removeEventListener("online", handleOnline);
+    window.removeEventListener("offline", handleOffline);
+  });
+}
+
+// ========== 3. ОСНОВНАЯ ЛОГИКА ==========
+const homePageKey = computed(() => `home-page-${currentLocale.value}`);
 
 const {
   data: homePage,
   pending,
   error,
-  refresh,
-} = useAsyncData(`home-page-${currentLocale.value}`, async () => {
-  const response = await find("home-page", {
-    filters: { locale: currentLocale.value },
-  });
+} = useAsyncData(
+  homePageKey,
+  async () => {
+    try {
+      const response = await find("home-page", {
+        filters: { locale: currentLocale.value },
+      });
 
-  if (!response) {
-    throw createError({ statusCode: 404, message: "Home page not found" });
-  }
-  return response.data as unknown as HomePage;
-});
+      if (!response || !response.data) {
+        throw createError({ statusCode: 404, message: "Home page not found" });
+      }
+
+      // Сохраняем в кэш для оффлайн
+      if (import.meta.client) {
+        saveToCache(homePageKey.value, response.data);
+      }
+
+      return response.data;
+    } catch (e) {
+      // Если нет интернета - берем из кэша
+      if (!isOnline.value) {
+        const cached = loadFromCache(homePageKey.value);
+        if (cached) return cached;
+      }
+      throw e;
+    }
+  },
+  {
+    // Трансформация данных
+    transform: (data) => ({
+      ...data,
+      _offline: data._offline || false,
+    }),
+
+    // Авто-обновление при смене локали
+    watch: [() => currentLocale.value],
+
+    // Кэширование (память → localStorage)
+    getCachedData: (key, nuxtApp) => {
+      if (import.meta.client) {
+        if (nuxtApp.payload.data[key]) {
+          return nuxtApp.payload.data[key];
+        }
+        return loadFromCache(key);
+      }
+    },
+  },
+);
 
 console.debug("Home page data:", homePage.value);
 </script>
@@ -106,9 +135,9 @@ console.debug("Home page data:", homePage.value);
     :featured-prod="homePage.featuredProducts"
   />
 
-  <SaleProductsSection 
-   v-if="homePage?.featuredProducts"
-   :sale-prod="homePage.featuredProducts"
+  <SaleProductsSection
+    v-if="homePage?.featuredProducts"
+    :sale-prod="homePage.featuredProducts"
   />
 
   <!-- <section class="category" aria-labelledby="category-page">
@@ -150,5 +179,4 @@ console.debug("Home page data:", homePage.value);
   </span>
 </template>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>
