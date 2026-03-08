@@ -176,16 +176,16 @@ const visibleImagesCount = computed(() => {
   width: 100%;
   position: relative;
   border-radius: toEm(6);
-  transition: all var(--transition-duration);
   perspective: toRem(500);
-
-  @media (max-width:$tablet){
-     overflow: hidden;
-  }
 
   &_rotate-active {
    z-index: 150;
    scale: 1.1;
+   transform-origin: center;
+
+   @media (max-width:$tablet){
+      margin-block: calc(1 * toEm(16));
+   }
   }
 
   &__front,
@@ -363,7 +363,7 @@ const visibleImagesCount = computed(() => {
       transition: color var(--transition-duration), margin-block-start .4s;
 
    &_is-visible {
-         margin-block-start: toEm(-14);
+         margin-block-start: toEm(-15);
          color: var(--success-color);
          background-color: var(--light-color);
          transition: margin-block-start .4s, color var(--transition-duration);

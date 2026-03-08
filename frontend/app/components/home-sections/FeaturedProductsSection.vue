@@ -83,7 +83,7 @@ const MAX_PRODUCTS_TO_SHOW = 6;
          padding-inline: toRem(5);
          overflow-x: auto;
          scrollbar-width: thin;
-         scrollbar-color: var(--danger-color) var(--light-color);
+         scrollbar-color: var(--light-color) var(--light-color);
       }
    }
 
@@ -128,7 +128,7 @@ const MAX_PRODUCTS_TO_SHOW = 6;
    }
 
    &__item {
-      transition: all .4s;
+      transition: all .5s;
       @include adaptiveValue("height", 350, 300);
 
       @media ($tablet <= width <= toEm(1250)){
