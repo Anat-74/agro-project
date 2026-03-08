@@ -42,20 +42,34 @@ const { currentLocale } = useLocale();
 // );
 
 // // Функция для определения типа ссылки для категории
-const getCategoryLink = (category: Category) => {
-  // Если у категории есть подкатегории, ведем к странице с подкатегориями
-  if (category.subcategories && category.subcategories.length > 0) {
-    return `/${currentLocale.value}/${category.slug}`;
-  }
-  // Если у категории есть продукты, ведем к странице с продуктами
-  else if (category.products && category.products.length > 0) {
-    return `/${currentLocale.value}/${category.slug}/products`;
-  }
-  // В противном случае ведем к странице категории (где будет отображено, что контента нет)
-  else {
-    return `/${currentLocale.value}/${category.slug}`;
-  }
-};
+// const getCategoryLink = (category: Category) => {
+//   // Если у категории есть подкатегории, ведем к странице с подкатегориями
+//   if (category.subcategories && category.subcategories.length > 0) {
+//     return `/${currentLocale.value}/${category.slug}`;
+//   }
+//   // Если у категории есть продукты, ведем к странице с продуктами
+//   else if (category.products && category.products.length > 0) {
+//     return `/${currentLocale.value}/${category.slug}/products`;
+//   }
+//   // В противном случае ведем к странице категории (где будет отображено, что контента нет)
+//   else {
+//     return `/${currentLocale.value}/${category.slug}`;
+//   }
+// };
+
+//======================================================================
+
+// const getProductLink = (product: Product) => {
+//   if (product.subcategory?.slug) {
+//     // Сначала на страницу подкатегории
+//     const categorySlug = product.subcategory.category?.slug || product.category?.slug;
+//     return `/${currentLocale.value}/${categorySlug}/${product.subcategory.slug}`;
+//   } else if (product.category?.slug) {
+//     // Продукт связан с категорией напрямую
+//     return `/${currentLocale.value}/${product.category.slug}/products/${product.slug}`;
+//   }
+//   return `/${currentLocale.value}`;
+// };
 
 //==========================================================
 

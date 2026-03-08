@@ -7,27 +7,13 @@ const cartStore = useCartStore();
 const route = useRoute();
 const { isInCart } = useIsInCart();
 const { width } = useViewport();
+const { getProductLink } = useProductLink();
 
 interface Props {
   product: Product;
   index: number;
 }
 const { product } = defineProps<Props>();
-
-// Функция для формирования URL продукта с учетом связи с категорией или подкатегорией
-const getProductLink = (product: Product) => {
-  if (product.subcategory?.slug) {
-    // Продукт связан с подкатегорией
-    // Берем категорию из subcategory.category, так как product.category может быть undefined
-    const categorySlug =
-      product.subcategory.category?.slug || product.category?.slug;
-    return `/${currentLocale.value}/${categorySlug}/${product.subcategory.slug}/${product.slug}`;
-  } else if (product.category?.slug) {
-    // Продукт связан с категорией напрямую
-    return `/${currentLocale.value}/${product.category.slug}/products/${product.slug}`;
-  }
-  return `/${currentLocale.value}`
-};
 
 const handleAddToCart = (product: Product) => {
   if (isInCart(product.id)) {
@@ -41,8 +27,6 @@ const visibleImagesCount = computed(() => {
   if (width.value < 767.98) return 4;
   return 6;
 });
-
-console.log("productDiscount", product);
 </script>
 
 <template>
@@ -52,10 +36,7 @@ console.log("productDiscount", product);
       class="discount-card__discount"
       name="mdi:discount"
     />
-    <NuxtLink
-      class="discount-card__link"
-      :to="getProductLink(product)"
-    >
+    <NuxtLink class="discount-card__link" :to="getProductLink(product)">
       <UImage
         v-if="product.image?.length"
         :src="product.image[0]?.url"

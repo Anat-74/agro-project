@@ -7,6 +7,7 @@ const { isInCart } = useIsInCart();
 const cartStore = useCartStore();
 const route = useRoute();
 const { width } = useViewport();
+const { getProductLink } = useProductLink();
 
 interface Props {
   product: Product;
@@ -22,8 +23,8 @@ const toggleActive = () => {
 
 const isVisibleLink = ref(false);
 const toggleVisibleLink = () => {
-   isVisibleLink.value = !isVisibleLink.value
-}
+  isVisibleLink.value = !isVisibleLink.value;
+};
 
 const handleAddToCart = (product: Product) => {
   if (isInCart(product.id)) {
@@ -39,18 +40,22 @@ const visibleImagesCount = computed(() => {
   return 6;
 });
 
- const characteristics = computed(() => {
+const characteristics = computed(() => {
   try {
-    return JSON.parse(product?.characteristics || '[]')
+    return JSON.parse(product?.characteristics || "[]");
   } catch {
-    return []
+    return [];
   }
-  })
+});
 </script>
 
 <template>
-  <li :class="['product-card', {'product-card_rotate-active' : rotateActive}]">
-    <div :class="['product-card__front', { 'product-card__front_front': rotateActive }]"
+  <li :class="['product-card', { 'product-card_rotate-active': rotateActive }]">
+    <div
+      :class="[
+        'product-card__front',
+        { 'product-card__front_front': rotateActive },
+      ]"
     >
       <div class="product-card__top-items">
         <Icon
@@ -58,9 +63,7 @@ const visibleImagesCount = computed(() => {
           class="product-card__discount"
           name="mdi:discount"
         />
-        <ProductStatus class="product-card__in-stock" 
-         :product="product"
-        />
+        <ProductStatus class="product-card__in-stock" :product="product" />
         <UButton
           class="product-card__details"
           variant="product-details"
@@ -68,10 +71,8 @@ const visibleImagesCount = computed(() => {
           @click="toggleActive"
         />
       </div>
-      <div class="product-card__content"
-      @click="toggleVisibleLink"
-      >
-      <UImage
+      <div class="product-card__content" @click="toggleVisibleLink">
+        <UImage
           class="product-card__image"
           v-if="product.image?.length"
           :src="product.image[0]?.url"
@@ -81,15 +82,24 @@ const visibleImagesCount = computed(() => {
           width="180"
           height="160"
         />
-      <h3 :class="['product-card__title', {'product-card__title_is-visible' : isVisibleLink}]"
-      >
-        {{ product.name }}
-      </h3>
-      <NuxtLink
-        :class="['product-card__link', { 'product-card__link_is-visible' : isVisibleLink}]"
-        :to="`/${currentLocale}/${product.category?.slug}/products/${product.slug}`"
-      ><span>{{ linkTranslations[currentLocale].featuredProductLabel }}</span>
-      </NuxtLink>
+        <h3
+          :class="[
+            'product-card__title',
+            { 'product-card__title_is-visible': isVisibleLink },
+          ]"
+        >
+          {{ product.name }}
+        </h3>
+        <NuxtLink
+          :class="[
+            'product-card__link',
+            { 'product-card__link_is-visible': isVisibleLink },
+          ]"
+          :to="getProductLink(product)"
+          ><span>{{
+            linkTranslations[currentLocale].featuredProductLabel
+          }}</span>
+        </NuxtLink>
       </div>
       <div class="product-card__bottom-items">
         <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
@@ -115,7 +125,12 @@ const visibleImagesCount = computed(() => {
         />
       </div>
     </div>
-    <div :class="['product-card__back', { 'product-card__back_back': rotateActive }]">
+    <div
+      :class="[
+        'product-card__back',
+        { 'product-card__back_back': rotateActive },
+      ]"
+    >
       <div class="product-card__top-items">
         <Icon
           v-if="product.isDiscount"
@@ -131,18 +146,21 @@ const visibleImagesCount = computed(() => {
         />
       </div>
       <div class="product-card__content">
-         <p class="product-card__description">
-            <span class="product-card__name">{{ product.name }}</span> {{ product.description }}
-         </p>
-         <ProductCharacteristics
-            class="product-card__characteristics"
-            :specs="characteristics" 
-         />
-       <NuxtLink
-        class="product-card__link"
-        :to="`/${currentLocale}/${categorySlug}/products/${product.slug}`"
-      ><span>{{ linkTranslations[currentLocale].featuredProductLabel }}</span>
-      </NuxtLink>
+        <p class="product-card__description">
+          <span class="product-card__name">{{ product.name }}</span>
+          {{ product.description }}
+        </p>
+        <ProductCharacteristics
+          class="product-card__characteristics"
+          :specs="characteristics"
+        />
+        <NuxtLink
+          class="product-card__link"
+          :to="`/${currentLocale}/${categorySlug}/products/${product.slug}`"
+          ><span>{{
+            linkTranslations[currentLocale].featuredProductLabel
+          }}</span>
+        </NuxtLink>
       </div>
       <div class="product-card__bottom-items">
         <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
@@ -179,13 +197,13 @@ const visibleImagesCount = computed(() => {
   perspective: toRem(500);
 
   &_rotate-active {
-   z-index: 150;
-   scale: 1.1;
-   transform-origin: center;
+    z-index: 150;
+    scale: 1.1;
+    transform-origin: center;
 
-   @media (max-width:$tablet){
+    @media (max-width: $tablet) {
       margin-block: calc(1 * toEm(16));
-   }
+    }
   }
 
   &__front,
@@ -213,54 +231,64 @@ const visibleImagesCount = computed(() => {
       z-index: 150;
       right: toEm(14);
       top: toEm(22);
-   }
+    }
 
     .product-card__content {
       @include hover {
-      .product-card__link {
-         visibility: visible;
-         opacity: 1;
-         display: block;
-         transition: opacity .9s, visibility .9s, background-color .4s, color var(--transition-duration);
+        .product-card__link {
+          visibility: visible;
+          opacity: 1;
+          display: block;
+          transition:
+            opacity 0.9s,
+            visibility 0.9s,
+            background-color 0.4s,
+            color var(--transition-duration);
 
-         @starting-style {
-           opacity: 0;
-           visibility: hidden;
-         }
+          @starting-style {
+            opacity: 0;
+            visibility: hidden;
+          }
+        }
+
+        .product-card__title {
+          margin-block-start: toEm(-12);
+          color: var(--success-color);
+          background-color: var(--light-color);
+          transition:
+            margin-block-start 0.4s,
+            color var(--transition-duration);
+        }
       }
+    }
 
-      .product-card__title {
-         margin-block-start: toEm(-12);
-         color: var(--success-color);
-         background-color: var(--light-color);
-         transition: margin-block-start .4s, color var(--transition-duration);
+    .product-card__link {
+      justify-self: center;
+      opacity: 0;
+      visibility: hidden;
+      display: none;
+
+      &_is-visible {
+        visibility: visible;
+        opacity: 1;
+        display: block;
+        transition:
+          opacity 0.9s,
+          visibility 0.9s,
+          background-color 0.4s,
+          color var(--transition-duration);
+
+        @starting-style {
+          opacity: 0;
+          visibility: hidden;
+        }
       }
-   }
-}
+    }
 
-   .product-card__link {
-         justify-self: center;
-         opacity: 0;
-         visibility: hidden;
-         display: none;
-
-         &_is-visible {
-         visibility: visible;
-         opacity: 1;
-         display: block;
-         transition: opacity .9s, visibility .9s, background-color .4s, color var(--transition-duration);
-
-      @starting-style {
-         opacity: 0;
-         visibility: hidden;
-     }
-   }
-}
-
-   .product-card__bottom-items {
+    .product-card__bottom-items {
       position: absolute;
       bottom: toEm(12);
-   }
+    }
 
     &_front {
       transform: rotateY(180deg);
@@ -268,7 +296,7 @@ const visibleImagesCount = computed(() => {
   }
 
   &__back {
-   transform: rotateY(180deg);
+    transform: rotateY(180deg);
 
     .product-card__top-items {
       padding-block-end: toRem(2);
@@ -278,7 +306,7 @@ const visibleImagesCount = computed(() => {
       font-size: toEm(15);
     }
 
-   .product-card__content {
+    .product-card__content {
       display: grid;
       justify-items: center;
       row-gap: toEm(12);
@@ -291,40 +319,46 @@ const visibleImagesCount = computed(() => {
 
       visibility: hidden;
       opacity: 0;
-      transition: opacity 1s, visibility 1s;
+      transition:
+        opacity 1s,
+        visibility 1s;
 
       &:not(:last-child) {
-      margin-block-end: toEm(9);
+        margin-block-end: toEm(9);
       }
-   }
+    }
 
-   .product-card__details {
+    .product-card__details {
       font-size: toEm(16);
-  }
+    }
 
-   .product-card__link {
-         padding-block: toEm(6);
-         margin-block-start: toEm(12);
-         transition: background-color var(--transition-duration), color var(--transition-duration);
-      
+    .product-card__link {
+      padding-block: toEm(6);
+      margin-block-start: toEm(12);
+      transition:
+        background-color var(--transition-duration),
+        color var(--transition-duration);
+
       span {
-         font-size: toEm(14);
-       }
-  }
+        font-size: toEm(14);
+      }
+    }
 
     &_back {
       z-index: 110;
       transform: rotateY(360deg);
 
       .product-card__content {
-         visibility: visible;
-         opacity: 1;
-         transition: opacity 1.5s, visibility 1.5s;
+        visibility: visible;
+        opacity: 1;
+        transition:
+          opacity 1.5s,
+          visibility 1.5s;
 
-         @starting-style {
-           opacity: 0;
-           visibility: hidden;
-         }
+        @starting-style {
+          opacity: 0;
+          visibility: hidden;
+        }
       }
     }
   }
@@ -345,60 +379,64 @@ const visibleImagesCount = computed(() => {
   }
 
   &__in-stock {
-   flex: 1 1 auto;
-   padding: toEm(4);
+    flex: 1 1 auto;
+    padding: toEm(4);
   }
 
   &__content {
-   flex: 1 1 auto;
+    flex: 1 1 auto;
   }
 
-   &__title {
-      position: relative;
-      z-index: 100;
-      text-align: center;
-      padding-inline: toEm(4);
-      padding-block-start: toEm(2);
-      padding-block-end: toEm(12);
-      transition: color var(--transition-duration), margin-block-start .4s;
+  &__title {
+    position: relative;
+    z-index: 100;
+    text-align: center;
+    padding-inline: toEm(4);
+    padding-block-start: toEm(2);
+    padding-block-end: toEm(12);
+    transition:
+      color var(--transition-duration),
+      margin-block-start 0.4s;
 
-   &_is-visible {
-         margin-block-start: toEm(-15);
-         color: var(--success-color);
-         background-color: var(--light-color);
-         transition: margin-block-start .4s, color var(--transition-duration);
-      }
+    &_is-visible {
+      margin-block-start: toEm(-15);
+      color: var(--success-color);
+      background-color: var(--light-color);
+      transition:
+        margin-block-start 0.4s,
+        color var(--transition-duration);
+    }
   }
 
   &__description {
-         font-size: toEm(15);
+    font-size: toEm(15);
 
-      &::first-letter {
-         color: var(--danger-hover);
-         font-style: italic;
-         margin-inline-end: toRem(1);
-      }
+    &::first-letter {
+      color: var(--danger-hover);
+      font-style: italic;
+      margin-inline-end: toRem(1);
+    }
 
-   span {
+    span {
       font-weight: 600;
       color: var(--success-color);
-   }
+    }
   }
 
   &__link {
-      text-transform: uppercase;
-      font-size: toEm(14);
-      padding-inline: toEm(30);
-      padding-block: toEm(8);
-      border: 1px solid var(--warning-color);
-      border-radius: toEm(4);
-      font-weight: 700;
-      color: var(--warning-color);
+    text-transform: uppercase;
+    font-size: toEm(14);
+    padding-inline: toEm(30);
+    padding-block: toEm(8);
+    border: 1px solid var(--warning-color);
+    border-radius: toEm(4);
+    font-weight: 700;
+    color: var(--warning-color);
 
-      @include hover {
-         color: var(--light-color);
-         background-color: var(--warning-color);
-   }
+    @include hover {
+      color: var(--light-color);
+      background-color: var(--warning-color);
+    }
   }
 
   &__bottom-items {
@@ -428,17 +466,17 @@ const visibleImagesCount = computed(() => {
     }
   }
 
-    &:deep(.product-card__characteristics) {
-      width: 100%;
-      .product-characteristics {
-         &__title {
-            display: none;
-         }
-
-         &__table {
-            font-size: toEm(14);
-         }
+  &:deep(.product-card__characteristics) {
+    width: 100%;
+    .product-characteristics {
+      &__title {
+        display: none;
       }
-   }
+
+      &__table {
+        font-size: toEm(14);
+      }
+    }
+  }
 }
 </style>
