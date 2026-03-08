@@ -19,7 +19,7 @@ const { saleProd } = defineProps<Props>();
       <ul class="sale-products__card-list"
          v-if="saleProd?.[1]?.products?.length" 
       >
-       <DiscountProduct 
+       <DiscountProduct
           v-for="(prod, index) in saleProd?.[1].products"
           :key="prod.id"
           :index="index"

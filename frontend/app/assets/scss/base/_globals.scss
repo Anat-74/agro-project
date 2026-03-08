@@ -39,13 +39,16 @@ body:has(.dialog-hamburger[open]) {
 
 @media (min-width: c.$mobile) {
   @media (any-hover: hover) {
-    .products-section__card-list,
-    .featured-products__card-list:has(li:hover) {
+   ul:has(li:hover) {
       li:not(:hover) {
+        transition: all .4s;
         opacity: .8;
-        filter: grayscale(57%);
+        filter: grayscale(70%);
       }
     }
+   li {
+      transition: all .4s;
+   }
   }
 }
 

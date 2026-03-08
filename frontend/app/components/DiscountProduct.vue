@@ -98,6 +98,7 @@ const visibleImagesCount = computed(() => {
    padding-block: toEm(9);
    border-radius: toEm(6);
    border: toEm(2) solid var(--whitesmoke-color);
+   transition: all .4s;
 
    @media (max-width:$tablet){
       background-color: var(--light-color);
@@ -149,9 +150,14 @@ const visibleImagesCount = computed(() => {
 
    &__items-price {
       grid-area: price;
+      align-self: end;
       display: flex;
       align-items: center;
       column-gap: toEm(2);
+
+      @media (min-width:toEm(540)){
+         translate: 0 toEm(-4);
+      }
    }
 
    &__price {
