@@ -128,6 +128,7 @@ const MAX_PRODUCTS_TO_SHOW = 6;
    }
 
    &__item {
+      max-width: toRem(220);
       transition: all .5s;
       @include adaptiveValue("height", 350, 300);
 

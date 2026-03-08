@@ -80,7 +80,7 @@ const characteristics = computed(() => {
           :alt="product.name"
           :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
           :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
-          width="180"
+          width="200"
           height="160"
         />
         <h3

@@ -222,10 +222,7 @@ const finalSrc = computed(() => {
 
   &_product {
    flex: 1 1 auto;
-   
-
-       max-width: toEm(180); 
-
+   max-width: toEm(200); 
   }
 
     &_discount-content {
