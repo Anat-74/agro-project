@@ -35,8 +35,9 @@ const handleAddToCart = (product: Product) => {
 };
 
 const visibleImagesCount = computed(() => {
-  if (width.value < 565.98) return 4;
-  if (width.value < 878.98) return 5;
+  if (width.value < 479.98) return 2;
+  if (width.value < 767.98) return 3;
+  if (width.value < 1023.98) return 4;
   return 6;
 });
 

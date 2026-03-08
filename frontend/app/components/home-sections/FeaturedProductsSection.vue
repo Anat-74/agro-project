@@ -70,7 +70,7 @@ const MAX_PRODUCTS_TO_SHOW = 6;
    &__title {
       position: absolute;
       left: toRem(15);
-      top: 0;
+      top: toEm(-2);
    }
 
       &__items {
