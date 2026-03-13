@@ -5,6 +5,7 @@ import SaleProductsSection from "~/components/home-sections/SaleProductsSection.
 
 const { find } = useStrapi();
 const { currentLocale } = useLocale();
+const { isOnline } = useOnlineStatus();
 
 // ========== 1. ХЕЛПЕРЫ ДЛЯ КЭША ==========
 const saveToCache = (key: string, data: any) => {
@@ -40,34 +41,12 @@ const loadFromCache = (key: string) => {
   }
 };
 
-// ========== 2. ОНЛАЙН/ОФФЛАЙН СТАТУС ==========
-const isOnline = ref(true);
-
-if (import.meta.client) {
-  isOnline.value = navigator.onLine;
-
-  const handleOnline = () => {
-    isOnline.value = true;
-  };
-  const handleOffline = () => {
-    isOnline.value = false;
-  };
-
-  window.addEventListener("online", handleOnline);
-  window.addEventListener("offline", handleOffline);
-
-  onUnmounted(() => {
-    window.removeEventListener("online", handleOnline);
-    window.removeEventListener("offline", handleOffline);
-  });
-}
-
-// ========== 3. ОСНОВНАЯ ЛОГИКА ==========
+// ========== 2. ОСНОВНАЯ ЛОГИКА ==========
 const homePageKey = computed(() => `home-page-${currentLocale.value}`);
 
 const {
   data: homePage,
-  pending,
+  status,
   error,
 } = useAsyncData(
   homePageKey,
@@ -122,7 +101,7 @@ console.debug("Home page data:", homePage.value);
 </script>
 
 <template>
-  <Loader v-if="pending" />
+  <Loader v-if="status === 'pending'" />
 
   <HeroSection
     v-if="homePage?.heroSlider || homePage?.heroGrids"
@@ -177,6 +156,9 @@ console.debug("Home page data:", homePage.value);
   <span v-if="error" class="error">
     {{ error.message }}
   </span>
+
+  <!-- Оффлайн-страница при ошибке загрузки данных -->
+  <OfflinePage v-if="error && !isOnline" />
 </template>
 
 <style lang="scss" scoped></style>

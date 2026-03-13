@@ -186,7 +186,15 @@ export default defineNuxtConfig({
     workbox: {
       runtimeCaching: [
         {
-          urlPattern: /^https:\/\/api\.your-strapi\.com\/.*/i,
+          urlPattern: /^https?:\/\/.*\.strapi\.io\/.*/i,
+          handler: "StaleWhileRevalidate",
+          options: {
+            cacheName: "strapi-api-cache",
+            expiration: { maxEntries: 100, maxAgeSeconds: 7 * 24 * 60 * 60 },
+          },
+        },
+        {
+          urlPattern: /^https?:\/\/.*\.your-strapi\.com\/.*/i,
           handler: "StaleWhileRevalidate",
           options: {
             cacheName: "api-cache",
