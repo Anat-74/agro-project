@@ -163,6 +163,8 @@ provide(VISIBILITY_KEY, {
 </script>
 
 <template>
+  <VitePwaManifest />
+  <PWAUpdateNotice />
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
@@ -176,7 +178,7 @@ provide(VISIBILITY_KEY, {
 
   main {
     flex: 1 1 auto;
-    transition: background-color var(--transition-duration);
+    //  transition: background-color var(--transition-duration);
   }
 }
 </style>

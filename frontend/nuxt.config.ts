@@ -14,6 +14,7 @@ export default defineNuxtConfig({
     "@nuxtjs/strapi",
     "@nuxtjs/mdc",
     "@nuxtjs/seo",
+    "@vite-pwa/nuxt",
   ],
   nitro: {
     storage: {
@@ -158,6 +159,43 @@ export default defineNuxtConfig({
   colorMode: {
     preference: "system",
     fallback: "light",
+  },
+  pwa: {
+    manifest: {
+      name: "Agro Market",
+      short_name: "Agro",
+      description: "Интернет-магазин сельхозпродукции",
+      theme_color: "#4299e1",
+      background_color: "#ffffff",
+      display: "standalone",
+      icons: [
+        {
+          src: "/icons/icon-192x192.svg",
+          sizes: "192x192",
+          type: "image/svg+xml",
+          purpose: "any maskable",
+        },
+        {
+          src: "/icons/icon-512x512.svg",
+          sizes: "512x512",
+          type: "image/svg+xml",
+          purpose: "any maskable",
+        },
+      ],
+    },
+    workbox: {
+      runtimeCaching: [
+        {
+          urlPattern: /^https:\/\/api\.your-strapi\.com\/.*/i,
+          handler: "StaleWhileRevalidate",
+          options: {
+            cacheName: "api-cache",
+            expiration: { maxEntries: 50, maxAgeSeconds: 7 * 24 * 60 * 60 },
+          },
+        },
+      ],
+    },
+    registerWebManifestInRouteRules: true,
   },
   css: ["~/assets/scss/styles.scss"],
   vite: {

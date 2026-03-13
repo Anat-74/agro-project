@@ -19,6 +19,7 @@
     "@nuxtjs/seo": "^3.2.2",
     "@nuxtjs/strapi": "^2.0.0",
     "@pinia/nuxt": "^0.11.2",
+    "@vite-pwa/nuxt": "^1.1.1",
     "dotenv": "^17.2.3",
     "nuxt": "^4.0.2",
     "pinia": "^3.0.0",
