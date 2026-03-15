@@ -41,9 +41,9 @@ defineProps<{
         @mouseenter="visibleIsContacts"
         @mouseleave="hideContacts"
       >
-        <NuxtLink 
-        :class="['nav__link', {'nav__link_is-contacts' : isContacts}]" 
-        :to="`/${currentLocale}/contacts`"
+        <NuxtLink
+          :class="['nav__link', { 'nav__link_is-contacts': isContacts }]"
+          :to="`/${currentLocale}/contacts`"
           >{{ baseNavigationTranslations[currentLocale].contacts }}
           <Icon name="mingcute:down-line" />
         </NuxtLink>
@@ -119,8 +119,8 @@ defineProps<{
 
     &_is-contacts {
       svg {
-      transition: color var(--transition-duration);
-      color: var(--warning-color);
+        transition: color var(--transition-duration);
+        color: var(--warning-color);
       }
     }
 

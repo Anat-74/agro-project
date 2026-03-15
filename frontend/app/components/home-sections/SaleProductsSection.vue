@@ -10,11 +10,9 @@ const { saleProd } = defineProps<Props>();
    <section class="sale-products" aria-labelledby="sale-products">
       <div class="sale-products__container">
       <h2
-         v-if="saleProd?.[1]?.heading"
          class="sale-products__title"
          id="sale-products"
-        >
-          {{ saleProd?.[1].heading }}
+        > {{ saleProd?.[1]?.heading }}
         </h2>
       <ul class="sale-products__card-list"
          v-if="saleProd?.[1]?.products?.length" 
