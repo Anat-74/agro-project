@@ -2,6 +2,7 @@
 import FeaturedProductsSection from "~/components/home-sections/FeaturedProductsSection.vue";
 import HeroSection from "~/components/home-sections/HeroSection.vue";
 import SaleProductsSection from "~/components/home-sections/SaleProductsSection.vue";
+import OfflinePage from "~/pages/offline.vue";
 
 const { find } = useStrapi();
 const { currentLocale } = useLocale();

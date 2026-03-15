@@ -1,5 +1,5 @@
 @use "sass:math";
-@use "./container" as c;
+@use "./settings" as s;
 @use "./functions" as f;
 
 @mixin hover($hasActiveEffectOnMobile: true) {
@@ -42,8 +42,7 @@
   // Мин. значение в toRem
   $percent: 2.5,
   // Процент роста
-  $unit: "cqw" 
-  // Единица по умолчанию cqw!
+  $unit: "cqw" // Единица по умолчанию cqw!
 ) {
   // Fallback для браузеров без поддержки Container Queries
   @if ($unit == "cqw" or $unit == "cqh" or $unit == "cqi" or $unit == "cqb") {
@@ -77,8 +76,8 @@
   $startSize,
   $minSize,
   $keepSize: 0,
-  $widthFrom: c.$containerWidth,
-  $widthTo: c.$minWidth
+  $widthFrom: s.$containerWidth,
+  $widthTo: s.$minWidth
 ) {
   @if ($startSize==0) {
     $startSize: 0.0001;
@@ -90,8 +89,8 @@
   // Для calc();
   $addSize: math.div($startSize - $minSize, 16);
 
-  @if ($widthFrom == c.$containerWidth and c.$maxWidthContainer == 0) {
-    $widthFrom: c.$maxWidth;
+  @if ($widthFrom == s.$containerWidth and s.$maxWidthContainer == 0) {
+    $widthFrom: s.$maxWidth;
   }
 
   // Брейк-поинты в EM
@@ -136,10 +135,8 @@
     // Если не поддерживается clamp();
     @supports not (#{$property}: $propertyValue) {
       #{$property}: calc(
-        #{f.toRem($minSize)} + #{$addSize} * (100vw - #{f.toRem($widthTo)}) / #{math.div(
-            $widthFrom,
-            16
-          ) - math.div($widthTo, 16)}
+        #{f.toRem($minSize)} + #{$addSize} * (100vw - #{f.toRem($widthTo)}) /
+          #{math.div($widthFrom, 16) - math.div($widthTo, 16)}
       );
     }
   }

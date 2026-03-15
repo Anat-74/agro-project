@@ -1,5 +1,5 @@
 @use "./functions" as *;
-@use "./container" as c;
+@use "./settings" as c;
 
 // .backdrop-visible {
 //   background-color: var(--back-drop-main);
@@ -36,7 +36,7 @@
 }
 
 .iconify {
-   font-size: toRem(25);
+  font-size: toRem(25);
 }
 
 .iconify--my-icon {

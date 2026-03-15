@@ -238,7 +238,10 @@ const finalSrc = computed(() => {
   }
 
   &_discount-product {
-      max-width: toEm(100);
+   max-width: toEm(100);
+      img {
+      border-radius: toEm(12);
+   }
   }
 }
 </style>

@@ -99,7 +99,7 @@
    font-size: inherit;
  }
 
- button {
+ :where(button[class]) {
   cursor: pointer;
   padding: 0;
   border: none;
