@@ -160,51 +160,87 @@ export default defineNuxtConfig({
     preference: "system",
     fallback: "light",
   },
-  pwa: {
-    manifest: {
-      name: "Agro Market",
-      short_name: "Agro",
-      description: "Интернет-магазин сельхозпродукции",
-      theme_color: "#4299e1",
-      background_color: "#ffffff",
-      display: "standalone",
-      icons: [
-        {
-          src: "/icons/icon-192x192.svg",
-          sizes: "192x192",
-          type: "image/svg+xml",
-          purpose: "any maskable",
-        },
-        {
-          src: "/icons/icon-512x512.svg",
-          sizes: "512x512",
-          type: "image/svg+xml",
-          purpose: "any maskable",
-        },
-      ],
-    },
-    workbox: {
-      runtimeCaching: [
-        {
-          urlPattern: /^https?:\/\/.*\.strapi\.io\/.*/i,
-          handler: "StaleWhileRevalidate",
-          options: {
-            cacheName: "strapi-api-cache",
-            expiration: { maxEntries: 100, maxAgeSeconds: 7 * 24 * 60 * 60 },
-          },
-        },
-        {
-          urlPattern: /^https?:\/\/.*\.your-strapi\.com\/.*/i,
-          handler: "StaleWhileRevalidate",
-          options: {
-            cacheName: "api-cache",
-            expiration: { maxEntries: 50, maxAgeSeconds: 7 * 24 * 60 * 60 },
-          },
-        },
-      ],
-    },
-    registerWebManifestInRouteRules: true,
-  },
+//   pwa: {
+//     manifest: {
+//       name: "Agro Market",
+//       short_name: "Agro",
+//       description: "Интернет-магазин сельхозпродукции",
+//       theme_color: "#4299e1",
+//       background_color: "#ffffff",
+//       display: "standalone",
+//       icons: [
+//         {
+//           src: "/icons/icon-192x192.svg",
+//           sizes: "192x192",
+//           type: "image/svg+xml",
+//           purpose: "any maskable",
+//         },
+//         {
+//           src: "/icons/icon-512x512.svg",
+//           sizes: "512x512",
+//           type: "image/svg+xml",
+//           purpose: "any maskable",
+//         },
+//       ],
+//     },
+//     workbox: {
+//       // Кэширование основных ресурсов приложения для оффлайн-режима
+//       globPatterns: [
+//         "**/*.{js,css,html,ico,png,svg,jpg,jpeg,gif,webp,woff2,woff,ttf,eot,json,xml,txt}",
+//       ],
+
+//       runtimeCaching: [
+//         // Кэширование API-запросов к Strapi
+//         {
+//           urlPattern: /^https?:\/\/.*\.strapi\.io\/.*/i,
+//           handler: "NetworkFirst",
+//           options: {
+//             cacheName: "strapi-api-cache",
+//             expiration: {
+//               maxEntries: 100,
+//               maxAgeSeconds: 7 * 24 * 60 * 60, // 7 дней
+//             },
+//           },
+//         },
+//         // Кэширование других API-запросов
+//         {
+//           urlPattern: /^https?:\/\/.*\.your-strapi\.com\/.*/i,
+//           handler: "NetworkFirst",
+//           options: {
+//             cacheName: "api-cache",
+//             expiration: {
+//               maxEntries: 50,
+//               maxAgeSeconds: 7 * 24 * 60 * 60, // 7 дней
+//             },
+//           },
+//         },
+//         // Кэширование изображений
+//         {
+//           urlPattern: /^https?:\/\/.*\.(png|jpg|jpeg|gif|webp)$/i,
+//           handler: "CacheFirst",
+//           options: {
+//             cacheName: "images-cache",
+//             expiration: {
+//               maxEntries: 200,
+//               maxAgeSeconds: 30 * 24 * 60 * 60, // 30 дней
+//             },
+//             cacheableResponse: {
+//               statuses: [0, 200],
+//             },
+//           },
+//         },
+//       ],
+//     },
+//     // Автообновление PWA
+//     registerType: "autoUpdate",
+//     // Настройки для разработки
+//     devOptions: {
+//       enabled: true,
+//       suppressWarnings: true,
+//       type: "module",
+//     },
+//     registerWebManifestInRouteRules: true,
+//   },
   css: ["~/assets/scss/styles.scss"],
   vite: {
     css: {

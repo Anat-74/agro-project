@@ -3,7 +3,6 @@ const { find } = useStrapi();
 const searchStore = useSearchStore();
 const { products, totalPages, currentPage } = storeToRefs(searchStore);
 const { currentLocale } = useLocale();
-const config = useRuntimeConfig();
 
 const {
   data: global,

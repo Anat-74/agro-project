@@ -10,6 +10,7 @@ export type Product = {
   isAvailable?: boolean;
   isDiscount?: boolean;
   image: Image[];
+  mainImage?: Image;
   seo?: {
     metaTitle?: string;
     metaDescription?: string;
