@@ -18,7 +18,7 @@ const _currentLocale = ref<LocaleCode>(
        _currentLocale.value = value
        langCookie.value = value
        if (route.params.lang !== value) {
-         router.replace({
+        router.replace({
            params: { ...route.params, lang: value },
            query: route.query
          })

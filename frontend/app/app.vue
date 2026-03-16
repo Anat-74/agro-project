@@ -149,6 +149,8 @@ watch([currentLocale, () => route.path], () => {
   updateHead();
 });
 
+
+
 // Глобальное состояние для видимости
 const isContacts = ref<boolean>(false);
 
@@ -178,7 +180,6 @@ provide(VISIBILITY_KEY, {
 
   main {
     flex: 1 1 auto;
-    //  transition: background-color var(--transition-duration);
   }
 }
 </style>

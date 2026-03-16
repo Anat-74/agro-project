@@ -80,6 +80,11 @@ const visibleImagesCount = computed(() => {
 <style lang="scss" scoped>
 .discount-card {
   position: relative;
+  padding-inline: toEm(12);
+  padding-block: toEm(9);
+  border-radius: toEm(6);
+  border: toEm(2) solid var(--whitesmoke-color);
+
   display: grid;
   grid-template-columns: auto 1fr auto;
   justify-items: start;
@@ -88,10 +93,6 @@ const visibleImagesCount = computed(() => {
   grid-template-areas:
     "link title show"
     "link price add";
-  padding-inline: toEm(12);
-  padding-block: toEm(9);
-  border-radius: toEm(6);
-  border: toEm(2) solid var(--whitesmoke-color);
 
   @media (max-width: $tablet) {
     background-color: var(--light-color);
@@ -99,7 +100,7 @@ const visibleImagesCount = computed(() => {
 
   @media (max-width: toEm(800)) {
     &:last-child {
-      display: none;
+      grid-column: 1 /-1;
     }
   }
 

@@ -29,11 +29,6 @@ const {
     }
   },
    {
-    // Трансформация данных
-   //  transform: (data) => ({
-   //    ...data
-   //   }),
-
     watch: [() => currentLocale.value],
   },
 );
