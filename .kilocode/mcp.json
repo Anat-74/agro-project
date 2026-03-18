@@ -1,1 +1,12 @@
-{"mcpServers":{}}
+{
+  "mcpServers": {
+    "open-websearch": {
+      "command": "npx",
+      "args": ["open-websearch@latest"],
+      "env": {
+        "DEFAULT_SEARCH_ENGINE": "duckduckgo",
+        "ALLOWED_SEARCH_ENGINES": "duckduckgo,bing,baidu,exa"
+      }
+    }
+  }
+}
