@@ -15,6 +15,7 @@ export default defineNuxtConfig({
     "@nuxtjs/mdc",
     "@nuxtjs/seo",
     "@vite-pwa/nuxt",
+    "@nuxtjs/mcp-toolkit",
   ],
   nitro: {
     storage: {
@@ -103,10 +104,18 @@ export default defineNuxtConfig({
     strapiAdmin: {
       token: process.env.STRAPI_ADMIN_TOKEN,
     },
+    mcp: {
+      enabled: process.env.MCP_ENABLED === "true" || true,
+      debug: process.env.MCP_DEBUG === "true" || false,
+    },
     public: {
       siteUrl: process.env.SITE_URL || process.env.NUXT_PUBLIC_SITE_URL,
       strapi: {
         url: process.env.NUXT_PUBLIC_STRAPI_URL,
+      },
+      mcp: {
+        endpoint: "/api/mcp",
+        version: "1.0.0",
       },
     },
   },
@@ -160,87 +169,87 @@ export default defineNuxtConfig({
     preference: "system",
     fallback: "light",
   },
-//   pwa: {
-//     manifest: {
-//       name: "Agro Market",
-//       short_name: "Agro",
-//       description: "Интернет-магазин сельхозпродукции",
-//       theme_color: "#4299e1",
-//       background_color: "#ffffff",
-//       display: "standalone",
-//       icons: [
-//         {
-//           src: "/icons/icon-192x192.svg",
-//           sizes: "192x192",
-//           type: "image/svg+xml",
-//           purpose: "any maskable",
-//         },
-//         {
-//           src: "/icons/icon-512x512.svg",
-//           sizes: "512x512",
-//           type: "image/svg+xml",
-//           purpose: "any maskable",
-//         },
-//       ],
-//     },
-//     workbox: {
-//       // Кэширование основных ресурсов приложения для оффлайн-режима
-//       globPatterns: [
-//         "**/*.{js,css,html,ico,png,svg,jpg,jpeg,gif,webp,woff2,woff,ttf,eot,json,xml,txt}",
-//       ],
+  //   pwa: {
+  //     manifest: {
+  //       name: "Agro Market",
+  //       short_name: "Agro",
+  //       description: "Интернет-магазин сельхозпродукции",
+  //       theme_color: "#4299e1",
+  //       background_color: "#ffffff",
+  //       display: "standalone",
+  //       icons: [
+  //         {
+  //           src: "/icons/icon-192x192.svg",
+  //           sizes: "192x192",
+  //           type: "image/svg+xml",
+  //           purpose: "any maskable",
+  //         },
+  //         {
+  //           src: "/icons/icon-512x512.svg",
+  //           sizes: "512x512",
+  //           type: "image/svg+xml",
+  //           purpose: "any maskable",
+  //         },
+  //       ],
+  //     },
+  //     workbox: {
+  //       // Кэширование основных ресурсов приложения для оффлайн-режима
+  //       globPatterns: [
+  //         "**/*.{js,css,html,ico,png,svg,jpg,jpeg,gif,webp,woff2,woff,ttf,eot,json,xml,txt}",
+  //       ],
 
-//       runtimeCaching: [
-//         // Кэширование API-запросов к Strapi
-//         {
-//           urlPattern: /^https?:\/\/.*\.strapi\.io\/.*/i,
-//           handler: "NetworkFirst",
-//           options: {
-//             cacheName: "strapi-api-cache",
-//             expiration: {
-//               maxEntries: 100,
-//               maxAgeSeconds: 7 * 24 * 60 * 60, // 7 дней
-//             },
-//           },
-//         },
-//         // Кэширование других API-запросов
-//         {
-//           urlPattern: /^https?:\/\/.*\.your-strapi\.com\/.*/i,
-//           handler: "NetworkFirst",
-//           options: {
-//             cacheName: "api-cache",
-//             expiration: {
-//               maxEntries: 50,
-//               maxAgeSeconds: 7 * 24 * 60 * 60, // 7 дней
-//             },
-//           },
-//         },
-//         // Кэширование изображений
-//         {
-//           urlPattern: /^https?:\/\/.*\.(png|jpg|jpeg|gif|webp)$/i,
-//           handler: "CacheFirst",
-//           options: {
-//             cacheName: "images-cache",
-//             expiration: {
-//               maxEntries: 200,
-//               maxAgeSeconds: 30 * 24 * 60 * 60, // 30 дней
-//             },
-//             cacheableResponse: {
-//               statuses: [0, 200],
-//             },
-//           },
-//         },
-//       ],
-//     },
-//     // Автообновление PWA
-//     registerType: "autoUpdate",
-//     // Настройки для разработки
-//     devOptions: {
-//       enabled: true,
-//       suppressWarnings: true,
-//       type: "module",
-//     },
-//     registerWebManifestInRouteRules: true,
-//   },
+  //       runtimeCaching: [
+  //         // Кэширование API-запросов к Strapi
+  //         {
+  //           urlPattern: /^https?:\/\/.*\.strapi\.io\/.*/i,
+  //           handler: "NetworkFirst",
+  //           options: {
+  //             cacheName: "strapi-api-cache",
+  //             expiration: {
+  //               maxEntries: 100,
+  //               maxAgeSeconds: 7 * 24 * 60 * 60, // 7 дней
+  //             },
+  //           },
+  //         },
+  //         // Кэширование других API-запросов
+  //         {
+  //           urlPattern: /^https?:\/\/.*\.your-strapi\.com\/.*/i,
+  //           handler: "NetworkFirst",
+  //           options: {
+  //             cacheName: "api-cache",
+  //             expiration: {
+  //               maxEntries: 50,
+  //               maxAgeSeconds: 7 * 24 * 60 * 60, // 7 дней
+  //             },
+  //           },
+  //         },
+  //         // Кэширование изображений
+  //         {
+  //           urlPattern: /^https?:\/\/.*\.(png|jpg|jpeg|gif|webp)$/i,
+  //           handler: "CacheFirst",
+  //           options: {
+  //             cacheName: "images-cache",
+  //             expiration: {
+  //               maxEntries: 200,
+  //               maxAgeSeconds: 30 * 24 * 60 * 60, // 30 дней
+  //             },
+  //             cacheableResponse: {
+  //               statuses: [0, 200],
+  //             },
+  //           },
+  //         },
+  //       ],
+  //     },
+  //     // Автообновление PWA
+  //     registerType: "autoUpdate",
+  //     // Настройки для разработки
+  //     devOptions: {
+  //       enabled: true,
+  //       suppressWarnings: true,
+  //       type: "module",
+  //     },
+  //     registerWebManifestInRouteRules: true,
+  //   },
   css: ["~/assets/scss/styles.scss"],
   vite: {
     css: {
@@ -271,5 +280,16 @@ export default defineNuxtConfig({
   },
   imports: {
     dirs: ["shared/types/**", "shared/utils/**"],
+  },
+  mcp: {
+    // Автоматическое обнаружение инструментов, промптов и ресурсов
+    // По умолчанию модуль ищет файлы в server/mcp/
+    // toolsDir, promptsDir, resourcesDir настроены по умолчанию
+    // Настройки безопасности (опционально)
+    // security: {
+    //   cors: {
+    //     origin: ["http://localhost:3000"],
+    //   },
+    // },
   },
 });

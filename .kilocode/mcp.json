@@ -1,12 +1,9 @@
 {
   "mcpServers": {
-    "open-websearch": {
+    // Внешний сервер nuxt-docs отключен - используется локальный MCP-сервер через @nuxtjs/mcp-toolkit
+    "nuxt-docs": {
       "command": "npx",
-      "args": ["open-websearch@latest"],
-      "env": {
-        "DEFAULT_SEARCH_ENGINE": "duckduckgo",
-        "ALLOWED_SEARCH_ENGINES": "duckduckgo,bing,baidu,exa"
-      }
+      "args": ["mcp-remote", "https://nuxt.com/mcp"]
     }
   }
 }

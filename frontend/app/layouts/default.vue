@@ -34,8 +34,8 @@ console.debug("global data:", global.value);
       <Logo
         class="header__logo hidden-mobile"
         :global="global"
-         width="48"
-         height="48"
+        width="48"
+        height="48"
       />
       <AnimateTitle class="hidden-mobile" />
       <ProductFilter class="header__search" />
@@ -62,10 +62,13 @@ console.debug("global data:", global.value);
           :phones="global.phones"
           :email="global.email"
         />
-        <div v-if="searchStore.products.length" class="header__product-filter-card">
+        <div
+          v-if="searchStore.products.length"
+          class="header__product-filter-card"
+        >
           <ul class="header__product-card-list">
             <ProductFilterCard
-               v-for="product in products"
+              v-for="product in products"
               :key="product.id"
               :product="product"
             />
@@ -101,6 +104,9 @@ console.debug("global data:", global.value);
   />
 
   <span v-if="error"> Error: {{ error.message }} </span>
+
+  <!-- AI Ассистент для всех пользователей -->
+  <ChatAssistant />
 </template>
 
 <style lang="scss" scoped>
