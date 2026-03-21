@@ -1,6 +1,5 @@
 {
   "mcpServers": {
-    // Внешний сервер nuxt-docs отключен - используется локальный MCP-сервер через @nuxtjs/mcp-toolkit
     "nuxt-docs": {
       "command": "npx",
       "args": ["mcp-remote", "https://nuxt.com/mcp"]

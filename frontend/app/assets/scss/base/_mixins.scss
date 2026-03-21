@@ -46,7 +46,10 @@
 ) {
   // Fallback для браузеров без поддержки Container Queries
   @if ($unit == "cqw" or $unit == "cqh" or $unit == "cqi" or $unit == "cqb") {
-    $fallback-unit: if($unit == "cqw" or $unit == "cqi", "vw", "vh");
+    $fallback-unit: "vh"; // значение по умолчанию
+    @if $unit == "cqw" or $unit == "cqi" {
+      $fallback-unit: "vw";
+    }
     #{$property}: clamp(
       #{f.toRem($minSize)},
       #{$percent + 1}#{$fallback-unit} + #{f.toRem($minSize)},
