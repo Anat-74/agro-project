@@ -34,8 +34,9 @@ export const useSearchStore = defineStore("search", () => {
     // Устанавливаем статус в pending
     status.value = "pending"
     try {
-      // Выполняем запрос к Strapi
-      const result = await find<Product>("products", getQueryParams());
+    // Выполняем запрос к Strapi
+    // Используем as any для параметров, так как типы @nuxtjs/strapi 2.1.1 слишком строгие
+    const result = await find<Product>("products", getQueryParams() as any);
       // Сохраняем результаты
       products.value = result.data
       // Сохраняем общее число страниц
@@ -73,11 +74,13 @@ export const useSearchStore = defineStore("search", () => {
     executeSearch()
   }
 
-  // Функция формирования параметров запроса
+  // Функция формирования параметров запроса для Strapi v5
   const getQueryParams = () => {
-    // Убираем фильтр по productSlug если он есть в URL
-    const baseFilters: any = {
-      locale: route.params.lang,
+    const baseFilters: Record<string, any> = {}
+
+    // Фильтр по локали с оператором $eq
+    if (route.params.lang) {
+      baseFilters.locale = { $eq: route.params.lang }
     }
 
     // Используем отформатированный запрос
@@ -86,22 +89,21 @@ export const useSearchStore = defineStore("search", () => {
     }
 
     // Добавляем фильтр по slug только если мы НЕ на странице товара
-    if (!route.params.productSlug) {
+    if (!route.params.productSlug && route.params.productSlug) {
       baseFilters.slug = { $eq: route.params.productSlug }
     }
 
+    // Правильная структура для Strapi v5 через @nuxtjs/strapi 2.1.1
     return {
       populate: {
         subcategory: {
           populate: {
-            category: {
-              fields: ["slug"] // Выбираем только поле slug из категории
-            }
-          },
-        },
+            category: true // Объектный синтаксис с boolean для Strapi v5
+          }
+        }
       },
       filters: baseFilters,
-      sort: [filters.sort],
+      sort: filters.sort ? [filters.sort] : undefined,
       pagination: {
         page: currentPage.value,
         pageSize: 32,

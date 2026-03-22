@@ -17,12 +17,13 @@ export type Category = {
   products?: Product[];
   seoTitle?: string;
   seoDescription?: string;
-  seoImage?: Image[];
+  seoImage?: Image[] | null;
   seo?: {
     metaTitle?: string;
     metaDescription?: string;
     structuredData?: any;
-  };
+  } | null;
+  localizations?: any[]; // Новое поле в Strapi v5
 };
 
 export type Subcategory = {
@@ -40,12 +41,13 @@ export type Subcategory = {
   products?: Product[];
   seoTitle?: string;
   seoDescription?: string;
-  seoImage?: Image[];
+  seoImage?: Image[] | null;
   seo?: {
     metaTitle?: string;
     metaDescription?: string;
     structuredData?: any;
-  };
+  } | null;
+  localizations?: any[]; // Новое поле в Strapi v5
 };
 
 export type SubcategoriesResponse = {

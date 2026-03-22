@@ -77,8 +77,8 @@ const { data, pending, error, refresh } = useAsyncData(
 
     return {
       category: categoryRes.data[0] as Category,
-      subcategories: subcategoriesRes as SubcategoriesResponse,
-      products: productsRes as ProductsResponse,
+      subcategories: subcategoriesRes as any, // Временное решение
+      products: productsRes as any, // Временное решение
     };
   },
 );

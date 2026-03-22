@@ -24,14 +24,8 @@ AI-ассистент интегрирован в agro-market проект дл�
    - Обработка сообщений пользователя
    - Интеграция с DeepSeek API
    - Управление сессиями через cookies
-   - Поддержка MCP tools
 
-3. **MCP Tools**:
-   - `chat_assistant` - базовые операции ассистента
-   - `strapi_products` - работа с продуктами из Strapi
-   - `cart_operations` - управление корзиной покупок
-
-4. **Интеграция с DeepSeek API**:
+3. **Интеграция с DeepSeek API**:
    - Модель: `deepseek-chat`
    - OpenAI-совместимый endpoint
    - Поддержка tool calls
@@ -48,23 +42,6 @@ AI-ассистент интегрирован в agro-market проект дл�
    DEEPSEEK_API_KEY=your_api_key_here
    ```
 
-### 2. Конфигурация MCP
-
-MCP Toolkit уже настроен в `nuxt.config.ts`. Проверьте настройки:
-
-```typescript
-// nuxt.config.ts
-mcp: {
-  // Auto-discovery of tools, prompts, resources
-},
-runtimeConfig: {
-  mcp: {
-    enabled: process.env.MCP_ENABLED === 'true' || true,
-    debug: process.env.MCP_DEBUG === 'true' || false,
-  },
-}
-```
-
 ### 3. Переменные окружения
 
 Добавьте в `.env` файл:
@@ -72,10 +49,6 @@ runtimeConfig: {
 ```env
 # DeepSeek API
 DEEPSEEK_API_KEY=your_deepseek_api_key_here
-
-# MCP настройки
-MCP_ENABLED=true
-MCP_DEBUG=false
 ```
 
 ## Использование
@@ -89,29 +62,9 @@ MCP_DEBUG=false
 
 ### Для разработчиков
 
-#### Добавление новых инструментов
+#### Интеграция с внешними сервисами
 
-1. Создайте новый файл в `server/mcp/tools/`:
-
-   ```typescript
-   // server/mcp/tools/your-tool.ts
-   import { defineMcpTool } from "@nuxtjs/mcp-toolkit/server";
-   import { z } from "zod";
-
-   export default defineMcpTool({
-     name: "your_tool",
-     description: "Описание вашего инструмента",
-     inputSchema: z.object({
-       // параметры
-     }),
-     execute: async ({ input, context }) => {
-       // логика инструмента
-       return { success: true, data: {} };
-     },
-   });
-   ```
-
-2. Добавьте инструмент в `AVAILABLE_TOOLS` в `chat-assistant.post.ts`
+AI-ассистент может быть расширен для интеграции с внешними сервисами через API endpoints.
 
 #### Кастомизация интерфейса
 

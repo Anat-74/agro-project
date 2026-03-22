@@ -1,0 +1,10 @@
+{
+  "name": "mcp-servers",
+  "version": "1.0.0",
+  "description": "MCP servers for various integrations",
+  "type": "commonjs",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.22.0"
+  }
+}

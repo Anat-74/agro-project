@@ -15,10 +15,10 @@ export type Product = {
     metaTitle?: string;
     metaDescription?: string;
     structuredData?: any;
-  };
-  seoTitle?: string;
-  seoDescription?: string;
-  seoImage?: Image[];
+  } | null;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  seoImage?: Image[] | null;
   category?: {
     slug: string;
   };
@@ -33,6 +33,7 @@ export type Product = {
   createdAt?: string;
   updatedAt?: string;
   publishedAt?: string;
+  localizations?: any[]; // Новое поле в Strapi v5
 };
 
 export type PaginationMeta = {
