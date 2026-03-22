@@ -32,8 +32,30 @@ async function callStrapiTool(toolName: string, args: any): Promise<any> {
       if (operation === "search" && query) {
         // Поиск продуктов по названию или описанию
         baseParams.append("filters[isAvailable][$eq]", "true");
-        baseParams.append("filters[$or][0][name][$contains]", query);
-        baseParams.append("filters[$or][1][description][$contains]", query);
+
+        // Для русского языка: преобразуем первую букву в заглавную
+        // потому что Strapi $startsWith чувствителен к регистру
+        const capitalizedQuery = query.charAt(0).toUpperCase() + query.slice(1);
+
+        // Ищем с заглавной первой буквой
+        baseParams.append(
+          "filters[$or][0][name][$startsWith]",
+          capitalizedQuery,
+        );
+        baseParams.append(
+          "filters[$or][1][description][$startsWith]",
+          capitalizedQuery,
+        );
+
+        // Также ищем с оригинальным query (на случай если пользователь ввел с заглавной)
+        baseParams.append("filters[$or][2][name][$startsWith]", query);
+        baseParams.append("filters[$or][3][description][$startsWith]", query);
+
+        // Для поиска в любом месте строки (не только в начале) используем $eq с маской
+        // Но в Strapi v5 нет LIKE, поэтому используем $containsi если поддерживается
+        baseParams.append("filters[$or][4][name][$containsi]", query);
+        baseParams.append("filters[$or][5][description][$containsi]", query);
+
         baseParams.append("sort", "name:asc");
       }
 
@@ -45,21 +67,23 @@ async function callStrapiTool(toolName: string, args: any): Promise<any> {
         if (category === "Ягоды") {
           // Ищем только конкретные ягоды по названию и подкатегории
           // Убираем общий поиск по "ягод" чтобы исключить томаты
-          baseParams.append("filters[$or][0][name][$contains]", "ежевик");
-          baseParams.append("filters[$or][1][name][$contains]", "клубник");
-          baseParams.append("filters[$or][2][name][$contains]", "малин");
-          baseParams.append("filters[$or][3][name][$contains]", "черник");
-          baseParams.append("filters[$or][4][name][$contains]", "смородин");
-          baseParams.append("filters[$or][5][name][$contains]", "вишн");
-          baseParams.append("filters[$or][6][name][$contains]", "алыч");
-          baseParams.append("filters[$or][7][name][$contains]", "крыжовник");
-          baseParams.append("filters[$or][8][name][$contains]", "слив");
+          // Используем $startsWith с заглавными буквами
+          baseParams.append("filters[$or][0][name][$startsWith]", "Ежевик");
+          baseParams.append("filters[$or][1][name][$startsWith]", "Клубник");
+          baseParams.append("filters[$or][2][name][$startsWith]", "Малин");
+          baseParams.append("filters[$or][3][name][$startsWith]", "Черник");
+          baseParams.append("filters[$or][4][name][$startsWith]", "Смородин");
+          baseParams.append("filters[$or][5][name][$startsWith]", "Вишн");
+          baseParams.append("filters[$or][6][name][$startsWith]", "Алыч");
+          baseParams.append("filters[$or][7][name][$startsWith]", "Крыжовник");
+          baseParams.append("filters[$or][8][name][$startsWith]", "Слив");
           baseParams.append(
             "filters[$or][9][subcategory][name][$eq]",
             "Ежевика",
           );
         } else {
           // Для других категорий используем стандартный поиск
+          // Учитываем продукты с прямой связью с категорией
           baseParams.append("filters[category][name][$eq]", category);
         }
 
