@@ -143,21 +143,25 @@ async function callStrapiTool(toolName: string, args: any): Promise<any> {
       }
 
       // Выполняем запрос к Strapi API
-      const response = await fetch(
-        `${STRAPI_URL}/api/products?${baseParams.toString()}`,
-      );
+      const url = `${STRAPI_URL}/api/products?${baseParams.toString()}`;
+      console.log("Strapi search URL:", url);
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`Strapi API error: ${response.status}`);
       }
 
       const result = await response.json();
+      console.log("Strapi raw search result:", JSON.stringify(result, null, 2));
       const products = result.data || [];
 
       // Форматируем ответ
       const formattedProducts = products.map((product: any) => {
         const attributes = product.attributes || product;
+        // В Strapi v5 используем documentId как идентификатор продукта
+        // потому что числовой id может быть ID статуса публикации (например, 899)
+        const productId = product.documentId || product.id;
         return {
-          id: product.id,
+          id: productId,
           name: attributes.name,
           description: attributes.description,
           price: attributes.price,
@@ -284,6 +288,203 @@ async function callStrapiTool(toolName: string, args: any): Promise<any> {
           operation === "get_by_category" && category === "Ягоды"
             ? `В категории "${category}" найдено ${fallbackProducts.length} ягод. Используются демонстрационные данные.`
             : "Используются демонстрационные данные. Реальные данные временно недоступны.",
+      };
+    }
+  }
+
+  return { error: `Инструмент ${toolName} не реализован`, data: args };
+}
+
+// Вспомогательная функция для работы с корзиной
+async function callCartTool(toolName: string, args: any): Promise<any> {
+  console.log(`callCartTool called: ${toolName}`, args);
+  // Реализация работы с корзиной
+  if (toolName === "cart_operations") {
+    const { operation, productId, quantity = 1 } = args;
+
+    try {
+      // Для операции добавления сначала получаем информацию о продукте
+      if (operation === "add" && productId) {
+        try {
+          // Получаем информацию о продукте из Strapi
+          const STRAPI_URL = process.env.STRAPI_URL || process.env.NUXT_PUBLIC_STRAPI_URL || "http://127.0.0.1:1337";
+          const STRAPI_API_TOKEN = process.env.STRAPI_ADMIN_TOKEN || process.env.NUXT_STRAPI_TOKEN || "";
+          
+          // Определяем, является ли productId числовым ID или documentId
+          const isNumericId = /^\d+$/.test(String(productId));
+          let productUrl: string;
+          if (isNumericId) {
+            // Числовой ID – используем стандартный endpoint
+            productUrl = `${STRAPI_URL}/api/products/${productId}?populate=*&publicationState=preview`;
+          } else {
+            // DocumentId – используем фильтр по documentId
+            productUrl = `${STRAPI_URL}/api/products?filters[documentId][$eq]=${encodeURIComponent(productId)}&populate=*&publicationState=preview`;
+          }
+          
+          console.log("Fetching product info from:", productUrl);
+          const headers: Record<string, string> = {
+            "Content-Type": "application/json",
+          };
+          if (STRAPI_API_TOKEN) {
+            headers["Authorization"] = `Bearer ${STRAPI_API_TOKEN}`;
+          }
+          const response = await fetch(productUrl, { headers });
+          
+          console.log("Product fetch response status:", response.status, response.statusText);
+          
+          if (response.ok) {
+            const result = await response.json();
+            console.log("Product fetch result:", JSON.stringify(result, null, 2));
+            
+            // Обрабатываем оба формата ответа: прямой объект или массив с фильтром
+            let productData = result.data;
+            if (Array.isArray(productData)) {
+              // Если получили массив (фильтр по documentId), берем первый элемент
+              if (productData.length === 0) {
+                throw new Error(`Продукт с documentId ${productId} не найден`);
+              }
+              productData = productData[0];
+            }
+            
+            const product = productData;
+            const attributes = product.attributes || product;
+            const productName = attributes.name;
+            const productPrice = attributes.price;
+            const productSlug = attributes.slug;
+            const categorySlug = attributes.category?.slug || "fruits"; // fallback
+            const imageUrl = attributes.mainImage?.url || attributes.image?.[0]?.url || "";
+            
+            console.log("Product info retrieved:", { productName, productPrice, productSlug, categorySlug, imageUrl });
+
+            // Возвращаем инструкцию для клиента с полной информацией о продукте
+            return {
+              success: true,
+              message: `Товар "${productName}" добавлен в корзину в количестве ${quantity}. Нажмите "Добавить в корзину" для подтверждения.`,
+              operation: "add",
+              productId: productId,
+              productName,
+              price: productPrice,
+              quantity,
+              total: productPrice * quantity,
+              timestamp: new Date().toISOString(),
+              // Инструкция для клиента
+              clientInstruction: {
+                type: "add_to_cart",
+                product: {
+                  id: product.documentId || product.id, // предпочтительно documentId
+                  name: productName,
+                  price: productPrice,
+                  slug: productSlug,
+                  image: imageUrl,
+                },
+                categorySlug: categorySlug,
+                quantity: quantity,
+              },
+            };
+          } else {
+            const errorText = await response.text();
+            console.error("Product fetch failed:", response.status, errorText);
+          }
+        } catch (error) {
+          console.error("Error fetching product info:", error);
+          // Если не удалось получить информацию, возвращаем базовый ответ
+        }
+      }
+
+      switch (operation) {
+        case "add":
+          // Добавление товара в корзину (fallback если не удалось получить информацию)
+          return {
+            success: true,
+            message: `Товар с ID ${productId} добавлен в корзину в количестве ${quantity}. Нажмите "Добавить в корзину" для подтверждения.`,
+            operation: "add",
+            productId,
+            quantity,
+            timestamp: new Date().toISOString(),
+            // Инструкция для клиента
+            clientInstruction: {
+              type: "add_to_cart",
+              productId: productId,
+              quantity: quantity,
+            },
+          };
+
+        case "remove":
+          // Удаление товара из корзины
+          return {
+            success: true,
+            message: `Товар с ID ${productId} удален из корзины. Нажмите "Удалить из корзины" для подтверждения.`,
+            operation: "remove",
+            productId,
+            timestamp: new Date().toISOString(),
+            // Инструкция для клиента
+            clientInstruction: {
+              type: "remove_from_cart",
+              productId: productId,
+            },
+          };
+
+        case "update":
+          // Обновление количества товара
+          return {
+            success: true,
+            message: `Количество товара с ID ${productId} обновлено до ${quantity}. Нажмите "Обновить количество" для подтверждения.`,
+            operation: "update",
+            productId,
+            quantity,
+            timestamp: new Date().toISOString(),
+            // Инструкция для клиента
+            clientInstruction: {
+              type: "update_cart_quantity",
+              productId: productId,
+              quantity: quantity,
+            },
+          };
+
+        case "get":
+          // Получение содержимого корзины
+          // Для операции get возвращаем только сообщение, так как реальные данные будут на клиенте
+          return {
+            success: true,
+            message:
+              "Содержимое корзины получено. Проверьте корзину в правом верхнем углу сайта.",
+            operation: "get",
+            timestamp: new Date().toISOString(),
+            // Инструкция для клиента
+            clientInstruction: {
+              type: "show_cart",
+            },
+          };
+
+        case "clear":
+          // Очистка корзины
+          return {
+            success: true,
+            message:
+              "Корзина очищена. Нажмите 'Очистить корзину' для подтверждения.",
+            operation: "clear",
+            timestamp: new Date().toISOString(),
+            // Инструкция для клиента
+            clientInstruction: {
+              type: "clear_cart",
+            },
+          };
+
+        default:
+          return {
+            error: `Неизвестная операция корзины: ${operation}`,
+            operation,
+            productId,
+            quantity,
+          };
+      }
+    } catch (error: any) {
+      console.error("Cart operation error:", error);
+      return {
+        error: `Ошибка при выполнении операции с корзиной: ${error.message}`,
+        operation,
+        productId,
+        quantity,
       };
     }
   }
@@ -459,14 +660,56 @@ export default defineEventHandler(async (event) => {
   Доступные операции: search, get_featured, get_by_category, get_by_id
 - cart_operations: Управление корзиной покупок (добавление, удаление, просмотр)
 
-ВАЖНЫЕ ПРАВИЛА:
+ВАЖНЫЕ ПРАВИЛА ФОРМАТА:
 1. ВСЕГДА используй ТОЛЬКО VALID JSON формат для аргументов инструментов
-2. НИКОГДА не используй XML, HTML или другие форматы для аргументов
-3. Пример правильного формата для strapi_products:
+2. НИКОГДА не используй XML, HTML, DSML или другие форматы для аргументов
+3. Аргументы ДОЛЖНЫ быть валидным JSON объектом, начинающимся с { и заканчивающимся }
+4. Пример правильного формата для strapi_products:
    {
      "operation": "search",
      "query": "яблоки",
      "limit": 5
+   }
+5. Пример НЕПРАВИЛЬНОГО формата (НЕ ИСПОЛЬЗУЙ):
+   <function_calls>
+   <invoke name="strapi_products">
+   <parameter name="operation" string="true">search</parameter>
+   </invoke>
+   </function_calls>
+
+РАБОТА С КОРЗИНОЙ:
+1. Когда пользователь просит добавить товар в корзину (например: "добавь горох в корзину", "положи яблоки в корзину", "хочу купить морковь"):
+   - Сначала используй strapi_products с operation: "search" и query: "название товара" чтобы найти товар
+   - Получи ID товара из результатов поиска
+   - Затем используй cart_operations с operation: "add", productId: "найденный ID", quantity: 1
+   
+2. Когда пользователь просит посмотреть корзину (например: "что в корзине", "покажи корзину", "корзина", "моя корзина"):
+   - Используй cart_operations с operation: "get"
+   
+3. Когда пользователь просит удалить товар из корзины (например: "удали горох из корзины", "убери яблоки из корзины"):
+   - Используй cart_operations с operation: "remove" и productId: "ID товара"
+
+4. Когда пользователь просит очистить корзину (например: "очисти корзину", "удали все из корзины"):
+   - Используй cart_operations с operation: "clear"
+
+ВАЖНО: РАСПОЗНАВАНИЕ НАМЕРЕНИЙ ПОЛЬЗОВАТЕЛЯ:
+- Если пользователь говорит "добавь [товар] в корзину" → ищи товар и добавляй в корзину
+- Если пользователь говорит "положи [товар] в корзину" → ищи товар и добавляй в корзину  
+- Если пользователь говорит "хочу купить [товар]" → ищи товар и добавляй в корзину
+- Если пользователь говорит "корзина" или "покажи корзину" → показывай содержимое корзины
+- Если пользователь говорит "удали [товар] из корзины" → удаляй товар из корзины
+
+ПОСЛЕДОВАТЕЛЬНОСТЬ ДЕЙСТВИЙ ДЛЯ ДОБАВЛЕНИЯ В КОРЗИНУ:
+1. Поиск товара: strapi_products { "operation": "search", "query": "название товара" }
+2. Получение ID товара из результатов поиска (используй поле 'id' из объекта продукта, сервер вернет результаты в следующем раунде)
+3. После получения результатов поиска, вызови cart_operations с operation: "add", productId: "найденный ID", quantity: 1
+ВАЖНО: Это двухэтапный процесс. Сначала вызови strapi_products, дождись результатов, затем вызови cart_operations.
+
+ФОРМАТ ОТВЕТОВ ДЛЯ ПОЛЬЗОВАТЕЛЯ:
+- НИКОГДА не показывай технические форматы (JSON, XML, DSML) в ответах
+- Всегда преобразуй результаты инструментов в человеческий язык
+- Пример: вместо "<function_calls>..." говори "Отлично! Я нашел горох и добавляю его в вашу корзину"
+- Используй дружелюбный, социальный стиль общения
    }
 4. При запросах о продуктах сначала используй инструмент strapi_products для получения актуальных данных
 5. Предоставляй подробные консультации на основе общих знаний о сельском хозяйстве
@@ -481,12 +724,17 @@ export default defineEventHandler(async (event) => {
 - Зелень: петрушка, укроп, базилик, салат - витамины A, C, K, хранить в воде
 - Орехи и сухофрукты: грецкие орехи, миндаль, изюм, курага - энергия, хранить в сухом месте
 
-СТИЛЬ ОБЩЕНИЯ:
-- Будь дружелюбным, полезным и профессиональным
-- Отвечай на русском языке подробно, но понятно
-- Используй социальный, человеческий язык - не технический синтаксис
-- После получения данных от инструментов, объясняй их простыми словами
-- Если пользователь спрашивает о ягодах, используй операцию get_by_category с category="Ягоды"`,
+СТИЛЬ ОБЩЕНИЯ И ФОРМАТ ОТВЕТОВ:
+1. ВСЕГДА используй человеческий, социальный язык в ответах пользователю
+2. НИКОГДА не показывай технические форматы (JSON, XML, DSML, tool calls) в ответах пользователю
+3. После получения данных от инструментов, объясняй их простыми, понятными словами
+4. Пример ПРАВИЛЬНОГО ответа:
+   "Отлично! Я нашел горох в нашем магазине. Это 'Горох Стручковый' по цене 4.48 рубля. Добавляю его в вашу корзину!"
+5. Пример НЕПРАВИЛЬНОГО ответа (НЕ ИСПОЛЬЗУЙ):
+   "<function_calls><invoke name='cart_operations'><parameter name='operation' string='true'>add</parameter>"
+6. Если пользователь спрашивает о ягодах, используй операцию get_by_category с category="Ягоды"
+7. Всегда заканчивай ответ дружелюбным предложением помощи или вопросом
+8. Используй эмодзи и форматирование для улучшения читаемости, но не переусердствуй`,
     };
 
     // Подготавливаем сообщения для API
@@ -540,6 +788,7 @@ export default defineEventHandler(async (event) => {
     // Обрабатываем tool calls если они есть
     let toolResults = [];
     let finalAssistantMessage = assistantMessage;
+    let clientInstruction: any = null; // Для хранения инструкций для клиента
 
     if (assistantMessage.tool_calls && assistantMessage.tool_calls.length > 0) {
       // Реальная обработка tool calls
@@ -563,13 +812,37 @@ export default defineEventHandler(async (event) => {
             const queryMatch = xmlText.match(
               /query["']?\s*[:=]\s*["']?([^"'\s>]+)/i,
             );
+            const categoryMatch = xmlText.match(
+              /category["']?\s*[:=]\s*["']?([^"'\s>]+)/i,
+            );
             const limitMatch = xmlText.match(/limit["']?\s*[:=]\s*["']?(\d+)/i);
+            const productIdMatch = xmlText.match(
+              /productId["']?\s*[:=]\s*["']?([^"'\s>]+)/i,
+            );
+            const quantityMatch = xmlText.match(
+              /quantity["']?\s*[:=]\s*["']?(\d+)/i,
+            );
 
             args = {
               operation: operationMatch ? operationMatch[1] : "search",
-              query: queryMatch ? queryMatch[1] : "ягоды",
+              query: queryMatch ? queryMatch[1] : "",
               limit: limitMatch ? parseInt(limitMatch[1]) : 10,
             };
+
+            // Если есть категория, добавляем её
+            if (categoryMatch) {
+              args.category = categoryMatch[1];
+            }
+
+            // Если есть productId, добавляем его (для cart_operations)
+            if (productIdMatch) {
+              args.productId = productIdMatch[1];
+            }
+
+            // Если есть quantity, добавляем его (для cart_operations)
+            if (quantityMatch) {
+              args.quantity = parseInt(quantityMatch[1]);
+            }
 
             // Специальная логика для запросов о ягодах
             if (
@@ -597,7 +870,17 @@ export default defineEventHandler(async (event) => {
             };
           } else if (functionName === "cart_operations") {
             // Обработка операций с корзиной
-            result = { message: "Операция с корзиной выполнена", data: args };
+            console.log("Calling cart_operations with args:", args);
+            result = await callCartTool(functionName, args);
+            console.log("cart_operations result:", result);
+
+            // Сохраняем clientInstruction для возврата клиенту
+            if (result && result.clientInstruction) {
+              console.log("Setting clientInstruction from cart_operations:", result.clientInstruction);
+              clientInstruction = result.clientInstruction;
+            } else {
+              console.log("No clientInstruction in cart_operations result");
+            }
           } else {
             result = {
               error: `Инструмент ${functionName} не поддерживается`,
@@ -636,6 +919,11 @@ export default defineEventHandler(async (event) => {
         })),
       ];
 
+      console.log(
+        "Second request messages:",
+        JSON.stringify(secondMessages, null, 2),
+      );
+
       const secondResponse = await fetch(DEEPSEEK_API_URL, {
         method: "POST",
         headers: {
@@ -645,6 +933,8 @@ export default defineEventHandler(async (event) => {
         body: JSON.stringify({
           model: "deepseek-chat",
           messages: secondMessages,
+          tools: AVAILABLE_TOOLS, // Включаем инструменты для второго раунда
+          tool_choice: "auto",
           temperature: 0.7,
           max_tokens: 1000,
           stream: false,
@@ -658,15 +948,103 @@ export default defineEventHandler(async (event) => {
         );
       }
 
-      const secondData = await secondResponse.json();
-      console.log(
-        "Second API response data:",
-        JSON.stringify(secondData, null, 2),
-      );
+       const secondData = await secondResponse.json();
+       console.log(
+         "Second API response data:",
+         JSON.stringify(secondData, null, 2),
+       );
 
-      finalAssistantMessage = secondData.choices[0].message;
-      console.log("Final assistant message:", finalAssistantMessage);
-      console.log("Final assistant content:", finalAssistantMessage.content);
+       finalAssistantMessage = secondData.choices[0].message;
+       console.log("Final assistant message:", finalAssistantMessage);
+       console.log("Final assistant content:", finalAssistantMessage.content);
+       
+       // Проверяем, есть ли tool calls во втором ответе
+       if (finalAssistantMessage.tool_calls && finalAssistantMessage.tool_calls.length > 0) {
+         console.log("Second round tool calls detected:", finalAssistantMessage.tool_calls);
+         
+         // Обрабатываем tool calls второго раунда
+         for (const toolCall of finalAssistantMessage.tool_calls) {
+           try {
+             const functionName = toolCall.function.name;
+             let args: any = {};
+
+             try {
+               args = JSON.parse(toolCall.function.arguments);
+             } catch (jsonError) {
+               // Парсинг XML формата (как в первом раунде)
+               const xmlText = toolCall.function.arguments;
+               console.log("Parsing XML format in second round:", xmlText);
+
+               const operationMatch = xmlText.match(
+                 /operation["']?\s*[:=]\s*["']?([^"'\s>]+)/i,
+               );
+               const queryMatch = xmlText.match(
+                 /query["']?\s*[:=]\s*["']?([^"'\s>]+)/i,
+               );
+               const productIdMatch = xmlText.match(
+                 /productId["']?\s*[:=]\s*["']?([^"'\s>]+)/i,
+               );
+               const quantityMatch = xmlText.match(
+                 /quantity["']?\s*[:=]\s*["']?(\d+)/i,
+               );
+
+               args = {
+                 operation: operationMatch ? operationMatch[1] : "search",
+                 query: queryMatch ? queryMatch[1] : "",
+               };
+
+               if (productIdMatch) args.productId = productIdMatch[1];
+               if (quantityMatch) args.quantity = parseInt(quantityMatch[1]);
+             }
+
+             // Вызываем инструмент
+             let result;
+             if (functionName === "strapi_products") {
+               console.log("Second round: calling strapi_products with args:", args);
+               result = await callStrapiTool(functionName, args);
+               console.log("Second round strapi_products result:", result);
+             } else if (functionName === "cart_operations") {
+               console.log("Second round: calling cart_operations with args:", args);
+               result = await callCartTool(functionName, args);
+               console.log("Second round cart_operations result:", result);
+               if (result && result.clientInstruction) {
+                 console.log("Second round: Setting clientInstruction from cart_operations:", result.clientInstruction);
+                 clientInstruction = result.clientInstruction;
+               } else {
+                 console.log("Second round: No clientInstruction in cart_operations result");
+               }
+             } else if (functionName === "chat_assistant") {
+               result = {
+                 message: "Информация получена от ассистента",
+                 data: args,
+               };
+             } else {
+               result = {
+                 error: `Инструмент ${functionName} не поддерживается`,
+                 data: args,
+               };
+             }
+
+             // Добавляем результат
+             toolResults.push({
+               tool_call_id: toolCall.id,
+               result: JSON.stringify(result),
+             });
+           } catch (error: any) {
+             console.error(`Error processing second round tool call ${toolCall.function.name}:`, error);
+             toolResults.push({
+               tool_call_id: toolCall.id,
+               result: JSON.stringify({
+                 error: `Ошибка при выполнении ${toolCall.function.name}: ${error.message}`,
+               }),
+             });
+           }
+         }
+         
+         // После обработки tool calls второго раунда, мы могли бы сделать третий запрос,
+         // но для простоты ограничимся двумя раундами
+         console.log("Second round tool calls processed, stopping further rounds.");
+       }
 
       // Добавляем окончательный ответ в историю
       const finalMessageWithTimestamp = {
@@ -677,6 +1055,11 @@ export default defineEventHandler(async (event) => {
     }
 
     // Возвращаем ответ
+    console.log("Server returning clientInstruction:", clientInstruction);
+    console.log("clientInstruction type:", typeof clientInstruction);
+    if (clientInstruction) {
+      console.log("clientInstruction content:", JSON.stringify(clientInstruction, null, 2));
+    }
     return {
       success: true,
       message:
@@ -685,6 +1068,7 @@ export default defineEventHandler(async (event) => {
       tool_results: toolResults,
       sessionId: cookieSessionId,
       history: recentHistory,
+      clientInstruction: clientInstruction, // Добавляем инструкции для клиента
     };
   } catch (error: any) {
     console.error("Chat assistant error:", error);
