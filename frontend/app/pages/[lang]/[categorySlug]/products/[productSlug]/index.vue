@@ -210,11 +210,9 @@ const handleAddToCart = (product: Product) => {
      </span>
      <UButton
       @click="handleAddToCart(product)"
-      :disabled="isInCart(product.id)"
-      variant="add-to-cart"
-      class="wrapper-right__btn"
-     >
-     {{ isInCart(product.id) ? buttonTranslations[currentLocale].addedIsCart : buttonTranslations[currentLocale].label }}
+       :disabled="isInCart(product.documentId)"
+      >
+      {{ isInCart(product.documentId) ? buttonTranslations[currentLocale].addedIsCart : buttonTranslations[currentLocale].label }}
      </UButton>
    </div>
 </section>

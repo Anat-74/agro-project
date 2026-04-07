@@ -70,7 +70,7 @@ console.debug("global data:", global.value);
           <ul class="header__product-card-list">
             <ProductFilterCard
               v-for="product in products"
-              :key="product.id"
+              :key="product.documentId"
               :product="product"
             />
           </ul>

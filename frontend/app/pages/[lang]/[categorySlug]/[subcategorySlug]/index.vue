@@ -158,8 +158,8 @@ watchEffect(() => {
 });
 
 const handleAddToCart = (product: Product) => {
-  if (isInCart(product.id)) {
-    cartStore.removeFromCart(product.id);
+  if (isInCart(product.documentId)) {
+    cartStore.removeFromCart(product.documentId);
   } else {
     cartStore.addToCart(product, route.params.categorySlug as string, null);
   }
@@ -221,7 +221,7 @@ const handleAddToCart = (product: Product) => {
     <ul v-if="products?.data.length" class="subcategory-products__list">
       <li
         v-for="(product, index) in products.data"
-        :key="product.id"
+        :key="product.documentId"
         class="subcategory-products__item"
       >
         <Icon
@@ -268,9 +268,9 @@ const handleAddToCart = (product: Product) => {
         <UButton
           @click="handleAddToCart(product)"
           variant="add"
-          :is-in-cart="isInCart(product.id)"
+          :is-in-cart="isInCart(product.documentId)"
           :aria-label="
-            isInCart(product.id)
+            isInCart(product.documentId)
               ? buttonTranslations[currentLocale].ariaLabelAdded
               : buttonTranslations[currentLocale].label
           "

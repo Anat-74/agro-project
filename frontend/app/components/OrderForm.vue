@@ -19,7 +19,7 @@ const submitOrder = async () => {
    isSubmitting.value = true
    try {
       const order = await orderStore.createOrder(form.email, form.phone)
-      emit('order-success', order.data.items[0]?.product.id)
+       emit('order-success', order.data.items[0]?.product.documentId)
 
       form.email = ''
       form.phone = ''

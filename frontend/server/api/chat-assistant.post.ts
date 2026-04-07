@@ -104,7 +104,7 @@ async function callStrapiTool(toolName: string, args: any): Promise<any> {
 
           return {
             product: {
-              id: product.id,
+               id: product.documentId,
               name: product.attributes?.name || product.name,
               description:
                 product.attributes?.description || product.description,
@@ -158,8 +158,7 @@ async function callStrapiTool(toolName: string, args: any): Promise<any> {
       const formattedProducts = products.map((product: any) => {
         const attributes = product.attributes || product;
         // В Strapi v5 используем documentId как идентификатор продукта
-        // потому что числовой id может быть ID статуса публикации (например, 899)
-        const productId = product.documentId || product.id;
+        const productId = product.documentId;
         return {
           id: productId,
           name: attributes.name,
@@ -371,7 +370,7 @@ async function callCartTool(toolName: string, args: any): Promise<any> {
               clientInstruction: {
                 type: "add_to_cart",
                 product: {
-                  id: product.documentId || product.id, // предпочтительно documentId
+                   id: product.documentId,
                   name: productName,
                   price: productPrice,
                   slug: productSlug,

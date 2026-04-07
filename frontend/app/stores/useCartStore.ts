@@ -3,7 +3,7 @@ export type CartProduct = Omit<Product, 'image'> & {
    categorySlug: string
    subcategorySlug: string | null
    originalLocale: string
-   documentId: string // Используем documentId вместо id
+   documentId: string
  }
  
  export type CartItem = {
@@ -92,15 +92,7 @@ const isCartItem = (item: any): item is CartItem => {
           try {
            const parsed = JSON.parse(savedCart)
              if (Array.isArray(parsed)) {
-                // Миграция старых данных: если есть id (число), но нет documentId
-                const migratedItems = parsed.map(item => {
-                  if (item.product && typeof item.product.id === 'number' && !item.product.documentId) {
-                    // Преобразуем числовой id в строку для documentId
-                    item.product.documentId = String(item.product.id)
-                  }
-                  return item
-                })
-                items.value = migratedItems.filter(isCartItem);
+                items.value = parsed.filter(isCartItem);
            }
          } catch (e) {
            console.error("Ошибка загрузки:", e)

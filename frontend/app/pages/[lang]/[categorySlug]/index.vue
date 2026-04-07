@@ -248,7 +248,7 @@ watchEffect(() => {
     >
       <li
         v-for="(product, index) in products.data"
-        :key="product.id"
+        :key="product.documentId"
         class="category-content__item"
       >
         <NuxtLink

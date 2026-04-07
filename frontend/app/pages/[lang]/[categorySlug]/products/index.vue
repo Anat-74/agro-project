@@ -160,7 +160,7 @@ watchEffect(() => {
         <ProductCard
           class="products-section__item"
           v-for="(product, index) in products.data"
-          :key="product.id"
+          :key="product.documentId"
           :product="product"
           :index="index"
           :categorySlug="categorySlug"
