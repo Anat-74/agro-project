@@ -1,7 +1,7 @@
 import type { Image } from "./image";
 
 export type Product = {
-  id: number;
+  id: string; // В Strapi v5 это documentId
   name: string;
   slug: string;
   price: number;
@@ -29,7 +29,7 @@ export type Product = {
     };
   };
   locale?: string;
-  documentId?: string;
+  documentId: string;
   createdAt?: string;
   updatedAt?: string;
   publishedAt?: string;

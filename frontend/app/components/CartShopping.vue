@@ -28,7 +28,7 @@ onMounted(() => {
   <ul class="cart-item">
     <li
       v-for="item in cartStore.items"
-      :key="item.product.id"
+      :key="item.product.documentId"
       class="cart-item__item"
     >
       <div
@@ -77,7 +77,7 @@ onMounted(() => {
       </span>
       <div class="cart-item__controls">
         <UButton
-          @click="cartStore.updateQuantity(item.product.id, item.quantity - 1)"
+          @click="cartStore.updateQuantity(item.product.documentId, item.quantity - 1)"
           :disabled="item.quantity <= 1"
           variant="remove-quantity-prod"
           :aria-label="
@@ -93,7 +93,7 @@ onMounted(() => {
           {{ item.quantity }}
         </span>
         <UButton
-          @click="cartStore.updateQuantity(item.product.id, item.quantity + 1)"
+          @click="cartStore.updateQuantity(item.product.documentId, item.quantity + 1)"
           variant="add-quantity-prod"
           :aria-label="
             buttonTranslations[currentLocale].ariaLabelIncreaseQuantity
@@ -101,7 +101,7 @@ onMounted(() => {
         />
       </div>
       <UButton
-        @click="cartStore.removeFromCart(item.product.id)"
+        @click="cartStore.removeFromCart(item.product.documentId)"
         variant="remove-cart-item"
         icon="material-symbols:delete-outline-rounded"
         class="cart-item__remove-from-cart"

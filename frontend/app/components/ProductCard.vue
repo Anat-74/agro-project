@@ -11,7 +11,7 @@ const { getProductLink } = useProductLink();
 
 interface Props {
   product: Product;
-  index: number;
+   index: number;
   categorySlug?: string;
 }
 const { product } = defineProps<Props>();
@@ -27,8 +27,8 @@ const toggleVisibleLink = () => {
 };
 
 const handleAddToCart = (product: Product) => {
-  if (isInCart(product.id)) {
-    cartStore.removeFromCart(product.id);
+  if (isInCart(product.documentId)) {
+    cartStore.removeFromCart(product.documentId);
   } else {
     cartStore.addToCart(product, route.params.categorySlug as string, null);
   }
@@ -117,9 +117,9 @@ const characteristics = computed(() => {
         <UButton
           @click="handleAddToCart(product)"
           variant="add"
-          :is-in-cart="isInCart(product.id)"
+          :is-in-cart="isInCart(product.documentId)"
           :aria-label="
-            isInCart(product.id)
+            isInCart(product.documentId)
               ? buttonTranslations[currentLocale].ariaLabelAdded
               : buttonTranslations[currentLocale].label
           "
@@ -178,9 +178,9 @@ const characteristics = computed(() => {
         <UButton
           @click="handleAddToCart(product)"
           variant="add"
-          :is-in-cart="isInCart(product.id)"
+          :is-in-cart="isInCart(product.documentId)"
           :aria-label="
-            isInCart(product.id)
+            isInCart(product.documentId)
               ? buttonTranslations[currentLocale].ariaLabelAdded
               : buttonTranslations[currentLocale].label
           "

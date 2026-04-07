@@ -16,8 +16,8 @@ interface Props {
 const { product } = defineProps<Props>();
 
 const handleAddToCart = (product: Product) => {
-  if (isInCart(product.id)) {
-    cartStore.removeFromCart(product.id);
+  if (isInCart(product.documentId)) {
+    cartStore.removeFromCart(product.documentId);
   } else {
     cartStore.addToCart(product, route.params.categorySlug as string, null);
   }
@@ -67,9 +67,9 @@ const visibleImagesCount = computed(() => {
       class="discount-card__add"
       @click="handleAddToCart(product)"
       variant="add"
-      :is-in-cart="isInCart(product.id)"
+      :is-in-cart="isInCart(product.documentId)"
       :aria-label="
-        isInCart(product.id)
+        isInCart(product.documentId)
           ? buttonTranslations[currentLocale].ariaLabelAdded
           : buttonTranslations[currentLocale].label
       "

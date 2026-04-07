@@ -3,6 +3,7 @@ export type CartProduct = Omit<Product, 'image'> & {
    categorySlug: string
    subcategorySlug: string | null
    originalLocale: string
+   documentId: string // Используем documentId вместо id
  }
  
  export type CartItem = {
@@ -27,7 +28,7 @@ export const useCartStore = defineStore('cart', () => {
       categorySlug: string,
       subcategorySlug: string | null = null
     ) => {
-      const existingItem = items.value.find(item => item.product.id === product.id)
+      const existingItem = items.value.find(item => item.product.documentId === product.documentId)
       
       // Нормализация изображения
       const normalizedImage = typeof product.image === 'string'
@@ -53,13 +54,13 @@ export const useCartStore = defineStore('cart', () => {
       saveCart()
     }
 
-   const removeFromCart = (productId: number) => {
-      items.value = items.value.filter(item => item.product.id !== productId)
+   const removeFromCart = (productId: string) => {
+      items.value = items.value.filter(item => item.product.documentId !== productId)
       saveCart()
    }
 
-   const updateQuantity = (productId: number, quantity: number) => {
-      const item = items.value.find(item => item.product.id === productId)
+   const updateQuantity = (productId: string, quantity: number) => {
+      const item = items.value.find(item => item.product.documentId === productId)
       if (item) {
         const newQuantity = Math.max(1, quantity)
         item.quantity = newQuantity
@@ -81,24 +82,32 @@ const isCartItem = (item: any): item is CartItem => {
    return item && 
           typeof item.quantity === 'number' &&
           item.product &&
-          typeof item.product.id === 'number'
+          typeof item.product.documentId === 'string'
  }
 
-   const loadCart = () => {
-      if (typeof window === 'undefined') return; // Для SSR
-      const savedCart = localStorage.getItem('cart')
-      if (savedCart) {
-         try {
-          const parsed = JSON.parse(savedCart)
-            if (Array.isArray(parsed)) {
-               items.value = parsed.filter(isCartItem);
-          }
-        } catch (e) {
-          console.error("Ошибка загрузки:", e)
-          localStorage.removeItem('cart')
-        }
-      }
-   }
+    const loadCart = () => {
+       if (typeof window === 'undefined') return; // Для SSR
+       const savedCart = localStorage.getItem('cart')
+       if (savedCart) {
+          try {
+           const parsed = JSON.parse(savedCart)
+             if (Array.isArray(parsed)) {
+                // Миграция старых данных: если есть id (число), но нет documentId
+                const migratedItems = parsed.map(item => {
+                  if (item.product && typeof item.product.id === 'number' && !item.product.documentId) {
+                    // Преобразуем числовой id в строку для documentId
+                    item.product.documentId = String(item.product.id)
+                  }
+                  return item
+                })
+                items.value = migratedItems.filter(isCartItem);
+           }
+         } catch (e) {
+           console.error("Ошибка загрузки:", e)
+           localStorage.removeItem('cart')
+         }
+       }
+    }
 
    return {
       items,

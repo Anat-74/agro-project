@@ -510,12 +510,15 @@ const handleCartAction = (event: CustomEvent) => {
     case "add_to_cart":
       if (data.product) {
         // Создаем объект продукта для добавления в корзину
+        // В Strapi v5 сервер возвращает documentId в поле id
         const product = {
           id: data.product.id,
           name: data.product.name,
           price: data.product.price,
           slug: data.product.slug,
           image: data.product.image,
+          // Добавляем documentId для совместимости с обновленным store
+          documentId: data.product.id,
         };
 
         // Добавляем продукт в корзину
@@ -549,7 +552,8 @@ const handleCartAction = (event: CustomEvent) => {
 
     case "remove_from_cart":
       if (data.productId) {
-        const productId = Number(data.productId);
+        // В Strapi v5 productId может быть строкой (documentId)
+        const productId = data.productId;
         cartStore.removeFromCart(productId);
 
         const successMessage: ChatMessage = {
@@ -565,7 +569,8 @@ const handleCartAction = (event: CustomEvent) => {
 
     case "update_cart_quantity":
       if (data.productId && data.quantity) {
-        const productId = Number(data.productId);
+        // В Strapi v5 productId может быть строкой (documentId)
+        const productId = data.productId;
         const quantity = Number(data.quantity);
         cartStore.updateQuantity(productId, quantity);
 
@@ -1060,30 +1065,34 @@ onUnmounted(() => {
 /* Стили для кнопок действий с корзиной */
 .cart-action-buttons {
   display: flex;
-  gap: 8px;
-  margin-top: 12px;
+  gap: 16px;
+  margin-top: 16px;
   flex-wrap: wrap;
 }
 
 .cart-action-button {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 500;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  border: 2px solid var(--success-color);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
   }
 
   &:active {
     transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   }
 }
 
