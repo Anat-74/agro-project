@@ -3,12 +3,12 @@ import type { Product } from "./product";
 import type { PaginationMeta } from "./product";
 
 export type Category = {
-  id: number;
+  id: string; // В Strapi v5 это documentId
   name: string;
   slug: string;
   description?: string;
   locale?: string;
-  documentId?: string;
+  documentId: string;
   createdAt?: string;
   updatedAt?: string;
   publishedAt?: string;
@@ -27,13 +27,13 @@ export type Category = {
 };
 
 export type Subcategory = {
-  id: number;
+  id: string; // В Strapi v5 это documentId
   name: string;
   slug: string;
   description?: string;
   price: string;
   locale?: string;
-  documentId?: string;
+  documentId: string;
   createdAt?: string;
   updatedAt?: string;
   publishedAt?: string;

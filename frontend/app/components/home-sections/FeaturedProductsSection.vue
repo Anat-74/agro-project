@@ -44,7 +44,7 @@ const MAX_PRODUCTS_TO_SHOW = 6;
         <ProductCard
         class="featured-products__item"
           v-for="(prod, index) in featuredProd?.[0].products.slice(0, MAX_PRODUCTS_TO_SHOW)"
-          :key="prod.id"
+           :key="prod.documentId"
           :product="prod"
           :index="index"
        /> 

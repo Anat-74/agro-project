@@ -189,7 +189,7 @@ const handleAddToCart = (product: Product) => {
       <ul v-if="product.image?.length" class="wrapper-left__thumbnails">
         <li
           v-for="(img, index) in product.image"
-          :key="img.id"
+           :key="img.documentId || img.id"
           :class="[
             'wrapper-left__thumbnail',
             { 'wrapper-left__thumbnail_active': isActive(img.url) },

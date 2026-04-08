@@ -1,7 +1,7 @@
 import type { StrapiImage } from "./image";
 
 export interface SocialLink {
-  id: number;
+  id: string; // В Strapi v5 это documentId
   label: string;
   href: string;
   isSocial: boolean | null;
@@ -9,19 +9,19 @@ export interface SocialLink {
 }
 
 export interface Email {
-  id: number;
+  id: string; // В Strapi v5 это documentId
   email: string;
   isEmail: boolean | null;
 }
 
 export interface Phone {
-  id: number;
+  id: string; // В Strapi v5 это documentId
   phoneNumber: string;
   isMobile: boolean | null;
 }
 
 export interface FooterData {
-  id: number;
+  id: string; // В Strapi v5 это documentId
   companyName: string;
   copyright: string;
   legalAdress: string;
@@ -31,7 +31,7 @@ export interface FooterData {
 }
 
 export interface LegalInfo {
-  id: number;
+  id: string; // В Strapi v5 это documentId
   accountNumber: string;
   bankAddress: string;
   bankName: string;
@@ -39,7 +39,7 @@ export interface LegalInfo {
 }
 
 export type GlobalData = {
-  id: number;
+  id: string; // В Strapi v5 это documentId
   documentId: string;
   createdAt: string;
   updatedAt: string;

@@ -25,7 +25,7 @@ const { grids } = defineProps<Props>();
     <li
       class="hero-grids__item"
       v-for="grid in grids"
-      :key="grid.id"
+       :key="grid.documentId || grid.id"
       v-show="grid.isVisible"
     >
       <UImage

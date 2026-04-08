@@ -212,7 +212,7 @@ watchEffect(() => {
     >
       <li
         v-for="(subcategory, index) in subcategories.data"
-        :key="subcategory.id"
+         :key="subcategory.documentId"
         class="category-content__item"
       >
         <NuxtLink

@@ -19,7 +19,7 @@ const { saleProd } = defineProps<Props>();
       >
        <DiscountProduct
           v-for="(prod, index) in saleProd?.[1].products"
-          :key="prod.id"
+           :key="prod.documentId"
           :index="index"
           :product="prod"
        />

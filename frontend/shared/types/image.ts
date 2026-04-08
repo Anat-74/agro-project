@@ -1,5 +1,5 @@
 export type Image = {
-  id: number;
+  id: string; // В Strapi v5 это documentId
   url: string;
   name: string;
   alternativeText?: string | null;
@@ -19,10 +19,11 @@ export type Image = {
   createdAt?: string;
   updatedAt?: string;
   publishedAt?: string;
+  documentId?: string;
 };
 
 export interface StrapiImage {
-  id: number;
+  id: string; // В Strapi v5 это documentId
   url: string;
   alternativeText: string | null;
   documentId?: string;

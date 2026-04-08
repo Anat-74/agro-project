@@ -45,7 +45,7 @@ defineProps<Props>();
           {{ footer.legalAdress }}
         </p>
 
-        <div class="company__phones" v-for="item in phones" :key="item.id">
+         <div class="company__phones" v-for="item in phones" :key="item.documentId || item.id">
           <Icon v-if="item.isMobile" name="et:phone" />
 
           <Icon v-if="!item.isMobile" name="carbon:phone-ip" />
@@ -55,7 +55,7 @@ defineProps<Props>();
             >{{ formatPhone(item.phoneNumber) }}
           </a>
         </div>
-        <div class="company__email" v-for="item in email" :key="item.id">
+         <div class="company__email" v-for="item in email" :key="item.documentId || item.id">
           <Icon v-if="item.isEmail" name="material-symbols:mail-outline" />
           <a
             v-if="item.isEmail"

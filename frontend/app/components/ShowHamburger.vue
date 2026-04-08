@@ -146,7 +146,7 @@ watch(currentLocale, () => {
         <AnimateTitle />
       </div>
       <ul v-if="category?.length" class="dialog-hamburger__accordion accordion">
-        <li v-for="cat in category" :key="cat.id" class="accordion__item">
+         <li v-for="cat in category" :key="cat.documentId" class="accordion__item">
           <details name="faq" class="accordion__details">
             <summary class="accordion__summary">
               <UImage
@@ -167,7 +167,7 @@ watch(currentLocale, () => {
             <ul class="accordion__product-list">
               <!-- <li
                 v-for="sub in cat.subcategories"
-                :key="sub.id"
+                 :key="sub.documentId"
                 class="accordion__product-item"
               >
                 <NuxtLink
@@ -181,7 +181,7 @@ watch(currentLocale, () => {
               <!-- Отображение продуктов, принадлежащих напрямую категории -->
               <li
                 v-for="prod in cat.products"
-                :key="prod.id"
+                 :key="prod.documentId"
                 class="accordion__product-item"
               >
                 <NuxtLink
@@ -224,7 +224,7 @@ watch(currentLocale, () => {
             <li
               class="accordion__product-item"
               v-for="prod in product"
-              :key="prod.id"
+               :key="prod.documentId"
             >
               <NuxtLink
                 class="accordion__product-link accordion__product-link_is-discount"
@@ -251,7 +251,7 @@ watch(currentLocale, () => {
         <div
           class="dialog-hamburger__phones"
           v-for="item in phones"
-          :key="item.id"
+           :key="item.documentId || item.id"
         >
           <Icon v-if="item.isMobile" name="et:phone" />
 

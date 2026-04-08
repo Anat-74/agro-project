@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 const { find } = useStrapi();
 const searchStore = useSearchStore();
 const { products, totalPages, currentPage } = storeToRefs(searchStore);
@@ -11,7 +10,7 @@ const {
   refresh,
 } = useAsyncData(`global-${currentLocale.value}`, async () => {
   const response = await find("global", {
-    filters: { locale: { $eq: currentLocale.value } },
+    filters: { locale: { $eq: currentLocale.value } } as any,
   });
 
   if (!response.data) {

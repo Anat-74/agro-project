@@ -179,7 +179,7 @@ onMounted(() => {
           <li
             class="discount-card__item"
             v-for="prod in product"
-            :key="prod.id"
+             :key="prod.documentId"
           >
             <span class="discount-card__promotional">
               <Icon name="mdi:discount-outline" />

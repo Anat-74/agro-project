@@ -15,6 +15,7 @@ export default defineNuxtConfig({
     "@nuxtjs/mdc",
     "@nuxtjs/seo",
     "@vite-pwa/nuxt",
+    "@nuxtjs/mcp-toolkit",
   ],
   nitro: {
     storage: {
@@ -243,5 +244,13 @@ export default defineNuxtConfig({
   },
   imports: {
     dirs: ["shared/types/**", "shared/utils/**"],
+  },
+  mcp: {
+    name: "Agro Market MCP Server",
+    version: "1.0.0",
+    route: "/mcp",
+    browserRedirect: "/",
+    dir: "mcp",
+    autoImports: true,
   },
 });

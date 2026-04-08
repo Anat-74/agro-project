@@ -15,6 +15,7 @@
     "@nuxt/icon": "^1.10.3",
     "@nuxt/image": "latest",
     "@nuxtjs/color-mode": "^3.5.2",
+    "@nuxtjs/mcp-toolkit": "^0.13.4",
     "@nuxtjs/mdc": "^0.17.0",
     "@nuxtjs/seo": "^3.2.2",
     "@nuxtjs/strapi": "^2.1.1",

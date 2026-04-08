@@ -169,7 +169,7 @@ const handleAddToCart = (product: Product) => {
      >
      <li
         v-for="(img, index) in product.image" 
-        :key="img.id"
+         :key="img.documentId || img.id"
         :class="['wrapper-left__thumbnail', {'wrapper-left__thumbnail_active': isActive(img.url)}]"
       @mouseover="setCurrentImage(img.url)"
       @click="setCurrentImage(img.url)"

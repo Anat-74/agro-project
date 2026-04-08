@@ -60,11 +60,11 @@ onUnmounted(() => cancelAnimationFrame(rafId));
       <div
       class="slider__slide"
       v-for="slide in props.slides" 
-      :key="slide.id" 
+       :key="slide.documentId || slide.id" 
       >
         <slot 
         :slide="slide" 
-        :index="slide.id"
+         :index="slide.documentId || slide.id"
         >
             <div 
             class="slider__slide-content"
@@ -97,11 +97,11 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     >
       <button
         v-for="slide in props.slides"
-        :key="slide.id"
+         :key="slide.documentId || slide.id"
         :class="[
-      'slider__pagination-dot', { 'slider__pagination-dot_active': active === slide.id }
+      'slider__pagination-dot', { 'slider__pagination-dot_active': active === (slide.documentId || slide.id) }
       ]"
-        @click="go(slide.id)"
+         @click="go(slide.documentId || slide.id)"
         :aria-label="`Перейти к слайду ${slide.id}`"
         :aria-current="active === slide.id ? 'true' : undefined"
       />

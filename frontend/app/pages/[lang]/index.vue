@@ -16,7 +16,7 @@ const {
   async () => {
     try {
       const response = await find("home-page", {
-        filters: { locale: currentLocale.value },
+        filters: { locale: { $eq: currentLocale.value } } as any,
       });
 
       if (!response || !response.data) {

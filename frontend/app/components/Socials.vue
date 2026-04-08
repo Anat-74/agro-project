@@ -11,7 +11,7 @@ const { isOpen } = useDialog("hamburgerDialog");
 
 <template>
   <div v-if="socials" :class="['socials', { 'socials_is-open': isOpen }]">
-    <a v-for="link in socials" :key="link.id" :href="link.href" target="_blank">
+     <a v-for="link in socials" :key="link.documentId || link.id" :href="link.href" target="_blank">
       <UImage
         v-if="link?.icon"
         :src="link.icon[0]?.url"

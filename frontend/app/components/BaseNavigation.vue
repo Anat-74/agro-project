@@ -48,10 +48,10 @@ defineProps<{
           <Icon name="mingcute:down-line" />
         </NuxtLink>
         <div v-if="isContacts" class="nav__contacts contacts">
-          <div
+           <div
             class="contacts__phone-link contacts-link"
             v-for="item in phones"
-            :key="item.id"
+            :key="item.documentId || item.id"
           >
             <Icon v-if="item.isMobile" name="et:phone" />
 
@@ -60,10 +60,10 @@ defineProps<{
               >{{ formatPhone(item.phoneNumber) }}
             </a>
           </div>
-          <div
+           <div
             class="contacts__mail-link contacts-link"
             v-for="item in email"
-            :key="item.id"
+            :key="item.documentId || item.id"
           >
             <Icon v-if="item.isEmail" name="material-symbols:mail-outline" />
             <a v-if="item.isEmail" :href="`mailto:${item.email}`">
