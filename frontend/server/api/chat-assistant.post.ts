@@ -576,7 +576,7 @@ export default defineEventHandler(async (event) => {
             assistantMessage.content = secondRoundData.choices[0].message.content;
           } else if (parsedContent.operation === "add") {
             // Для добавления в корзину показываем простое сообщение
-            assistantMessage.content = "Товар успешно добавлен в корзину";
+            assistantMessage.content = "✅ Товар добавлен в корзину";
           } else if (parsedContent.operation === "get") {
             // Для получения корзины показываем простое сообщение
             assistantMessage.content = "Корзина загружена";

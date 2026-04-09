@@ -257,7 +257,7 @@ const executeCartAction = async (instruction: any) => {
             }));
             return {
               success: true,
-              message: `✅ Товар "${data.product.name}" добавлен в корзину`,
+              message: "",
             };
           } catch (eventError) {
             console.error('Error dispatching cart event:', eventError);
@@ -318,7 +318,7 @@ const executeCartAction = async (instruction: any) => {
                 
                 return {
                   success: true,
-                  message: `✅ Товар "${product.name}" добавлен в корзину`,
+                  message: "",
                 };
               } catch (eventError) {
                 console.error('Error dispatching cart event for found product:', eventError);
@@ -944,31 +944,21 @@ const handleClientInstruction = async (instruction: any) => {
 
   if (cartActionTypes.includes(instruction.type)) {
     try {
-      // Показываем сообщение о выполнении
-      const processingMessage: ChatMessage = {
-        role: "assistant",
-        content: `⏳ Выполняю действие: ${instruction.type}...`,
-        timestamp: new Date().toISOString(),
-      };
-      messages.value.push(processingMessage);
-      scrollToBottom();
-
-      // Выполняем действие через MCP
+      // Выполняем действие через MCP без показа сообщения о выполнении
       const result = await executeCartAction(instruction);
       
-      // Удаляем сообщение о выполнении
-      messages.value.pop();
-      
-      // Добавляем результат
-      const resultMessage: ChatMessage = {
-        role: "assistant",
-        content: result.message,
-        timestamp: new Date().toISOString(),
-      };
-      messages.value.push(resultMessage);
-      
-      saveChatHistory();
-      scrollToBottom();
+      // Добавляем результат только если есть сообщение
+      if (result.message && result.message.trim() !== "") {
+        const resultMessage: ChatMessage = {
+          role: "assistant",
+          content: result.message,
+          timestamp: new Date().toISOString(),
+        };
+        messages.value.push(resultMessage);
+        
+        saveChatHistory();
+        scrollToBottom();
+      }
       
     } catch (error) {
       console.error("Error executing cart action:", error);
@@ -1143,15 +1133,7 @@ const handleCartAction = (event: CustomEvent) => {
           null,
         );
 
-        // Добавляем сообщение об успешном добавлении
-        const successMessage: ChatMessage = {
-          role: "assistant",
-          content: `✅ Товар "${data.product.name}" успешно добавлен в корзину!`,
-          timestamp: new Date().toISOString(),
-        };
-        messages.value.push(successMessage);
-        saveChatHistory();
-        scrollToBottom();
+        // Не добавляем сообщение - оно уже будет показано через executeCartAction
       } else if (data.productId) {
         // Если нет полной информации о продукте, показываем сообщение
         const infoMessage: ChatMessage = {
