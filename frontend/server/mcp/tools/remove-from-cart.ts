@@ -5,10 +5,19 @@ export default defineMcpTool({
   description: "Remove product from shopping cart",
   inputSchema: z.object({
     productId: z.string(),
-    userId: z.string().optional(),
+    removeAll: z.boolean().default(false),
   }),
-  handler: async ({ productId, userId }) => {
-    // TODO: Implement actual cart logic
-    return { success: true, productId };
+  handler: async ({ productId, removeAll }: { productId: string; removeAll: boolean }) => {
+    return {
+      success: true,
+      instruction: {
+        type: 'remove_from_cart',
+        data: {
+          productId,
+          removeAll,
+        }
+      },
+      message: `Инструкция для удаления товара ${productId} из корзины создана`
+    };
   },
 });

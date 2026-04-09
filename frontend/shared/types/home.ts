@@ -84,8 +84,8 @@ export type HomePage = {
   heroSlider: HeroSlide[];
   heroGrids: HeroGrid[];
   featuredProducts: FeaturedProduct[];
-  locale?: string;
-  documentId?: string;
+  locale: string;
+  documentId: string;
   createdAt?: string;
   updatedAt?: string;
   publishedAt?: string;

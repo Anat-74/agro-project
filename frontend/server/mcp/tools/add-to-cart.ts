@@ -6,10 +6,24 @@ export default defineMcpTool({
   inputSchema: z.object({
     productId: z.string(),
     quantity: z.number().min(1).default(1),
-    userId: z.string().optional(),
+    categorySlug: z.string().optional(),
+    subcategorySlug: z.string().optional(),
   }),
-  handler: async ({ productId, quantity, userId }) => {
-    // TODO: Implement actual cart logic
-    return { success: true, productId, quantity };
+  handler: async ({ productId, quantity, categorySlug, subcategorySlug }: { productId: string; quantity: number; categorySlug?: string; subcategorySlug?: string }) => {
+    // Этот инструмент просто возвращает инструкцию для клиента
+    // Реальное добавление в корзину происходит на клиенте
+    return {
+      success: true,
+      instruction: {
+        type: 'add_to_cart',
+        data: {
+          productId,
+          quantity,
+          categorySlug,
+          subcategorySlug,
+        }
+      },
+      message: `Инструкция для добавления товара ${productId} в корзину создана`
+    };
   },
 });
