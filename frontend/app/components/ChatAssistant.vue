@@ -32,28 +32,43 @@
               <p class="assistant-subtitle">Agro-Market Помощник</p>
             </div>
           </div>
-          <button
-            class="close-button"
-            @click="closeChat"
-            aria-label="Закрыть чат"
-          >
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path
-                d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-              />
-            </svg>
-          </button>
+          <div class="header-actions">
+            <button
+              v-if="messages.length > 0"
+              class="clear-history-button"
+              @click="clearChatHistory"
+              aria-label="Очистить историю чата"
+              title="Очистить историю"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                />
+              </svg>
+            </button>
+            <button
+              class="close-button"
+              @click="closeChat"
+              aria-label="Закрыть чат"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
       <div class="chat-body" ref="chatBody">
         <div v-if="messages.length === 0" class="empty-state">
           <div class="empty-icon">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path
-                d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"
-              />
-            </svg>
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                />
+              </svg>
           </div>
           <h4 class="empty-title">Привет! Я ваш AI-ассистент</h4>
           <p class="empty-description">
@@ -160,13 +175,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, onMounted, onUnmounted, watch } from "vue";
-import { useCartStore } from "~/stores/useCartStore";
-import {
-  parseAIResponse,
-  type ChatAssistantResponse,
-} from "~/composables/useChatAssistant";
-
 interface ChatMessage {
   role: "user" | "assistant" | "system";
   content: string;
@@ -1086,12 +1094,14 @@ const loadChatHistory = () => {
 };
 
 const clearChatHistory = () => {
+  console.log('Clearing chat history, current messages:', messages.value.length);
   messages.value = [];
   sessionId.value = null;
   if (typeof window !== "undefined") {
     localStorage.removeItem("chatAssistantHistory");
     localStorage.removeItem("chatAssistantSessionId");
   }
+  console.log('Chat history cleared');
 };
 
 // Обработка клавиш
@@ -1328,6 +1338,12 @@ onUnmounted(() => {
   align-items: center;
 }
 
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
 .assistant-info {
   display: flex;
   align-items: center;
@@ -1361,7 +1377,8 @@ onUnmounted(() => {
   opacity: 0.9;
 }
 
-.close-button {
+.close-button,
+.clear-history-button {
   background: none;
   border: none;
   color: white;
@@ -1379,6 +1396,15 @@ onUnmounted(() => {
   svg {
     width: 20px;
     height: 20px;
+  }
+}
+
+.clear-history-button {
+  opacity: 0.8;
+  
+  &:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.15);
   }
 }
 
