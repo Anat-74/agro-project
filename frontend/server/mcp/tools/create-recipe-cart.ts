@@ -93,18 +93,22 @@ const RECIPES = {
   }
 };
 
+const inputSchema = z.object({
+  recipe: z.enum(["borscht", "salad", "breakfast", "soup", "pizza", "smoothie", "barbecue"]).optional(),
+  customIngredients: z.array(z.object({
+    name: z.string(),
+    quantity: z.number().min(0.1),
+    unit: z.string(),
+  })).optional(),
+  clearCart: z.boolean().default(true),
+});
+
+type Input = z.infer<typeof inputSchema>;
+
 export default defineMcpTool({
   description: "Create shopping cart based on a recipe or meal plan",
-  inputSchema: z.object({
-    recipe: z.enum(["borscht", "salad", "breakfast", "soup", "pizza", "smoothie", "barbecue"]).optional(),
-    customIngredients: z.array(z.object({
-      name: z.string(),
-      quantity: z.number().min(0.1),
-      unit: z.string(),
-    })).optional(),
-    clearCart: z.boolean().default(true),
-  }),
-  handler: async ({ recipe, customIngredients, clearCart }: { recipe?: "borscht" | "salad" | "breakfast"; customIngredients?: Array<{ name: string; quantity: number; unit: string }>; clearCart: boolean }) => {
+  inputSchema: inputSchema.shape,
+  handler: async ({ recipe, customIngredients, clearCart }: Input) => {
     let ingredients = [];
     
     if (recipe && RECIPES[recipe]) {

@@ -1,15 +1,19 @@
 import { defineMcpTool } from "@nuxtjs/mcp-toolkit/server";
 import { z } from "zod";
 
+const inputSchema = z.object({
+  action: z.enum(["clear", "update_quantity", "apply_coupon", "calculate_totals"]),
+  productId: z.string().optional(),
+  quantity: z.number().min(0).optional(),
+  couponCode: z.string().optional(),
+});
+
+type Input = z.infer<typeof inputSchema>;
+
 export default defineMcpTool({
   description: "Manage shopping cart (clear, update quantities, etc.)",
-  inputSchema: z.object({
-    action: z.enum(["clear", "update_quantity", "apply_coupon", "calculate_totals"]),
-    productId: z.string().optional(),
-    quantity: z.number().min(0).optional(),
-    couponCode: z.string().optional(),
-  }),
-  handler: async ({ action, productId, quantity, couponCode: _couponCode }: { action: "clear" | "update_quantity" | "apply_coupon" | "calculate_totals"; productId?: string; quantity?: number; couponCode?: string }) => {
+  inputSchema: inputSchema.shape,
+  handler: async ({ action, productId, quantity, couponCode: _couponCode }: Input) => {
     switch (action) {
       case "clear":
         return {
