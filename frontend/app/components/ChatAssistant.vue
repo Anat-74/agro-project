@@ -1,179 +1,3 @@
-<template>
-  <div class="chat-assistant">
-    <!-- Floating button -->
-    <button
-      v-if="!isOpen"
-      class="chat-button"
-      @click="openChat"
-      aria-label="Открыть чат с ассистентом"
-    >
-      <svg class="chat-icon" viewBox="0 0 24 24" fill="currentColor">
-        <path
-          d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"
-        />
-      </svg>
-      <span class="chat-button-text">AI Ассистент</span>
-    </button>
-
-    <!-- Chat modal -->
-    <div v-if="isOpen" class="chat-modal">
-      <div class="chat-header">
-        <div class="header-content">
-          <div class="assistant-info">
-            <div class="assistant-avatar">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
-                />
-              </svg>
-            </div>
-            <div>
-              <h3 class="assistant-title">AI Ассистент</h3>
-              <p class="assistant-subtitle">Agro-Market Помощник</p>
-            </div>
-          </div>
-          <div class="header-actions">
-            <button
-              v-if="messages.length > 0"
-              class="clear-history-button"
-              @click="clearChatHistory"
-              aria-label="Очистить историю чата"
-              title="Очистить историю"
-            >
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                />
-              </svg>
-            </button>
-            <button
-              class="close-button"
-              @click="closeChat"
-              aria-label="Закрыть чат"
-            >
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="chat-body" ref="chatBody">
-        <div v-if="messages.length === 0" class="empty-state">
-          <div class="empty-icon">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
-                />
-              </svg>
-          </div>
-          <h4 class="empty-title">Привет! Я ваш AI-ассистент</h4>
-          <p class="empty-description">
-            Я помогу вам с поиском продуктов, ответами на вопросы о доставке и
-            оплате, консультацией по сельскохозяйственной продукции и другими
-            вопросами.
-          </p>
-          <div class="suggestions">
-            <button
-              v-for="suggestion in quickSuggestions"
-              :key="suggestion"
-              class="suggestion-button"
-              @click="sendQuickMessage(suggestion)"
-            >
-              {{ suggestion }}
-            </button>
-          </div>
-        </div>
-
-        <div v-else class="messages-container">
-          <div
-            v-for="(message, index) in messages"
-            :key="index"
-            :class="['message', message.role]"
-          >
-            <div class="message-avatar">
-              <svg
-                v-if="message.role === 'assistant'"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path
-                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
-                />
-              </svg>
-              <svg v-else viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-                />
-              </svg>
-            </div>
-            <div class="message-content">
-              <div
-                class="message-text"
-                v-html="
-                  formatMessage(message.content, message.clientInstruction)
-                "
-              ></div>
-              <div class="message-time">
-                {{ formatTime(message.timestamp) }}
-              </div>
-            </div>
-          </div>
-
-          <div v-if="isLoading" class="message assistant">
-            <div class="message-avatar">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
-                />
-              </svg>
-            </div>
-            <div class="message-content">
-              <div class="typing-indicator">
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="chat-footer">
-        <form @submit.prevent="sendMessage" class="message-form">
-          <input
-            v-model="inputMessage"
-            type="text"
-            placeholder="Введите ваш вопрос..."
-            :disabled="isLoading"
-            class="message-input"
-            @keydown.enter.exact.prevent="sendMessage"
-          />
-          <button
-            type="submit"
-            :disabled="!inputMessage.trim() || isLoading"
-            class="send-button"
-            aria-label="Отправить сообщение"
-          >
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-            </svg>
-          </button>
-        </form>
-        <div class="chat-footer-info">
-          <p class="footer-text">
-            AI-ассистент работает на DeepSeek. Ответы могут содержать
-            неточности.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
 interface ChatMessage {
   role: "user" | "assistant" | "system";
@@ -1265,6 +1089,148 @@ onUnmounted(() => {
 });
 </script>
 
+<template>
+  <div class="chat-assistant">
+    <!-- Floating button -->
+    <button
+      v-if="!isOpen"
+      class="chat-button"
+      @click="openChat"
+      aria-label="Открыть чат с ассистентом"
+    >
+      <svg class="chat-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path
+          d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"
+        />
+      </svg>
+      <span class="chat-button-text">AI Ассистент</span>
+    </button>
+
+    <!-- Chat modal -->
+    <div v-if="isOpen" class="chat-modal">
+      <div class="chat-header">
+        <div class="header-content">
+          <div class="assistant-info">
+            <div class="assistant-avatar">
+              <Icon name="material-symbols:chat" />
+            </div>
+            <div>
+              <h3 class="assistant-title">AI Ассистент</h3>
+              <p class="assistant-subtitle">Agro-Market Помощник</p>
+            </div>
+          </div>
+          <div class="header-actions">
+            <button
+              v-if="messages.length > 0"
+              class="clear-history-button"
+              @click="clearChatHistory"
+              aria-label="Очистить историю чата"
+              title="Очистить историю"
+            >
+              <Icon name="material-symbols:delete-outline-rounded" />
+            </button>
+            <button
+              class="close-button"
+              @click="closeChat"
+              aria-label="Закрыть чат"
+            >
+              <Icon name="material-symbols-light:close" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-body" ref="chatBody">
+        <div v-if="messages.length === 0" class="empty-state">
+           <div class="empty-icon">
+              <Icon name="material-symbols:chat" />
+          </div>
+          <h4 class="empty-title">Привет! Я ваш AI-ассистент</h4>
+          <p class="empty-description">
+            Я помогу вам с поиском продуктов, ответами на вопросы о доставке и
+            оплате, консультацией по сельскохозяйственной продукции и другими
+            вопросами.
+          </p>
+          <div class="suggestions">
+            <button
+              v-for="suggestion in quickSuggestions"
+              :key="suggestion"
+              class="suggestion-button"
+              @click="sendQuickMessage(suggestion)"
+            >
+              {{ suggestion }}
+            </button>
+          </div>
+        </div>
+
+        <div v-else class="messages-container">
+          <div
+            v-for="(message, index) in messages"
+            :key="index"
+            :class="['message', message.role]"
+          >
+             <div class="message-avatar">
+              <Icon v-if="message.role === 'assistant'" name="material-symbols:chat" />
+              <Icon v-else name="material-symbols:person" />
+            </div>
+            <div class="message-content">
+              <div
+                class="message-text"
+                v-html="
+                  formatMessage(message.content, message.clientInstruction)
+                "
+              ></div>
+              <div class="message-time">
+                {{ formatTime(message.timestamp) }}
+              </div>
+            </div>
+          </div>
+
+          <div v-if="isLoading" class="message assistant">
+             <div class="message-avatar">
+              <Icon name="material-symbols:chat" />
+            </div>
+            <div class="message-content">
+              <div class="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-footer">
+        <form @submit.prevent="sendMessage" class="message-form">
+          <input
+            v-model="inputMessage"
+            type="text"
+            placeholder="Введите ваш вопрос..."
+            :disabled="isLoading"
+            class="message-input"
+            @keydown.enter.exact.prevent="sendMessage"
+          />
+          <button
+            type="submit"
+            :disabled="!inputMessage.trim() || isLoading"
+            class="send-button"
+            aria-label="Отправить сообщение"
+          >
+             <Icon name="material-symbols:send" />
+          </button>
+        </form>
+        <div class="chat-footer-info">
+          <p class="footer-text">
+            AI-ассистент работает на DeepSeek. Ответы могут содержать
+            неточности.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <style scoped lang="scss">
 .chat-assistant {
   font-family:
@@ -1351,17 +1317,16 @@ onUnmounted(() => {
 }
 
 .assistant-avatar {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  svg {
-    width: 24px;
-    height: 24px;
+  
+  .icon {
+    color: var(--light-color);
   }
 }
 
@@ -1381,30 +1346,34 @@ onUnmounted(() => {
 .clear-history-button {
   background: none;
   border: none;
-  color: white;
   cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
+  padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
+  color: var(--light-color);
+  transition: all var(--transition-duration);
+  border-radius: 4px;
+  
+  svg,
+  .icon {
+    color: inherit;
+    fill: currentColor;
+    transition: transform var(--transition-duration);
   }
-
-  svg {
-    width: 20px;
-    height: 20px;
-  }
-}
-
-.clear-history-button {
-  opacity: 0.8;
   
   &:hover {
-    opacity: 1;
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.1);
+    
+    svg,
+    .icon {
+      transform: scale(1.1);
+    }
+  }
+  
+  &:active {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(0.95);
   }
 }
 
@@ -1421,13 +1390,12 @@ onUnmounted(() => {
 }
 
 .empty-icon {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto 16px;
-  color: #4caf50;
-  opacity: 0.7;
-
-  svg {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 20px;
+  color: var(--primary-color);
+  
+  .icon {
     width: 100%;
     height: 100%;
   }
@@ -1517,18 +1485,17 @@ onUnmounted(() => {
 }
 
 .message-avatar {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-
-  svg {
-    width: 18px;
-    height: 18px;
-    color: white;
+  background: var(--primary-color);
+  
+  .icon {
+    color: var(--light-color);
   }
 }
 
@@ -1626,9 +1593,8 @@ onUnmounted(() => {
     cursor: not-allowed;
   }
 
-  svg {
-    width: 20px;
-    height: 20px;
+  .icon {
+    color: var(--light-color);
   }
 }
 
