@@ -3,7 +3,7 @@
 import { useChatMessages } from '../composables/chat-assistant/useChatMessages'
 import { useChatMCP } from '../composables/chat-assistant/useChatMCP'
 import { useChatCart } from '../composables/chat-assistant/useChatCart'
-import { parseAIResponse } from '../composables/useChatAssistant'
+import { parseAIResponse } from '../composables/chat-assistant/useChatAssistant'
 
 // Инициализация композаблов
 const chatMessages = useChatMessages()
