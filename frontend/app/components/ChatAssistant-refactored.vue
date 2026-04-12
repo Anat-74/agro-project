@@ -1,14 +1,20 @@
 <script setup lang="ts">
-// Импорты из новых композаблов для AI ассистента
-import { useChatMessages } from '../composables/chat-assistant/useChatMessages'
-import { useChatMCP } from '../composables/chat-assistant/useChatMCP'
-import { useChatCart } from '../composables/chat-assistant/useChatCart'
-import { parseAIResponse } from '../composables/useChatAssistant'
+import { ref, nextTick, onMounted, onUnmounted } from 'vue'
+import { 
+  useChatMessages, 
+  useChatMCP, 
+  useChatCart, 
+  useChatQuickActions,
+  type ChatMessage,
+  type CartInstruction
+} from '~/composables/chat-assistant'
+import { parseAIResponse } from '~/composables/useChatAssistant'
 
 // Инициализация композаблов
 const chatMessages = useChatMessages()
 const chatMCP = useChatMCP()
 const chatCart = useChatCart()
+const chatQuickActions = useChatQuickActions()
 
 // Реактивные переменные
 const isOpen = ref(false)
@@ -32,24 +38,11 @@ const {
 
 const { callMCPTool } = chatMCP
 const { cartStore, setupCartListeners } = chatCart
+const { QUICK_SUGGESTIONS, processQuickSuggestion } = chatQuickActions
 
-// Быстрые предложения (вынесены из композабла для простоты)
-const quickSuggestions = [
-  'Собери корзину для борща',
-  'Найди яблоко',
-  'Покажи корзину',
-  'Очисти корзину',
-  'Добавь картофель',
-  'Найди овощи',
-  'Собери завтрак',
-  'Собери куриный суп',
-  'Собери пиццу',
-  'Собери смузи'
-]
-
-// Основные функции компонента
 const openChat = () => {
   isOpen.value = true
+  // Загружаем историю из localStorage при открытии
   loadChatHistory()
 }
 
@@ -59,38 +52,20 @@ const closeChat = () => {
 
 const sendQuickMessage = async (message: string) => {
   // Для быстрых предложений выполняем действия напрямую
-  const instruction = getQuickSuggestionInstruction(message)
+  const result = await processQuickSuggestion(
+    message,
+    async (instruction: CartInstruction) => {
+      return chatCart.executeCartAction(instruction, callMCPTool)
+    },
+    addUserMessage,
+    addAssistantMessage,
+    saveChatHistory,
+    scrollToBottom
+  )
   
-  if (instruction) {
-    // Добавляем сообщение пользователя
-    addUserMessage(message)
-    
-    // Выполняем действие
-    const result = await chatCart.executeCartAction(instruction, callMCPTool)
-    
-    // Добавляем результат
-    addAssistantMessage(result.message)
-    
-    // Если есть предложение (например, добавить найденный товар)
-    if (result.suggestion) {
-      // Добавляем кнопку для предложения
-      const suggestionMessage = {
-        role: 'assistant' as const,
-        content: result.message + '<br><br><button class="cart-action-button add-to-cart" onclick="window.dispatchEvent(new CustomEvent(\'chat-assistant-cart-action\', { detail: ' + JSON.stringify(result.suggestion).replace(/"/g, '&quot;') + ' }))">✅ Добавить в корзину</button>',
-        timestamp: new Date().toISOString(),
-        clientInstruction: result.suggestion
-      }
-      // Заменяем последнее сообщение
-      if (messages.value.length > 0) {
-        messages.value[messages.value.length - 1] = suggestionMessage
-      }
-    }
-    
-    saveChatHistory()
-    scrollToBottom()
-  } else {
-    // Для других сообщений используем обычный AI
-    inputMessage.value = message
+  // Если результат - строка, значит это не быстрое предложение, используем обычный AI
+  if (typeof result === 'string') {
+    inputMessage.value = result
     sendMessage()
   }
 }
@@ -99,26 +74,34 @@ const sendMessage = async () => {
   const message = inputMessage.value.trim()
   if (!message || isLoading.value) return
 
+  // Добавляем сообщение пользователя
   addUserMessage(message)
   inputMessage.value = ''
   isLoading.value = true
+
+  // Прокручиваем к низу
   scrollToBottom()
 
   try {
+    // Используем $fetch напрямую, так как компонент уже смонтирован
     const response = await $fetch('/api/chat-assistant', {
       method: 'POST',
       body: JSON.stringify({
         message,
         sessionId: sessionId.value,
-        tools: [],
-        cartState: cartStore.items.length
+        tools: [], // Можно добавить MCP tools здесь
+        cartState: cartStore.items.length // Текущее состояние корзины
       })
     })
 
+    // Парсим ответ от AI (может быть XML/DSML или JSON)
     const parsedResponse = parseAIResponse(response)
+
+    // Обрабатываем успешный ответ
     processAIResponse(parsedResponse)
   } catch (error: any) {
     console.error('Chat error:', error)
+
     addErrorMessage('Произошла ошибка при отправке сообщения. Пожалуйста, попробуйте еще раз.')
   } finally {
     isLoading.value = false
@@ -126,51 +109,81 @@ const sendMessage = async () => {
   }
 }
 
+/**
+ * Обрабатывает успешный ответ от AI
+ */
 const processAIResponse = (response: any) => {
   if (!response || !response.success) {
     handleAIError(response?.error || 'Неизвестная ошибка')
     return
   }
 
+  // Сохраняем sessionId для последующих запросов
   if (response.sessionId) {
     sessionId.value = response.sessionId
   }
 
+  // Добавляем ответ ассистента
   addAssistantMessage(response.message, response.clientInstruction)
 
+  // Обрабатываем tool calls если есть
   if (response.tool_calls && response.tool_calls.length > 0) {
     console.log('Tool calls received:', response.tool_calls)
     processToolCalls(response.tool_calls)
   }
 
+  // Обрабатываем инструкции для клиента
   if (response.clientInstruction) {
     handleClientInstruction(response.clientInstruction)
   }
 
+  // Сохраняем историю и прокручиваем
   saveChatHistory()
   scrollToBottom()
 }
 
+/**
+ * Обрабатывает ошибки от AI
+ */
 const handleAIError = (error: any) => {
   console.error('AI error:', error)
+
   addErrorMessage(`Ошибка: ${error?.message || error || 'Неизвестная ошибка'}`)
   scrollToBottom()
 }
 
+/**
+ * Обрабатывает tool calls от AI
+ */
 const processToolCalls = (toolCalls: any[]) => {
   if (!toolCalls || toolCalls.length === 0) return
+
   console.log('Processing tool calls:', toolCalls)
-  
+
+  // Здесь можно добавить логику обработки tool calls
+  // Например, выполнение функций strapi_products, cart_operations и т.д.
+
   toolCalls.forEach((toolCall, index) => {
     const { function: func } = toolCall
-    console.log(`Tool call ${index + 1}: ${func.name} with args:`, func.arguments)
+    console.log(
+      `Tool call ${index + 1}: ${func.name} with args:`,
+      func.arguments
+    )
+
+    // В реальном приложении здесь будет вызов соответствующих функций
+    // Например: executeToolCall(func.name, JSON.parse(func.arguments))
   })
 }
 
+/**
+ * Обрабатывает инструкции для клиента
+ */
 const handleClientInstruction = async (instruction: any) => {
   if (!instruction) return
+
   console.log('Client instruction received:', instruction)
 
+  // Автоматически выполняем действия с корзиной через MCP
   const cartActionTypes = [
     'add_to_cart',
     'remove_from_cart', 
@@ -182,8 +195,10 @@ const handleClientInstruction = async (instruction: any) => {
 
   if (cartActionTypes.includes(instruction.type)) {
     try {
+      // Выполняем действие через MCP без показа сообщения о выполнении
       const result = await chatCart.executeCartAction(instruction, callMCPTool)
       
+      // Добавляем результат только если есть сообщение
       if (result.message && result.message.trim() !== '') {
         addAssistantMessage(result.message)
         scrollToBottom()
@@ -191,6 +206,7 @@ const handleClientInstruction = async (instruction: any) => {
       
     } catch (error) {
       console.error('Error executing cart action:', error)
+      
       addErrorMessage(`❌ Ошибка при выполнении действия: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`)
       scrollToBottom()
     }
@@ -199,8 +215,10 @@ const handleClientInstruction = async (instruction: any) => {
 
   switch (instruction.type) {
     case 'update_cart':
+      // Эта инструкция обрабатывается через кнопки в formatMessage
       break
     case 'tool_calls':
+      // Обработка tool calls
       if (instruction.calls && Array.isArray(instruction.calls)) {
         processToolCalls(instruction.calls)
       }
@@ -218,56 +236,16 @@ const scrollToBottom = () => {
   })
 }
 
+// Обработка клавиш
 const handleKeyDown = (e: KeyboardEvent) => {
   if (e.key === 'Escape' && isOpen.value) {
     closeChat()
   }
 }
 
-// Вспомогательные функции для быстрых предложений
-const getQuickSuggestionInstruction = (message: string): any => {
-  const suggestions: Record<string, any> = {
-    'Собери корзину для борща': {
-      type: 'create_recipe_cart',
-      data: { recipe: 'borscht', recipeName: 'Борщ', clearCart: true }
-    },
-    'Найди яблоко': {
-      type: 'search_products',
-      data: { query: 'яблоко', limit: 5, autoAdd: false }
-    },
-    'Покажи корзину': { type: 'show_cart' },
-    'Очисти корзину': { type: 'clear_cart' },
-    'Добавь картофель': {
-      type: 'add_to_cart',
-      data: { productName: 'картофель', quantity: 1, categorySlug: 'vegetables' }
-    },
-    'Найди овощи': {
-      type: 'search_products',
-      data: { query: '', category: 'vegetables', limit: 4 }
-    },
-    'Собери завтрак': {
-      type: 'create_recipe_cart',
-      data: { recipe: 'breakfast', recipeName: 'Завтрак', clearCart: true }
-    },
-    'Собери куриный суп': {
-      type: 'create_recipe_cart',
-      data: { recipe: 'soup', recipeName: 'Куриный суп', clearCart: true }
-    },
-    'Собери пиццу': {
-      type: 'create_recipe_cart',
-      data: { recipe: 'pizza', recipeName: 'Домашняя пицца', clearCart: true }
-    },
-    'Собери смузи': {
-      type: 'create_recipe_cart',
-      data: { recipe: 'smoothie', recipeName: 'Фруктовый смузи', clearCart: true }
-    }
-  }
-  
-  return suggestions[message]
-}
-
 onMounted(() => {
   window.addEventListener('keydown', handleKeyDown)
+  // Настраиваем обработчики событий корзины
   const cleanupCartListeners = setupCartListeners(messages, saveChatHistory, scrollToBottom)
   
   onUnmounted(() => {
@@ -341,7 +319,7 @@ onMounted(() => {
           </p>
           <div class="suggestions">
             <button
-              v-for="suggestion in quickSuggestions"
+              v-for="suggestion in QUICK_SUGGESTIONS"
               :key="suggestion"
               class="suggestion-button"
               @click="sendQuickMessage(suggestion)"
@@ -420,7 +398,6 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-// Стили остаются без изменений
 .chat-assistant {
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

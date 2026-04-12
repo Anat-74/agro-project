@@ -1,14 +1,22 @@
 <script setup lang="ts">
+// Основные импорты Vue
+import { ref, nextTick, onMounted, onUnmounted } from 'vue'
+
+// Импорты из проекта
+import { useCartStore } from '../stores/useCartStore'
+
 // Импорты из новых композаблов для AI ассистента
 import { useChatMessages } from '../composables/chat-assistant/useChatMessages'
 import { useChatMCP } from '../composables/chat-assistant/useChatMCP'
 import { useChatCart } from '../composables/chat-assistant/useChatCart'
+import { useChatQuickActions } from '../composables/chat-assistant/useChatQuickActions'
 import { parseAIResponse } from '../composables/useChatAssistant'
 
 // Инициализация композаблов
 const chatMessages = useChatMessages()
 const chatMCP = useChatMCP()
 const chatCart = useChatCart()
+const chatQuickActions = useChatQuickActions()
 
 // Реактивные переменные
 const isOpen = ref(false)
@@ -32,20 +40,7 @@ const {
 
 const { callMCPTool } = chatMCP
 const { cartStore, setupCartListeners } = chatCart
-
-// Быстрые предложения (вынесены из композабла для простоты)
-const quickSuggestions = [
-  'Собери корзину для борща',
-  'Найди яблоко',
-  'Покажи корзину',
-  'Очисти корзину',
-  'Добавь картофель',
-  'Найди овощи',
-  'Собери завтрак',
-  'Собери куриный суп',
-  'Собери пиццу',
-  'Собери смузи'
-]
+const { QUICK_SUGGESTIONS } = chatQuickActions
 
 // Основные функции компонента
 const openChat = () => {
@@ -341,7 +336,7 @@ onMounted(() => {
           </p>
           <div class="suggestions">
             <button
-              v-for="suggestion in quickSuggestions"
+              v-for="suggestion in QUICK_SUGGESTIONS"
               :key="suggestion"
               class="suggestion-button"
               @click="sendQuickMessage(suggestion)"
@@ -420,7 +415,6 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-// Стили остаются без изменений
 .chat-assistant {
   font-family:
     -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

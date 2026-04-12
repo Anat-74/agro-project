@@ -1,4 +1,10 @@
 <script setup lang="ts">
+// Основные импорты Vue
+import { ref, nextTick, onMounted, onUnmounted } from 'vue'
+
+// Импорты из проекта
+import { useCartStore } from '../stores/useCartStore'
+
 // Импорты из новых композаблов для AI ассистента
 import { useChatMessages } from '../composables/chat-assistant/useChatMessages'
 import { useChatMCP } from '../composables/chat-assistant/useChatMCP'
