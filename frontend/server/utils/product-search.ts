@@ -115,10 +115,10 @@ export async function searchProducts(query?: string, category?: string, limit: n
     // Преобразуем ответ Strapi v5 в наш формат
     const products = (response.data || []).map((item: any) => {
       // Обработка изображения в Strapi v5
-      let image = "/images/placeholder.jpg";
+      let image = "/image/cart-empty-img.png";
       if (item.image) {
         if (Array.isArray(item.image) && item.image.length > 0) {
-          image = item.image[0].url || item.image[0].formats?.thumbnail?.url || "/images/placeholder.jpg";
+          image = item.image[0].url || item.image[0].formats?.thumbnail?.url || "/image/cart-empty-img.png";
         } else if (item.image.url) {
           image = item.image.url;
         }
@@ -137,7 +137,7 @@ export async function searchProducts(query?: string, category?: string, limit: n
         }
       }
       
-      return {
+      const product = {
         documentId: item.documentId || item.id,
         name: item.name,
         price: item.price || 0,
@@ -147,6 +147,9 @@ export async function searchProducts(query?: string, category?: string, limit: n
         category: category,
         categoryName: categoryName
       };
+      
+      console.log(`Found product: ${product.name} (documentId: ${product.documentId})`);
+      return product;
     });
     
     // Если через Strapi ничего не найдено, возвращаем пустой результат

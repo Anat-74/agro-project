@@ -30,7 +30,7 @@ async function searchProductsTool(query?: string, category?: string, limit: numb
       discountPrice: null,
     }));
     
-    console.log("Search results for query:", query, "Found products:", products.map((p: any) => `${p.name} (${p.price} руб)`));
+    console.log("Search results for query:", query, "Found products:", products.map((p: any) => `${p.name} (${p.price} руб, documentId: ${p.documentId})`));
     console.log("Total products found:", result.total, "Has more:", result.hasMore, "Success:", result.success, "Note:", result.note);
     
     return {
@@ -223,16 +223,15 @@ export default defineEventHandler(async (event) => {
    Правильный формат аргументов: {"operation": "add", "productId": "documentId товара", "quantity": 1}
 
 СИСТЕМА РАБОТЫ:
-- При поиске "яблоки" система найдет товар "Яблоко Каштель" с documentId: "ebt2ulbafd1h97w4me6o7dko"
-- При запросе "добавь яблоко в корзину" используй этот documentId
-- Для известных товаров используй готовые documentId без поиска
+1. Для запроса "найди [товар]" используй strapi_products с operation: "search" и query: "[товар]"
+2. Для запроса "добавь яблоки в корзину" используй cart_operations с operation: "add" и productId: "ebt2ulbafd1h97w4me6o7dko"
+3. Для запроса "добавь [другой товар] в корзину" (кроме яблок):
+   - Сначала найди товар через strapi_products с operation: "search"
+   - Получи documentId из первого найденного товара
+   - Затем используй cart_operations с operation: "add" и найденным documentId
 
-ВАЖНЫЕ ID ТОВАРОВ:
-- Яблоко Каштель → documentId: "ebt2ulbafd1h97w4me6o7dko"
-- Горох Стручковый → documentId: "ucpgucxhgbmsiugw8mzo70le"
-- Картофель Молодой → documentId: "u6y2mujh09q2mm3crs80fgb1"
-- Морковь Столовая → documentId: "e0r4rd7ng8e1fnz9u8m79dvv"
-- Огурцы Парниковые → documentId: "u32sz93mgki3j2q54c72mg7e"
+ИЗВЕСТНЫЕ ТОВАРЫ:
+- Яблоко Каштель → documentId: "ebt2ulbafd1h97w4me6o7dko" (используй этот ID для добавления яблок)
 
 КРИТИЧЕСКИ ВАЖНЫЕ ПРАВИЛА ФОРМАТА:
 1. ВСЕГДА используй tool_calls массив для вызова инструментов
@@ -266,6 +265,25 @@ tool_calls: [{
     "arguments": "{\"operation\": \"add\", \"productId\": \"ebt2ulbafd1h97w4me6o7dko\", \"quantity\": 1}"
   }
 }]
+
+ПРИМЕР 3: Пользователь говорит "добавь картофель в корзину"
+Возвращай tool_calls массив с ДВУМЯ элементами (сначала поиск, затем добавление):
+tool_calls: [{
+  "id": "call_789",
+  "type": "function",
+  "function": {
+    "name": "strapi_products",
+    "arguments": "{\"operation\": \"search\", \"query\": \"картофель\", \"limit\": 1}"
+  }
+}, {
+  "id": "call_890",
+  "type": "function",
+  "function": {
+    "name": "cart_operations",
+    "arguments": "{\"operation\": \"add\", \"productId\": \"НАЙДЕННЫЙ_DOCUMENT_ID_ЗДЕСЬ\", \"quantity\": 1}"
+  }
+}]
+ВАЖНО: Замени "НАЙДЕННЫЙ_DOCUMENT_ID_ЗДЕСЬ" на реальный documentId из результатов поиска
 
 ПРИМЕР 3: Пользователь говорит "покажи корзину"
 Возвращай tool_calls массив с одним элементом:
@@ -483,14 +501,26 @@ tool_calls: [
                 if (productResponse.data && productResponse.data.length > 0) {
                   const productData = productResponse.data[0];
                   
-                  // Обработка изображения в Strapi v5
+                  // Обработка изображения в Strapi v5 (согласованно с product-search.ts)
                   let image = null;
                   if (productData.image) {
+                    console.log('Product image data:', JSON.stringify(productData.image, null, 2));
+                    
                     if (Array.isArray(productData.image) && productData.image.length > 0) {
-                      image = productData.image[0].url || productData.image[0].formats?.thumbnail?.url || null;
+                      // Используем ту же логику, что и в product-search.ts
+                      const img = productData.image[0];
+                      image = img.url || img.formats?.thumbnail?.url || null;
+                      console.log('Using image URL from array:', image);
                     } else if (productData.image.url) {
                       image = productData.image.url;
+                      console.log('Using direct image URL:', image);
                     }
+                  }
+                  
+                    if (!image) {
+                    console.log('No image found for product:', productData.name);
+                    // Используем существующее изображение из public/image
+                    image = "/image/cart-empty-img.png";
                   }
                   
                   clientInstruction = {
@@ -509,7 +539,7 @@ tool_calls: [
                     }
                   };
                 } else {
-                  // Если не удалось получить информацию о товаре, используем минимальные данные
+                  // Если не удалось получить информацию о товаре, используем минимальные данные с placeholder
                   clientInstruction = {
                     type: "add_to_cart",
                     data: {
@@ -520,6 +550,7 @@ tool_calls: [
                         name: `Товар ${args.productId}`,
                         price: 100,
                         slug: `product-${args.productId}`,
+                        image: "/images/placeholder.jpg",
                       },
                       quantity: args.quantity || 1,
                     }
@@ -527,7 +558,7 @@ tool_calls: [
                 }
               } catch (productError) {
                 console.error("Error fetching product info:", productError);
-                // Fallback к минимальным данным
+                // Fallback к минимальным данным с placeholder
                 clientInstruction = {
                   type: "add_to_cart",
                   data: {
@@ -538,6 +569,7 @@ tool_calls: [
                       name: `Товар ${args.productId}`,
                       price: 100,
                       slug: `product-${args.productId}`,
+                      image: "/images/placeholder.jpg",
                     },
                     quantity: args.quantity || 1,
                   }
