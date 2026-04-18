@@ -7,33 +7,42 @@ export const useLocale = () => {
      sameSite: 'lax'
    })
 
-const _currentLocale = ref<LocaleCode>(
-  ((route.params.lang as string) || langCookie.value || 'ru') as LocaleCode
-)
+   // Вспомогательная функция для валидации locale
+   const validateLocale = (locale: string): LocaleCode => {
+     const validLocales: LocaleCode[] = ['ru', 'be']
+     return (validLocales.includes(locale as LocaleCode) ? locale : 'ru') as LocaleCode
+   }
 
-   // Computed для реактивного доступа
+   // Безопасная инициализация с валидацией
+   const _currentLocale = ref<LocaleCode>(
+     validateLocale((route.params?.lang as string) || langCookie.value || 'ru')
+   )
+
+   // Computed для реактивного доступа с валидацией
    const currentLocale = computed({
      get: () => _currentLocale.value,
      set: (value: LocaleCode) => {
-       _currentLocale.value = value
-       langCookie.value = value
-       if (route.params.lang !== value) {
+       const validValue = validateLocale(value)
+       _currentLocale.value = validValue
+       langCookie.value = validValue
+       if (route.params.lang !== validValue) {
         router.replace({
-           params: { ...route.params, lang: value },
+           params: { ...route.params, lang: validValue },
            query: route.query
          })
        }
      }
    })
 
-   watch(() => route.params.lang, (newVal) => {
-     if (newVal && newVal !== currentLocale.value) {
-       const validLocales: LocaleCode[] = ['ru', 'be']
-       currentLocale.value = validLocales.includes(newVal as LocaleCode)
-         ? newVal as LocaleCode
-         : 'ru'
-     }
-   })
+    watch(() => route.params.lang, (newVal) => {
+      if (newVal && newVal !== currentLocale.value) {
+        // Преобразуем newVal в строку (может быть string | string[] | undefined)
+        const langString = Array.isArray(newVal) ? newVal[0] : newVal
+        if (langString) {
+          currentLocale.value = validateLocale(langString)
+        }
+      }
+    })
 
    const locales = [
      {

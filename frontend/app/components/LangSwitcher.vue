@@ -2,6 +2,11 @@
 import { buttonTranslations } from '~/locales/button'
 
 const { currentLocale, locales, switchLocale } = useLocale()
+
+// Безопасный доступ к переводам
+const getButtonTranslation = (locale) => {
+  return buttonTranslations[locale] || buttonTranslations.ru
+}
 </script>
 
 <template>
@@ -13,7 +18,7 @@ const { currentLocale, locales, switchLocale } = useLocale()
       :key="locale.code"
       :icon="locale.icon"
       :class="{ active: currentLocale === locale.code }"
-      :aria-label="buttonTranslations[currentLocale].ariaLabelLang"
+      :aria-label="getButtonTranslation(currentLocale).ariaLabelLang"
      />
   </div>
 </template>

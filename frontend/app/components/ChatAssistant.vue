@@ -33,19 +33,37 @@ const {
 const { callMCPTool } = chatMCP
 const { cartStore, setupCartListeners } = chatCart
 
-// Быстрые предложения (вынесены из композабла для простоты)
+// Быстрые предложения (оптимизированы для работы с AI pipeline)
 const quickSuggestions = [
-  'Собери корзину для борща',
-  'Найди яблоко',
-  'Покажи корзину',
-  'Очисти корзину',
-  'Добавь картофель',
-  'Найди овощи',
-  'Собери завтрак',
-  'Собери куриный суп',
-  'Собери пиццу',
-  'Собери смузи'
+  'найди яблоки',
+  'покажи корзину',
+  'очисти корзину',
+  'добавь картофель в корзину',
+  'найди овощи',
+  'собери корзину для борща',
+  'собери завтрак',
+  'собери куриный суп',
+  'собери пиццу',
+  'собери смузи'
 ]
+
+// Преобразование быстрых предложений в сообщения для AI
+const convertQuickSuggestionToAIMessage = (quickMessage) => {
+  const mapping: Record<string, string> = {
+    'найди яблоки': 'найди яблоки',
+    'покажи корзину': 'покажи корзину',
+    'очисти корзину': 'очисти корзину',
+    'добавь картофель в корзину': 'добавь картофель в корзину',
+    'найди овощи': 'найди овощи',
+    'собери корзину для борща': 'собери корзину для борща',
+    'собери завтрак': 'собери завтрак',
+    'собери куриный суп': 'собери куриный суп',
+    'собери пиццу': 'собери пиццу',
+    'собери смузи': 'собери смузи'
+  }
+  
+  return mapping[quickMessage] || quickMessage
+}
 
 // Основные функции компонента
 const openChat = () => {
@@ -58,42 +76,38 @@ const closeChat = () => {
 }
 
 const sendQuickMessage = async (message: string) => {
-  // Для быстрых предложений выполняем действия напрямую
-  const instruction = getQuickSuggestionInstruction(message)
+  // Используем основной AI pipeline для быстрых предложений
+  // Преобразуем быстрые предложения в текстовые сообщения для AI
+  const aiMessage = convertQuickSuggestionToAIMessage(message)
   
-  if (instruction) {
-    // Добавляем сообщение пользователя
-    addUserMessage(message)
-    
-    // Выполняем действие
-    const result = await chatCart.executeCartAction(instruction, callMCPTool)
-    
-    // Добавляем результат
-    addAssistantMessage(result.message)
-    
-    // Если есть предложение (например, добавить найденный товар)
-    if (result.suggestion) {
-      // Добавляем кнопку для предложения
-      const suggestionMessage = {
-        role: 'assistant' as const,
-        content: result.message + '<br><br><button class="cart-action-button add-to-cart" onclick="window.dispatchEvent(new CustomEvent(\'chat-assistant-cart-action\', { detail: ' + JSON.stringify(result.suggestion).replace(/"/g, '&quot;') + ' }))">✅ Добавить в корзину</button>',
-        timestamp: new Date().toISOString(),
-        clientInstruction: result.suggestion
-      }
-      // Заменяем последнее сообщение
-      if (messages.value.length > 0) {
-        messages.value[messages.value.length - 1] = suggestionMessage
-      }
-    }
-    
-    saveChatHistory()
+  // Добавляем сообщение пользователя
+  addUserMessage(message)
+  inputMessage.value = ''
+  isLoading.value = true
+  scrollToBottom()
+
+  try {
+    const response = await $fetch('/api/chat-assistant', {
+      method: 'POST',
+      body: JSON.stringify({
+        message: aiMessage,
+        sessionId: sessionId.value,
+        tools: [],
+        cartState: cartStore.items.length
+      })
+    })
+
+    const parsedResponse = parseAIResponse(response)
+    processAIResponse(parsedResponse)
+  } catch (error: any) {
+    console.error('Quick message error:', error)
+    addErrorMessage('Произошла ошибка при обработке быстрого предложения. Пожалуйста, попробуйте еще раз.')
+  } finally {
+    isLoading.value = false
     scrollToBottom()
-  } else {
-    // Для других сообщений используем обычный AI
-    inputMessage.value = message
-    sendMessage()
   }
 }
+
 
 const sendMessage = async () => {
   const message = inputMessage.value.trim()
@@ -224,47 +238,7 @@ const handleKeyDown = (e: KeyboardEvent) => {
   }
 }
 
-// Вспомогательные функции для быстрых предложений
-const getQuickSuggestionInstruction = (message: string): any => {
-  const suggestions: Record<string, any> = {
-    'Собери корзину для борща': {
-      type: 'create_recipe_cart',
-      data: { recipe: 'borscht', recipeName: 'Борщ', clearCart: true }
-    },
-    'Найди яблоко': {
-      type: 'search_products',
-      data: { query: 'яблоко', limit: 5, autoAdd: false }
-    },
-    'Покажи корзину': { type: 'show_cart' },
-    'Очисти корзину': { type: 'clear_cart' },
-    'Добавь картофель': {
-      type: 'add_to_cart',
-      data: { productName: 'картофель', quantity: 1, categorySlug: 'vegetables' }
-    },
-    'Найди овощи': {
-      type: 'search_products',
-      data: { query: '', category: 'vegetables', limit: 4 }
-    },
-    'Собери завтрак': {
-      type: 'create_recipe_cart',
-      data: { recipe: 'breakfast', recipeName: 'Завтрак', clearCart: true }
-    },
-    'Собери куриный суп': {
-      type: 'create_recipe_cart',
-      data: { recipe: 'soup', recipeName: 'Куриный суп', clearCart: true }
-    },
-    'Собери пиццу': {
-      type: 'create_recipe_cart',
-      data: { recipe: 'pizza', recipeName: 'Домашняя пицца', clearCart: true }
-    },
-    'Собери смузи': {
-      type: 'create_recipe_cart',
-      data: { recipe: 'smoothie', recipeName: 'Фруктовый смузи', clearCart: true }
-    }
-  }
-  
-  return suggestions[message]
-}
+// Функция getQuickSuggestionInstruction удалена - быстрые предложения теперь используют основной AI pipeline
 
 onMounted(() => {
   window.addEventListener('keydown', handleKeyDown)
