@@ -225,12 +225,11 @@ export default defineEventHandler(async (event) => {
 СИСТЕМА РАБОТЫ:
 1. Для запроса "найди [товар]" используй strapi_products с operation: "search" и query: "[товар]"
 2. Для запроса "добавь яблоки в корзину" используй cart_operations с operation: "add" и productId: "ebt2ulbafd1h97w4me6o7dko"
-3. Для запроса "добавь [другой товар] в корзину" (кроме яблок):
-   - Если documentId известен из предыдущего поиска, используй cart_operations с найденным documentId
-   - Если documentId неизвестен, сначала выполни поиск через strapi_products
+3. Для запроса "добавь [товар] в корзину" (кроме яблок):
+   - Сначала найди товар через strapi_products
+   - Используй documentId из найденного товара для cart_operations
 
-ИЗВЕСТНЫЕ ТОВАРЫ:
-- Яблоко Каштель → documentId: "ebt2ulbafd1h97w4me6o7dko" (используй этот ID для добавления яблок)
+ВАЖНО: Всегда используй актуальный documentId из результатов поиска
 
 КРИТИЧЕСКИ ВАЖНЫЕ ПРАВИЛА ФОРМАТА:
 1. ВСЕГДА используй tool_calls массив для вызова инструментов
@@ -265,17 +264,17 @@ tool_calls: [{
   }
 }]
 
-ПРИМЕР 3: Пользователь говорит "добавь найденный картофель в корзину"
+ПРИМЕР 3: Пользователь говорит "добавь найденный товар в корзину"
 Возвращай tool_calls массив с одним элементом:
 tool_calls: [{
   "id": "call_789",
   "type": "function",
   "function": {
     "name": "cart_operations",
-    "arguments": "{\"operation\": \"add\", \"productId\": \"НАЙДЕННЫЙ_RANEE_DOCUMENT_ID\", \"quantity\": 1}"
+    "arguments": "{\"operation\": \"add\", \"productId\": \"НАЙДЕННЫЙ_DOCUMENT_ID\", \"quantity\": 1}"
   }
 }]
-ПРИМЕЧАНИЕ: Если documentId неизвестен, сначала выполни поиск через strapi_products
+ПРИМЕЧАНИЕ: Используй documentId из предыдущего поиска. Если documentId неизвестен, сначала выполни поиск
 
 ПРИМЕР 3: Пользователь говорит "покажи корзину"
 Возвращай tool_calls массив с одним элементом:
@@ -309,7 +308,7 @@ tool_calls: [
   }
 ]
 
-ПРИМЕР 5: Пользователь говорит "найди горох и добавь в корзину"
+ПРИМЕР 5: Пользователь говорит "найди товар и добавь в корзину"
 Возвращай tool_calls массив с ДВУМЯ элементами:
 tool_calls: [
   {
@@ -317,7 +316,7 @@ tool_calls: [
     "type": "function",
     "function": {
       "name": "strapi_products",
-      "arguments": "{\"operation\": \"search\", \"query\": \"горох\", \"limit\": 5}"
+      "arguments": "{\"operation\": \"search\", \"query\": \"товар\", \"limit\": 1}"
     }
   },
   {
@@ -325,10 +324,11 @@ tool_calls: [
     "type": "function",
     "function": {
       "name": "cart_operations",
-      "arguments": "{\"operation\": \"add\", \"productId\": \"ucpgucxhgbmsiugw8mzo70le\", \"quantity\": 1}"
+      "arguments": "{\"operation\": \"add\", \"productId\": \"НАЙДЕННЫЙ_DOCUMENT_ID\", \"quantity\": 1}"
     }
   }
 ]
+ВАЖНО: Замени "товар" на реальный запрос и "НАЙДЕННЫЙ_DOCUMENT_ID" на documentId из результатов поиска
 
 НЕПРАВИЛЬНЫЕ ПРИМЕРЫ (НЕ ИСПОЛЬЗУЙ НИКОГДА):
 - Любые форматы с тегами: <function_calls>, <invoke>, <parameter>, <tool_call>, <tool>
@@ -473,6 +473,7 @@ tool_calls: [
           let result;
           if (functionName === "strapi_products") {
             result = await callStrapiTool(functionName, args);
+            // AI сам покажет товары в сообщении, clientInstruction не нужен
           } else if (functionName === "cart_operations") {
             result = await callCartTool(functionName, args);
             
