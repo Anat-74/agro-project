@@ -226,9 +226,8 @@ export default defineEventHandler(async (event) => {
 1. Для запроса "найди [товар]" используй strapi_products с operation: "search" и query: "[товар]"
 2. Для запроса "добавь яблоки в корзину" используй cart_operations с operation: "add" и productId: "ebt2ulbafd1h97w4me6o7dko"
 3. Для запроса "добавь [другой товар] в корзину" (кроме яблок):
-   - Сначала найди товар через strapi_products с operation: "search"
-   - Получи documentId из первого найденного товара
-   - Затем используй cart_operations с operation: "add" и найденным documentId
+   - Если documentId известен из предыдущего поиска, используй cart_operations с найденным documentId
+   - Если documentId неизвестен, сначала выполни поиск через strapi_products
 
 ИЗВЕСТНЫЕ ТОВАРЫ:
 - Яблоко Каштель → documentId: "ebt2ulbafd1h97w4me6o7dko" (используй этот ID для добавления яблок)
@@ -266,24 +265,17 @@ tool_calls: [{
   }
 }]
 
-ПРИМЕР 3: Пользователь говорит "добавь картофель в корзину"
-Возвращай tool_calls массив с ДВУМЯ элементами (сначала поиск, затем добавление):
+ПРИМЕР 3: Пользователь говорит "добавь найденный картофель в корзину"
+Возвращай tool_calls массив с одним элементом:
 tool_calls: [{
   "id": "call_789",
   "type": "function",
   "function": {
-    "name": "strapi_products",
-    "arguments": "{\"operation\": \"search\", \"query\": \"картофель\", \"limit\": 1}"
-  }
-}, {
-  "id": "call_890",
-  "type": "function",
-  "function": {
     "name": "cart_operations",
-    "arguments": "{\"operation\": \"add\", \"productId\": \"НАЙДЕННЫЙ_DOCUMENT_ID_ЗДЕСЬ\", \"quantity\": 1}"
+    "arguments": "{\"operation\": \"add\", \"productId\": \"НАЙДЕННЫЙ_RANEE_DOCUMENT_ID\", \"quantity\": 1}"
   }
 }]
-ВАЖНО: Замени "НАЙДЕННЫЙ_DOCUMENT_ID_ЗДЕСЬ" на реальный documentId из результатов поиска
+ПРИМЕЧАНИЕ: Если documentId неизвестен, сначала выполни поиск через strapi_products
 
 ПРИМЕР 3: Пользователь говорит "покажи корзину"
 Возвращай tool_calls массив с одним элементом:
