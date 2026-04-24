@@ -11,7 +11,7 @@ const { getProductLink } = useProductLink();
 
 interface Props {
   product: Product;
-   index: number;
+  index: number;
   categorySlug?: string;
 }
 const { product } = defineProps<Props>();
