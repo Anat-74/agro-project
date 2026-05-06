@@ -1,13 +1,9 @@
 <script setup lang="ts">
-// Импорты из новых композаблов для AI ассистента
 import { useChatMessages } from '../composables/chat-assistant/useChatMessages'
-import { useChatMCP } from '../composables/chat-assistant/useChatMCP'
 import { useChatCart } from '../composables/chat-assistant/useChatCart'
 import { parseAIResponse } from '../composables/chat-assistant/useChatAssistant'
 
-// Инициализация композаблов
 const chatMessages = useChatMessages()
-const chatMCP = useChatMCP()
 const chatCart = useChatCart()
 
 // Реактивные переменные
@@ -30,40 +26,10 @@ const {
   addErrorMessage 
 } = chatMessages
 
-const { callMCPTool } = chatMCP
 const { cartStore, setupCartListeners } = chatCart
 
-// Быстрые предложения (поиск товаров и управление корзиной)
-const quickSuggestions = [
-  'добавь яблоки в корзину',  // Работает с известным documentId
-  'найди картофель',          // Поиск
-  'найди овощи',              // Поиск
-  'найди фрукты',             // Поиск
-  'покажи корзину',           // Показать корзину
-  'очисти корзину',           // Очистить корзину
-  'найди молочные продукты',  // Поиск
-  'найди мясо',               // Поиск
-  'найди рыбу',               // Поиск
-  'найди напитки'             // Поиск
-]
-
-// Преобразование быстрых предложений в сообщения для AI
-const convertQuickSuggestionToAIMessage = (quickMessage: string) => {
-  const mapping: Record<string, string> = {
-    'добавь яблоки в корзину': 'добавь яблоки в корзину',
-    'найди картофель': 'найди картофель',
-    'найди овощи': 'найди овощи',
-    'найди фрукты': 'найди фрукты',
-    'покажи корзину': 'покажи корзину',
-    'очисти корзину': 'очисти корзину',
-    'найди молочные продукты': 'найди молочные продукты',
-    'найди мясо': 'найди мясо',
-    'найди рыбу': 'найди рыбу',
-    'найди напитки': 'найди напитки'
-  }
-  
-  return mapping[quickMessage] || quickMessage
-}
+// Быстрые предложения — будут загружаться из Strapi (раздел 1.2)
+const quickSuggestions: string[] = []
 
 // Основные функции компонента
 const openChat = () => {
@@ -76,11 +42,6 @@ const closeChat = () => {
 }
 
 const sendQuickMessage = async (message: string) => {
-  // Используем основной AI pipeline для быстрых предложений
-  // Преобразуем быстрые предложения в текстовые сообщения для AI
-  const aiMessage = convertQuickSuggestionToAIMessage(message)
-  
-  // Добавляем сообщение пользователя
   addUserMessage(message)
   inputMessage.value = ''
   isLoading.value = true
@@ -90,7 +51,7 @@ const sendQuickMessage = async (message: string) => {
     const response = await $fetch('/api/chat-assistant', {
       method: 'POST',
       body: JSON.stringify({
-        message: aiMessage,
+        message,
         sessionId: sessionId.value,
         tools: [],
         cartState: cartStore.items.length
@@ -196,7 +157,7 @@ const handleClientInstruction = async (instruction: any) => {
 
   if (cartActionTypes.includes(instruction.type)) {
     try {
-      const result = await chatCart.executeCartAction(instruction, callMCPTool)
+      const result = await chatCart.executeCartAction(instruction)
       
       if (result.message && result.message.trim() !== '') {
         addAssistantMessage(result.message)

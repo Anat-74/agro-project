@@ -3,7 +3,6 @@
  */
 
 export * from './useChatMessages'
-export * from './useChatMCP'
 export * from './useChatCart'
 export * from './useChatQuickActions'
 
@@ -14,14 +13,8 @@ export type {
 } from './useChatMessages'
 
 export type {
-  MCPToolCallResult,
-  UseChatMCPReturn
-} from './useChatMCP'
-
-export type {
   CartActionResult,
   CartInstruction,
-  CallMCPTool,
   UseChatCartReturn
 } from './useChatCart'
 

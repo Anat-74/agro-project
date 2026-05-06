@@ -1,19 +1,16 @@
 {
-  "servers": {
-    "nuxt": {
-      "type": "http",
-      "url": "https://nuxt.com/mcp"
-    },
+  "$schema": "https://app.kilo.ai/config.json",
+  "mcp": {
     "strapi": {
-      "type": "command",
-      "command": "npx.cmd",
-      "args": ["-y", "strapi-mcp"],
-      "env": {
+      "type": "local",
+      "command": ["npx.cmd", "-y", "strapi-mcp"],
+      "environment": {
         "STRAPI_URL": "http://127.0.0.1:1337",
         "STRAPI_ADMIN_EMAIL": "mcp-bot@local.test",
         "STRAPI_ADMIN_PASSWORD": "RESAM6bUEaKF2s7",
         "STRAPI_DEV_MODE": "true"
-      }
+      },
+      "enabled": true
     }
   }
 }

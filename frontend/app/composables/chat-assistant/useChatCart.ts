@@ -1,7 +1,3 @@
-/**
- * Composable для работы с корзиной через чат
- */
-
 import { useCartStore } from '../../stores/useCartStore'
 
 export interface CartActionResult {
@@ -20,15 +16,23 @@ export interface CartInstruction {
   data?: any
 }
 
-// Тип для функции callMCPTool
-export type CallMCPTool = (toolName: string, arguments_: any) => Promise<any>
+async function searchProducts(query: string, limit: number = 5): Promise<any> {
+  try {
+    const response = await $fetch('/api/products/search', {
+      params: { query, limit }
+    })
+    return response
+  } catch (error) {
+    console.error('Error searching products:', error)
+    return { success: false, error: 'Search failed', products: [] }
+  }
+}
 
 /**
  * Выполняет действие с корзиной на основе инструкции от AI
  */
 export async function executeCartAction(
-  instruction: CartInstruction,
-  callMCPTool: CallMCPTool
+  instruction: CartInstruction
 ): Promise<CartActionResult> {
   try {
     if (!instruction || !instruction.type) {
@@ -61,27 +65,22 @@ export async function executeCartAction(
           }
         }
         
-        // Если есть только название товара, ищем через MCP
+        // Если есть только название товара, ищем через API
         if (data?.productName) {
           try {
-            // Ищем товар через MCP
-            const searchResult = await callMCPTool('search_products', {
-              query: data.productName,
-              limit: 1
-            })
+            const searchResult = await searchProducts(data.productName, 1)
             
-            // Проверяем результат поиска
             if (!searchResult) {
               return {
                 success: false,
-                message: '❌ Ошибка при поиске товара: пустой ответ от MCP'
+                message: '❌ Ошибка при поиске товара: пустой ответ от API'
               }
             }
             
             if (searchResult.success === false) {
               return {
                 success: false,
-                message: `❌ Ошибка при поиске товара: ${searchResult.error || 'Неизвестная ошибка MCP'}`
+                message: `❌ Ошибка при поиске товара: ${searchResult.error || 'Неизвестная ошибка'}`
               }
             }
             
@@ -202,112 +201,13 @@ export async function executeCartAction(
         }
         
       case 'create_recipe_cart':
-        try {
-          // Для рецептов нужно добавить несколько товаров
-          if (!data?.recipe && !data?.customIngredients) {
-            return {
-              success: false,
-              message: '❌ Не указан рецепт или ингредиенты',
-              suggestion: 'Укажите рецепт (например, "borscht") или список ингредиентов'
-            }
-          }
-          
-          // Используем MCP для создания корзины рецепта
-          const recipeResult = await callMCPTool('create_recipe_cart', {
-            recipe: data.recipe,
-            customIngredients: data.customIngredients,
-            clearCart: data.clearCart !== false
-          })
-          
-          if (recipeResult.success === false) {
-            return {
-              success: false,
-              message: `❌ Ошибка при создании корзины рецепта: ${recipeResult.error || 'Неизвестная ошибка'}`
-            }
-          }
-          
-          // Если MCP вернул инструкцию, выполняем ее
-          if (recipeResult.instruction) {
-            // Очищаем корзину если нужно
-            if (data.clearCart !== false) {
-              try {
-                window.dispatchEvent(new CustomEvent('chat-assistant-cart-action', { 
-                  detail: { type: 'clear_cart' } 
-                }))
-              } catch (clearError) {
-                console.error('Error clearing cart for recipe:', clearError)
-                // Продолжаем выполнение даже при ошибке очистки
-              }
-            }
-            
-            // Для рецептов с ингредиентами
-            if (recipeResult.ingredients && Array.isArray(recipeResult.ingredients)) {
-              const addedIngredients: string[] = []
-              
-              // Добавляем каждый ингредиент с задержкой
-              recipeResult.ingredients.forEach((ingredient: any, index: number) => {
-                setTimeout(async () => {
-                  try {
-                    // Ищем товар по названию
-                    const searchResult = await callMCPTool('search_products', {
-                      query: ingredient.name,
-                      limit: 1
-                    })
-                    
-                    if (searchResult.success && searchResult.products.length > 0) {
-                      const product = searchResult.products[0]
-                      
-                      window.dispatchEvent(new CustomEvent('chat-assistant-cart-action', { 
-                        detail: { 
-                          type: 'add_to_cart', 
-                          data: { 
-                            productId: product.documentId,
-                            product: {
-                              id: product.documentId,
-                              documentId: product.documentId,
-                              name: product.name,
-                              price: product.price,
-                              slug: product.name.toLowerCase().replace(/ /g, '-'),
-                              image: product.image ? [{ url: product.image }] : []
-                            },
-                            quantity: ingredient.quantity || 1,
-                            categorySlug: product.category || 'vegetables'
-                          }
-                        } 
-                      }))
-                      
-                      addedIngredients.push(ingredient.name)
-                    }
-                  } catch (searchError) {
-                    console.error(`Error searching ingredient ${ingredient.name}:`, searchError)
-                  }
-                }, index * 300) // Задержка между добавлениями
-              })
-              
-              return {
-                success: true,
-                message: `✅ Корзина для "${recipeResult.recipe || 'рецепта'}" создана!\n\nДобавляю ${recipeResult.ingredientCount || recipeResult.ingredients.length} ингредиентов...`,
-                note: 'Ингредиенты добавляются с небольшой задержкой'
-              }
-            }
-          }
-          
-          return {
-            success: true,
-            message: `✅ Корзина для "${recipeResult.recipe || 'рецепта'}" создана!`,
-            details: recipeResult
-          }
-        } catch (error) {
-          console.error('Error creating recipe cart:', error)
-          return {
-            success: false,
-            message: `❌ Ошибка при создании корзины рецепта: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`,
-            fallback: 'Попробуйте добавить ингредиенты по отдельности'
-          }
+        return {
+          success: false,
+          message: '❌ Функция создания корзины по рецепту временно недоступна',
+          suggestion: 'Пожалуйста, добавляйте товары в корзину по одному'
         }
         
       case 'search_products':
-        // Используем MCP для поиска товаров
         try {
           if (!data?.query && !data?.category) {
             return {
@@ -318,14 +218,9 @@ export async function executeCartAction(
           }
           
           console.log(`Searching for: query="${data.query}", category="${data.category}"`)
-          const result = await callMCPTool('search_products', {
-            query: data.query,
-            category: data.category,
-            limit: data.limit || 5
-          })
+          const result = await searchProducts(data.query, data.limit || 5)
           console.log('Search result:', JSON.stringify(result, null, 2))
           
-          // Проверяем результат
           if (!result) {
             return {
               success: false,
@@ -343,7 +238,8 @@ export async function executeCartAction(
           }
           
           if (result.products && result.products.length > 0) {
-            let message = `🍎 **Найдены яблоки!**\n\n`
+            const firstProduct = result.products[0]
+            let message = `🍎 **Найдены товары!**\n\n`
             
             result.products.forEach((product: any, index: number) => {
               message += `**${index + 1}. ${product.name}**\n`
@@ -358,12 +254,6 @@ export async function executeCartAction(
               message += `\n... и еще ${result.total - result.products.length} товаров`
             }
             
-            if (result.note) {
-              message += `\n\n_${result.note}_`
-            }
-            
-            // Добавляем предложение добавить в корзину
-            const firstProduct = result.products[0]
             message += `\n\nХотите добавить **"${firstProduct.name}"** в корзину?`
             
             return {
