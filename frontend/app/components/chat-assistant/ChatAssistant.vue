@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { useChatMessages } from '../composables/chat-assistant/useChatMessages'
-import { useChatCart } from '../composables/chat-assistant/useChatCart'
-import { parseAIResponse } from '../composables/chat-assistant/useChatAssistant'
-import { chatAssistantTranslations } from '../locales/chat-assistant'
+import { useChatMessages } from '../../composables/chat-assistant/useChatMessages'
+import { useChatCart } from '../../composables/chat-assistant/useChatCart'
+import { parseAIResponse } from '../../composables/chat-assistant/useChatAssistant'
+import { chatAssistantTranslations } from '../../locales/chat-assistant'
+import ChatProductCard from './ChatProductCard.vue'
 
 const { currentLocale } = useLocale()
 const chatMessages = useChatMessages()
@@ -126,7 +127,7 @@ const processAIResponse = (response: any) => {
   addAssistantMessage(response.message, response.clientInstruction)
 
   if (response.tool_calls && response.tool_calls.length > 0) {
-    console.log('Tool calls received:', response.tool_calls)
+    console.debug('Tool calls received:', response.tool_calls)
     processToolCalls(response.tool_calls)
   }
 
@@ -146,17 +147,19 @@ const handleAIError = (error: any) => {
 
 const processToolCalls = (toolCalls: any[]) => {
   if (!toolCalls || toolCalls.length === 0) return
-  console.log('Processing tool calls:', toolCalls)
+  console.debug('Processing tool calls:', toolCalls)
   
   toolCalls.forEach((toolCall, index) => {
     const { function: func } = toolCall
-    console.log(`Tool call ${index + 1}: ${func.name} with args:`, func.arguments)
+    console.debug(`Tool call ${index + 1}: ${func.name} with args:`, func.arguments)
   })
 }
 
 const handleClientInstruction = async (instruction: any) => {
   if (!instruction) return
-  console.log('Client instruction received:', instruction)
+  console.debug('Client instruction received:', instruction)
+
+  if (instruction.type === 'show_products') return
 
   const cartActionTypes = [
     'add_to_cart',
@@ -314,6 +317,16 @@ onMounted(() => {
               ></div>
               <div class="message-time">
                 {{ formatTime(message.timestamp, currentLocale) }}
+              </div>
+              <div
+                v-if="message.clientInstruction?.type === 'show_products'"
+                class="product-results"
+              >
+                <ChatProductCard
+                  v-for="product in message.clientInstruction.data.products"
+                  :key="product.documentId"
+                  :product="product"
+                />
               </div>
             </div>
           </div>

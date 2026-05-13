@@ -217,9 +217,9 @@ export async function executeCartAction(
             }
           }
           
-          console.log(`Searching for: query="${data.query}", category="${data.category}"`)
+          console.debug(`Searching for: query="${data.query}", category="${data.category}"`)
           const result = await searchProducts(data.query, data.limit || 5)
-          console.log('Search result:', JSON.stringify(result, null, 2))
+          console.debug('Search result:', JSON.stringify(result, null, 2))
           
           if (!result) {
             return {
@@ -310,7 +310,7 @@ export function createCartActionHandler(
   scrollToBottom: () => void
 ) {
   return (event: CustomEvent) => {
-    console.log('[ChatAssistant] Cart action received:', event.detail)
+    console.debug('[ChatAssistant] Cart action received:', event.detail)
     const { type, data } = event.detail
 
     switch (type) {

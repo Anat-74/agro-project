@@ -111,14 +111,14 @@ export function useChatMessages(options: UseChatMessagesOptions = {}) {
 
   // Очистка истории
   const clearChatHistory = () => {
-    console.log('Clearing chat history, current messages:', messages.value.length)
+    console.debug('Clearing chat history, current messages:', messages.value.length)
     messages.value = []
     sessionId.value = null
     if (typeof window !== 'undefined') {
       localStorage.removeItem(storageKey)
       localStorage.removeItem(sessionStorageKey)
     }
-    console.log('Chat history cleared')
+    console.debug('Chat history cleared')
   }
 
   // Добавление сообщения

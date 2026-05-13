@@ -192,7 +192,7 @@ export const useChatAssistant = createUseAsyncData({
     const cached = nuxtApp.payload.data[key] ?? nuxtApp.static.data[key];
 
     if (cached && !isCacheExpired(cached, 5 * 60 * 1000)) {
-      console.log(`Используем кэшированные данные для ключа: ${key}`);
+      console.debug(`Используем кэшированные данные для ключа: ${key}`);
       return cached;
     }
 

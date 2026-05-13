@@ -30,8 +30,8 @@ async function searchProductsTool(query?: string, category?: string, limit: numb
       discountPrice: null,
     }));
     
-    console.log("Search results for query:", query, "Found products:", products.map((p: any) => `${p.name} (${p.price} руб, documentId: ${p.documentId})`));
-    console.log("Total products found:", result.total, "Has more:", result.hasMore, "Success:", result.success, "Note:", result.note);
+    console.debug("Search results for query:", query, "Found products:", products.map((p: any) => `${p.name} (${p.price} руб, documentId: ${p.documentId})`));
+    console.debug("Total products found:", result.total, "Has more:", result.hasMore, "Success:", result.success, "Note:", result.note);
     
     return {
       success: true,
@@ -80,7 +80,7 @@ async function callStrapiTool(toolName: string, args: any): Promise<any> {
 
 // Вспомогательная функция для работы с корзиной
 async function callCartTool(toolName: string, args: any): Promise<any> {
-  console.log(`callCartTool called: ${toolName}`, args);
+  console.debug(`callCartTool called: ${toolName}`, args);
   
   if (toolName === "cart_operations") {
     const { operation, productId, quantity = 1 } = args;
@@ -278,7 +278,7 @@ ${JSON.stringify(lastSearchResults, null, 2)}
     const toolCallsToProcess = assistantMessage.tool_calls || [];
 
     if (toolCallsToProcess.length > 0) {
-      console.log("Processing tool calls:", toolCallsToProcess);
+      console.debug("Processing tool calls:", toolCallsToProcess);
 
       for (const toolCall of toolCallsToProcess) {
         try {
@@ -304,7 +304,7 @@ ${JSON.stringify(lastSearchResults, null, 2)}
             }
           }
 
-          console.log(`Calling tool ${functionName} with args:`, args);
+          console.debug(`Calling tool ${functionName} with args:`, args);
 
           // Вызываем соответствующий инструмент
           let result;
@@ -316,8 +316,19 @@ ${JSON.stringify(lastSearchResults, null, 2)}
                 name: p.name,
                 price: p.price,
                 slug: p.slug,
-                category: p.category
+                image: p.image,
+                category: p.category,
+                categoryName: p.categoryName
               }));
+
+              clientInstruction = {
+                type: "show_products",
+                data: {
+                  products: searchResultsOutput,
+                  query: args.query,
+                  total: result.total
+                }
+              };
             }
           } else if (functionName === "cart_operations") {
             result = await callCartTool(functionName, args);
@@ -342,21 +353,21 @@ ${JSON.stringify(lastSearchResults, null, 2)}
                   // Обработка изображения в Strapi v5 (согласованно с product-search.ts)
                   let image = null;
                   if (productData.image) {
-                    console.log('Product image data:', JSON.stringify(productData.image, null, 2));
+                    console.debug('Product image data:', JSON.stringify(productData.image, null, 2));
                     
                     if (Array.isArray(productData.image) && productData.image.length > 0) {
                       // Используем ту же логику, что и в product-search.ts
                       const img = productData.image[0];
                       image = img.url || img.formats?.thumbnail?.url || null;
-                      console.log('Using image URL from array:', image);
+                      console.debug('Using image URL from array:', image);
                     } else if (productData.image.url) {
                       image = productData.image.url;
-                      console.log('Using direct image URL:', image);
+                      console.debug('Using direct image URL:', image);
                     }
                   }
                   
                     if (!image) {
-                    console.log('No image found for product:', productData.name);
+                    console.debug('No image found for product:', productData.name);
                     // Используем существующее изображение из public/image
                     image = "/image/cart-empty-img.png";
                   }
