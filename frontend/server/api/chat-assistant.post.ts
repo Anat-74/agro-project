@@ -26,8 +26,7 @@ async function searchProductsTool(query?: string, category?: string, limit: numb
       image: p.image,
       category: p.categoryName || "Без категории",
       isAvailable: true,
-      isDiscount: false,
-      discountPrice: null,
+      isDiscount: p.isDiscount || false,
     }));
     
     console.debug("Search results for query:", query, "Found products:", products.map((p: any) => `${p.name} (${p.price} руб, documentId: ${p.documentId})`));
@@ -207,10 +206,12 @@ export default defineEventHandler(async (event) => {
     let contextBlock = "";
     if (lastSearchResults && Array.isArray(lastSearchResults) && lastSearchResults.length > 0) {
       contextBlock = `
-КОНТЕКСТ ПРЕДЫДУЩЕГО ПОИСКА (используй documentId для операций с корзиной):
+КОНТЕКСТ ПРЕДЫДУЩЕГО ПОИСКА (эти товары уже найдены, используй их documentId):
 ${JSON.stringify(lastSearchResults, null, 2)}
 
-Если пользователь просит добавить товар в корзину, используй documentId из этого контекста.
+ВАЖНО: Если пользователь говорит "добавь в корзину" — НЕ СПРАШИВАЙ какой товар.
+Используй documentId первого товара из контекста выше и вызови cart_operations.
+ТЫ ОБЯЗАН использовать tool_calls, а не отвечать текстом.
 Не вызывай поиск повторно для товаров, которые уже есть в контексте.
 `;
     }
@@ -221,15 +222,16 @@ ${JSON.stringify(lastSearchResults, null, 2)}
       content: `Ты AI-ассистент интернет-магазина "Агро-Маркет". Помогаешь с поиском товаров и корзиной.${contextBlock}
 
 ПРАВИЛА РАБОТЫ С ИНСТРУМЕНТАМИ:
-1. При запросе "найди [товар]" — вызови strapi_products с operation: "search", query: "[товар]"
-2. При запросе "добавь в корзину" — вызови cart_operations с operation: "add". Всегда используй documentId из результатов поиска (из контекста выше). Если documentId неизвестен — сначала выполни search
-3. При запросе "покажи корзину" — вызови cart_operations с operation: "get"
-4. При составных запросах ("найди и добавь") — вызови оба инструмента: сначала search, потом add
-5. Не вызывай поиск повторно для товаров, уже найденных в контексте
+1. "найди [товар]" → strapi_products с operation: "search", query: "[товар]"
+2. "добавь в корзину" → cart_operations с operation: "add"
+   - Если есть КОНТЕКСТ выше: используй documentId первого товара из контекста, НЕ ОТВЕЧАЙ ТЕКСТОМ
+   - Если контекста нет: сначала search, потом add
+3. "покажи корзину" → cart_operations с operation: "get"
+4. "найди [товар] и добавь" → СНАЧАЛА search, ПОТОМ add (два tool_calls в одном ответе)
 
 ФОРМАТ ОТВЕТА:
-- Для вызова инструмента: верни tool_calls массив, content оставь пустым
-- После получения результатов инструментов: сформируй ответ пользователю на русском языке
+- Для вызова инструмента: tool_calls массив, content пустой. НИКОГДА не отвечай текстом когда нужно вызвать инструмент
+- После результата инструмента: ответь пользователю на русском
 - Найденные товары: "Нашел X товаров: 1) [Название] - [цена] руб"
 - Корзина: "✅ Товар добавлен в корзину"
 - Если ничего не найдено: "По вашему запросу ничего не найдено"
@@ -318,7 +320,8 @@ ${JSON.stringify(lastSearchResults, null, 2)}
                 slug: p.slug,
                 image: p.image,
                 category: p.category,
-                categoryName: p.categoryName
+                categoryName: p.categoryName,
+                isDiscount: p.isDiscount || false
               }));
 
               clientInstruction = {

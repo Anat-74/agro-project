@@ -145,7 +145,8 @@ export async function searchProducts(query?: string, category?: string, limit: n
         description: item.description || "",
         image: image,
         category: category,
-        categoryName: categoryName
+        categoryName: categoryName,
+        isDiscount: item.isDiscount || false
       };
       
       console.log(`Found product: ${product.name} (documentId: ${product.documentId})`);

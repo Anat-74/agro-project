@@ -13,6 +13,7 @@ interface ChatProduct {
   image?: string
   category?: string
   categoryName?: string
+  isDiscount?: boolean
 }
 
 const props = defineProps<{
@@ -44,18 +45,28 @@ const handleAddToCart = () => {
 
 <template>
   <div class="chat-product-card">
-    <UImage
-      v-if="product.image"
-      :src="product.image"
-      :alt="product.name"
-      width="80"
-      height="80"
-      type="thumbnail"
-      class="chat-product-card__image"
-    />
+    <template v-if="product.image">
+      <div class="chat-product-card__image-wrap">
+        <UImage
+          :src="product.image"
+          :alt="product.name"
+          width="80"
+          height="80"
+          type="thumbnail"
+          class="chat-product-card__image"
+        />
+        <Icon
+          v-if="product.isDiscount"
+          class="chat-product-card__discount"
+          name="mdi:discount"
+        />
+      </div>
+    </template>
     <div v-else class="chat-product-card__placeholder" />
     <div class="chat-product-card__info">
-      <h4 class="chat-product-card__name">{{ product.name }}</h4>
+      <div class="chat-product-card__name-row">
+        <h4 class="chat-product-card__name">{{ product.name }}</h4>
+      </div>
       <p class="chat-product-card__price">{{ formattedPrice }} руб</p>
       <div class="chat-product-card__actions">
         <NuxtLink
@@ -86,10 +97,36 @@ const handleAddToCart = () => {
   margin-block: 8px;
   align-items: center;
 
-  &__image {
+  &__image-wrap {
+    position: relative;
     flex-shrink: 0;
+  }
+
+  &__image {
     border-radius: 8px;
     overflow: hidden;
+  }
+
+  &__discount {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    color: var(--success-color, #4caf50);
+    font-size: 18px;
+    background: var(--light-color, #fff);
+    border-radius: 50%;
+  }
+
+  &__discount-inline {
+    color: var(--success-color, #4caf50);
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  &__name-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
   }
 
   &__placeholder {
