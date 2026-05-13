@@ -168,7 +168,7 @@ const AVAILABLE_TOOLS = [
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
-    const { message, sessionId, useTools = true } = body;
+    const { message, sessionId, useTools = true, lastSearchResults } = body;
 
     if (!message) {
       throw new Error("Сообщение обязательно");
@@ -203,167 +203,38 @@ export default defineEventHandler(async (event) => {
     // Используем только текущее сообщение (без истории)
     const recentHistory = [userMessage];
 
-    // Формируем расширенный системный промпт для ассистента с информацией о доступных инструментах
+    // Добавляем контекст предыдущего поиска, если он есть
+    let contextBlock = "";
+    if (lastSearchResults && Array.isArray(lastSearchResults) && lastSearchResults.length > 0) {
+      contextBlock = `
+КОНТЕКСТ ПРЕДЫДУЩЕГО ПОИСКА (используй documentId для операций с корзиной):
+${JSON.stringify(lastSearchResults, null, 2)}
+
+Если пользователь просит добавить товар в корзину, используй documentId из этого контекста.
+Не вызывай поиск повторно для товаров, которые уже есть в контексте.
+`;
+    }
+
+    // Формируем системный промпт — краткий, без хардкода и примеров
     const systemPrompt = {
       role: "system",
-      content: `Ты AI-ассистент для agro-market проекта "Агро-Маркет". Ты помогаешь пользователям с поиском продуктов и консультациями.
+      content: `Ты AI-ассистент интернет-магазина "Агро-Маркет". Помогаешь с поиском товаров и корзиной.${contextBlock}
 
-КОМАНДЫ ПОЛЬЗОВАТЕЛЯ И КАК НА НИХ РЕАГИРОВАТЬ:
-1. "найди [товар]" → Вызови инструмент strapi_products с операцией "search"
-2. "добавь [товар] в корзину" → Вызови инструмент cart_operations с операцией "add" и productId из найденных товаров
-3. "покажи корзину" → Вызови инструмент cart_operations с операцией "get"
-4. "удали [товар] из корзины" → Вызови инструмент cart_operations с операцией "remove"
-5. "найди [товар] и добавь в корзину" → Вызови ОБА инструмента: сначала strapi_products для поиска, потом cart_operations для добавления
+ПРАВИЛА РАБОТЫ С ИНСТРУМЕНТАМИ:
+1. При запросе "найди [товар]" — вызови strapi_products с operation: "search", query: "[товар]"
+2. При запросе "добавь в корзину" — вызови cart_operations с operation: "add". Всегда используй documentId из результатов поиска (из контекста выше). Если documentId неизвестен — сначала выполни search
+3. При запросе "покажи корзину" — вызови cart_operations с operation: "get"
+4. При составных запросах ("найди и добавь") — вызови оба инструмента: сначала search, потом add
+5. Не вызывай поиск повторно для товаров, уже найденных в контексте
 
-ДОСТУПНЫЕ ИНСТРУМЕНТЫ (используй tool_calls для их вызова):
-1. strapi_products - Поиск товаров в базе данных
-   Правильный формат аргументов: {"operation": "search", "query": "название товара", "limit": 5}
-
-2. cart_operations - Управление корзиной покупок
-   Правильный формат аргументов: {"operation": "add", "productId": "documentId товара", "quantity": 1}
-
-СИСТЕМА РАБОТЫ:
-1. Для запроса "найди [товар]" используй strapi_products с operation: "search" и query: "[товар]"
-2. Для запроса "добавь яблоки в корзину" используй cart_operations с operation: "add" и productId: "ebt2ulbafd1h97w4me6o7dko"
-3. Для запроса "добавь [товар] в корзину" (кроме яблок):
-   - Сначала найди товар через strapi_products
-   - Используй documentId из найденного товара для cart_operations
-
-ВАЖНО: Всегда используй актуальный documentId из результатов поиска
-
-КРИТИЧЕСКИ ВАЖНЫЕ ПРАВИЛА ФОРМАТА:
-1. ВСЕГДА используй tool_calls массив для вызова инструментов
-2. НИКОГДА не возвращай JSON в content - используй только tool_calls
-3. Для вызова инструмента возвращай массив tool_calls с одним или несколькими tool_call объектами
-4. Каждый tool_call должен иметь: id, type: "function", function: {name: "имя_инструмента", arguments: "JSON_строка"}
-5. Для составных запросов (например, "найди и добавь") возвращай несколько tool_call в массиве в правильном порядке
-6. НИКОГДА не используй XML, HTML, DSML, Markdown или другие форматы
-7. ВСЕГДА используй только двойные кавычки в JSON аргументах
-
-ПРАВИЛЬНЫЕ ПРИМЕРЫ (используй ТОЛЬКО эти форматы через tool_calls):
-
-ПРИМЕР 1: Пользователь говорит "найди яблоки"
-Возвращай tool_calls массив с одним элементом:
-tool_calls: [{
-  "id": "call_123",
-  "type": "function",
-  "function": {
-    "name": "strapi_products",
-    "arguments": "{\"operation\": \"search\", \"query\": \"яблоки\", \"limit\": 5}"
-  }
-}]
-
-ПРИМЕР 2: Пользователь говорит "добавь яблоко в корзину"
-Возвращай tool_calls массив с одним элементом:
-tool_calls: [{
-  "id": "call_456",
-  "type": "function",
-  "function": {
-    "name": "cart_operations",
-    "arguments": "{\"operation\": \"add\", \"productId\": \"ebt2ulbafd1h97w4me6o7dko\", \"quantity\": 1}"
-  }
-}]
-
-ПРИМЕР 3: Пользователь говорит "добавь найденный товар в корзину"
-Возвращай tool_calls массив с одним элементом:
-tool_calls: [{
-  "id": "call_789",
-  "type": "function",
-  "function": {
-    "name": "cart_operations",
-    "arguments": "{\"operation\": \"add\", \"productId\": \"НАЙДЕННЫЙ_DOCUMENT_ID\", \"quantity\": 1}"
-  }
-}]
-ПРИМЕЧАНИЕ: Используй documentId из предыдущего поиска. Если documentId неизвестен, сначала выполни поиск
-
-ПРИМЕР 3: Пользователь говорит "покажи корзину"
-Возвращай tool_calls массив с одним элементом:
-tool_calls: [{
-  "id": "call_789",
-  "type": "function",
-  "function": {
-    "name": "cart_operations",
-    "arguments": "{\"operation\": \"get\"}"
-  }
-}]
-
-ПРИМЕР 4: Пользователь говорит "найди яблоки и добавь в корзину"
-Возвращай tool_calls массив с ДВУМЯ элементами в правильном порядке:
-tool_calls: [
-  {
-    "id": "call_111",
-    "type": "function",
-    "function": {
-      "name": "strapi_products",
-      "arguments": "{\"operation\": \"search\", \"query\": \"яблоки\", \"limit\": 5}"
-    }
-  },
-  {
-    "id": "call_222",
-    "type": "function",
-    "function": {
-      "name": "cart_operations",
-      "arguments": "{\"operation\": \"add\", \"productId\": \"ebt2ulbafd1h97w4me6o7dko\", \"quantity\": 1}"
-    }
-  }
-]
-
-ПРИМЕР 5: Пользователь говорит "найди товар и добавь в корзину"
-Возвращай tool_calls массив с ДВУМЯ элементами:
-tool_calls: [
-  {
-    "id": "call_333",
-    "type": "function",
-    "function": {
-      "name": "strapi_products",
-      "arguments": "{\"operation\": \"search\", \"query\": \"товар\", \"limit\": 1}"
-    }
-  },
-  {
-    "id": "call_444",
-    "type": "function",
-    "function": {
-      "name": "cart_operations",
-      "arguments": "{\"operation\": \"add\", \"productId\": \"НАЙДЕННЫЙ_DOCUMENT_ID\", \"quantity\": 1}"
-    }
-  }
-]
-ВАЖНО: Замени "товар" на реальный запрос и "НАЙДЕННЫЙ_DOCUMENT_ID" на documentId из результатов поиска
-
-НЕПРАВИЛЬНЫЕ ПРИМЕРЫ (НЕ ИСПОЛЬЗУЙ НИКОГДА):
-- Любые форматы с тегами: <function_calls>, <invoke>, <parameter>, <tool_call>, <tool>
-- XML, HTML, DSML, Markdown в tool_calls
-- JSON в content (вместо tool_calls)
-- Любые объяснения, комментарии или текст вместе с tool_calls
-
-ДОПОЛНИТЕЛЬНЫЕ ПРАВИЛА:
-1. Для известных товаров (яблоки, горох, картофель, морковь, огурцы) используй готовые documentId без поиска
-2. Для неизвестных товаров сначала ищи через strapi_products, затем используй найденный documentId
-3. Для составных запросов ("найди и добавь") возвращай несколько tool_calls в одном ответе
-4. Всегда сохраняй порядок: сначала поиск, потом добавление в корзину
-5. Не объясняй пользователю что ты делаешь - просто вызывай инструменты через tool_calls
-
-ФОРМАТ ОТВЕТА С ИСПОЛЬЗОВАНИЕМ ИНСТРУМЕНТОВ:
-1. Если нужно вызвать инструмент: верни ТОЛЬКО tool_calls массив без дополнительного текста в content
-2. Content должен быть пустой строкой или null при использовании tool_calls
-3. После выполнения инструментов система покажет тебе результаты, и тогда ты можешь ответить пользователю
-4. Не пытайся показать пользователю технические форматы
-
-ФОРМАТ ОТВЕТА ПОСЛЕ ПОЛУЧЕНИЯ РЕЗУЛЬТАТОВ ИНСТРУМЕНТОВ:
-1. Когда система пришлет тебе результаты выполнения tool_calls, ты получишь их в контексте
-2. На основе этих результатов сформируй ответ пользователю на русском языке
-3. Для результатов поиска: покажи найденные товары в формате: 'Нашел X товаров: 1) [Название] - [цена] руб'
-4. Для каждого товара укажи основные характеристики: название, цена, краткое описание
-5. Предложи пользователю добавить товары в корзину
-6. Для операций с корзиной: подтверди успешное выполнение, например: '✅ Товар добавлен в корзину'
-7. Если товар не найден, сообщи об этом: 'По вашему запросу ничего не найдено. Попробуйте другие ключевые слова.'
-
-ВАЖНЫЕ ХАРАКТЕРИСТИКИ:
-- Отвечай на русском языке
-- Будь дружелюбным и полезным
-- Не показывай технические детали пользователю
-- Говори просто и понятно
-- Для операций с корзиной используй эмодзи для наглядности`,
+ФОРМАТ ОТВЕТА:
+- Для вызова инструмента: верни tool_calls массив, content оставь пустым
+- После получения результатов инструментов: сформируй ответ пользователю на русском языке
+- Найденные товары: "Нашел X товаров: 1) [Название] - [цена] руб"
+- Корзина: "✅ Товар добавлен в корзину"
+- Если ничего не найдено: "По вашему запросу ничего не найдено"
+- Будь дружелюбным, используй эмодзи 🥔 ✅ 🛒
+- Не показывай технические детали и JSON в ответе пользователю`,
     };
 
     // Формируем запрос к DeepSeek API
@@ -371,7 +242,7 @@ tool_calls: [
       model: "deepseek-chat",
       messages: [systemPrompt, ...recentHistory],
       temperature: 0.7,
-      max_tokens: 1000,
+      max_tokens: 500,
     };
 
     // Добавляем инструменты если нужно
@@ -402,43 +273,9 @@ tool_calls: [
     // Обрабатываем tool calls если они есть
     let toolResults = [];
     let clientInstruction = undefined;
+    let searchResultsOutput: any[] = [];
 
-    // Проверяем, не вернул ли AI JSON в content (вместо tool_calls)
-    let parsedContent = null;
-    if (assistantMessage.content && !assistantMessage.tool_calls) {
-      try {
-        // Пытаемся найти JSON в content
-        const jsonMatch = assistantMessage.content.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          parsedContent = JSON.parse(jsonMatch[0]);
-          console.log("Parsed JSON from content:", parsedContent);
-        }
-      } catch (error) {
-        console.log("Could not parse JSON from content:", assistantMessage.content);
-      }
-    }
-
-    // Если есть parsedContent, создаем искусственный tool call
-    let toolCallsToProcess = assistantMessage.tool_calls || [];
-    if (parsedContent && toolCallsToProcess.length === 0) {
-      // Определяем какой инструмент вызывать на основе parsedContent
-      let functionName = "strapi_products";
-      if (parsedContent.operation === "add" || parsedContent.operation === "remove" || parsedContent.operation === "get" || parsedContent.operation === "clear") {
-        functionName = "cart_operations";
-      }
-      
-      // Создаем искусственный tool call
-      const artificialToolCall = {
-        id: `artificial_${Date.now()}`,
-        type: "function",
-        function: {
-          name: functionName,
-          arguments: JSON.stringify(parsedContent)
-        }
-      };
-      toolCallsToProcess = [artificialToolCall];
-      console.log("Created artificial tool call from content:", artificialToolCall);
-    }
+    const toolCallsToProcess = assistantMessage.tool_calls || [];
 
     if (toolCallsToProcess.length > 0) {
       console.log("Processing tool calls:", toolCallsToProcess);
@@ -473,7 +310,15 @@ tool_calls: [
           let result;
           if (functionName === "strapi_products") {
             result = await callStrapiTool(functionName, args);
-            // AI сам покажет товары в сообщении, clientInstruction не нужен
+            if (result.success && result.products && result.products.length > 0) {
+              searchResultsOutput = result.products.map((p: any) => ({
+                documentId: p.documentId,
+                name: p.name,
+                price: p.price,
+                slug: p.slug,
+                category: p.category
+              }));
+            }
           } else if (functionName === "cart_operations") {
             result = await callCartTool(functionName, args);
             
@@ -597,56 +442,6 @@ tool_calls: [
 
         // Если есть результаты инструментов, отправляем их обратно в AI
         if (toolResults.length > 0) {
-          // Определяем, использовал ли AI старый формат (JSON в content) или новый (tool_calls)
-          // Если есть tool_calls или созданные искусственные tool calls, используем обычный flow
-          // Старый формат (JSON в content без tool_calls) обрабатываем специально для обратной совместимости
-          if (parsedContent && toolCallsToProcess.length === 0) {
-            if (parsedContent.operation === "search") {
-            // Для поиска отправляем результаты обратно в AI, чтобы получить детальный ответ
-            // Создаем сообщение assistant с tool_calls (искусственными) и пустым content
-            const assistantMessageWithToolCalls = {
-              role: "assistant",
-              content: "",
-              tool_calls: toolCallsToProcess,
-            };
-            
-            const secondRoundMessages = [
-              systemPrompt,
-              ...recentHistory,
-              assistantMessageWithToolCalls,
-              ...toolResults,
-            ];
-
-            const secondRoundResponse = await fetch(DEEPSEEK_API_URL, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
-              },
-              body: JSON.stringify({
-                model: "deepseek-chat",
-                messages: secondRoundMessages,
-                temperature: 0.7,
-                max_tokens: 1000,
-              }),
-            });
-
-            if (!secondRoundResponse.ok) {
-              throw new Error(`DeepSeek API second round error: ${secondRoundResponse.status}`);
-            }
-
-            const secondRoundData = await secondRoundResponse.json();
-            assistantMessage.content = secondRoundData.choices[0].message.content;
-          } else if (parsedContent.operation === "add") {
-            // Для добавления в корзину показываем простое сообщение
-            assistantMessage.content = "✅ Товар добавлен в корзину";
-          } else if (parsedContent.operation === "get") {
-            // Для получения корзины показываем простое сообщение
-            assistantMessage.content = "Корзина загружена";
-          } else {
-            assistantMessage.content = "Операция выполнена успешно";
-          }
-        } else {
           // Обычный flow: отправляем результаты инструментов обратно в AI
           const secondRoundMessages = [
             systemPrompt,
@@ -665,7 +460,7 @@ tool_calls: [
               model: "deepseek-chat",
               messages: secondRoundMessages,
               temperature: 0.7,
-              max_tokens: 1000,
+              max_tokens: 500,
             }),
           });
 
@@ -677,7 +472,6 @@ tool_calls: [
           assistantMessage.content = secondRoundData.choices[0].message.content;
         }
       }
-    }
 
     // Возвращаем ответ
     return {
@@ -686,6 +480,7 @@ tool_calls: [
       sessionId: cookieSessionId,
       tool_calls: toolCallsToProcess,
       clientInstruction,
+      searchResults: searchResultsOutput.length > 0 ? searchResultsOutput : undefined,
       timestamp: new Date().toISOString(),
     };
   } catch (error) {

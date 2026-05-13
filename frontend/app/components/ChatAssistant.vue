@@ -2,9 +2,12 @@
 import { useChatMessages } from '../composables/chat-assistant/useChatMessages'
 import { useChatCart } from '../composables/chat-assistant/useChatCart'
 import { parseAIResponse } from '../composables/chat-assistant/useChatAssistant'
+import { chatAssistantTranslations } from '../locales/chat-assistant'
 
+const { currentLocale } = useLocale()
 const chatMessages = useChatMessages()
 const chatCart = useChatCart()
+const t = computed(() => chatAssistantTranslations[currentLocale.value])
 
 // Реактивные переменные
 const isOpen = ref(false)
@@ -31,6 +34,9 @@ const { cartStore, setupCartListeners } = chatCart
 // Быстрые предложения — будут загружаться из Strapi (раздел 1.2)
 const quickSuggestions: string[] = []
 
+// Контекст последнего поиска для связки "найди → добавь в корзину"
+const lastSearchResults = ref<any[]>([])
+
 // Основные функции компонента
 const openChat = () => {
   isOpen.value = true
@@ -54,7 +60,8 @@ const sendQuickMessage = async (message: string) => {
         message,
         sessionId: sessionId.value,
         tools: [],
-        cartState: cartStore.items.length
+        cartState: cartStore.items.length,
+        lastSearchResults: lastSearchResults.value
       })
     })
 
@@ -62,7 +69,7 @@ const sendQuickMessage = async (message: string) => {
     processAIResponse(parsedResponse)
   } catch (error: any) {
     console.error('Quick message error:', error)
-    addErrorMessage('Произошла ошибка при обработке быстрого предложения. Пожалуйста, попробуйте еще раз.')
+    addErrorMessage(t.value.errorQuickMessage)
   } finally {
     isLoading.value = false
     scrollToBottom()
@@ -86,7 +93,8 @@ const sendMessage = async () => {
         message,
         sessionId: sessionId.value,
         tools: [],
-        cartState: cartStore.items.length
+        cartState: cartStore.items.length,
+        lastSearchResults: lastSearchResults.value
       })
     })
 
@@ -94,7 +102,7 @@ const sendMessage = async () => {
     processAIResponse(parsedResponse)
   } catch (error: any) {
     console.error('Chat error:', error)
-    addErrorMessage('Произошла ошибка при отправке сообщения. Пожалуйста, попробуйте еще раз.')
+    addErrorMessage(t.value.errorSendMessage)
   } finally {
     isLoading.value = false
     scrollToBottom()
@@ -103,12 +111,16 @@ const sendMessage = async () => {
 
 const processAIResponse = (response: any) => {
   if (!response || !response.success) {
-    handleAIError(response?.error || 'Неизвестная ошибка')
+    handleAIError(response?.error || t.value.errorDefault)
     return
   }
 
   if (response.sessionId) {
     sessionId.value = response.sessionId
+  }
+
+  if (response.searchResults) {
+    lastSearchResults.value = response.searchResults
   }
 
   addAssistantMessage(response.message, response.clientInstruction)
@@ -128,7 +140,7 @@ const processAIResponse = (response: any) => {
 
 const handleAIError = (error: any) => {
   console.error('AI error:', error)
-  addErrorMessage(`Ошибка: ${error?.message || error || 'Неизвестная ошибка'}`)
+  addErrorMessage(`${t.value.errorPrefix}: ${error?.message || error || t.value.errorDefault}`)
   scrollToBottom()
 }
 
@@ -166,7 +178,7 @@ const handleClientInstruction = async (instruction: any) => {
       
     } catch (error) {
       console.error('Error executing cart action:', error)
-      addErrorMessage(`❌ Ошибка при выполнении действия: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`)
+        addErrorMessage(`❌ ${t.value.errorCartAction}: ${error instanceof Error ? error.message : t.value.errorDefault}`)
       scrollToBottom()
     }
     return
@@ -219,14 +231,14 @@ onMounted(() => {
       v-if="!isOpen"
       class="chat-button"
       @click="openChat"
-      aria-label="Открыть чат с ассистентом"
+      :aria-label="t.chatButtonAria"
     >
       <svg class="chat-icon" viewBox="0 0 24 24" fill="currentColor">
         <path
           d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"
         />
       </svg>
-      <span class="chat-button-text">AI Ассистент</span>
+      <span class="chat-button-text">{{ t.title }}</span>
     </button>
 
     <!-- Chat modal -->
@@ -238,25 +250,26 @@ onMounted(() => {
               <Icon name="material-symbols:chat" />
             </div>
             <div>
-              <h3 class="assistant-title">AI Ассистент</h3>
-              <p class="assistant-subtitle">Agro-Market Помощник</p>
+              <h3 class="assistant-title">{{ t.title }}</h3>
+              <p class="assistant-subtitle">{{ t.subtitle }}</p>
             </div>
           </div>
           <div class="header-actions">
-            <button
-              v-if="messages.length > 0"
-              class="clear-history-button"
-              @click="clearChatHistory"
-              aria-label="Очистить историю чата"
-              title="Очистить историю"
-            >
-              <Icon name="material-symbols:delete-outline-rounded" />
-            </button>
-            <button
-              class="close-button"
-              @click="closeChat"
-              aria-label="Закрыть чат"
-            >
+              <button
+                v-if="messages.length > 0"
+                class="clear-history-button"
+                @click="clearChatHistory"
+                :aria-label="t.clearHistory"
+                :title="t.clearHistoryTitle"
+              >
+                <Icon name="material-symbols:delete-outline-rounded" />
+              </button>
+              <button
+                class="close-button"
+                @click="closeChat"
+                :aria-label="t.closeChat"
+                :title="t.closeChatTitle"
+              >
               <Icon name="material-symbols-light:close" />
             </button>
           </div>
@@ -268,12 +281,8 @@ onMounted(() => {
            <div class="empty-icon">
               <Icon name="material-symbols:chat" />
           </div>
-          <h4 class="empty-title">Привет! Я ваш AI-ассистент</h4>
-          <p class="empty-description">
-            Я помогу вам с поиском продуктов, ответами на вопросы о доставке и
-            оплате, консультацией по сельскохозяйственной продукции и другими
-            вопросами.
-          </p>
+          <h4 class="empty-title">{{ t.emptyTitle }}</h4>
+          <p class="empty-description">{{ t.emptyDescription }}</p>
           <div class="suggestions">
             <button
               v-for="suggestion in quickSuggestions"
@@ -304,7 +313,7 @@ onMounted(() => {
                 "
               ></div>
               <div class="message-time">
-                {{ formatTime(message.timestamp) }}
+                {{ formatTime(message.timestamp, currentLocale) }}
               </div>
             </div>
           </div>
@@ -329,7 +338,7 @@ onMounted(() => {
           <input
             v-model="inputMessage"
             type="text"
-            placeholder="Введите ваш вопрос..."
+            :placeholder="t.placeholder"
             :disabled="isLoading"
             class="message-input"
             @keydown.enter.exact.prevent="sendMessage"
@@ -338,15 +347,14 @@ onMounted(() => {
             type="submit"
             :disabled="!inputMessage.trim() || isLoading"
             class="send-button"
-            aria-label="Отправить сообщение"
+            :aria-label="t.sendButton"
           >
              <Icon name="material-symbols:send" />
           </button>
         </form>
         <div class="chat-footer-info">
           <p class="footer-text">
-            AI-ассистент работает на DeepSeek. Ответы могут содержать
-            неточности.
+            {{ t.footerText }}
           </p>
         </div>
       </div>

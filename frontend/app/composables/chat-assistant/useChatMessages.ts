@@ -2,9 +2,6 @@
  * Composable для управления сообщениями и историей чата
  */
 
-import { ref } from 'vue'
-import type { Ref } from 'vue'
-
 export interface ChatMessage {
   role: 'user' | 'assistant' | 'system'
   content: string
@@ -73,9 +70,10 @@ export function useChatMessages(options: UseChatMessagesOptions = {}) {
   }
 
   // Форматирование времени
-  const formatTime = (timestamp: string): string => {
+  const localeMap: Record<string, string> = { ru: 'ru-RU', be: 'be-BY' }
+  const formatTime = (timestamp: string, locale: string = 'ru'): string => {
     const date = new Date(timestamp)
-    return date.toLocaleTimeString('ru-RU', {
+    return date.toLocaleTimeString(localeMap[locale] || 'ru-RU', {
       hour: '2-digit',
       minute: '2-digit'
     })
