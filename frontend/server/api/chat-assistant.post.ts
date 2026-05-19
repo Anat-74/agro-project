@@ -7,13 +7,21 @@ const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || "";
 
 // Простая функция для поиска товаров через нашу общую функцию
-async function searchProductsTool(query?: string, category?: string, limit: number = 10) {
+async function searchProductsTool(
+  query?: string,
+  category?: string,
+  limit: number = 10,
+  minPrice?: number,
+  maxPrice?: number,
+  inStock?: boolean,
+  isDiscount?: boolean,
+) {
   try {
     // Импортируем общую функцию поиска
     const { searchProducts } = await import('../utils/product-search');
     
     // Вызываем функцию поиска
-    const result = await searchProducts(query, category, limit);
+    const result = await searchProducts(query, category, limit, minPrice, maxPrice, inStock, isDiscount);
     
     // Преобразуем результат в формат, ожидаемый AI ассистентом
     const products = result.products.map((p: any) => ({
@@ -53,11 +61,11 @@ async function searchProductsTool(query?: string, category?: string, limit: numb
 // Вспомогательная функция для работы с Strapi API
 async function callStrapiTool(toolName: string, args: any): Promise<any> {
   if (toolName === "strapi_products") {
-    const { operation, query, category, limit = 10 } = args;
+    const { operation, query, category, limit = 10, minPrice, maxPrice, inStock, isDiscount } = args;
     
     // Для операции search используем нашу улучшенную функцию
     if (operation === "search" && query) {
-      return await searchProductsTool(query, category, limit);
+      return await searchProductsTool(query, category, limit, minPrice, maxPrice, inStock, isDiscount);
     }
     
     // Для других операций используем простую заглушку
@@ -69,6 +77,24 @@ async function callStrapiTool(toolName: string, args: any): Promise<any> {
       hasMore: false,
       message: `Операция "${operation}" временно недоступна. Используйте поиск товаров.`
     };
+  }
+  
+  if (toolName === "get_recommendations") {
+    const { basedOn, sourceId, sourceType, limit = 5 } = args;
+    try {
+      const { getRecommendations } = await import('../utils/product-recommendations');
+      const result = await getRecommendations(basedOn, sourceType, sourceId, limit);
+      return result;
+    } catch (error) {
+      console.error("Error in get_recommendations:", error);
+      return {
+        success: false,
+        products: [],
+        total: 0,
+        basedOn,
+        error: `Ошибка рекомендаций: ${error instanceof Error ? error.message : String(error)}`,
+      };
+    }
   }
   
   return {
@@ -131,6 +157,22 @@ const AVAILABLE_TOOLS = [
             type: "string",
             description: "ID продукта (для operation: 'get_by_id')",
           },
+          maxPrice: {
+            type: "number",
+            description: "Максимальная цена товара (из 'дешевые', 'до X руб', 'не дороже X', 'бюджетные')",
+          },
+          minPrice: {
+            type: "number",
+            description: "Минимальная цена товара (из 'от X руб', 'дороже X')",
+          },
+          inStock: {
+            type: "boolean",
+            description: "Только товары в наличии (из 'в наличии', 'доступные')",
+          },
+          isDiscount: {
+            type: "boolean",
+            description: "Только товары со скидкой (из 'со скидкой', 'по акции', 'уценка')",
+          },
         },
         required: ["operation"],
       },
@@ -162,12 +204,43 @@ const AVAILABLE_TOOLS = [
       },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "get_recommendations",
+      description: "Получить рекомендации товаров: похожие (category), новинки (latest), со скидкой (discount)",
+      parameters: {
+        type: "object",
+        properties: {
+          basedOn: {
+            type: "string",
+            enum: ["category", "latest", "discount"],
+            description: "Тип рекомендаций: category — похожие товары из той же категории, latest — новинки, discount — товары со скидкой",
+          },
+          sourceId: {
+            type: "string",
+            description: "documentId товара для рекомендаций basedOn='category' (похожие)",
+          },
+          sourceType: {
+            type: "string",
+            enum: ["product", "article"],
+            description: "Тип источника (для будущего блога, сейчас только product)",
+          },
+          limit: {
+            type: "number",
+            description: "Количество рекомендаций (по умолчанию: 5, макс: 10)",
+          },
+        },
+        required: ["basedOn"],
+      },
+    },
+  },
 ];
 
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
-    const { message, sessionId, useTools = true, lastSearchResults } = body;
+    const { message, sessionId, useTools = true, lastSearchResults, locale = "ru" } = body;
 
     if (!message) {
       throw new Error("Сообщение обязательно");
@@ -220,6 +293,7 @@ ${JSON.stringify(lastSearchResults, null, 2)}
     const systemPrompt = {
       role: "system",
       content: `Ты AI-ассистент интернет-магазина "Агро-Маркет". Помогаешь с поиском товаров и корзиной.${contextBlock}
+Отвечай на языке: ${locale}.
 
 ПРАВИЛА РАБОТЫ С ИНСТРУМЕНТАМИ:
 1. "найди [товар]" → strapi_products с operation: "search", query: "[товар]"
@@ -228,6 +302,13 @@ ${JSON.stringify(lastSearchResults, null, 2)}
    - Если контекста нет: сначала search, потом add
 3. "покажи корзину" → cart_operations с operation: "get"
 4. "найди [товар] и добавь" → СНАЧАЛА search, ПОТОМ add (два tool_calls в одном ответе)
+5. "дешевые", "до 5 руб", "не дороже X" → strapi_products с maxPrice
+6. "со скидкой", "по акции" → strapi_products с isDiscount: true
+7. "в наличии" → strapi_products с inStock: true
+8. "что посоветуешь", "похожие", "рекомендуй", "новинки", "популярное" → get_recommendations
+   - "похожие на [товар]" → get_recommendations с basedOn: "category", sourceId: "[documentId товара]"
+   - "что нового", "новинки" → get_recommendations с basedOn: "latest"
+   - "со скидкой", "по акции" → get_recommendations с basedOn: "discount"
 
 ФОРМАТ ОТВЕТА:
 - Для вызова инструмента: tool_calls массив, content пустой. НИКОГДА не отвечай текстом когда нужно вызвать инструмент
@@ -427,6 +508,30 @@ ${JSON.stringify(lastSearchResults, null, 2)}
                   }
                 };
               }
+            }
+          } else if (functionName === "get_recommendations") {
+            result = await callStrapiTool(functionName, args);
+            if (result.success && result.products && result.products.length > 0) {
+              const recProducts = result.products.map((p: any) => ({
+                documentId: p.documentId,
+                name: p.name,
+                price: p.price,
+                slug: p.slug,
+                image: p.image,
+                category: p.category,
+                categoryName: p.categoryName,
+                isDiscount: p.isDiscount || false
+              }));
+
+              clientInstruction = {
+                type: "show_products",
+                data: {
+                  products: recProducts,
+                  source: "recommendations",
+                  basedOn: args.basedOn,
+                  total: result.total
+                }
+              };
             }
           } else {
             result = {

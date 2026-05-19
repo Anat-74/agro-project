@@ -22,7 +22,15 @@ const handleSearchError = (query?: string, category?: string, limit: number = 5)
 };
 
 // Основная функция поиска товаров
-export async function searchProducts(query?: string, category?: string, limit: number = 5) {
+export async function searchProducts(
+  query?: string,
+  category?: string,
+  limit: number = 5,
+  minPrice?: number,
+  maxPrice?: number,
+  inStock?: boolean,
+  isDiscount?: boolean,
+) {
   try {
     // Получаем URL Strapi из конфигурации
     const strapiUrl = process.env.STRAPI_URL || "http://127.0.0.1:1337";
@@ -86,6 +94,22 @@ export async function searchProducts(query?: string, category?: string, limit: n
     if (filters.category && filters.category.documentId && filters.category.documentId.$eq) {
       // Фильтр по категории: filters[category][documentId][$eq]=id
       params["filters[category][documentId][$eq]"] = filters.category.documentId.$eq;
+    }
+    
+    if (minPrice !== undefined) {
+      params["filters[price][$gte]"] = minPrice;
+    }
+    
+    if (maxPrice !== undefined) {
+      params["filters[price][$lte]"] = maxPrice;
+    }
+    
+    if (inStock === true) {
+      params["filters[isAvailable][$eq]"] = true;
+    }
+    
+    if (isDiscount === true) {
+      params["filters[isDiscount][$eq]"] = true;
     }
     
     // Выполняем запрос к Strapi API

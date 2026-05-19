@@ -4,6 +4,7 @@ import { useChatCart } from '../../composables/chat-assistant/useChatCart'
 import { parseAIResponse } from '../../composables/chat-assistant/useChatAssistant'
 import { chatAssistantTranslations } from '../../locales/chat-assistant'
 import ChatProductCard from './ChatProductCard.vue'
+import VoiceInput from './VoiceInput.vue'
 
 const { currentLocale } = useLocale()
 const chatMessages = useChatMessages()
@@ -32,8 +33,8 @@ const {
 
 const { cartStore, setupCartListeners } = chatCart
 
-// Быстрые предложения — будут загружаться из Strapi (раздел 1.2)
-const quickSuggestions: string[] = []
+// Быстрые предложения — загружаются из Strapi
+const quickSuggestions = ref<string[]>([])
 
 // Контекст последнего поиска для связки "найди → добавь в корзину"
 const lastSearchResults = ref<any[]>([])
@@ -62,7 +63,8 @@ const sendQuickMessage = async (message: string) => {
         sessionId: sessionId.value,
         tools: [],
         cartState: cartStore.items.length,
-        lastSearchResults: lastSearchResults.value
+        lastSearchResults: lastSearchResults.value,
+        locale: currentLocale.value
       })
     })
 
@@ -95,7 +97,8 @@ const sendMessage = async () => {
         sessionId: sessionId.value,
         tools: [],
         cartState: cartStore.items.length,
-        lastSearchResults: lastSearchResults.value
+        lastSearchResults: lastSearchResults.value,
+        locale: currentLocale.value
       })
     })
 
@@ -208,6 +211,11 @@ const scrollToBottom = () => {
   })
 }
 
+const onVoiceResult = (text: string) => {
+  inputMessage.value = text
+  nextTick(() => sendMessage())
+}
+
 const handleKeyDown = (e: KeyboardEvent) => {
   if (e.key === 'Escape' && isOpen.value) {
     closeChat()
@@ -216,7 +224,27 @@ const handleKeyDown = (e: KeyboardEvent) => {
 
 // Функция getQuickSuggestionInstruction удалена - быстрые предложения теперь используют основной AI pipeline
 
+const loadQuickSuggestions = async () => {
+  try {
+    const data = await $fetch(`/api/chat-suggestions?locale=${currentLocale.value}`)
+    quickSuggestions.value = data.suggestions.map((s: any) => s.text)
+  } catch {
+    quickSuggestions.value = [
+      'Найди ягоды для варенья',
+      'Что есть со скидкой?',
+      'Подбери фрукты к чаю',
+      'Покажи новинки',
+      'Что посоветуешь?'
+    ]
+  }
+}
+
+watch(currentLocale, () => {
+  loadQuickSuggestions()
+})
+
 onMounted(() => {
+  loadQuickSuggestions()
   window.addEventListener('keydown', handleKeyDown)
   const cleanupCartListeners = setupCartListeners(messages, saveChatHistory, scrollToBottom)
   
@@ -229,68 +257,66 @@ onMounted(() => {
 
 <template>
   <div class="chat-assistant">
-    <!-- Floating button -->
     <button
       v-if="!isOpen"
-      class="chat-button"
+      class="chat-assistant__toggle"
       @click="openChat"
       :aria-label="t.chatButtonAria"
     >
-      <svg class="chat-icon" viewBox="0 0 24 24" fill="currentColor">
+      <svg class="chat-assistant__toggle-icon" viewBox="0 0 24 24" fill="currentColor">
         <path
           d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"
         />
       </svg>
-      <span class="chat-button-text">{{ t.title }}</span>
+      <span class="chat-assistant__toggle-text">{{ t.title }}</span>
     </button>
 
-    <!-- Chat modal -->
-    <div v-if="isOpen" class="chat-modal">
-      <div class="chat-header">
-        <div class="header-content">
-          <div class="assistant-info">
-            <div class="assistant-avatar">
+    <div v-if="isOpen" class="chat-assistant__modal">
+      <header class="chat-assistant__header">
+        <div class="chat-assistant__header-content">
+          <div class="chat-assistant__info">
+            <div class="chat-assistant__avatar">
               <Icon name="material-symbols:chat" />
             </div>
             <div>
-              <h3 class="assistant-title">{{ t.title }}</h3>
-              <p class="assistant-subtitle">{{ t.subtitle }}</p>
+              <h3 class="chat-assistant__title">{{ t.title }}</h3>
+              <p class="chat-assistant__subtitle">{{ t.subtitle }}</p>
             </div>
           </div>
-          <div class="header-actions">
-              <button
-                v-if="messages.length > 0"
-                class="clear-history-button"
-                @click="clearChatHistory"
-                :aria-label="t.clearHistory"
-                :title="t.clearHistoryTitle"
-              >
-                <Icon name="material-symbols:delete-outline-rounded" />
-              </button>
-              <button
-                class="close-button"
-                @click="closeChat"
-                :aria-label="t.closeChat"
-                :title="t.closeChatTitle"
-              >
+          <div class="chat-assistant__actions">
+            <button
+              v-if="messages.length > 0"
+              class="chat-assistant__clear-btn"
+              @click="clearChatHistory"
+              :aria-label="t.clearHistory"
+              :title="t.clearHistoryTitle"
+            >
+              <Icon name="material-symbols:delete-outline-rounded" />
+            </button>
+            <button
+              class="chat-assistant__close-btn"
+              @click="closeChat"
+              :aria-label="t.closeChat"
+              :title="t.closeChatTitle"
+            >
               <Icon name="material-symbols-light:close" />
             </button>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div class="chat-body" ref="chatBody">
-        <div v-if="messages.length === 0" class="empty-state">
-           <div class="empty-icon">
-              <Icon name="material-symbols:chat" />
+      <main class="chat-assistant__body" ref="chatBody">
+        <div v-if="messages.length === 0" class="chat-assistant__empty">
+          <div class="chat-assistant__empty-icon">
+            <Icon name="material-symbols:chat" />
           </div>
-          <h4 class="empty-title">{{ t.emptyTitle }}</h4>
-          <p class="empty-description">{{ t.emptyDescription }}</p>
-          <div class="suggestions">
+          <h4 class="chat-assistant__empty-title">{{ t.emptyTitle }}</h4>
+          <p class="chat-assistant__empty-description">{{ t.emptyDescription }}</p>
+          <div class="chat-assistant__suggestions">
             <button
               v-for="suggestion in quickSuggestions"
               :key="suggestion"
-              class="suggestion-button"
+              class="chat-assistant__suggestion"
               @click="sendQuickMessage(suggestion)"
             >
               {{ suggestion }}
@@ -302,25 +328,25 @@ onMounted(() => {
           <div
             v-for="(message, index) in messages"
             :key="index"
-            :class="['message', message.role]"
+            :class="['message', message.role === 'user' ? 'message--user' : 'message--assistant']"
           >
-             <div class="message-avatar">
+            <div class="message__avatar">
               <Icon v-if="message.role === 'assistant'" name="material-symbols:chat" />
               <Icon v-else name="material-symbols:person" />
             </div>
-            <div class="message-content">
+            <div class="message__content">
               <div
-                class="message-text"
+                class="message__text"
                 v-html="
                   formatMessage(message.content, message.clientInstruction)
                 "
               ></div>
-              <div class="message-time">
+              <div class="message__time">
                 {{ formatTime(message.timestamp, currentLocale) }}
               </div>
               <div
                 v-if="message.clientInstruction?.type === 'show_products'"
-                class="product-results"
+                class="message__products"
               >
                 <ChatProductCard
                   v-for="product in message.clientInstruction.data.products"
@@ -331,75 +357,74 @@ onMounted(() => {
             </div>
           </div>
 
-          <div v-if="isLoading" class="message assistant">
-             <div class="message-avatar">
+          <div v-if="isLoading" class="message message--assistant">
+            <div class="message__avatar">
               <Icon name="material-symbols:chat" />
             </div>
-            <div class="message-content">
-              <div class="typing-indicator">
-                <span></span>
-                <span></span>
-                <span></span>
+            <div class="message__content">
+              <div class="message__typing">
+                <span class="message__dot"></span>
+                <span class="message__dot"></span>
+                <span class="message__dot"></span>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </main>
 
-      <div class="chat-footer">
-        <form @submit.prevent="sendMessage" class="message-form">
+      <footer class="chat-assistant__footer">
+        <form @submit.prevent="sendMessage" class="chat-assistant__form">
+          <VoiceInput
+            :disabled="isLoading"
+            :locale="currentLocale"
+            @on-result="onVoiceResult"
+          />
           <input
             v-model="inputMessage"
             type="text"
             :placeholder="t.placeholder"
             :disabled="isLoading"
-            class="message-input"
+            class="chat-assistant__input"
             @keydown.enter.exact.prevent="sendMessage"
           />
           <button
             type="submit"
             :disabled="!inputMessage.trim() || isLoading"
-            class="send-button"
+            class="chat-assistant__send"
             :aria-label="t.sendButton"
           >
-             <Icon name="material-symbols:send" />
+            <Icon name="material-symbols:send" />
           </button>
         </form>
-        <div class="chat-footer-info">
-          <p class="footer-text">
+        <div class="chat-assistant__footer-info">
+          <p class="chat-assistant__footer-text">
             {{ t.footerText }}
           </p>
         </div>
-      </div>
+      </footer>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-// Стили остаются без изменений
-.chat-assistant {
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-.chat-button {
+.chat-assistant__toggle {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: toRem(24);
+  right: toRem(24);
   z-index: 1000;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
+  gap: toRem(8);
+  padding: toRem(12) toRem(20);
   background: linear-gradient(135deg, #4caf50, #2e7d32);
-  color: white;
+  color: var(--light-color);
   border: none;
-  border-radius: 50px;
+  border-radius: toRem(50);
   cursor: pointer;
   box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
-  transition: all 0.3s ease;
+  transition: all var(--transition-duration);
   font-weight: 500;
-  font-size: 14px;
+  @include adaptiveValue("font-size", 14, 12);
 
   &:hover {
     transform: translateY(-2px);
@@ -411,330 +436,351 @@ onMounted(() => {
   }
 }
 
-.chat-icon {
-  width: 20px;
-  height: 20px;
+.chat-assistant__toggle-icon {
+  width: toRem(20);
+  height: toRem(20);
 }
 
-.chat-button-text {
+.chat-assistant__toggle-text {
   white-space: nowrap;
 }
 
-.chat-modal {
+.chat-assistant__modal {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: toRem(24);
+  right: toRem(24);
   z-index: 1001;
-  width: 400px;
-  max-width: calc(100vw - 48px);
-  height: 600px;
-  max-height: calc(100vh - 48px);
-  background: white;
-  border-radius: 16px;
+  width: toRem(400);
+  max-width: calc(100vw - toRem(48));
+  height: toRem(600);
+  max-height: calc(100vh - toRem(48));
+  background: var(--light-color);
+  border-radius: toRem(16);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header"
+    "body"
+    "footer";
   overflow: hidden;
+
+  > * {
+    min-width: 0;
+  }
 }
 
-.chat-header {
-  padding: 16px 20px;
+.chat-assistant__header {
+  grid-area: header;
+  padding: toRem(16) toRem(20);
   background: linear-gradient(135deg, #4caf50, #2e7d32);
-  color: white;
+  color: var(--light-color);
 }
 
-.header-content {
+.chat-assistant__header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.header-actions {
+.chat-assistant__actions {
   display: flex;
-  gap: 8px;
+  gap: toRem(8);
   align-items: center;
 }
 
-.assistant-info {
+.chat-assistant__info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: toRem(12);
 }
 
-.assistant-avatar {
-  width: 48px;
-  height: 48px;
+.chat-assistant__avatar {
+  width: toRem(48);
+  height: toRem(48);
   background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   .icon {
     color: var(--light-color);
   }
 }
 
-.assistant-title {
+.chat-assistant__title {
   margin: 0;
-  font-size: 16px;
+  @include adaptiveValue("font-size", 16, 14);
   font-weight: 600;
 }
 
-.assistant-subtitle {
-  margin: 2px 0 0;
-  font-size: 12px;
+.chat-assistant__subtitle {
+  margin: toRem(2) 0 0;
+  @include adaptiveValue("font-size", 12, 11);
   opacity: 0.9;
 }
 
-.close-button,
-.clear-history-button {
+.chat-assistant__close-btn,
+.chat-assistant__clear-btn {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
+  padding: toRem(8);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--light-color);
   transition: all var(--transition-duration);
-  border-radius: 4px;
-  
+  border-radius: toRem(4);
+
   svg,
   .icon {
     color: inherit;
     fill: currentColor;
     transition: transform var(--transition-duration);
   }
-  
-  &:hover {
+
+  @include hover {
     background: rgba(255, 255, 255, 0.1);
-    
+
     svg,
     .icon {
       transform: scale(1.1);
     }
   }
-  
+
   &:active {
     background: rgba(255, 255, 255, 0.2);
     transform: scale(0.95);
   }
 }
 
-.chat-body {
-  flex: 1;
+.chat-assistant__body {
+  grid-area: body;
   overflow-y: auto;
-  padding: 20px;
-  background: #f8f9fa;
+  padding: toRem(20);
+  background: var(--bg);
 }
 
-.empty-state {
+.chat-assistant__empty {
   text-align: center;
-  padding: 40px 20px;
+  padding: toRem(40) toRem(20);
 }
 
-.empty-icon {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 20px;
+.chat-assistant__empty-icon {
+  width: toRem(80);
+  height: toRem(80);
+  margin: 0 auto toRem(20);
   color: var(--primary-color);
-  
+
   .icon {
     width: 100%;
     height: 100%;
   }
 }
 
-.empty-title {
-  margin: 0 0 8px;
-  font-size: 18px;
+.chat-assistant__empty-title {
+  margin: 0 0 toRem(8);
+  @include adaptiveValue("font-size", 18, 16);
   font-weight: 600;
-  color: #333;
+  color: var(--color);
 }
 
-.empty-description {
-  margin: 0 0 24px;
-  font-size: 14px;
+.chat-assistant__empty-description {
+  margin: 0 0 toRem(24);
+  @include adaptiveValue("font-size", 14, 13);
   line-height: 1.5;
-  color: #666;
+  color: var(--gray-color);
 }
 
-.suggestions {
+.chat-assistant__suggestions {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  max-width: 300px;
+  gap: toRem(8);
+  max-width: toRem(300);
   margin: 0 auto;
 }
 
-.suggestion-button {
-  padding: 10px 16px;
-  background: white;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 13px;
+.chat-assistant__suggestion {
+  padding: toRem(10) toRem(16);
+  background: var(--light-color);
+  border: toRem(1) solid var(--border-color);
+  border-radius: toRem(8);
+  @include adaptiveValue("font-size", 13, 12);
   text-align: left;
   cursor: pointer;
-  transition: all 0.2s ease;
-  color: #333;
+  transition: all var(--transition-duration);
+  color: var(--color);
 
-  &:hover {
-    background: #f5f5f5;
-    border-color: #4caf50;
-    color: #2e7d32;
+  @include hover {
+    background: var(--bg);
+    border-color: var(--success-color);
+    color: var(--success-color);
   }
 }
 
 .messages-container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: toRem(16);
 }
 
 .message {
-  display: flex;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
+  gap: toRem(12);
+  align-content: start;
   animation: fadeIn 0.3s ease;
 
-  &.user {
-    flex-direction: row-reverse;
-
-    .message-avatar {
-      background: #4caf50;
+  &--user {
+    .message__avatar {
+      order: 1;
+      background: var(--success-color);
     }
 
-    .message-content {
-      align-items: flex-end;
+    .message__content {
+      order: 0;
     }
 
-    .message-text {
-      background: #4caf50;
-      color: white;
-      border-radius: 18px 18px 4px 18px;
+    .message__text {
+      background: var(--success-color);
+      color: var(--light-color);
+      border-radius: toRem(18) toRem(18) toRem(4) toRem(18);
     }
   }
 
-  &.assistant {
-    .message-avatar {
-      background: #757575;
+  &--assistant {
+    .message__avatar {
+      background: var(--gray-color);
     }
 
-    .message-text {
-      background: white;
-      color: #333;
-      border: 1px solid #e0e0e0;
-      border-radius: 18px 18px 18px 4px;
+    .message__text {
+      background: var(--light-color);
+      color: var(--color);
+      border: toRem(1) solid var(--border-color);
+      border-radius: toRem(18) toRem(18) toRem(18) toRem(4);
     }
   }
 }
 
-.message-avatar {
-  width: 40px;
-  height: 40px;
+.message__avatar {
+  width: toRem(40);
+  height: toRem(40);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   background: var(--primary-color);
-  
+
   .icon {
     color: var(--light-color);
   }
 }
 
-.message-content {
+.message__content {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: toRem(4);
   max-width: 70%;
 }
 
-.message-text {
-  padding: 12px 16px;
-  font-size: 14px;
+.message__text {
+  padding: toRem(12) toRem(16);
+  @include adaptiveValue("font-size", 14, 13);
   line-height: 1.5;
   word-wrap: break-word;
 }
 
-.message-time {
-  font-size: 11px;
-  color: #999;
+.message__time {
+  @include adaptiveValue("font-size", 11, 10);
+  color: var(--gray-color);
 }
 
-.typing-indicator {
+.message__products {
   display: flex;
-  gap: 4px;
-  padding: 12px 16px;
+  flex-direction: column;
+  gap: toRem(8);
+  margin-top: toRem(8);
+}
 
-  span {
-    width: 8px;
-    height: 8px;
-    background: #757575;
-    border-radius: 50%;
-    animation: typing 1.4s infinite ease-in-out;
+.message__typing {
+  display: flex;
+  gap: toRem(4);
+  padding: toRem(12) toRem(16);
+}
 
-    &:nth-child(1) {
-      animation-delay: -0.32s;
-    }
+.message__dot {
+  width: toRem(8);
+  height: toRem(8);
+  background: var(--gray-color);
+  border-radius: 50%;
+  animation: typing 1.4s infinite ease-in-out;
 
-    &:nth-child(2) {
-      animation-delay: -0.16s;
-    }
+  &:nth-child(1) {
+    animation-delay: -0.32s;
+  }
+
+  &:nth-child(2) {
+    animation-delay: -0.16s;
   }
 }
 
-.chat-footer {
-  padding: 16px 20px;
-  background: white;
-  border-top: 1px solid #e0e0e0;
+.chat-assistant__footer {
+  grid-area: footer;
+  padding: toRem(16) toRem(20);
+  background: var(--light-color);
+  border-top: toRem(1) solid var(--border-color);
 }
 
-.message-form {
+.chat-assistant__form {
   display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: toRem(8);
+  margin-bottom: toRem(8);
 }
 
-.message-input {
+.chat-assistant__input {
   flex: 1;
-  padding: 12px 16px;
-  border: 1px solid #e0e0e0;
-  border-radius: 24px;
-  font-size: 14px;
+  padding: toRem(12) toRem(16);
+  border: toRem(1) solid var(--border-color);
+  border-radius: toRem(24);
+  @include adaptiveValue("font-size", 14, 13);
   outline: none;
-  transition: border-color 0.2s ease;
+  transition: border-color var(--transition-duration);
 
   &:focus {
-    border-color: #4caf50;
+    border-color: var(--success-color);
   }
 
   &:disabled {
-    background: #f5f5f5;
+    background: var(--bg);
     cursor: not-allowed;
   }
 }
 
-.send-button {
-  width: 48px;
-  height: 48px;
-  background: #4caf50;
-  color: white;
+.chat-assistant__send {
+  width: toRem(48);
+  height: toRem(48);
+  background: var(--success-color);
+  color: var(--light-color);
   border: none;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s ease;
+  transition: background var(--transition-duration);
 
-  &:hover:not(:disabled) {
-    background: #388e3c;
+  @include hover {
+    &:not(:disabled) {
+      background: #388e3c;
+    }
   }
 
   &:disabled {
-    background: #cccccc;
+    background: var(--gray-color);
     cursor: not-allowed;
   }
 
@@ -743,21 +789,85 @@ onMounted(() => {
   }
 }
 
-.chat-footer-info {
+.chat-assistant__footer-info {
   text-align: center;
 }
 
-.footer-text {
+.chat-assistant__footer-text {
   margin: 0;
-  font-size: 11px;
-  color: #999;
+  @include adaptiveValue("font-size", 11, 10);
+  color: var(--gray-color);
   line-height: 1.4;
+}
+
+.chat-assistant__cart-actions {
+  display: flex;
+  gap: toRem(16);
+  margin-top: toRem(16);
+  flex-wrap: wrap;
+}
+
+.chat-assistant__cart-action {
+  padding: toRem(14) toRem(24);
+  border-radius: toRem(12);
+  @include adaptiveValue("font-size", 16, 14);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  border: toRem(2) solid var(--success-color);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  display: flex;
+  align-items: center;
+  gap: toRem(8);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+  @include hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  }
+
+  &--add {
+    background: linear-gradient(135deg, var(--success-color), #2e7d32);
+    color: var(--light-color);
+  }
+
+  &--remove {
+    background: linear-gradient(135deg, var(--danger-color), #c62828);
+    color: var(--light-color);
+  }
+
+  &--update {
+    background: linear-gradient(135deg, #2196f3, #1565c0);
+    color: var(--light-color);
+  }
+
+  &--clear {
+    background: linear-gradient(135deg, #ff9800, #ef6c00);
+    color: var(--light-color);
+  }
+
+  &--show {
+    background: linear-gradient(135deg, #9c27b0, #6a1b9a);
+    color: var(--light-color);
+  }
+
+  &--cancel {
+    background: var(--bg);
+    color: var(--gray-color);
+    border: toRem(1) solid var(--border-color);
+  }
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(toRem(10));
   }
   to {
     opacity: 1;
@@ -772,92 +882,27 @@ onMounted(() => {
     transform: translateY(0);
   }
   30% {
-    transform: translateY(-6px);
+    transform: translateY(toRem(-6));
   }
 }
 
-@media (max-width: 480px) {
-  .chat-modal {
-    width: calc(100vw - 32px);
-    height: calc(100vh - 100px);
-    bottom: 16px;
-    right: 16px;
+@media (max-width: $mobile) {
+  .chat-assistant__modal {
+    width: calc(100vw - toRem(32));
+    height: calc(100vh - toRem(100));
+    bottom: toRem(16);
+    right: toRem(16);
     max-width: none;
     max-height: none;
   }
 
-  .chat-button {
-    bottom: 16px;
-    right: 16px;
+  .chat-assistant__toggle {
+    bottom: toRem(16);
+    right: toRem(16);
   }
 
-  .message-content {
+  .message__content {
     max-width: 80%;
   }
-}
-
-/* Стили для кнопок действий с корзиной */
-.cart-action-buttons {
-  display: flex;
-  gap: 16px;
-  margin-top: 16px;
-  flex-wrap: wrap;
-}
-
-.cart-action-button {
-  padding: 14px 24px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  border: 2px solid var(--success-color);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-
-  &:hover {
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-  }
-
-  &:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  }
-}
-
-.cart-action-button.add-to-cart {
-  background: linear-gradient(135deg, #4caf50, #2e7d32);
-  color: white;
-}
-
-.cart-action-button.remove-from-cart {
-  background: linear-gradient(135deg, #f44336, #c62828);
-  color: white;
-}
-
-.cart-action-button.update-quantity {
-  background: linear-gradient(135deg, #2196f3, #1565c0);
-  color: white;
-}
-
-.cart-action-button.clear-cart {
-  background: linear-gradient(135deg, #ff9800, #ef6c00);
-  color: white;
-}
-
-.cart-action-button.show-cart {
-  background: linear-gradient(135deg, #9c27b0, #6a1b9a);
-  color: white;
-}
-
-.cart-action-button.cancel {
-  background: #f5f5f5;
-  color: #666;
-  border: 1px solid #ddd;
 }
 </style>

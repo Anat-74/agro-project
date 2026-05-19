@@ -88,14 +88,16 @@ const handleAddToCart = () => {
 
 <style scoped lang="scss">
 .chat-product-card {
-  display: flex;
-  gap: 12px;
-  padding: 12px;
-  background: var(--light-color, #fff);
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  margin-block: 8px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: toRem(12);
+  padding: toRem(12);
+  background: var(--light-color);
+  border: toRem(1) solid var(--border-color);
+  border-radius: toRem(12);
+  margin-block: toRem(8);
   align-items: center;
+  @include containerParent(card, inline-size);
 
   &__image-wrap {
     position: relative;
@@ -103,37 +105,37 @@ const handleAddToCart = () => {
   }
 
   &__image {
-    border-radius: 8px;
+    border-radius: toRem(8);
     overflow: hidden;
   }
 
   &__discount {
     position: absolute;
-    top: -4px;
-    right: -4px;
-    color: var(--success-color, #4caf50);
-    font-size: 18px;
-    background: var(--light-color, #fff);
+    top: toRem(-4);
+    right: toRem(-4);
+    color: var(--success-color);
+    @include adaptiveValue("font-size", 18, 14);
+    background: var(--light-color);
     border-radius: 50%;
   }
 
   &__discount-inline {
-    color: var(--success-color, #4caf50);
-    font-size: 16px;
+    color: var(--success-color);
+    @include adaptiveValue("font-size", 16, 14);
     flex-shrink: 0;
   }
 
   &__name-row {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: toRem(4);
   }
 
   &__placeholder {
-    width: 80px;
-    height: 80px;
-    border-radius: 8px;
-    background: #f0f0f0;
+    width: toRem(80);
+    height: toRem(80);
+    border-radius: toRem(8);
+    background: var(--bg);
     flex-shrink: 0;
   }
 
@@ -142,34 +144,34 @@ const handleAddToCart = () => {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: toRem(4);
   }
 
   &__name {
     margin: 0;
-    font-size: 14px;
+    @include adaptiveValue("font-size", 14, 13);
     font-weight: 600;
-    color: #333;
+    color: var(--color);
     line-height: 1.3;
   }
 
   &__price {
     margin: 0;
-    font-size: 16px;
+    @include adaptiveValue("font-size", 16, 14);
     font-weight: 700;
-    color: #2e7d32;
+    color: var(--success-color);
   }
 
   &__actions {
     display: flex;
-    gap: 8px;
-    margin-top: 4px;
+    gap: toRem(8);
+    margin-top: toRem(4);
     flex-wrap: wrap;
   }
 
   &__link {
-    font-size: 12px;
-    color: #4caf50;
+    @include adaptiveValue("font-size", 12, 11);
+    color: var(--success-color);
     text-decoration: none;
     white-space: nowrap;
 
@@ -179,19 +181,25 @@ const handleAddToCart = () => {
   }
 
   &__cart-button {
-    font-size: 12px;
-    padding: 4px 12px;
-    background: #4caf50;
-    color: white;
+    @include adaptiveValue("font-size", 12, 11);
+    padding: toRem(4) toRem(12);
+    background: var(--success-color);
+    color: var(--light-color);
     border: none;
-    border-radius: 16px;
+    border-radius: toRem(16);
     cursor: pointer;
     white-space: nowrap;
-    transition: background 0.2s;
+    transition: background var(--transition-duration);
 
-    &:hover {
+    @include hover {
       background: #388e3c;
     }
+  }
+}
+
+@container card (max-width: toRem(260)) {
+  .chat-product-card {
+    grid-template-columns: 1fr;
   }
 }
 </style>
