@@ -91,8 +91,6 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .voice-input {
-  @include adaptiveValue("width", 40, 34);
-  @include adaptiveValue("height", 40, 34);
   border-radius: 50%;
   border: toRem(1) solid var(--border-color);
   background: var(--light-color);
@@ -103,6 +101,8 @@ onUnmounted(() => {
   transition: all var(--transition-duration);
   flex-shrink: 0;
   color: var(--gray-color);
+  @include adaptiveValue("width", 40, 34);
+  @include adaptiveValue("height", 40, 34);
 
   @include hover {
     &:not(:disabled) {

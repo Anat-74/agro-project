@@ -511,14 +511,14 @@ onMounted(() => {
 
 .chat-assistant__title {
   margin: 0;
-  @include adaptiveValue("font-size", 16, 14);
   font-weight: 600;
+  @include adaptiveValue("font-size", 16, 14);
 }
 
 .chat-assistant__subtitle {
   margin: toRem(2) 0 0;
-  @include adaptiveValue("font-size", 12, 11);
   opacity: 0.9;
+  @include adaptiveValue("font-size", 12, 11);
 }
 
 .chat-assistant__close-btn,
@@ -582,16 +582,16 @@ onMounted(() => {
 
 .chat-assistant__empty-title {
   margin: 0 0 toRem(8);
-  @include adaptiveValue("font-size", 18, 16);
   font-weight: 600;
   color: var(--color);
+  @include adaptiveValue("font-size", 18, 16);
 }
 
 .chat-assistant__empty-description {
   margin: 0 0 toRem(24);
-  @include adaptiveValue("font-size", 14, 13);
   line-height: 1.5;
   color: var(--gray-color);
+  @include adaptiveValue("font-size", 14, 13);
 }
 
 .chat-assistant__suggestions {
@@ -607,11 +607,11 @@ onMounted(() => {
   background: var(--light-color);
   border: toRem(1) solid var(--border-color);
   border-radius: toRem(8);
-  @include adaptiveValue("font-size", 13, 12);
   text-align: left;
   cursor: pointer;
   transition: all var(--transition-duration);
   color: var(--color);
+  @include adaptiveValue("font-size", 13, 12);
 
   @include hover {
     background: var(--bg);
@@ -689,14 +689,14 @@ onMounted(() => {
 
 .message__text {
   padding: toRem(12) toRem(16);
-  @include adaptiveValue("font-size", 14, 13);
   line-height: 1.5;
   word-wrap: break-word;
+  @include adaptiveValue("font-size", 14, 13);
 }
 
 .message__time {
-  @include adaptiveValue("font-size", 11, 10);
   color: var(--gray-color);
+  @include adaptiveValue("font-size", 11, 10);
 }
 
 .message__products {
@@ -746,9 +746,9 @@ onMounted(() => {
   padding: toRem(12) toRem(16);
   border: toRem(1) solid var(--border-color);
   border-radius: toRem(24);
-  @include adaptiveValue("font-size", 14, 13);
   outline: none;
   transition: border-color var(--transition-duration);
+  @include adaptiveValue("font-size", 14, 13);
 
   &:focus {
     border-color: var(--success-color);
@@ -795,9 +795,9 @@ onMounted(() => {
 
 .chat-assistant__footer-text {
   margin: 0;
-  @include adaptiveValue("font-size", 11, 10);
   color: var(--gray-color);
   line-height: 1.4;
+  @include adaptiveValue("font-size", 11, 10);
 }
 
 .chat-assistant__cart-actions {
@@ -810,7 +810,6 @@ onMounted(() => {
 .chat-assistant__cart-action {
   padding: toRem(14) toRem(24);
   border-radius: toRem(12);
-  @include adaptiveValue("font-size", 16, 14);
   font-weight: 700;
   letter-spacing: 0.3px;
   border: toRem(2) solid var(--success-color);
@@ -821,6 +820,7 @@ onMounted(() => {
   align-items: center;
   gap: toRem(8);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  @include adaptiveValue("font-size", 16, 14);
 
   @include hover {
     transform: translateY(-3px) scale(1.05);

@@ -114,15 +114,15 @@ const handleAddToCart = () => {
     top: toRem(-4);
     right: toRem(-4);
     color: var(--success-color);
-    @include adaptiveValue("font-size", 18, 14);
     background: var(--light-color);
     border-radius: 50%;
+    @include adaptiveValue("font-size", 18, 14);
   }
 
   &__discount-inline {
     color: var(--success-color);
-    @include adaptiveValue("font-size", 16, 14);
     flex-shrink: 0;
+    @include adaptiveValue("font-size", 16, 14);
   }
 
   &__name-row {
@@ -149,17 +149,17 @@ const handleAddToCart = () => {
 
   &__name {
     margin: 0;
-    @include adaptiveValue("font-size", 14, 13);
     font-weight: 600;
     color: var(--color);
     line-height: 1.3;
+    @include adaptiveValue("font-size", 14, 13);
   }
 
   &__price {
     margin: 0;
-    @include adaptiveValue("font-size", 16, 14);
     font-weight: 700;
     color: var(--success-color);
+    @include adaptiveValue("font-size", 16, 14);
   }
 
   &__actions {
@@ -170,10 +170,10 @@ const handleAddToCart = () => {
   }
 
   &__link {
-    @include adaptiveValue("font-size", 12, 11);
     color: var(--success-color);
     text-decoration: none;
     white-space: nowrap;
+    @include adaptiveValue("font-size", 12, 11);
 
     &:hover {
       text-decoration: underline;
@@ -181,7 +181,6 @@ const handleAddToCart = () => {
   }
 
   &__cart-button {
-    @include adaptiveValue("font-size", 12, 11);
     padding: toRem(4) toRem(12);
     background: var(--success-color);
     color: var(--light-color);
@@ -190,6 +189,7 @@ const handleAddToCart = () => {
     cursor: pointer;
     white-space: nowrap;
     transition: background var(--transition-duration);
+    @include adaptiveValue("font-size", 12, 11);
 
     @include hover {
       background: #388e3c;
