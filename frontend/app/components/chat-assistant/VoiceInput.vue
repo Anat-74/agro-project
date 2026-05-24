@@ -12,7 +12,7 @@ const isListening = ref(false)
 const micVisible = ref(true)
 
 // Проверка поддержки Web Speech API
-const SpeechRecognitionAPI = window.SpeechRecognition || (window as any).webkitSpeechRecognition
+const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
 const isSupported = Boolean(SpeechRecognitionAPI)
 
 if (!isSupported) {
@@ -76,56 +76,14 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <button
+  <UButton
     v-if="micVisible"
-    class="voice-input"
-    :class="{ 'voice-input--listening': isListening }"
-    :disabled="disabled"
-    @click="toggleListening"
+    variant="voice"
+    :class="{ 'btn_voice--listening': isListening }"
+    :icon="isListening ? 'material-symbols:mic-off' : 'material-symbols:mic'"
+    :isDisabled="disabled"
     :aria-label="isListening ? 'Остановить запись' : 'Голосовой ввод'"
-    type="button"
-  >
-    <Icon :name="isListening ? 'material-symbols:mic-off' : 'material-symbols:mic'" />
-  </button>
+    @click="toggleListening"
+  />
 </template>
 
-<style scoped lang="scss">
-.voice-input {
-  border-radius: 50%;
-  border: toRem(1) solid var(--border-color);
-  background: var(--light-color);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-duration);
-  flex-shrink: 0;
-  color: var(--gray-color);
-  @include adaptiveValue("width", 40, 34);
-  @include adaptiveValue("height", 40, 34);
-
-  @include hover {
-    &:not(:disabled) {
-      border-color: var(--success-color);
-      color: var(--success-color);
-    }
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  &--listening {
-    background: var(--danger-color);
-    color: var(--light-color);
-    border-color: var(--danger-color);
-    animation: pulse 1.5s infinite;
-  }
-}
-
-@keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4); }
-  50% { box-shadow: 0 0 0 toRem(8) rgba(244, 67, 54, 0); }
-}
-</style>

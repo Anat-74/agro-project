@@ -27,6 +27,10 @@ interface Props {
     | "slide-prev"
     | "slide-next"
     | "product-details"
+    | "send"
+    | "voice"
+    | "suggestion"
+    | "cart-pill"
   size?: "small" | "normal" | "large";
   isLoading?: boolean;
   isDisabled?: boolean;
@@ -604,6 +608,125 @@ defineEmits<Emits>();
     }
   }
 
+  &_close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: toRem(8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--light-color);
+    transition: all var(--transition-duration);
+    border-radius: toRem(4);
+
+    svg, .icon {
+      color: inherit;
+      fill: currentColor;
+      transition: transform var(--transition-duration);
+    }
+
+    @include hover {
+      background: rgba(255, 255, 255, 0.1);
+      svg, .icon { transform: scale(1.1); }
+    }
+
+    &:active {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(0.95);
+    }
+  }
+
+  &_send {
+    width: toRem(48);
+    height: toRem(48);
+    background: var(--success-color);
+    color: var(--light-color);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition-duration);
+
+    @include hover {
+      &:not(:disabled) { background: #388e3c; }
+    }
+
+    &:disabled {
+      background: var(--gray-color);
+      cursor: not-allowed;
+    }
+  }
+
+  &_voice {
+    border-radius: 50%;
+    border: toRem(1) solid var(--border-color);
+    background: var(--light-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-duration);
+    flex-shrink: 0;
+    color: var(--gray-color);
+    @include adaptiveValue("width", 40, 34);
+    @include adaptiveValue("height", 40, 34);
+
+    @include hover {
+      &:not(:disabled) {
+        border-color: var(--success-color);
+        color: var(--success-color);
+      }
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &--listening {
+      background: var(--danger-color);
+      color: var(--light-color);
+      border-color: var(--danger-color);
+      animation: pulse 1.5s infinite;
+    }
+  }
+
+  &_suggestion {
+    padding: toRem(10) toRem(16);
+    background: var(--light-color);
+    border: toRem(1) solid var(--border-color);
+    border-radius: toRem(8);
+    text-align: left;
+    cursor: pointer;
+    transition: all var(--transition-duration);
+    color: var(--color);
+
+    @include hover {
+      background: var(--bg);
+      border-color: var(--success-color);
+      color: var(--success-color);
+    }
+  }
+
+  &_cart-pill {
+    @include adaptiveValue("font-size", 12, 11);
+    padding: toRem(4) toRem(12);
+    background: var(--success-color);
+    color: var(--light-color);
+    border: none;
+    border-radius: toRem(16);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background var(--transition-duration);
+
+    @include hover {
+      background: #388e3c;
+    }
+  }
+
   /* Состояние загрузки */
   &.loading {
     pointer-events: none;
@@ -629,5 +752,10 @@ defineEmits<Emits>();
   to {
     transform: rotate(360deg);
   }
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4); }
+  50% { box-shadow: 0 0 0 toRem(8) rgba(244, 67, 54, 0); }
 }
 </style>

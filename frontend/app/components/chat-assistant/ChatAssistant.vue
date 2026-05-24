@@ -5,7 +5,6 @@ import { parseAIResponse } from '../../composables/chat-assistant/useChatAssista
 import { chatAssistantTranslations } from '../../locales/chat-assistant'
 import ChatProductCard from './ChatProductCard.vue'
 import VoiceInput from './VoiceInput.vue'
-
 const { currentLocale } = useLocale()
 const chatMessages = useChatMessages()
 const chatCart = useChatCart()
@@ -226,8 +225,8 @@ const handleKeyDown = (e: KeyboardEvent) => {
 
 const loadQuickSuggestions = async () => {
   try {
-    const data = await $fetch(`/api/chat-suggestions?locale=${currentLocale.value}`)
-    quickSuggestions.value = data.suggestions.map((s: any) => s.text)
+    const data = await $fetch<ChatSuggestionsData>(`/api/chat-suggestions?locale=${currentLocale.value}`)
+    quickSuggestions.value = data.suggestions.map(s => s.text)
   } catch {
     quickSuggestions.value = [
       'Найди ягоды для варенья',
@@ -284,23 +283,23 @@ onMounted(() => {
             </div>
           </div>
           <div class="chat-assistant__actions">
-            <button
+            <UButton
               v-if="messages.length > 0"
-              class="chat-assistant__clear-btn"
-              @click="clearChatHistory"
+              variant="close"
               :aria-label="t.clearHistory"
               :title="t.clearHistoryTitle"
+              @click="clearChatHistory"
             >
               <Icon name="material-symbols:delete-outline-rounded" />
-            </button>
-            <button
-              class="chat-assistant__close-btn"
-              @click="closeChat"
+            </UButton>
+            <UButton
+              variant="close"
               :aria-label="t.closeChat"
               :title="t.closeChatTitle"
+              @click="closeChat"
             >
               <Icon name="material-symbols-light:close" />
-            </button>
+            </UButton>
           </div>
         </div>
       </header>
@@ -313,14 +312,14 @@ onMounted(() => {
           <h4 class="chat-assistant__empty-title">{{ t.emptyTitle }}</h4>
           <p class="chat-assistant__empty-description">{{ t.emptyDescription }}</p>
           <div class="chat-assistant__suggestions">
-            <button
+            <UButton
               v-for="suggestion in quickSuggestions"
               :key="suggestion"
-              class="chat-assistant__suggestion"
+              variant="suggestion"
               @click="sendQuickMessage(suggestion)"
             >
               {{ suggestion }}
-            </button>
+            </UButton>
           </div>
         </div>
 
@@ -387,14 +386,14 @@ onMounted(() => {
             class="chat-assistant__input"
             @keydown.enter.exact.prevent="sendMessage"
           />
-          <button
+          <UButton
             type="submit"
-            :disabled="!inputMessage.trim() || isLoading"
-            class="chat-assistant__send"
+            variant="send"
+            icon="material-symbols:send"
+            :isDisabled="!inputMessage.trim() || isLoading"
             :aria-label="t.sendButton"
-          >
-            <Icon name="material-symbols:send" />
-          </button>
+            @click="sendMessage"
+          />
         </form>
         <div class="chat-assistant__footer-info">
           <p class="chat-assistant__footer-text">
@@ -521,41 +520,6 @@ onMounted(() => {
   @include adaptiveValue("font-size", 12, 11);
 }
 
-.chat-assistant__close-btn,
-.chat-assistant__clear-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: toRem(8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--light-color);
-  transition: all var(--transition-duration);
-  border-radius: toRem(4);
-
-  svg,
-  .icon {
-    color: inherit;
-    fill: currentColor;
-    transition: transform var(--transition-duration);
-  }
-
-  @include hover {
-    background: rgba(255, 255, 255, 0.1);
-
-    svg,
-    .icon {
-      transform: scale(1.1);
-    }
-  }
-
-  &:active {
-    background: rgba(255, 255, 255, 0.2);
-    transform: scale(0.95);
-  }
-}
-
 .chat-assistant__body {
   grid-area: body;
   overflow-y: auto;
@@ -600,24 +564,6 @@ onMounted(() => {
   gap: toRem(8);
   max-width: toRem(300);
   margin: 0 auto;
-}
-
-.chat-assistant__suggestion {
-  padding: toRem(10) toRem(16);
-  background: var(--light-color);
-  border: toRem(1) solid var(--border-color);
-  border-radius: toRem(8);
-  text-align: left;
-  cursor: pointer;
-  transition: all var(--transition-duration);
-  color: var(--color);
-  @include adaptiveValue("font-size", 13, 12);
-
-  @include hover {
-    background: var(--bg);
-    border-color: var(--success-color);
-    color: var(--success-color);
-  }
 }
 
 .messages-container {
@@ -757,35 +703,6 @@ onMounted(() => {
   &:disabled {
     background: var(--bg);
     cursor: not-allowed;
-  }
-}
-
-.chat-assistant__send {
-  width: toRem(48);
-  height: toRem(48);
-  background: var(--success-color);
-  color: var(--light-color);
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background var(--transition-duration);
-
-  @include hover {
-    &:not(:disabled) {
-      background: #388e3c;
-    }
-  }
-
-  &:disabled {
-    background: var(--gray-color);
-    cursor: not-allowed;
-  }
-
-  .icon {
-    color: var(--light-color);
   }
 }
 

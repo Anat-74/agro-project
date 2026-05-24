@@ -75,12 +75,12 @@ const handleAddToCart = () => {
         >
           {{ t.viewProduct }}
         </NuxtLink>
-        <button
-          class="chat-product-card__cart-button"
+        <UButton
+          variant="cart-pill"
           @click="handleAddToCart"
         >
           {{ t.addToCart }}
-        </button>
+        </UButton>
       </div>
     </div>
   </div>
@@ -180,21 +180,7 @@ const handleAddToCart = () => {
     }
   }
 
-  &__cart-button {
-    padding: toRem(4) toRem(12);
-    background: var(--success-color);
-    color: var(--light-color);
-    border: none;
-    border-radius: toRem(16);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background var(--transition-duration);
-    @include adaptiveValue("font-size", 12, 11);
 
-    @include hover {
-      background: #388e3c;
-    }
-  }
 }
 
 @container card (max-width: toRem(260)) {

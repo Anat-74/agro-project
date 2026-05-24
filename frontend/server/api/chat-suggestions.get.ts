@@ -10,18 +10,18 @@ export default defineEventHandler(async (event) => {
       params: { populate: "*", locale },
     });
 
-    const data = response.data;
+    const data = response.data as AiAssistant;
     return {
       suggestions: data.quickSuggestions || [],
       welcomeTitle: data.welcomeTitle || "",
       welcomeDescription: data.welcomeDescription || "",
-    };
+    } satisfies ChatSuggestionsData;
   } catch (error) {
     console.error("Error fetching suggestions:", error);
     return {
       suggestions: [],
       welcomeTitle: "",
       welcomeDescription: "",
-    };
+    } satisfies ChatSuggestionsData;
   }
 });
