@@ -1,257 +1,268 @@
 <script setup lang="ts">
-import { useChatMessages } from '../../composables/chat-assistant/useChatMessages'
-import { useChatCart } from '../../composables/chat-assistant/useChatCart'
-import { parseAIResponse } from '../../composables/chat-assistant/useChatAssistant'
-import { chatAssistantTranslations } from '../../locales/chat-assistant'
-import ChatProductCard from './ChatProductCard.vue'
-import VoiceInput from './VoiceInput.vue'
-const { currentLocale } = useLocale()
-const chatMessages = useChatMessages()
-const chatCart = useChatCart()
-const t = computed(() => chatAssistantTranslations[currentLocale.value])
+import { useChatMessages } from "../../composables/chat-assistant/useChatMessages";
+import { useChatCart } from "../../composables/chat-assistant/useChatCart";
+import { parseAIResponse } from "../../composables/chat-assistant/useChatAssistant";
+import { chatAssistantTranslations } from "../../locales/chat-assistant";
+import ChatProductCard from "./ChatProductCard.vue";
+import VoiceInput from "./VoiceInput.vue";
+const { currentLocale } = useLocale();
+const chatMessages = useChatMessages();
+const chatCart = useChatCart();
+const t = computed(() => chatAssistantTranslations[currentLocale.value]);
 
 // Реактивные переменные
-const isOpen = ref(false)
-const inputMessage = ref('')
-const isLoading = ref(false)
-const chatBody = ref<HTMLElement | null>(null)
+const isOpen = ref(false);
+const inputMessage = ref("");
+const isLoading = ref(false);
+const chatBody = ref<HTMLElement | null>(null);
 
 // Использование методов из композаблов
-const { 
-  messages, 
-  sessionId, 
-  formatMessage, 
+const {
+  messages,
+  sessionId,
+  formatMessage,
   formatTime,
   saveChatHistory,
   loadChatHistory,
   clearChatHistory,
   addUserMessage,
   addAssistantMessage,
-  addErrorMessage 
-} = chatMessages
+  addErrorMessage,
+} = chatMessages;
 
-const { cartStore, setupCartListeners } = chatCart
+const { cartStore, setupCartListeners } = chatCart;
 
 // Быстрые предложения — загружаются из Strapi
-const quickSuggestions = ref<string[]>([])
+const quickSuggestions = ref<string[]>([]);
 
 // Контекст последнего поиска для связки "найди → добавь в корзину"
-const lastSearchResults = ref<any[]>([])
+const lastSearchResults = ref<any[]>([]);
 
 // Основные функции компонента
 const openChat = () => {
-  isOpen.value = true
-  loadChatHistory()
-}
+  isOpen.value = true;
+  loadChatHistory();
+};
 
 const closeChat = () => {
-  isOpen.value = false
-}
+  isOpen.value = false;
+};
 
 const sendQuickMessage = async (message: string) => {
-  addUserMessage(message)
-  inputMessage.value = ''
-  isLoading.value = true
-  scrollToBottom()
+  addUserMessage(message);
+  inputMessage.value = "";
+  isLoading.value = true;
+  scrollToBottom();
 
   try {
-    const response = await $fetch('/api/chat-assistant', {
-      method: 'POST',
+    const response = await $fetch("/api/chat-assistant", {
+      method: "POST",
       body: JSON.stringify({
         message,
         sessionId: sessionId.value,
         tools: [],
         cartState: cartStore.items.length,
         lastSearchResults: lastSearchResults.value,
-        locale: currentLocale.value
-      })
-    })
+        locale: currentLocale.value,
+      }),
+    });
 
-    const parsedResponse = parseAIResponse(response)
-    processAIResponse(parsedResponse)
+    const parsedResponse = parseAIResponse(response);
+    processAIResponse(parsedResponse);
   } catch (error: any) {
-    console.error('Quick message error:', error)
-    addErrorMessage(t.value.errorQuickMessage)
+    console.error("Quick message error:", error);
+    addErrorMessage(t.value.errorQuickMessage);
   } finally {
-    isLoading.value = false
-    scrollToBottom()
+    isLoading.value = false;
+    scrollToBottom();
   }
-}
-
+};
 
 const sendMessage = async () => {
-  const message = inputMessage.value.trim()
-  if (!message || isLoading.value) return
+  const message = inputMessage.value.trim();
+  if (!message || isLoading.value) return;
 
-  addUserMessage(message)
-  inputMessage.value = ''
-  isLoading.value = true
-  scrollToBottom()
+  addUserMessage(message);
+  inputMessage.value = "";
+  isLoading.value = true;
+  scrollToBottom();
 
   try {
-    const response = await $fetch('/api/chat-assistant', {
-      method: 'POST',
+    const response = await $fetch("/api/chat-assistant", {
+      method: "POST",
       body: JSON.stringify({
         message,
         sessionId: sessionId.value,
         tools: [],
         cartState: cartStore.items.length,
         lastSearchResults: lastSearchResults.value,
-        locale: currentLocale.value
-      })
-    })
+        locale: currentLocale.value,
+      }),
+    });
 
-    const parsedResponse = parseAIResponse(response)
-    processAIResponse(parsedResponse)
+    const parsedResponse = parseAIResponse(response);
+    processAIResponse(parsedResponse);
   } catch (error: any) {
-    console.error('Chat error:', error)
-    addErrorMessage(t.value.errorSendMessage)
+    console.error("Chat error:", error);
+    addErrorMessage(t.value.errorSendMessage);
   } finally {
-    isLoading.value = false
-    scrollToBottom()
+    isLoading.value = false;
+    scrollToBottom();
   }
-}
+};
 
 const processAIResponse = (response: any) => {
   if (!response || !response.success) {
-    handleAIError(response?.error || t.value.errorDefault)
-    return
+    handleAIError(response?.error || t.value.errorDefault);
+    return;
   }
 
   if (response.sessionId) {
-    sessionId.value = response.sessionId
+    sessionId.value = response.sessionId;
   }
 
   if (response.searchResults) {
-    lastSearchResults.value = response.searchResults
+    lastSearchResults.value = response.searchResults;
   }
 
-  addAssistantMessage(response.message, response.clientInstruction)
+  addAssistantMessage(response.message, response.clientInstruction);
 
   if (response.tool_calls && response.tool_calls.length > 0) {
-    console.debug('Tool calls received:', response.tool_calls)
-    processToolCalls(response.tool_calls)
+    console.debug("Tool calls received:", response.tool_calls);
+    processToolCalls(response.tool_calls);
   }
 
   if (response.clientInstruction) {
-    handleClientInstruction(response.clientInstruction)
+    handleClientInstruction(response.clientInstruction);
   }
 
-  saveChatHistory()
-  scrollToBottom()
-}
+  saveChatHistory();
+  scrollToBottom();
+};
 
 const handleAIError = (error: any) => {
-  console.error('AI error:', error)
-  addErrorMessage(`${t.value.errorPrefix}: ${error?.message || error || t.value.errorDefault}`)
-  scrollToBottom()
-}
+  console.error("AI error:", error);
+  addErrorMessage(
+    `${t.value.errorPrefix}: ${error?.message || error || t.value.errorDefault}`,
+  );
+  scrollToBottom();
+};
 
 const processToolCalls = (toolCalls: any[]) => {
-  if (!toolCalls || toolCalls.length === 0) return
-  console.debug('Processing tool calls:', toolCalls)
-  
+  if (!toolCalls || toolCalls.length === 0) return;
+  console.debug("Processing tool calls:", toolCalls);
+
   toolCalls.forEach((toolCall, index) => {
-    const { function: func } = toolCall
-    console.debug(`Tool call ${index + 1}: ${func.name} with args:`, func.arguments)
-  })
-}
+    const { function: func } = toolCall;
+    console.debug(
+      `Tool call ${index + 1}: ${func.name} with args:`,
+      func.arguments,
+    );
+  });
+};
 
 const handleClientInstruction = async (instruction: any) => {
-  if (!instruction) return
-  console.debug('Client instruction received:', instruction)
+  if (!instruction) return;
+  console.debug("Client instruction received:", instruction);
 
-  if (instruction.type === 'show_products') return
+  if (instruction.type === "show_products") return;
 
   const cartActionTypes = [
-    'add_to_cart',
-    'remove_from_cart', 
-    'clear_cart',
-    'show_cart',
-    'create_recipe_cart',
-    'search_products'
-  ]
+    "add_to_cart",
+    "remove_from_cart",
+    "clear_cart",
+    "show_cart",
+    "create_recipe_cart",
+    "search_products",
+  ];
 
   if (cartActionTypes.includes(instruction.type)) {
     try {
-      const result = await chatCart.executeCartAction(instruction)
-      
-      if (result.message && result.message.trim() !== '') {
-        addAssistantMessage(result.message)
-        scrollToBottom()
+      const result = await chatCart.executeCartAction(instruction);
+
+      if (result.message && result.message.trim() !== "") {
+        addAssistantMessage(result.message);
+        scrollToBottom();
       }
-      
     } catch (error) {
-      console.error('Error executing cart action:', error)
-        addErrorMessage(`❌ ${t.value.errorCartAction}: ${error instanceof Error ? error.message : t.value.errorDefault}`)
-      scrollToBottom()
+      console.error("Error executing cart action:", error);
+      addErrorMessage(
+        `❌ ${t.value.errorCartAction}: ${error instanceof Error ? error.message : t.value.errorDefault}`,
+      );
+      scrollToBottom();
     }
-    return
+    return;
   }
 
   switch (instruction.type) {
-    case 'update_cart':
-      break
-    case 'tool_calls':
+    case "update_cart":
+      break;
+    case "tool_calls":
       if (instruction.calls && Array.isArray(instruction.calls)) {
-        processToolCalls(instruction.calls)
+        processToolCalls(instruction.calls);
       }
-      break
+      break;
     default:
-      console.warn('Unknown client instruction type:', instruction.type)
+      console.warn("Unknown client instruction type:", instruction.type);
   }
-}
+};
 
 const scrollToBottom = () => {
   nextTick(() => {
     if (chatBody.value) {
-      chatBody.value.scrollTop = chatBody.value.scrollHeight
+      chatBody.value.scrollTop = chatBody.value.scrollHeight;
     }
-  })
-}
+  });
+};
 
 const onVoiceResult = (text: string) => {
-  inputMessage.value = text
-  nextTick(() => sendMessage())
-}
+  inputMessage.value = text;
+  nextTick(() => sendMessage());
+};
 
 const handleKeyDown = (e: KeyboardEvent) => {
-  if (e.key === 'Escape' && isOpen.value) {
-    closeChat()
+  if (e.key === "Escape" && isOpen.value) {
+    closeChat();
   }
-}
+};
 
 // Функция getQuickSuggestionInstruction удалена - быстрые предложения теперь используют основной AI pipeline
 
 const loadQuickSuggestions = async () => {
   try {
-    const data = await $fetch<ChatSuggestionsData>(`/api/chat-suggestions?locale=${currentLocale.value}`)
-    quickSuggestions.value = data.suggestions.map(s => s.text)
+    const data = await $fetch<ChatSuggestionsData>(
+      `/api/chat-suggestions?locale=${currentLocale.value}`,
+    );
+    quickSuggestions.value = data.suggestions.map((s) => s.text);
   } catch {
     quickSuggestions.value = [
-      'Найди ягоды для варенья',
-      'Что есть со скидкой?',
-      'Подбери фрукты к чаю',
-      'Покажи новинки',
-      'Что посоветуешь?'
-    ]
+      "Найди ягоды для варенья",
+      "Что есть со скидкой?",
+      "Подбери фрукты к чаю",
+      "Покажи новинки",
+      "Что посоветуешь?",
+    ];
   }
-}
+};
 
 watch(currentLocale, () => {
-  loadQuickSuggestions()
-})
+  loadQuickSuggestions();
+});
 
 onMounted(() => {
-  loadQuickSuggestions()
-  window.addEventListener('keydown', handleKeyDown)
-  const cleanupCartListeners = setupCartListeners(messages, saveChatHistory, scrollToBottom)
-  
+  loadQuickSuggestions();
+  window.addEventListener("keydown", handleKeyDown);
+  const cleanupCartListeners = setupCartListeners(
+    messages,
+    saveChatHistory,
+    scrollToBottom,
+  );
+
   onUnmounted(() => {
-    window.removeEventListener('keydown', handleKeyDown)
-    cleanupCartListeners()
-  })
-})
+    window.removeEventListener("keydown", handleKeyDown);
+    cleanupCartListeners();
+  });
+});
 </script>
 
 <template>
@@ -262,7 +273,11 @@ onMounted(() => {
       @click="openChat"
       :aria-label="t.chatButtonAria"
     >
-      <svg class="chat-assistant__toggle-icon" viewBox="0 0 24 24" fill="currentColor">
+      <svg
+        class="chat-assistant__toggle-icon"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+      >
         <path
           d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"
         />
@@ -310,7 +325,9 @@ onMounted(() => {
             <Icon name="material-symbols:chat" />
           </div>
           <h4 class="chat-assistant__empty-title">{{ t.emptyTitle }}</h4>
-          <p class="chat-assistant__empty-description">{{ t.emptyDescription }}</p>
+          <p class="chat-assistant__empty-description">
+            {{ t.emptyDescription }}
+          </p>
           <div class="chat-assistant__suggestions">
             <UButton
               v-for="suggestion in quickSuggestions"
@@ -327,10 +344,16 @@ onMounted(() => {
           <div
             v-for="(message, index) in messages"
             :key="index"
-            :class="['message', message.role === 'user' ? 'message--user' : 'message--assistant']"
+            :class="[
+              'message',
+              message.role === 'user' ? 'message--user' : 'message--assistant',
+            ]"
           >
             <div class="message__avatar">
-              <Icon v-if="message.role === 'assistant'" name="material-symbols:chat" />
+              <Icon
+                v-if="message.role === 'assistant'"
+                name="material-symbols:chat"
+              />
               <Icon v-else name="material-symbols:person" />
             </div>
             <div class="message__content">
