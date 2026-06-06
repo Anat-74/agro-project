@@ -18,6 +18,7 @@ export default defineNuxtConfig({
     "@nuxtjs/mcp-toolkit",
   ],
   nitro: {
+    preset: "netlify",
     storage: {
       // Кэширование оптимизированных изображений
       // "cache:nuxt-image": {
