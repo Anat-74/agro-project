@@ -3,9 +3,6 @@ import { buttonTranslations } from "~/locales/button";
 import { tooltipTranslations } from "~/locales/tooltip";
 import { linkTranslations } from "~/locales/link";
 const { currentLocale } = useLocale();
-const linkT = computed(() => linkTranslations[currentLocale.value])
-const tooltipT = computed(() => tooltipTranslations[currentLocale.value])
-const buttonT = computed(() => buttonTranslations[currentLocale.value])
 const { isInCart } = useIsInCart();
 const cartStore = useCartStore();
 const route = useRoute();
@@ -101,18 +98,91 @@ const characteristics = computed(() => {
           ]"
           :to="getProductLink(product)"
           ><span>{{
-            linkT.featuredProductLabel
-        <UTooltip :text="tooltipT.byRuble">
-              ? buttonT.ariaLabelAdded
-              : buttonT.label
-            linkT.featuredProductLabel
+            linkTranslations[currentLocale].featuredProductLabel
           }}</span>
         </NuxtLink>
       </div>
       <div class="product-card__bottom-items">
-        <UTooltip :text="tooltipT.byRuble">
-              ? buttonT.ariaLabelAdded
-              : buttonT.label
+        <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
+          <Icon name="my-icon:icon-by-regular" />
+        </UTooltip>
+        <span
+          :class="[
+            'product-card__price',
+            { 'product-card__price_discount': product.isDiscount },
+          ]"
+        >
+          {{ formatPrice(product.price) }}
+        </span>
+        <UButton
+          @click="handleAddToCart(product)"
+          variant="add"
+          :is-in-cart="isInCart(product.documentId)"
+          :aria-label="
+            isInCart(product.documentId)
+              ? buttonTranslations[currentLocale].ariaLabelAdded
+              : buttonTranslations[currentLocale].label
+          "
+        />
+      </div>
+    </div>
+    <div
+      :class="[
+        'product-card__back',
+        { 'product-card__back_back': rotateActive },
+      ]"
+    >
+      <div class="product-card__top-items">
+        <Icon
+          v-if="product.isDiscount"
+          class="product-card__discount"
+          name="mdi:discount"
+        />
+        <ProductStatus :product="product" class="product-card__in-stock" />
+        <UButton
+          class="product-card__details"
+          variant="product-details"
+          icon="mdi:rotate-3d"
+          @click="toggleActive"
+        />
+      </div>
+      <div class="product-card__content">
+        <p class="product-card__description">
+          <span class="product-card__name">{{ product.name }}</span>
+          {{ product.description }}
+        </p>
+        <ProductCharacteristics
+          class="product-card__characteristics"
+          :specs="characteristics"
+        />
+        <NuxtLink
+          class="product-card__link"
+          :to="`/${currentLocale}/${categorySlug}/products/${product.slug}`"
+          ><span>{{
+            linkTranslations[currentLocale].featuredProductLabel
+          }}</span>
+        </NuxtLink>
+      </div>
+      <div class="product-card__bottom-items">
+        <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
+          <Icon name="my-icon:icon-by-regular" />
+        </UTooltip>
+        <span
+          :class="[
+            'product-card__price',
+            { 'product-card__price_discount': product?.isDiscount },
+          ]"
+        >
+          {{ formatPrice(product.price) }}
+        </span>
+        <UButton
+          @click="handleAddToCart(product)"
+          variant="add"
+          :is-in-cart="isInCart(product.documentId)"
+          :aria-label="
+            isInCart(product.documentId)
+              ? buttonTranslations[currentLocale].ariaLabelAdded
+              : buttonTranslations[currentLocale].label
           "
         />
       </div>

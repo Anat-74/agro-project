@@ -82,12 +82,19 @@ onMounted(() => {
           @click="cartStore.updateQuantity(item.product.documentId, item.quantity - 1)"
           :disabled="item.quantity <= 1"
           variant="remove-quantity-prod"
-          :aria-label="
-            buttonT.ariaLabelReduceQuantity
-            buttonT.ariaLabelIncreaseQuantity
-          buttonT.ariaLabelRemoveItemFromCart
-        "
-      />
+          :aria-label="buttonT.ariaLabelReduceQuantity"
+        />
+        <UButton
+          @click="cartStore.updateQuantity(item.product.documentId, item.quantity + 1)"
+          variant="add-quantity-prod"
+          :aria-label="buttonT.ariaLabelIncreaseQuantity"
+        />
+        <UButton
+          @click="cartStore.removeFromCart(item.product.documentId)"
+          icon="material-symbols:delete-outline-rounded"
+          :aria-label="buttonT.ariaLabelRemoveItemFromCart"
+        />
+      </div>
     </li>
   </ul>
 </template>

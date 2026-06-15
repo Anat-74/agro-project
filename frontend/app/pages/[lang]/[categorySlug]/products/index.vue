@@ -117,12 +117,36 @@ watchEffect(() => {
           @click="goBack"
           icon="material-symbols:arrow-back"
           :aria-label="buttonT.ariaLabelGoBack"
+        />
+        <UButton
+          @click="goForward"
+          icon="material-symbols:arrow-forward"
           :aria-label="buttonT.ariaLabelGoForward"
+        />
+        <div class="products-section__select-wrapper select-wrapper">
+          <label class="visually-hidden" for="sort-product">
             {{ productFilterT.labelSelect }}
+          </label>
+          <select
+            id="sort-product"
+            class="products-section__select select"
+            v-model="sortOption"
+          >
+            <option value="name:asc">
               {{ productFilterT.optionName }}
+            </option>
+            <option value="price:asc">
               {{ productFilterT.optionPrice }}
+            </option>
+            <option value="price:desc">
               {{ productFilterT.optionPriceDesc }}
-          visuallyHiddenT.sectionSubcategorySlugList
+            </option>
+          </select>
+        </div>
+      </div>
+      <h2 class="visually-hidden">
+        {{ visuallyHiddenT.sectionSubcategorySlugList }}
+      </h2>
         {{ productFilterT.noResults }}
       </div>
       <Pagination
@@ -132,7 +156,6 @@ watchEffect(() => {
         :pageCount="pageCount"
         :routeName="route.name?.toString() || ''"
       />
-    </div>
   </section>
 
   <span v-if="error" class="error">

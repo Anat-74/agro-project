@@ -181,19 +181,36 @@ const handleAddToCart = (product: Product) => {
         @click="goBack"
         icon="material-symbols:arrow-back"
         :aria-label="buttonT.ariaLabelGoBack"
+      />
+      <UButton
+        @click="goForward"
+        icon="material-symbols:arrow-forward"
         :aria-label="buttonT.ariaLabelGoForward"
+      />
+      <div class="subcategory-products__select-wrapper select-wrapper">
+        <label class="visually-hidden" for="sort-subcategory-product">
           {{ productFilterT.labelSelect }}
+        </label>
+        <select
+          id="sort-subcategory-product"
+          class="subcategory-products__select select"
+          v-model="sortOption"
+        >
+          <option value="name:asc">
             {{ productFilterT.optionName }}
+          </option>
+          <option value="price:asc">
             {{ productFilterT.optionPrice }}
+          </option>
+          <option value="price:desc">
             {{ productFilterT.optionPriceDesc }}
+          </option>
+        </select>
+      </div>
+    </div>
+    <h2 class="visually-hidden">
       {{ visuallyHiddenT.sectionSubcategorySlugList }}
-              ? buttonT.ariaLabelAdded
-              : buttonT.label
-          "
-        />
-        </div>
-      </li>
-    </ul>
+    </h2>
 
     <Pagination
       v-if="pageCount > 1"

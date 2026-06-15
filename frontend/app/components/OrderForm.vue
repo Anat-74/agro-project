@@ -37,12 +37,22 @@ const submitOrder = async () => {
 <template>
    <div 
    :class="['order-form', {'order-form_disabled': isSubmitting || cartStore.totalItems === 0}]">
-     <h3 
-     class="order-form__title">{{ t.title }}</h3>
-         {{ t.email }}
-         {{ t.phone }}*
-           >{{ t.checkbox }}
-         >{{ isSubmitting ? t.submitting : t.checkout }}</UButton>
+      <h3 
+      class="order-form__title">{{ t.title }}</h3>
+      <label class="order-form__label">{{ t.email }}</label>
+      <input class="order-form__input" v-model="form.email" type="text" />
+      <label class="order-form__label">{{ t.phone }}*</label>
+      <input class="order-form__input" v-model="form.phone" type="tel" />
+      <label class="order-form__checkbox-label">
+        <input class="order-form__checkbox" type="checkbox" v-model="form.agree" />
+        <span class="order-form__conditions">{{ t.checkbox }}</span>
+      </label>
+      <div class="order-form__submit-wrapper">
+        <UButton
+          class="order-form__submit"
+          :disabled="isSubmitting"
+          @click="submitOrder"
+        >{{ isSubmitting ? t.submitting : t.checkout }}</UButton>
       <b>{{ t.total }}</b>
              <strong
                aria-live="polite"
