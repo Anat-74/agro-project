@@ -32,10 +32,9 @@ const {
     populate: {
       image: {
         fields: ["id", "alternativeText", "url"],
-        image: { fields: ["alternativeText", "url"] },
       },
       mainImage: { fields: ["alternativeText", "url"] },
-      seo: { fields: ["id", "title", "description"] },
+      seo: { fields: ["metaTitle", "metaDescription", "structuredData"] },
       seoImage: { fields: ["alternativeText", "url"] },
     },
   } as any);
