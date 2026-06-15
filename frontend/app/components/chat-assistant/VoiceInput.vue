@@ -76,10 +76,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <UButton
+  <ChatAssistantButton
     v-if="micVisible"
     variant="voice"
-    :class="{ 'btn_voice--listening': isListening }"
+    :isListening="isListening"
     :icon="isListening ? 'material-symbols:mic-off' : 'material-symbols:mic'"
     :isDisabled="disabled"
     :aria-label="isListening ? 'Остановить запись' : 'Голосовой ввод'"

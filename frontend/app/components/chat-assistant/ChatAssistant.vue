@@ -298,7 +298,7 @@ onMounted(() => {
             </div>
           </div>
           <div class="chat-assistant__actions">
-            <UButton
+            <ChatAssistantButton
               v-if="messages.length > 0"
               variant="close"
               :aria-label="t.clearHistory"
@@ -306,20 +306,20 @@ onMounted(() => {
               @click="clearChatHistory"
             >
               <Icon name="material-symbols:delete-outline-rounded" />
-            </UButton>
-            <UButton
+            </ChatAssistantButton>
+            <ChatAssistantButton
               variant="close"
               :aria-label="t.closeChat"
               :title="t.closeChatTitle"
               @click="closeChat"
             >
               <Icon name="material-symbols-light:close" />
-            </UButton>
+            </ChatAssistantButton>
           </div>
         </div>
       </header>
 
-      <main class="chat-assistant__body" ref="chatBody">
+      <div class="chat-assistant__body" ref="chatBody">
         <div v-if="messages.length === 0" class="chat-assistant__empty">
           <div class="chat-assistant__empty-icon">
             <Icon name="material-symbols:chat" />
@@ -329,14 +329,14 @@ onMounted(() => {
             {{ t.emptyDescription }}
           </p>
           <div class="chat-assistant__suggestions">
-            <UButton
+            <ChatAssistantButton
               v-for="suggestion in quickSuggestions"
               :key="suggestion"
               variant="suggestion"
               @click="sendQuickMessage(suggestion)"
             >
               {{ suggestion }}
-            </UButton>
+            </ChatAssistantButton>
           </div>
         </div>
 
@@ -392,7 +392,7 @@ onMounted(() => {
             </div>
           </div>
         </div>
-      </main>
+      </div>
 
       <footer class="chat-assistant__footer">
         <form @submit.prevent="sendMessage" class="chat-assistant__form">
@@ -407,10 +407,9 @@ onMounted(() => {
             :placeholder="t.placeholder"
             :disabled="isLoading"
           />
-          <UButton
+          <ChatAssistantButton
             type="submit"
             variant="send"
-            icon="material-symbols:send"
             :isDisabled="!inputMessage.trim() || isLoading"
             :aria-label="t.sendButton"
           />
