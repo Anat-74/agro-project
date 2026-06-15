@@ -346,7 +346,7 @@ onMounted(() => {
             :key="index"
             :class="[
               'message',
-              message.role === 'user' ? 'message--user' : 'message--assistant',
+              message.role === 'user' ? 'message_user' : 'message_assistant',
             ]"
           >
             <div class="message__avatar">
@@ -379,7 +379,7 @@ onMounted(() => {
             </div>
           </div>
 
-          <div v-if="isLoading" class="message message--assistant">
+          <div v-if="isLoading" class="message message_assistant">
             <div class="message__avatar">
               <Icon name="material-symbols:chat" />
             </div>

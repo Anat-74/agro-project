@@ -229,7 +229,7 @@ defineEmits<Emits>();
       opacity: .7;
     }
 
-    &--is-open {
+    &_is-open {
       @media (max-width:$mobile){
          width: 100%;
          padding-inline: 0;
@@ -441,7 +441,7 @@ defineEmits<Emits>();
        }
    }
 
-   &--is-added {
+   &_is-added {
     opacity: .8;
     border-color: var(--success-color);
     background-color: var(--success-color);
