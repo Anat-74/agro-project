@@ -1,5 +1,5 @@
-@use "./functions" as *;
-@use "./settings" as c;
+@use "../foundation/functions" as *;
+@use "../foundation/settings" as c;
 
 // .backdrop-visible {
 //   background-color: var(--back-drop-main);

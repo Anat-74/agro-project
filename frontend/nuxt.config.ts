@@ -220,15 +220,11 @@ export default defineNuxtConfig({
     css: {
       preprocessorOptions: {
         scss: {
-          additionalData: `
-             @use "@/assets/scss/base/_settings.scss" as *;
-             @use "@/assets/scss/base/_fonts.scss" as *;
-             @use "@/assets/scss/base/_functions.scss" as *;
-             @use "@/assets/scss/base/_globals.scss" as *;
-             @use "@/assets/scss/base/_utils.scss" as *;
-             @use "@/assets/scss/base/_mixins.scss" as *;
-             @use "@/assets/scss/base/_normalize.scss" as *;
-             `,
+           additionalData: `
+              @use "@/assets/scss/foundation/_settings.scss" as *;
+              @use "@/assets/scss/foundation/_functions.scss" as *;
+              @use "@/assets/scss/foundation/_mixins.scss" as *;
+              `,
         },
       },
       preprocessorMaxWorkers: true,

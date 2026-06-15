@@ -15,6 +15,11 @@ $containerPaddingX: 30;
 //? Ширина срабатывания первого брейкпоинта
 $containerWidth: $maxWidthContainer + $containerPaddingX;
 
+//! Font families
+$font-family: "Roboto";
+$font-family-cursive: "Yellowtail";
+$font-family-content: "Open Sans";
+
 //* Брейк-поинты
 $pc: f.toEm($containerWidth); // ПК, ноутбуки
 $tablet: f.toEm(1023.98); // Планшеты

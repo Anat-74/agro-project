@@ -1,3 +1,16 @@
+@use "./base/_normalize.scss";
+@use "./base/_fonts.scss";
+@use "./base/_globals.scss";
+@use "./base/_utils.scss";
+
+// ===================================================================
+//! GRADIENTS FOR CHAT ASSISTANT
+// ===================================================================
+:root {
+  --gradient-chat-primary: linear-gradient(135deg, #4caf50, #2e7d32);
+  --gradient-chat-toggle: linear-gradient(135deg, var(--success-color), #2e7d32);
+}
+
 // ===================================================================
 //! GLOBAL CSS VARIABLES FOR COLOR THEMES WITH TRANSPARENCY SUPPORT
 // ===================================================================
