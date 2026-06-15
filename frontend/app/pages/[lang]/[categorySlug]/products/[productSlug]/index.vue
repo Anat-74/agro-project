@@ -39,7 +39,7 @@ const { data: product, error, pending } = useAsyncData
           fields: ["id", "alternativeText", "url"]
         }
       }
-    })
+    } as any)
 
     if (!response.data || response.data.length === 0) {
        throw createError({

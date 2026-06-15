@@ -46,7 +46,7 @@ const { data: product } = useAsyncData(
           },
         },
       },
-    });
+    } as any);
 
     if (!response.data || response.data.length === 0) {
       throw createError({

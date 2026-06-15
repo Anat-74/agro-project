@@ -32,15 +32,13 @@ const {
     populate: {
       image: {
         fields: ["id", "alternativeText", "url"],
+        image: { fields: ["alternativeText", "url"] },
       },
-      seo: {
-        fields: ["metaTitle", "metaDescription", "structuredData"],
-      },
-      seoImage: {
-        fields: ["id", "alternativeText", "url"],
-      },
+      mainImage: { fields: ["alternativeText", "url"] },
+      seo: { fields: ["id", "title", "description"] },
+      seoImage: { fields: ["alternativeText", "url"] },
     },
-  });
+  } as any);
 
   if (!response.data || response.data.length === 0) {
     throw createError({
