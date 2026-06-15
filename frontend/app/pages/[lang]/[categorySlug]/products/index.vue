@@ -29,7 +29,7 @@ const { data, pending, error, refresh } = useAsyncData(
           locale: currentLocale.value,
         },
         fields: ["id", "name"],
-      }),
+      } as any),
 
       // Запрос продуктов с фильтрацией по slug категории
       find("products", {
@@ -47,7 +47,7 @@ const { data, pending, error, refresh } = useAsyncData(
           page: page.value,
           pageSize: pageSize,
         },
-      }),
+      } as any),
     ]);
 
     // Обработка ошибок категории
@@ -63,7 +63,7 @@ const { data, pending, error, refresh } = useAsyncData(
       products: productsRes as ProductsResponse,
     };
   },
-);
+ );
 
 // Разделение данных
 const category = computed(() => data.value?.category);

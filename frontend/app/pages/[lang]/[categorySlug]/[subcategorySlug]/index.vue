@@ -46,7 +46,7 @@ const { data, pending, error, refresh } = useAsyncData(
             fields: ["metaTitle", "metaDescription", "structuredData"],
           },
         },
-      }),
+      } as any),
 
       // Запрос продуктов с фильтрацией по slug
       find("products", {
@@ -67,7 +67,7 @@ const { data, pending, error, refresh } = useAsyncData(
           page: page.value,
           pageSize: pageSize,
         },
-      }),
+      } as any),
     ]);
 
     // Обработка ошибок подкатегории
