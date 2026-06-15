@@ -286,7 +286,7 @@ onMounted(() => {
     </button>
 
     <div v-if="isOpen" class="chat-assistant__modal">
-      <header class="chat-assistant__header">
+      <header class="chat-assistant__header" aria-label="chat assistant header">
         <div class="chat-assistant__header-content">
           <div class="chat-assistant__info">
             <div class="chat-assistant__avatar">
@@ -394,7 +394,7 @@ onMounted(() => {
         </div>
       </div>
 
-      <footer class="chat-assistant__footer">
+      <footer class="chat-assistant__footer" aria-label="chat assistant footer">
         <form @submit.prevent="sendMessage" class="chat-assistant__form">
           <VoiceInput
             :disabled="isLoading"
