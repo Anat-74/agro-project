@@ -24,11 +24,29 @@ const { data, pending, error, refresh } = useAsyncData(
     const [categoryRes, productsRes] = await Promise.all([
       // Запрос категории
       find("categories", {
+        locale: currentLocale.value,
         filters: {
           slug: { $eq: categorySlug },
-          locale: currentLocale.value,
         },
         fields: ["id", "name"],
+      } as any),
+
+      // Запрос продуктов с фильтрацией по slug категории
+      find("products", {
+        locale: currentLocale.value,
+        filters: {
+          "category.slug": { $eq: categorySlug },
+        },
+        populate: {
+          image: {
+            fields: ["alternativeText", "url"],
+          },
+        },
+        sort: sortOption.value,
+        pagination: {
+          page: page.value,
+          pageSize: pageSize,
+        },
       } as any),
 
       // Запрос продуктов с фильтрацией по slug категории

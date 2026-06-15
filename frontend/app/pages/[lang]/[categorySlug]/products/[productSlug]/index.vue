@@ -24,9 +24,9 @@ const { data: product, error, pending } = useAsyncData
    (`product-${currentLocale.value}-${productSlug}`,
    async () => {
     const response = await find<Product>('products', {
+       locale: currentLocale.value,
        filters: {
           slug: { $eq: productSlug },
-          locale: currentLocale.value
        },
        populate: {
         image: {

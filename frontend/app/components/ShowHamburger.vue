@@ -36,9 +36,7 @@ const {
   refresh: refreshCategory,
 } = useAsyncData(`category-dialog-${currentLocale.value}`, async () => {
   const response = await find<Category>("categories", {
-    filters: {
-      locale: currentLocale.value,
-    },
+    locale: currentLocale.value,
     populate: {
       image: {
         fields: ["alternativeText", "url"],
@@ -72,8 +70,8 @@ const {
   refresh: refreshProduct,
 } = useAsyncData(`product-dialog-${currentLocale.value}`, async () => {
   const response = await find<Product>("products", {
+    locale: currentLocale.value,
     filters: {
-      locale: currentLocale.value,
       isDiscount: true,
     },
     fields: ["id", "name", "isDiscount", "slug"],
@@ -170,19 +168,19 @@ watch(currentLocale, () => {
 
           <div class="accordion__content">
             <ul class="accordion__product-list">
-              <!-- <li
+              <li
                 v-for="sub in cat.subcategories"
                  :key="sub.documentId"
                 class="accordion__product-item"
               >
                 <NuxtLink
                   class="accordion__product-link"
-                  @click="close()"
+                  @click="close?.()"
                   :to="`/${currentLocale}/${cat.slug}/${sub.slug}`"
                   >
                   {{ sub.name }}
                 </NuxtLink>
-              </li> -->
+              </li>
               <!-- Отображение продуктов, принадлежащих напрямую категории -->
               <li
                 v-for="prod in cat.products"

@@ -21,9 +21,9 @@ const { data, pending, error, refresh } = useAsyncData(
     // Параллельная загрузка категории, подкатегорий и продуктов
     const [categoryRes, subcategoriesRes, productsRes] = await Promise.all([
       find("categories", {
+        locale: currentLocale.value,
         filters: {
           slug: { $eq: categorySlug },
-          locale: currentLocale.value,
         },
         fields: ["id", "name", "seoTitle", "seoDescription"],
         populate: {
@@ -39,6 +39,32 @@ const { data, pending, error, refresh } = useAsyncData(
           products: {
             fields: ["id"],
           },
+        },
+      } as any),
+      find("subcategories", {
+        locale: currentLocale.value,
+        filters: {
+          "category.slug": { $eq: categorySlug },
+        },
+        populate: {
+          image: {
+            fields: ["alternativeText", "url"],
+          },
+        },
+        pagination: {
+          page: page.value,
+          pageSize: pageSize,
+        },
+      } as any),
+      find("products", {
+        locale: currentLocale.value,
+        filters: {
+          category: { slug: { $eq: categorySlug } },
+        },
+        fields: ["id"],
+        pagination: {
+          page: page.value,
+          pageSize: pageSize,
         },
       } as any),
       find("subcategories", {

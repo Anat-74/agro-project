@@ -26,8 +26,8 @@ const { data: product } = useAsyncData(
   `product-discount-${currentLocale.value}`,
   async () => {
     const response = await find<Product>("products", {
+      locale: currentLocale.value,
       filters: {
-        locale: currentLocale.value,
         isDiscount: true,
       },
       pagination: {
