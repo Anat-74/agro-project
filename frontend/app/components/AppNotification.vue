@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { buttonTranslations } from '~/locales/button'
 const { currentLocale } = useLocale()
+const buttonT = computed(() => buttonTranslations[currentLocale.value])
 
 defineProps({
   type: {
@@ -28,7 +29,7 @@ const close = () => {
       <UButton class="notification__close"
       @click="close"
       icon="mdi:close"
-      :aria-label="buttonTranslations[currentLocale].ariaLabelClosedSuccess"
+      :aria-label="buttonT.ariaLabelClosedSuccess"
       />
     </div>
   </Transition>

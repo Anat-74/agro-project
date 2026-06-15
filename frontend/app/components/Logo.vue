@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { currentLocale } = useLocale();
+const t = computed(() => logoTranslations[currentLocale.value])
 import { logoTranslations } from "~/locales/logo";
 
 interface Props {
@@ -18,7 +19,7 @@ const props = withDefaults(defineProps<Props>(), {
   <NuxtLink
     class="logo-link"
     :to="`/${currentLocale}`"
-    :aria-label="logoTranslations[currentLocale].label"
+    :aria-label="t.label"
   >
     <UImage
       class="logo-link__image"
@@ -27,7 +28,7 @@ const props = withDefaults(defineProps<Props>(), {
       :smooth-load="false"
       :width="props.width"
       :height="props.height"
-      :alt="logoTranslations[currentLocale].alt"
+      :alt="t.alt"
       type="icon"
     />
   </NuxtLink>

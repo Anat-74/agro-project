@@ -3,6 +3,7 @@ import { buttonTranslations } from '~/locales/button'
 
 const route = useRoute();
 const { currentLocale } = useLocale()
+const buttonT = computed(() => buttonTranslations[currentLocale.value])
 
 interface PropsPagination {
   page: number;
@@ -44,7 +45,7 @@ const getPageLink = (newPage: number) => {
         v-if="pageNum !== page"
         :to="getPageLink(pageNum)"
         class="pagination__number"
-        :aria-label="buttonTranslations[currentLocale].ariaLabelPagination"
+        :aria-label="buttonT.ariaLabelPagination"
       >
         {{ pageNum }}
       </NuxtLink>

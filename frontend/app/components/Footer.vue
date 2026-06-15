@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { baseFooterTranslations } from "~/locales/baseFooter";
 
-const { currentLocale } = useLocale();
+const { currentLocale } = useLocale()
+const t = computed(() => baseFooterTranslations[currentLocale.value]);
 const config = useRuntimeConfig();
 
 interface Props {
@@ -28,7 +29,7 @@ defineProps<Props>();
       <Socials class="base-footer__socials" :socials="socials" />
       <div class="base-footer__company company">
         <h2 class="company__title">
-          {{ baseFooterTranslations[currentLocale].titleCompany }}
+          {{ t.titleCompany }}
         </h2>
         <strong v-if="footer.companyName" class="company__name">{{
           footer.companyName
@@ -70,7 +71,7 @@ defineProps<Props>();
       <NavigationFooter class="base-footer__navigation" />
       <div class="base-footer__legal legal">
         <h2 class="legal__title">
-          {{ baseFooterTranslations[currentLocale].titleLegal }}
+          {{ t.titleLegal }}
         </h2>
         <strong v-if="legal.bankName" class="legal__name">{{
           legal.bankName

@@ -35,6 +35,7 @@ export interface HeroSlide {
 
 export interface HeroGrid {
   id: number;
+  documentId?: string;
   icons?: {
     id: number;
     url: string;

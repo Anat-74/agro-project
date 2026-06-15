@@ -4,6 +4,7 @@ import { baseNavigationTranslations } from "~/locales/baseNavigation";
 const { isContacts, visibleIsContacts, hideContacts } =
   inject<VisibilityState>("visible")!;
 const { currentLocale } = useLocale();
+const t = computed(() => baseNavigationTranslations[currentLocale.value])
 
 defineProps<{
   email: Email[];
@@ -16,23 +17,23 @@ defineProps<{
     <ul class="nav__list">
       <li class="nav__item">
         <NuxtLink :to="`/${currentLocale}`" class="nav__link">
-          {{ baseNavigationTranslations[currentLocale].home }}
+          {{ t.home }}
         </NuxtLink>
       </li>
       <li class="nav__item">
         <NuxtLink class="nav__link" :to="`/${currentLocale}/about`">
-          {{ baseNavigationTranslations[currentLocale].about }}
+          {{ t.about }}
         </NuxtLink>
       </li>
       <li class="nav__item">
         <NuxtLink class="nav__link" :to="`/${currentLocale}/services`">
-          {{ baseNavigationTranslations[currentLocale].services }}
+          {{ t.services }}
         </NuxtLink>
       </li>
 
       <li class="nav__item">
         <NuxtLink class="nav__link" :to="`/${currentLocale}/blog`">
-          {{ baseNavigationTranslations[currentLocale].blog }}
+          {{ t.blog }}
         </NuxtLink>
       </li>
 
@@ -44,7 +45,7 @@ defineProps<{
         <NuxtLink
           :class="['nav__link', { 'nav__link_is-contacts': isContacts }]"
           :to="`/${currentLocale}/contacts`"
-          >{{ baseNavigationTranslations[currentLocale].contacts }}
+          >{{ t.contacts }}
           <Icon name="mingcute:down-line" />
         </NuxtLink>
         <div v-if="isContacts" class="nav__contacts contacts">

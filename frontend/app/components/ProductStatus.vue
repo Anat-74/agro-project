@@ -2,6 +2,7 @@
 import { stockStatusTranslations } from '~/locales/stockStatus';
 
 const { currentLocale } = useLocale()
+const t = computed(() => stockStatusTranslations[currentLocale.value])
 const { product } = defineProps<{
   product: {
     isAvailable?: boolean
@@ -17,7 +18,7 @@ const { product } = defineProps<{
       'to-order': !product.isAvailable
     }"
   >
-    {{ product.isAvailable ? stockStatusTranslations[currentLocale].inStock : stockStatusTranslations[currentLocale].toOrder }}
+    {{ product.isAvailable ? t.inStock : t.toOrder }}
   </span>
 </template>
 

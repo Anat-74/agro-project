@@ -36,7 +36,7 @@ useSeoMeta({
 </template>
 
 <style lang="scss" scoped>
-@use "@/assets/scss/base/mixins" as m;
+@use "@/assets/scss/foundation/mixins" as m;
 .contacts {
   height: 50dvh;
   padding-block-start: toEm(32);

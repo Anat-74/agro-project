@@ -2,6 +2,7 @@ import type { StrapiImage } from "./image";
 
 export interface SocialLink {
   id: string; // В Strapi v5 это documentId
+  documentId?: string;
   label: string;
   href: string;
   isSocial: boolean | null;
@@ -10,18 +11,21 @@ export interface SocialLink {
 
 export interface Email {
   id: string; // В Strapi v5 это documentId
+  documentId?: string;
   email: string;
   isEmail: boolean | null;
 }
 
 export interface Phone {
   id: string; // В Strapi v5 это documentId
+  documentId?: string;
   phoneNumber: string;
   isMobile: boolean | null;
 }
 
 export interface FooterData {
   id: string; // В Strapi v5 это documentId
+  documentId?: string;
   companyName: string;
   copyright: string;
   legalAdress: string;
@@ -32,6 +36,7 @@ export interface FooterData {
 
 export interface LegalInfo {
   id: string; // В Strapi v5 это documentId
+  documentId?: string;
   accountNumber: string;
   bankAddress: string;
   bankName: string;

@@ -4,6 +4,11 @@ import { discountProductTranslations } from "~/locales/discountProduct";
 import { buttonTranslations } from "~/locales/button";
 import { showHamburgerTranslations } from "~/locales/showHamburger";
 
+const visuallyHiddenT = computed(() => visuallyHiddenTranslations[currentLocale.value])
+const discountT = computed(() => discountProductTranslations[currentLocale.value])
+const buttonT = computed(() => buttonTranslations[currentLocale.value])
+const showHamburgerT = computed(() => showHamburgerTranslations[currentLocale.value])
+
 interface Props {
   footer: FooterData;
   socials: SocialLink[];
@@ -50,7 +55,7 @@ const {
         },
       },
     },
-  });
+  } as any);
 
   if (!response.data || response.data.length === 0) {
     throw createError({
@@ -88,7 +93,7 @@ const {
         },
       },
     },
-  });
+  } as any);
 
   if (!response.data || response.data.length === 0) {
     throw createError({
@@ -117,8 +122,8 @@ watch(currentLocale, () => {
       variant="hamburger"
       :aria-label="
         isOpen
-          ? buttonTranslations[currentLocale].ariaLabelDialogClosed
-          : buttonTranslations[currentLocale].ariaLabelDialogOpen
+           ? buttonT.ariaLabelDialogClosed
+           : buttonT.ariaLabelDialogOpen
       "
     />
     <span
@@ -126,13 +131,13 @@ watch(currentLocale, () => {
         'hamburger-menu__categories',
         { 'hamburger-menu__categories_is-open': isOpen },
       ]"
-      >{{ showHamburgerTranslations[currentLocale].title }}
+      >{{ showHamburgerT.title }}
     </span>
   </div>
   <dialog class="dialog-hamburger" ref="dialog-hamburger" id="dialogHamburger">
     <Loader v-if="pending" />
     <h2 class="visually-hidden">
-      {{ visuallyHiddenTranslations[currentLocale].showModalMenuTitle }}
+      {{ visuallyHiddenT.showModalMenuTitle }}
     </h2>
     <div class="dialog-hamburger__items">
       <div class="dialog-hamburger__top visible-mobile">
@@ -213,7 +218,7 @@ watch(currentLocale, () => {
               name="mdi:discount-outline"
             />
             <h4 class="accordion__product-sub-title">
-              {{ discountProductTranslations[currentLocale].discount }}
+              {{ discountT.discount }}
             </h4>
             <Icon name="mingcute:down-line" />
           </summary>
@@ -269,7 +274,7 @@ watch(currentLocale, () => {
         @click="close?.()"
         :is-open="isOpen"
         variant="hamburger"
-        :aria-label="buttonTranslations[currentLocale].ariaLabelDialogClosed"
+        :aria-label="buttonT.ariaLabelDialogClosed"
       />
       <LangSwitcher />
       <ClientOnly>

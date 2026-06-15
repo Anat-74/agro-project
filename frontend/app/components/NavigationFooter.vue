@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { baseNavigationTranslations } from '~/locales/baseNavigation'
 const { currentLocale } = useLocale()
+const t = computed(() => baseNavigationTranslations[currentLocale.value])
 </script>
 
 <template>
@@ -13,28 +14,28 @@ const { currentLocale } = useLocale()
             <NuxtLink
             class="nav-footer__link"
             :to="`/${currentLocale}/about`">
-            {{ baseNavigationTranslations[currentLocale].about }}
+             {{ t.about }}
          </NuxtLink>
       </li>
       <li class="nav-footer__item">
             <NuxtLink 
             class="nav-footer__link" 
             :to="`/${currentLocale}/services`">
-            {{ baseNavigationTranslations[currentLocale].services }}
+             {{ t.services }}
          </NuxtLink>
       </li>
             <li class="nav-footer__item">
             <NuxtLink 
             class="nav-footer__link" 
             :to="`/${currentLocale}/blog`">
-            {{ baseNavigationTranslations[currentLocale].blog }}
+             {{ t.blog }}
          </NuxtLink>
       </li>
       <li class="nav-footer__item">
             <NuxtLink 
             class="nav-footer__link" 
             :to="`/${currentLocale}/contacts`">
-            {{ baseNavigationTranslations[currentLocale].contacts }}
+             {{ t.contacts }}
          </NuxtLink>
       </li>
    </ul>

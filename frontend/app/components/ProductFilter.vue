@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { productFilterTranslations } from '~/locales/productFilter'
 const { currentLocale } = useLocale()
+const t = computed(() => productFilterTranslations[currentLocale.value])
 const route = useRoute()
 const searchStore = useSearchStore()
 const { products, status, hasSearched } = storeToRefs(searchStore)
@@ -55,26 +56,12 @@ watch(() => route.params.productSlug, (newSlug) => {
   }
 })
 
-const debounce = <T extends (...args: any[]) => void>(fn: T, delay: number) => {
-  let timeoutId: ReturnType<typeof setTimeout>
-  const debounced = (...args: Parameters<T>) => {
-    clearTimeout(timeoutId)
-    timeoutId = setTimeout(() => fn(...args), delay)
-  }
-  debounced.cancel = () => clearTimeout(timeoutId)
-  return debounced
-}
-
-
-// Дебаунс для поиска
 const applyFilters = () => {
   searchStore.executeSearch()
 }
 
-// Создаем debounce-версию с задержкой 400 мс
-const debouncedApplyFilters = debounce(applyFilters, 400)
+const debouncedApplyFilters = useDebounce(applyFilters, 400)
 
-// watch([searchName, sortBy], debouncedApplyFilters)
 watch([searchName, sortBy], () => {
   debouncedApplyFilters()
 })
@@ -92,11 +79,11 @@ onUnmounted(() => {
   <label 
    class="visually-hidden"
    for="my-search"
-   > {{ productFilterTranslations[currentLocale].labelInput }}
+   > {{ t.labelInput }}
 </label>
     <input 
       v-model="searchName" 
-      :placeholder="productFilterTranslations[currentLocale].placeholder"
+      :placeholder="t.placeholder"
       class="search-input"
       type="search"
       id="my-search"
@@ -114,7 +101,7 @@ onUnmounted(() => {
    <span 
     v-if="hasSearched && products.length === 0 && status !== 'pending'"
    class="search-no-results">
-   {{ productFilterTranslations[currentLocale].noResults }}
+   {{ t.noResults }}
     </span>
   </div>
 </template>

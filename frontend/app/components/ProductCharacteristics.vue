@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { characteristcsTranslations } from '~/locales/productCharacteristics'
 const { currentLocale } = useLocale()
+const t = computed(() => characteristcsTranslations[currentLocale.value])
 
 interface Characteristic {
   param: string
@@ -18,7 +19,7 @@ defineProps({
 <template>
    <div v-if="specs?.length" class="product-characteristics">
      <h3 class="product-characteristics__title">
-      {{ characteristcsTranslations[currentLocale].title }}
+      {{ t.title }}
      </h3>
      <table class="product-characteristics__table">
        <tbody>

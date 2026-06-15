@@ -3,6 +3,8 @@ import { buttonTranslations } from "~/locales/button";
 import { tooltipTranslations } from "~/locales/tooltip";
 
 const { currentLocale } = useLocale();
+const tooltipT = computed(() => tooltipTranslations[currentLocale.value])
+const buttonT = computed(() => buttonTranslations[currentLocale.value])
 const cartStore = useCartStore();
 const route = useRoute();
 const { isInCart } = useIsInCart();
@@ -50,7 +52,7 @@ const visibleImagesCount = computed(() => {
     </NuxtLink>
     <h3 class="discount-card__title">{{ product.name }}</h3>
     <div class="discount-card__items-price">
-      <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
+      <UTooltip :text="tooltipT.byRuble">
         <Icon name="my-icon:icon-by-regular" />
       </UTooltip>
       <span
@@ -70,8 +72,8 @@ const visibleImagesCount = computed(() => {
       :is-in-cart="isInCart(product.documentId)"
       :aria-label="
         isInCart(product.documentId)
-          ? buttonTranslations[currentLocale].ariaLabelAdded
-          : buttonTranslations[currentLocale].label
+          ? buttonT.ariaLabelAdded
+          : buttonT.label
       "
     />
   </li>

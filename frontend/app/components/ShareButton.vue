@@ -3,21 +3,21 @@ import { shareButtonTranslations } from '~/locales/shareButton'
 import { buttonTranslations } from '~/locales/button'
 
 const { currentLocale } = useLocale()
+const t = computed(() => shareButtonTranslations[currentLocale.value])
+const buttonT = computed(() => buttonTranslations[currentLocale.value])
 const { show, type, content, showNotification } = useNotification()
 const route = useRoute()
 const config = useRuntimeConfig()
-
-const translations = shareButtonTranslations[currentLocale.value]
 
 const copyLink = async () => {
   const productLink = `${config.public.siteUrl}${route.fullPath.split('?')[0]}` // Текущий URL без параметров
 
   try {
      await navigator.clipboard.writeText(productLink)
-     showNotification(translations.successMessage)
-  } catch (err) {
-     console.error('Ошибка копирования:', err)
-     showNotification(translations.errorMessage)
+      showNotification(t.value.successMessage)
+   } catch (err) {
+      console.error('Ошибка копирования:', err)
+      showNotification(t.value.errorMessage)
    }
 }
 </script>
@@ -28,7 +28,7 @@ const copyLink = async () => {
    @click="copyLink"
    icon="ph:link-simple-bold"
    variant="share"
-  :aria-label="buttonTranslations[currentLocale].ariaLabelCopyLink"
+  :aria-label="buttonT.ariaLabelCopyLink"
    />
 
    <Transition name="fade">

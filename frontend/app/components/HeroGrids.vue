@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
 const { currentLocale } = useLocale();
+const t = computed(() => visuallyHiddenTranslations[currentLocale.value]);
 import { VISIBILITY_KEY } from "#shared/utils/visibility";
 const { isContacts } = inject<VisibilityState>(VISIBILITY_KEY)!;
 const { isOpen } = useDialog("hamburgerDialog");
@@ -14,7 +15,7 @@ const { grids } = defineProps<Props>();
 
 <template>
   <h2 class="visually-hidden">
-    {{ visuallyHiddenTranslations[currentLocale].heroGridsTitle }}
+    {{ t.heroGridsTitle }}
   </h2>
   <ul
     :class="[
