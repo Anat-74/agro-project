@@ -40,10 +40,10 @@ const { data, pending, error, refresh } = useAsyncData(
             fields: ["id"],
           },
         },
-      }),
+      } as any),
       find("subcategories", {
         filters: {
-          category: { slug: { $eq: categorySlug } }, // Фильтруем по slug категории!
+          category: { slug: { $eq: categorySlug } },
           locale: currentLocale.value,
         },
         populate: {
@@ -55,10 +55,10 @@ const { data, pending, error, refresh } = useAsyncData(
           page: page.value,
           pageSize: pageSize,
         },
-      }),
+      } as any),
       find("products", {
         filters: {
-          category: { slug: { $eq: categorySlug } }, // Фильтруем по slug категории!
+          category: { slug: { $eq: categorySlug } },
           locale: currentLocale.value,
         },
         fields: ["id"],
@@ -66,7 +66,7 @@ const { data, pending, error, refresh } = useAsyncData(
           page: page.value,
           pageSize: pageSize,
         },
-      }),
+      } as any),
     ]);
 
     // Обработка ошибок
