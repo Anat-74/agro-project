@@ -401,13 +401,11 @@ onMounted(() => {
             :locale="currentLocale"
             @on-result="onVoiceResult"
           />
-          <input
+          <form @submit.prevent="sendMessage" class="chat-assistant__form">
+          <UInput
             v-model="inputMessage"
-            type="text"
             :placeholder="t.placeholder"
             :disabled="isLoading"
-            class="chat-assistant__input"
-            @keydown.enter.exact.prevent="sendMessage"
           />
           <UButton
             type="submit"
@@ -415,8 +413,8 @@ onMounted(() => {
             icon="material-symbols:send"
             :isDisabled="!inputMessage.trim() || isLoading"
             :aria-label="t.sendButton"
-            @click="sendMessage"
           />
+          </form>
         </form>
         <div class="chat-assistant__footer-info">
           <p class="chat-assistant__footer-text">

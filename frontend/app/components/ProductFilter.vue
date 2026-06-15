@@ -76,18 +76,12 @@ onUnmounted(() => {
   class="search-body" 
    role="search"
   >
-  <label 
-   class="visually-hidden"
-   for="my-search"
-   > {{ t.labelInput }}
-</label>
-    <input 
-      v-model="searchName" 
-      :placeholder="t.placeholder"
-      class="search-input"
+    <UInput
+      v-model="searchName"
       type="search"
-      id="my-search"
-    >
+      :placeholder="t.placeholder"
+      :label="t.labelInput"
+    />
       <Icon
    v-if="status === 'pending'"
    name="eos-icons:bubble-loading" 
