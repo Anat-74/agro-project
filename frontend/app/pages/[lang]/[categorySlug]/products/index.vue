@@ -24,18 +24,18 @@ const { data, pending, error, refresh } = useAsyncData(
     const [categoryRes, productsRes] = await Promise.all([
       // Запрос категории
       find("categories", {
-        locale: currentLocale.value,
         filters: {
           slug: { $eq: categorySlug },
+          locale: { $eq: currentLocale.value },
         },
         fields: ["id", "name"],
       } as any),
 
       // Запрос продуктов с фильтрацией по slug категории
       find("products", {
-        locale: currentLocale.value,
         filters: {
           "category.slug": { $eq: categorySlug },
+          locale: { $eq: currentLocale.value },
         },
         populate: {
           image: {

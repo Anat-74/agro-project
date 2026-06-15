@@ -32,10 +32,10 @@ const { data, pending, error, refresh } = useAsyncData(
     const [subcategoryRes, productsRes] = await Promise.all([
       // Запрос подкатегории
       find("subcategories", {
-        locale: currentLocale.value,
         filters: {
           slug: { $eq: subcategorySlug },
           "category.slug": { $eq: categorySlug },
+          locale: { $eq: currentLocale.value },
         },
         fields: ["id", "name", "seoTitle", "seoDescription"],
         populate: {
@@ -50,16 +50,16 @@ const { data, pending, error, refresh } = useAsyncData(
 
       // Запрос продуктов с фильтрацией по slug
       find("products", {
-        locale: currentLocale.value,
         filters: {
           "subcategory.slug": { $eq: subcategorySlug },
+          locale: { $eq: currentLocale.value },
         },
         populate: {
           image: {
             fields: ["alternativeText", "url"],
           },
         },
-        sort: sortOption.value,
+        sort: [sortOption.value],
         pagination: {
           page: page.value,
           pageSize: pageSize,

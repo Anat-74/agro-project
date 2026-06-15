@@ -36,16 +36,18 @@ const {
   refresh: refreshCategory,
 } = useAsyncData(`category-dialog-${currentLocale.value}`, async () => {
   const response = await find<Category>("categories", {
-    locale: currentLocale.value,
+    filters: {
+      locale: { $eq: currentLocale.value },
+    },
     populate: {
       image: {
         fields: ["alternativeText", "url"],
       },
       subcategories: {
-        fields: ["id", "name", "slug"],
+        fields: ["name", "slug"],
       },
       products: {
-        fields: ["id", "name", "slug"],
+        fields: ["name", "slug"],
         populate: {
           image: {
             fields: ["alternativeText", "url"],
@@ -70,11 +72,11 @@ const {
   refresh: refreshProduct,
 } = useAsyncData(`product-dialog-${currentLocale.value}`, async () => {
   const response = await find<Product>("products", {
-    locale: currentLocale.value,
     filters: {
       isDiscount: true,
+      locale: { $eq: currentLocale.value },
     },
-    fields: ["id", "name", "isDiscount", "slug"],
+    fields: [ "name", "isDiscount", "slug"],
     pagination: {
       pageSize: 100,
     } as PaginationMeta,
@@ -83,10 +85,10 @@ const {
         fields: ["alternativeText", "url"],
       },
       subcategory: {
-        fields: ["id", "name", "slug"],
+        fields: ["name", "slug"],
         populate: {
           category: {
-            fields: ["id", "name", "slug"],
+            fields: ["name", "slug"],
           },
         },
       },
