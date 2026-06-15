@@ -4,6 +4,8 @@ import { orderSuccessTranslations } from "~/locales/orderSuccess";
 import { discountProductTranslations } from "~/locales/discountProduct";
 
 const { currentLocale } = useLocale();
+const cartT = computed(() => cartTranslations[currentLocale.value])
+const discountT = computed(() => discountProductTranslations[currentLocale.value])
 const route = useRoute();
 const cartStore = useCartStore();
 const { goBack } = useGoToForwardOrBack();
@@ -11,11 +13,10 @@ const { find } = useStrapi();
 const config = useRuntimeConfig();
 
 useSeoMeta({
-  title: cartTranslations[currentLocale.value as LocaleCode].title,
-  ogTitle: cartTranslations[currentLocale.value as LocaleCode].title,
-  description: cartTranslations[currentLocale.value as LocaleCode].description,
-  ogDescription:
-    cartTranslations[currentLocale.value as LocaleCode].description,
+  title: cartT.value.title,
+  ogTitle: cartT.value.title,
+  description: cartT.value.description,
+  ogDescription: cartT.value.description,
   ogImage: `${config.public.siteUrl}/image/cart-share-image.jpg`, // можно использовать специфичное изображение для корзины
   ogUrl: `${config.public.siteUrl}${route.fullPath}`,
   twitterCard: "summary_large_image",
@@ -91,7 +92,7 @@ onMounted(() => {
     aria-labelledby="cart-page"
   >
     <h1 class="visually-hidden" id="cart-page">
-      {{ cartTranslations[currentLocale].visuallyHidden }}
+      {{ cartT.visuallyHidden }}
     </h1>
 
     <UButton
@@ -150,7 +151,7 @@ onMounted(() => {
           height="144"
         />
         <span class="cart-empty__text">{{
-          cartTranslations[currentLocale].cartEmpty
+          cartT.cartEmpty
         }}</span>
       </div>
     </div>
@@ -158,7 +159,7 @@ onMounted(() => {
     <div class="cart-page__body">
       <div class="cart-page__cart-items">
         <h2 class="cart-page__title">
-          {{ cartTranslations[currentLocale].title }}
+          {{ cartT.title }}
         </h2>
         <span
           aria-atomic="true"
@@ -166,7 +167,7 @@ onMounted(() => {
           role="status"
           class="cart-page__total"
         >
-          {{ cartTranslations[currentLocale].total }}
+          {{ cartT.total }}
           <b>{{ cartStore.totalItems }}</b>
         </span>
 
@@ -183,7 +184,7 @@ onMounted(() => {
           >
             <span class="discount-card__promotional">
               <Icon name="mdi:discount-outline" />
-              {{ discountProductTranslations[currentLocale].discount }}
+              {{ discountT.discount }}
             </span>
             <ProductStatus :product="prod" class="discount-card__in-stock" />
             <NuxtLink

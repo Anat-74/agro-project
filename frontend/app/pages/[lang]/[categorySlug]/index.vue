@@ -6,6 +6,8 @@ const { find } = useStrapi();
 const route = useRoute();
 const { categorySlug } = route.params;
 const { currentLocale } = useLocale();
+const buttonT = computed(() => buttonTranslations[currentLocale.value])
+const productFilterT = computed(() => productFilterTranslations[currentLocale.value])
 const config = useRuntimeConfig();
 const { width } = useViewport();
 const { goBack, goForward } = useGoToForwardOrBack();
@@ -188,13 +190,13 @@ watchEffect(() => {
       <UButton
         @click="goBack"
         icon="material-symbols:arrow-back"
-        :aria-label="buttonTranslations[currentLocale].ariaLabelGoBack"
+        :aria-label="buttonT.ariaLabelGoBack"
         variant="go-forward-back"
       />
       <UButton
         @click="goForward"
         icon="material-symbols:arrow-forward"
-        :aria-label="buttonTranslations[currentLocale].ariaLabelGoForward"
+        :aria-label="buttonT.ariaLabelGoForward"
         variant="go-forward-back"
       />
     </div>
@@ -275,7 +277,7 @@ watchEffect(() => {
 
     <!-- Сообщение, если нет ни подкатегорий, ни продуктов -->
     <div v-else-if="displayMode === 'empty'" class="category-content__empty">
-      {{ productFilterTranslations[currentLocale].noResults }}
+      {{ productFilterT.noResults }}
     </div>
 
     <Pagination

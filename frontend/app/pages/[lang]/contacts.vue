@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
 const { currentLocale } = useLocale();
+const t = computed(() => visuallyHiddenTranslations[currentLocale.value])
 
 const pageMeta = {
   ru: {
@@ -28,7 +29,7 @@ useSeoMeta({
 <template>
   <section class="contacts" aria-labelledby="contacts-page">
     <h1 class="visually-hidden" id="contacts-page">
-      {{ visuallyHiddenTranslations[currentLocale].sectionAboutUsTitle }}
+      {{ t.sectionAboutUsTitle }}
     </h1>
     <p>В процессе наполнения контентом...</p>
     <p>In the process of filling with content...</p>

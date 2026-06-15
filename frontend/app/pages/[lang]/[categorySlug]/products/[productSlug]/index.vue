@@ -13,6 +13,9 @@ const { categorySlug, productSlug } = route.params as {
  productSlug: string
 }
 const { currentLocale } = useLocale()
+const visuallyHiddenT = computed(() => visuallyHiddenTranslations[currentLocale.value])
+const buttonT = computed(() => buttonTranslations[currentLocale.value])
+const tooltipT = computed(() => tooltipTranslations[currentLocale.value])
 const { goBack } = useGoToForwardOrBack()
 
 const currentImage = ref('')
@@ -133,14 +136,14 @@ const handleAddToCart = (product: Product) => {
    <h1
       class="visually-hidden"
       id="product-description"
-      >{{ visuallyHiddenTranslations[currentLocale].sectionProductSlugTitle }}</h1>
+      >{{ visuallyHiddenT.sectionProductSlugTitle }}</h1>
    <div class="product-review__wrapper-left wrapper-left">
       <div class="wrapper-left__row-top">
       <UButton
       class="wrapper-left__go-back"
       @click="goBack"
       icon="material-symbols:arrow-back"
-      :aria-label="buttonTranslations[currentLocale].ariaLabelGoBack"
+      :aria-label="buttonT.ariaLabelGoBack"
       variant="go-forward-back"
      />
      <Icon 
@@ -202,7 +205,7 @@ const handleAddToCart = (product: Product) => {
       :class="['wrapper-right__price', {'wrapper-right__price_discount' :product.isDiscount}]"
      >
       <UTooltip 
-      :text="tooltipTranslations[currentLocale].byRuble"
+      :text="tooltipT.byRuble"
       >
         <Icon name="my-icon:icon-by-regular" />
       </UTooltip>
@@ -212,7 +215,7 @@ const handleAddToCart = (product: Product) => {
       @click="handleAddToCart(product)"
        :disabled="isInCart(product.documentId)"
       >
-      {{ isInCart(product.documentId) ? buttonTranslations[currentLocale].addedIsCart : buttonTranslations[currentLocale].label }}
+      {{ isInCart(product.documentId) ? buttonT.addedIsCart : buttonT.label }}
      </UButton>
    </div>
 </section>

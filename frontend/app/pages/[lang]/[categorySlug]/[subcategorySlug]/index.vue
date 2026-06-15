@@ -6,6 +6,9 @@ import { buttonTranslations } from "~/locales/button";
 const { find } = useStrapi();
 const route = useRoute();
 const { currentLocale } = useLocale();
+const buttonT = computed(() => buttonTranslations[currentLocale.value])
+const productFilterT = computed(() => productFilterTranslations[currentLocale.value])
+const visuallyHiddenT = computed(() => visuallyHiddenTranslations[currentLocale.value])
 const { goBack, goForward } = useGoToForwardOrBack();
 const { isInCart } = useIsInCart();
 const cartStore = useCartStore();
@@ -177,102 +180,15 @@ const handleAddToCart = (product: Product) => {
       <UButton
         @click="goBack"
         icon="material-symbols:arrow-back"
-        :aria-label="buttonTranslations[currentLocale].ariaLabelGoBack"
-        variant="go-forward-back"
-      />
-      <UButton
-        @click="goForward"
-        icon="material-symbols:arrow-forward"
-        :aria-label="buttonTranslations[currentLocale].ariaLabelGoForward"
-        variant="go-forward-back"
-      />
-      <div class="subcategory-products__select-wrapper select-wrapper">
-        <label class="visually-hidden" for="sort-subcategory-product">
-          {{ productFilterTranslations[currentLocale].labelSelect }}
-        </label>
-
-        <select
-          class="subcategory-products__select select"
-          v-model="sortOption"
-          id="sort-subcategory-product"
-        >
-          <option class="option" disabled value=""></option>
-          <option class="option" value="name:asc">
-            {{ productFilterTranslations[currentLocale].optionName }}
-          </option>
-          <option class="option" value="price:asc">
-            {{ productFilterTranslations[currentLocale].optionPrice }}
-          </option>
-          <option class="option" value="price:desc">
-            {{ productFilterTranslations[currentLocale].optionPriceDesc }}
-          </option>
-        </select>
-      </div>
-    </div>
-    <h1
-      class="subcategory-products__subcategory-title"
-      id="subcategory-products"
-    >
-      {{ subcategory?.name }}
-    </h1>
-    <h2 class="visually-hidden">
-      {{ visuallyHiddenTranslations[currentLocale].sectionSubcategorySlugList }}
-    </h2>
-    <ul v-if="products?.data.length" class="subcategory-products__list">
-      <li
-        v-for="(product, index) in products.data"
-        :key="product.documentId"
-        class="subcategory-products__item"
-      >
-        <Icon
-          v-if="product.isDiscount"
-          class="subcategory-products__discount-icon"
-          name="mdi:discount"
-        />
-        <ProductStatus
-          :product="product"
-          class="subcategory-products__in-stock"
-        />
-        <NuxtLink
-          class="subcategory-products__link"
-          :to="`/${currentLocale}/${categorySlug}/${subcategorySlug}/${product.slug}`"
-        >
-          <NuxtImg
-            class="subcategory-products__image"
-            v-if="product.image?.length"
-            :src="`${config.public.strapi.url}${product.image[0]?.url}`"
-            :alt="product.name"
-            :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
-            :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
-            decoding="async"
-            width="258"
-            height="194"
-            format="webp"
-          />
-        </NuxtLink>
-
-        <div class="subcategory-products__items-bottom">
-          <h3 class="subcategory-products__title">
-            {{ product.name }}
-          </h3>
-
-          <span
-            :class="[
-              'subcategory-products__price',
-              { 'subcategory-products__price_discount': product.isDiscount },
-            ]"
-          >
-            {{ formatPrice(product.price) }}
-          </span>
-
-        <UButton
-          @click="handleAddToCart(product)"
-          variant="add"
-          :is-in-cart="isInCart(product.documentId)"
-          :aria-label="
-            isInCart(product.documentId)
-              ? buttonTranslations[currentLocale].ariaLabelAdded
-              : buttonTranslations[currentLocale].label
+        :aria-label="buttonT.ariaLabelGoBack"
+        :aria-label="buttonT.ariaLabelGoForward"
+          {{ productFilterT.labelSelect }}
+            {{ productFilterT.optionName }}
+            {{ productFilterT.optionPrice }}
+            {{ productFilterT.optionPriceDesc }}
+      {{ visuallyHiddenT.sectionSubcategorySlugList }}
+              ? buttonT.ariaLabelAdded
+              : buttonT.label
           "
         />
         </div>

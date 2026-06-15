@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { orderFormTranslations } from '~/locales/orderForm'
 const { currentLocale } = useLocale()
+const t = computed(() => orderFormTranslations[currentLocale.value])
 const cartStore = useCartStore()
 const orderStore = useOrderStore()
 
@@ -37,60 +38,12 @@ const submitOrder = async () => {
    <div 
    :class="['order-form', {'order-form_disabled': isSubmitting || cartStore.totalItems === 0}]">
      <h3 
-     class="order-form__title">{{ orderFormTranslations[currentLocale].title }}</h3>
-     <form
-      @submit.prevent="submitOrder"
-      class="order-form__form"
-      >
-         <label 
-         class="order-form__label"
-         for="email">
-         {{ orderFormTranslations[currentLocale].email }}
-      </label>
-         <input 
-           v-model="form.email" 
-           type="email" 
-           id="email"
-           :disabled="isSubmitting || cartStore.totalItems === 0"
-           placeholder="your@email.com"
-           class="order-form__input"
-         >
-         <label 
-         class="order-form__label"
-         for="phone">
-         {{ orderFormTranslations[currentLocale].phone }}*
-      </label>
-         <input
-           v-model="form.phone"
-           type="tel"
-           required
-           :disabled="isSubmitting || cartStore.totalItems === 0"
-           id="phone"
-           placeholder="+375(00) 000-00-00"
-           class="order-form__input"
-         >
-         <label class="order-form__checkbox-label">
-           <input 
-             v-model="form.agree" 
-             type="checkbox" 
-             required
-             :disabled="isSubmitting || cartStore.totalItems === 0"
-             class="order-form__checkbox"
-           >
-           <span
-           class="order-form__conditions"
-           >{{ orderFormTranslations[currentLocale].checkbox }}
-         </span>
-         </label>
-       <UButton
-         size="large"
-         type="submit" 
-         :disabled="isSubmitting || cartStore.totalItems === 0"
-         class="order-form__btn"
-         >{{ isSubmitting ? orderFormTranslations[currentLocale].submitting : orderFormTranslations[currentLocale].checkout }}</UButton>
-     </form>
-     <div class="order-form__total">
-      <b>{{ orderFormTranslations[currentLocale].total }}</b>
+     class="order-form__title">{{ t.title }}</h3>
+         {{ t.email }}
+         {{ t.phone }}*
+           >{{ t.checkbox }}
+         >{{ isSubmitting ? t.submitting : t.checkout }}</UButton>
+      <b>{{ t.total }}</b>
              <strong
                aria-live="polite"
                role="status"

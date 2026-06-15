@@ -13,6 +13,8 @@ const { categorySlug, subcategorySlug, productSlug } = route.params as {
   productSlug: string;
 };
 const { currentLocale } = useLocale();
+const visuallyHiddenT = computed(() => visuallyHiddenTranslations[currentLocale.value])
+const buttonT = computed(() => buttonTranslations[currentLocale.value]);
 const { goBack } = useGoToForwardOrBack();
 
 const currentImage = ref("");
@@ -157,7 +159,7 @@ const handleAddToCart = (product: Product) => {
     class="product-review"
   >
     <h1 class="visually-hidden" id="product-description">
-      {{ visuallyHiddenTranslations[currentLocale].sectionProductSlugTitle }}
+      {{ visuallyHiddenT.sectionProductSlugTitle }}
     </h1>
     <div class="product-review__wrapper-left wrapper-left">
       <div class="wrapper-left__row-top">
@@ -165,7 +167,7 @@ const handleAddToCart = (product: Product) => {
           class="wrapper-left__go-back"
           @click="goBack"
           icon="material-symbols:arrow-back"
-          :aria-label="buttonTranslations[currentLocale].ariaLabelGoBack"
+          :aria-label="buttonT.ariaLabelGoBack"
           variant="go-forward-back"
         />
         <Icon
@@ -235,7 +237,7 @@ const handleAddToCart = (product: Product) => {
         {{
           isInCart(product.documentId)
             ? "Товар в корзине"
-            : buttonTranslations[currentLocale].label
+            : buttonT.label
         }}
       </UButton>
     </div>

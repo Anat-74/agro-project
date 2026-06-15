@@ -7,6 +7,9 @@ const { find } = useStrapi();
 const route = useRoute();
 const { categorySlug } = route.params as { categorySlug: string };
 const { currentLocale } = useLocale();
+const productFilterT = computed(() => productFilterTranslations[currentLocale.value])
+const visuallyHiddenT = computed(() => visuallyHiddenTranslations[currentLocale.value])
+const buttonT = computed(() => buttonTranslations[currentLocale.value])
 const { goBack, goForward } = useGoToForwardOrBack();
 
 const sortOption = ref<string>("name:asc");
@@ -113,61 +116,14 @@ watchEffect(() => {
         <UButton
           @click="goBack"
           icon="material-symbols:arrow-back"
-          :aria-label="buttonTranslations[currentLocale].ariaLabelGoBack"
-          variant="go-forward-back"
-        />
-        <UButton
-          @click="goForward"
-          icon="material-symbols:arrow-forward"
-          :aria-label="buttonTranslations[currentLocale].ariaLabelGoForward"
-          variant="go-forward-back"
-        />
-        <div class="products-section__select-wrapper select-wrapper">
-          <label class="visually-hidden" for="sort-product">
-            {{ productFilterTranslations[currentLocale].labelSelect }}
-          </label>
-
-          <select
-            class="products-section__select select"
-            v-model="sortOption"
-            id="sort-product"
-          >
-            <option class="option" disabled value=""></option>
-            <option class="option" value="name:asc">
-              {{ productFilterTranslations[currentLocale].optionName }}
-            </option>
-            <option class="option" value="price:asc">
-              {{ productFilterTranslations[currentLocale].optionPrice }}
-            </option>
-            <option class="option" value="price:desc">
-              {{ productFilterTranslations[currentLocale].optionPriceDesc }}
-            </option>
-          </select>
-        </div>
-      </div>
-      <h1 class="products-section__category-title" id="products-section">
-        {{ category?.name }}
-      </h1>
-      <h2 class="visually-hidden">
-        {{
-          visuallyHiddenTranslations[currentLocale].sectionSubcategorySlugList
-        }}
-      </h2>
-      <ul 
-      v-if="products?.data.length" 
-      class="products-section__card-list"
-      >
-        <ProductCard
-          class="products-section__item"
-          v-for="(product, index) in products.data"
-          :key="product.documentId"
-          :product="product"
-          :index="index"
-          :categorySlug="categorySlug"
-        />
-      </ul>
-      <div v-else-if="!pending" class="products-section__empty">
-        {{ productFilterTranslations[currentLocale].noResults }}
+          :aria-label="buttonT.ariaLabelGoBack"
+          :aria-label="buttonT.ariaLabelGoForward"
+            {{ productFilterT.labelSelect }}
+              {{ productFilterT.optionName }}
+              {{ productFilterT.optionPrice }}
+              {{ productFilterT.optionPriceDesc }}
+          visuallyHiddenT.sectionSubcategorySlugList
+        {{ productFilterT.noResults }}
       </div>
       <Pagination
         v-if="pageCount > 1"

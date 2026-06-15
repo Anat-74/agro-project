@@ -4,6 +4,8 @@ import { buttonTranslations } from "~/locales/button";
 
 const cartStore = useCartStore();
 const { currentLocale } = useLocale();
+const cartT = computed(() => cartTranslations[currentLocale.value])
+const buttonT = computed(() => buttonTranslations[currentLocale.value])
 const config = useRuntimeConfig();
 
 const getProductLink = (product: CartItem["product"]) => {
@@ -36,7 +38,7 @@ onMounted(() => {
         class="cart-item__locale-warning"
       >
         <Icon name="mdi:alert" />
-        <span>{{ cartTranslations[currentLocale].warningLocale }}</span>
+        <span>{{ cartT.warningLocale }}</span>
         <UButton
           :label="item.product.originalLocale"
           variant="switch-locale-cart"
@@ -81,32 +83,9 @@ onMounted(() => {
           :disabled="item.quantity <= 1"
           variant="remove-quantity-prod"
           :aria-label="
-            buttonTranslations[currentLocale].ariaLabelReduceQuantity
-          "
-        />
-        <span
-          class="quantity-value"
-          aria-live="polite"
-          role="status"
-          aria-atomic="true"
-        >
-          {{ item.quantity }}
-        </span>
-        <UButton
-          @click="cartStore.updateQuantity(item.product.documentId, item.quantity + 1)"
-          variant="add-quantity-prod"
-          :aria-label="
-            buttonTranslations[currentLocale].ariaLabelIncreaseQuantity
-          "
-        />
-      </div>
-      <UButton
-        @click="cartStore.removeFromCart(item.product.documentId)"
-        variant="remove-cart-item"
-        icon="material-symbols:delete-outline-rounded"
-        class="cart-item__remove-from-cart"
-        :aria-label="
-          buttonTranslations[currentLocale].ariaLabelRemoveItemFromCart
+            buttonT.ariaLabelReduceQuantity
+            buttonT.ariaLabelIncreaseQuantity
+          buttonT.ariaLabelRemoveItemFromCart
         "
       />
     </li>
