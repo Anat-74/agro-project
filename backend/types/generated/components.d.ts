@@ -62,10 +62,7 @@ export interface LayoutFooter extends Struct.ComponentSchema {
     companyName: Schema.Attribute.String;
     copyright: Schema.Attribute.String;
     legalAdress: Schema.Attribute.String;
-    logo: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios',
-      true
-    >;
+    logo: Schema.Attribute.Media<'images'>;
     taxId: Schema.Attribute.String;
     workingHours: Schema.Attribute.String;
   };

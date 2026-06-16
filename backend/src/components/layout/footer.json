@@ -22,14 +22,11 @@
       "type": "string"
     },
     "logo": {
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos",
-        "audios"
-      ],
       "type": "media",
-      "multiple": true
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
     }
   }
 }
