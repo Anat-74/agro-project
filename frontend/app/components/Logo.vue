@@ -4,7 +4,7 @@ const t = computed(() => logoTranslations[currentLocale.value])
 import { logoTranslations } from "~/locales/logo";
 
 interface Props {
-  global: any;
+  global: GlobalData;
   width?: string | number;
   height?: string | number;
 }
@@ -23,8 +23,8 @@ const props = withDefaults(defineProps<Props>(), {
   >
     <UImage
       class="logo-link__image"
-      v-if="props.global?.footer?.logo?.length"
-      :src="props.global?.footer?.logo[0]?.url"
+      v-if="props.global?.footer?.logo?.url"
+      :src="props.global?.footer?.logo?.url"
       :smooth-load="false"
       :width="props.width"
       :height="props.height"

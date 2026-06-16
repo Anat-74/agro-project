@@ -11,7 +11,7 @@ interface Props {
   socials: SocialLink[];
   email: Email[];
   phones: Phone[];
-  global: any;
+  global: GlobalData;
 }
 
 defineProps<Props>();
@@ -202,14 +202,14 @@ defineProps<Props>();
   &__woring-hours {
     svg {
       translate: 0 toRem(5);
-      color: var(--forest-green-color);
+      color: var(--green-color);
     }
   }
 
   &__legal-adress {
     svg {
       translate: 0 toRem(3);
-      color: var(--dark-golden-color);
+      color: var(--warning-color);
     }
   }
 
@@ -245,7 +245,7 @@ defineProps<Props>();
     column-gap: toRem(5);
     transition: all var(--transition-duration);
     svg {
-      color: var(--sky-blue-color);
+      color: var(--sky-blue);
     }
 
     @include hover {

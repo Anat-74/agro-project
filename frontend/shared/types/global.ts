@@ -31,7 +31,7 @@ export interface FooterData {
   legalAdress: string;
   taxId: string;
   workingHours: string;
-  logo: StrapiImage[];
+  logo: StrapiImage;
 }
 
 export interface LegalInfo {
