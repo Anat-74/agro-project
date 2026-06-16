@@ -43,7 +43,7 @@ const { data, pending, error, refresh } = useAsyncData(
       } as any),
       find("subcategories", {
         filters: {
-          "category.slug": { $eq: categorySlug },
+          category: { slug: { $eq: categorySlug } },
           locale: { $eq: currentLocale.value },
         },
         populate: {
@@ -156,8 +156,8 @@ watchEffect(() => {
         category.value.name,
       ogImage: category.value.seoImage?.[0]?.url
         ? `${config.public.strapi.url}${category.value.seoImage[0].url}`
-        : category.value.image?.[0]?.url
-          ? `${config.public.strapi.url}${category.value.image[0].url}`
+        : category.value.image?.url
+          ? `${config.public.strapi.url}${category.value.image?.url}`
           : `${config.public.siteUrl}/default-category-image.jpg`,
       ogUrl: `${config.public.siteUrl}${route.fullPath}`,
     });

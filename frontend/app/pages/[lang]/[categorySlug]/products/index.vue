@@ -34,7 +34,7 @@ const { data, pending, error, refresh } = useAsyncData(
       // Запрос продуктов с фильтрацией по slug категории
       find("products", {
         filters: {
-          "category.slug": { $eq: categorySlug },
+          category: { slug: { $eq: categorySlug } },
           locale: { $eq: currentLocale.value },
         },
         populate: {
