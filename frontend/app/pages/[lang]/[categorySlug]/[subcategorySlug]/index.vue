@@ -34,16 +34,16 @@ const { data, pending, error, refresh } = useAsyncData(
       find("subcategories", {
         filters: {
           slug: { $eq: subcategorySlug },
-          "category.slug": { $eq: categorySlug },
+          category: { slug: { $eq: categorySlug } },
           locale: { $eq: currentLocale.value },
         },
-        fields: ["id", "name", "seoTitle", "seoDescription"],
+        fields: ["name", "slug"],
         populate: {
-          seoImage: {
-            fields: ["id", "alternativeText", "url"],
+          image: {
+            fields: ["alternativeText", "url"],
           },
-          seo: {
-            fields: ["metaTitle", "metaDescription", "structuredData"],
+          category: {
+            fields: ["slug"],
           },
         },
       } as any),
