@@ -6,9 +6,9 @@ import { buttonTranslations } from "~/locales/button";
 const { find } = useStrapi();
 const route = useRoute();
 const { currentLocale } = useLocale();
-const buttonT = computed(() => buttonTranslations[currentLocale.value])
-const productFilterT = computed(() => productFilterTranslations[currentLocale.value])
-const visuallyHiddenT = computed(() => visuallyHiddenTranslations[currentLocale.value])
+const buttonT = useTranslation(buttonTranslations)
+const productFilterT = useTranslation(productFilterTranslations)
+const visuallyHiddenT = useTranslation(visuallyHiddenTranslations)
 const { goBack, goForward } = useGoToForwardOrBack();
 const { isInCart } = useIsInCart();
 const cartStore = useCartStore();
@@ -93,9 +93,6 @@ const visibleImagesCount = computed(() => {
 const subcategory = computed(() => data.value?.subcategory);
 const products = computed(() => data.value?.products);
 
-// Флаг загрузки
-const isLoading = ref(pending);
-
 // Количество страниц
 const pageCount = computed(() => {
   return products.value?.meta?.pagination?.pageCount || 1;
@@ -137,8 +134,8 @@ watchEffect(() => {
         subcategory.value.name,
       ogImage: subcategory.value.seoImage?.[0]?.url
         ? `${config.public.strapi.url}${subcategory.value.seoImage[0].url}`
-        : subcategory.value.image?.[0]?.url
-          ? `${config.public.strapi.url}${subcategory.value.image[0].url}`
+        : subcategory.value.image?.url
+          ? `${config.public.strapi.url}${subcategory.value.image.url}`
           : `${config.public.siteUrl}/default-subcategory-image.jpg`,
       ogUrl: `${config.public.siteUrl}${route.fullPath}`,
     });
@@ -167,9 +164,9 @@ const handleAddToCart = (product: Product) => {
 </script>
 
 <template>
-  <Loader v-show="isLoading" class="loader" />
+  <Loader v-if="pending" class="loader" />
   <section
-    v-show="!isLoading"
+    v-else
     class="subcategory-products"
     aria-labelledby="subcategory-products"
   >
@@ -178,11 +175,13 @@ const handleAddToCart = (product: Product) => {
         @click="goBack"
         icon="material-symbols:arrow-back"
         :aria-label="buttonT.ariaLabelGoBack"
+        variant="go-forward-back"
       />
       <UButton
         @click="goForward"
         icon="material-symbols:arrow-forward"
         :aria-label="buttonT.ariaLabelGoForward"
+        variant="go-forward-back"
       />
       <div class="subcategory-products__select-wrapper select-wrapper">
         <label class="visually-hidden" for="sort-subcategory-product">
@@ -209,6 +208,51 @@ const handleAddToCart = (product: Product) => {
       {{ visuallyHiddenT.sectionSubcategorySlugList }}
     </h2>
 
+    <ul v-if="products?.data?.length" class="subcategory-products__list">
+      <li
+        v-for="(product, index) in products.data"
+        :key="product.documentId"
+        class="subcategory-products__item"
+      >
+        <NuxtLink
+          class="subcategory-products__link"
+          :to="`/${currentLocale}/${categorySlug}/${subcategorySlug}/${product.slug}`"
+        >
+          <UImage
+            v-if="product.image?.length"
+            :src="product.image[0]?.url"
+            :alt="product.name"
+            :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
+            :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
+            class="subcategory-products__image"
+            width="222"
+            height="194"
+          />
+          <h3 class="subcategory-products__title">{{ product.name }}</h3>
+        </NuxtLink>
+        <div class="subcategory-products__items-bottom">
+          <span
+            :class="[
+              'subcategory-products__price',
+              { 'subcategory-products__price_discount': product.isDiscount },
+            ]"
+          >
+            {{ formatPrice(product.price) }}
+          </span>
+          <UButton
+            class="subcategory-products__add-to-cart"
+            @click="handleAddToCart(product)"
+            variant="add"
+            :is-in-cart="isInCart(product.documentId)"
+          />
+        </div>
+      </li>
+    </ul>
+
+    <div v-else class="subcategory-products__empty">
+      {{ productFilterT.noResults }}
+    </div>
+
     <Pagination
       v-if="pageCount > 1"
       class="subcategory-products__pagination"
@@ -218,9 +262,9 @@ const handleAddToCart = (product: Product) => {
     />
   </section>
 
-  <span v-if="error" class="error">
+  <div v-if="error" class="subcategory-products__error">
     {{ error.message }}
-  </span>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -241,12 +285,27 @@ const handleAddToCart = (product: Product) => {
     height: 100%;
   }
 
+  &__empty {
+    text-align: center;
+    padding: toEm(20);
+    color: var(--gray-color);
+    font-style: italic;
+    @include adaptiveValue("font-size", 14, 12);
+  }
+
+  &__error {
+    text-align: center;
+    padding: toEm(16);
+    color: var(--danger-color);
+  }
+
   &__subcategory-title {
     color: var(--dark-golden-color);
     @include adaptiveValue("margin-block-end", 66, 32);
   }
 
   &__list {
+    > * { min-width: 0; }
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(toRem(262), 1fr));
     justify-items: center;
