@@ -1,12 +1,12 @@
 export const useIsInCart = () => {
    const cartStore = useCartStore()
 
-   const cartProductIds = computed<Set<string>>(() => 
-      new Set(cartStore.items.map(item => item.product.documentId))
-    )
-    
-    const isInCart = (productId: string) => 
-      cartProductIds.value.has(productId)
+   const cartIds = computed(() =>
+     new Set(cartStore.items.map(item => item.product.documentId))
+   )
+
+   const isInCart = (productId: string) =>
+     cartIds.value.has(productId)
 
    return { isInCart }
 }

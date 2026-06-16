@@ -6,6 +6,7 @@ const props = defineProps<{
 const cartStore = useCartStore()
 const route = useRoute()
 const { isInCart } = useIsInCart()
+const { find } = useStrapi()
 
 const dialogElement = useTemplateRef<HTMLDialogElement>("discount-dialog")
 const { open, close } = useDialog(
@@ -17,19 +18,29 @@ const { open, close } = useDialog(
 const { data: details, status, execute } = useAsyncData(
   "product-details-" + props.product.documentId,
   async () => {
-    const { find } = useStrapi()
-    return find("products/" + props.product.documentId, {
+    const response = await find("products", {
+      filters: { slug: { $eq: props.product.slug } },
       populate: {
-        images: { fields: ["url", "alternativeText"] },
+        image: { fields: ["url", "alternativeText"] },
+        mainImage: { fields: ["url", "alternativeText"] },
       },
     } as any)
+    return response.data?.[0] as Product
   },
-  { immediate: false, server: false, getCachedData: (k) => details.value || null }
+  { immediate: false, server: false }
 )
 
 const openModal = () => {
-  open()
+  open?.()
   if (!details.value) execute()
+}
+
+const parseCharacteristics = (char: string) => {
+  try {
+    return JSON.parse(char)
+  } catch {
+    return []
+  }
 }
 
 const handleAddToCart = () => {
@@ -64,23 +75,23 @@ const handleAddToCart = () => {
 
       <div v-else-if="status === 'error'" class="discount-modal__error">
         <p>{{ status }}</p>
-        <UButton variant="close" @click="execute">Повторить</UButton>
+        <UButton variant="close" @click="() => execute()">Повторить</UButton>
       </div>
 
       <div v-else-if="status === 'success' && details" class="discount-modal__details">
         <UImage
-          v-for="img in details.images"
+          v-for="img in details.image"
           :key="img.documentId || img.id"
           :src="img.url"
           :alt="product.name"
           width="200"
           height="200"
-          type="discount-modal"
+          type="thumbnail"
         />
         <MDC :value="details.description" />
         <ProductCharacteristics
           v-if="details.characteristics"
-          :specs="details.characteristics"
+          :specs="parseCharacteristics(details.characteristics)"
         />
       </div>
 

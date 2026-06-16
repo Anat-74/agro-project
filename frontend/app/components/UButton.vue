@@ -60,8 +60,8 @@ defineEmits<Emits>();
       `btn_${variant}`,
       { 'btn_loading': isLoading, btn_disabled: isDisabled },
       { 'btn_selected': !colorMode.unknown && theme === colorMode.value },
-      { 'btn_hamburger--is-open': isOpen && variant === 'hamburger' },
-      { 'btn_add--is-added': isInCart && variant === 'add' },
+      { 'btn_hamburger_is-open': isOpen && variant === 'hamburger' },
+      { 'btn_add_is-added': isInCart && variant === 'add' },
       size === 'large' ? 'btn_large' : '',
       icon ? 'btn_icon' : '',
     ]"
