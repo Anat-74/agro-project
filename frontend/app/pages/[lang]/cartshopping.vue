@@ -2,33 +2,39 @@
 import { cartTranslations } from "~/locales/cart";
 import { orderSuccessTranslations } from "~/locales/orderSuccess";
 import { discountProductTranslations } from "~/locales/discountProduct";
+import { buttonTranslations } from "~/locales/button";
 
 const { currentLocale } = useLocale();
 const cartT = computed(() => cartTranslations[currentLocale.value])
 const discountT = computed(() => discountProductTranslations[currentLocale.value])
+const buttonT = computed(() => buttonTranslations[currentLocale.value])
 const route = useRoute();
 const cartStore = useCartStore();
 const { goBack } = useGoToForwardOrBack();
 const { find } = useStrapi();
 const config = useRuntimeConfig();
 
-useSeoMeta({
-  title: cartT.value.title,
-  ogTitle: cartT.value.title,
-  description: cartT.value.description,
-  ogDescription: cartT.value.description,
-  ogImage: `${config.public.siteUrl}/image/cart-share-image.jpg`, // можно использовать специфичное изображение для корзины
-  ogUrl: `${config.public.siteUrl}${route.fullPath}`,
-  twitterCard: "summary_large_image",
+watchEffect(() => {
+  useSeoMeta({
+    title: cartT.value.title,
+    ogTitle: cartT.value.title,
+    description: cartT.value.description,
+    ogDescription: cartT.value.description,
+    ogImage: `${config.public.siteUrl}/image/cart-share-image.jpg`,
+    ogUrl: `${config.public.siteUrl}${route.fullPath}`,
+    twitterCard: "summary_large_image",
+  });
 });
 
+const productKey = computed(() => `product-discount-${currentLocale.value}`)
+
 const { data: product } = useAsyncData(
-  `product-discount-${currentLocale.value}`,
+  productKey,
   async () => {
     const response = await find<Product>("products", {
-      locale: currentLocale.value,
       filters: {
         isDiscount: true,
+        locale: { $eq: currentLocale.value },
       },
       pagination: {
         pageSize: 100,
@@ -48,13 +54,7 @@ const { data: product } = useAsyncData(
       },
     } as any);
 
-    if (!response.data || response.data.length === 0) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: "Product - Not Found",
-      });
-    }
-    return response.data;
+    return response.data || [];
   },
 );
 
@@ -64,6 +64,7 @@ const showOrderSuccess = ref(false);
 const successTitle = ref("");
 const successNotice = ref("");
 const successThanks = ref("");
+const orderTimer = ref<ReturnType<typeof setTimeout> | null>(null);
 
 const handleOrderSuccess = (orderId: number) => {
   const translations = orderSuccessTranslations[currentLocale.value];
@@ -76,10 +77,18 @@ const handleOrderSuccess = (orderId: number) => {
 
   showOrderSuccess.value = true;
 
-  setTimeout(() => {
+  orderTimer.value = setTimeout(() => {
     showOrderSuccess.value = false;
+    orderTimer.value = null;
   }, 7000);
 };
+
+onUnmounted(() => {
+  if (orderTimer.value) {
+    clearTimeout(orderTimer.value);
+    orderTimer.value = null;
+  }
+});
 
 onMounted(() => {
   cartStore.loadCart();
@@ -98,8 +107,8 @@ onMounted(() => {
     <UButton
       @click="goBack"
       icon="material-symbols:arrow-back"
-      aria-label="go back"
-      name-class="go-forward-back"
+      :aria-label="buttonT.ariaLabelGoBack"
+      variant="go-forward-back"
       class="cart-page__go-back"
     />
     <div
@@ -109,46 +118,46 @@ onMounted(() => {
       <div class="cart-empty__body">
         <ul class="cart-empty__list">
           <li class="cart-empty__item">
-            <NuxtImg
+            <UImage
               src="/image/valberg_new-removebg-preview.png"
-              alt="image"
-              decoding="async"
+              alt="valberg"
               width="122"
+              :fromStrapi="false"
             />
           </li>
           <li class="cart-empty__item">
-            <NuxtImg
+            <UImage
               src="/image/aiko_new_1-removebg-preview.png"
-              alt="image"
-              format="webp"
+              alt="aiko"
               width="122"
+              :fromStrapi="false"
             />
           </li>
           <li class="cart-empty__item">
-            <NuxtImg
+            <UImage
               src="/image/praktik_profi_rgb-removebg-preview.png"
-              alt="image"
-              format="webp"
+              alt="praktik profi"
               width="122"
+              :fromStrapi="false"
             />
           </li>
           <li class="cart-empty__item">
-            <NuxtImg
+            <UImage
               src="/image/praktik-home_rgb-removebg-preview.png"
-              alt="image"
-              format="webp"
+              alt="praktik home"
               width="122"
+              :fromStrapi="false"
             />
           </li>
         </ul>
       </div>
       <div class="cart-empty__image">
-        <NuxtImg
+        <UImage
           src="/image/cart-empty-img.png"
-          alt="image"
-          format="webp"
+          alt="empty cart"
           width="286"
           height="144"
+          :fromStrapi="false"
         />
         <span class="cart-empty__text">{{
           cartT.cartEmpty
@@ -191,16 +200,14 @@ onMounted(() => {
               class="discount-card__link"
               :to="`/${currentLocale}/${prod?.subcategory?.category?.slug}/${prod?.subcategory?.slug}/${prod.slug}`"
             >
-              <NuxtImg
+              <UImage
                 class="discount-card__image"
-                v-if="prod.image?.length"
-                :src="`${config.public.strapi.url}${prod.image[0]?.url}`"
+                v-if="prod.mainImage?.url || prod.image?.length"
+                :src="prod.mainImage?.url || prod.image?.[0]?.url"
                 :alt="prod.name"
-                loading="lazy"
-                decoding="async"
                 width="240"
                 height="180"
-                format="webp"
+                type="discount-content"
               />
             </NuxtLink>
             <h3 class="discount-card__title">{{ prod.name }}</h3>
@@ -230,11 +237,25 @@ onMounted(() => {
 </template>
 
 <style lang="scss" scoped>
+$shadow-cart-body:
+  0px 4px 4px 5px rgba(30, 33, 44, 0.05),
+  0px 12px 10px -9px rgba(30, 33, 44, 0.08),
+  0px 26px 24px -120px rgba(30, 33, 44, 0.1),
+  0px 30px 0px -99px rgba(30, 33, 44, 0.16);
+
+$shadow-cart-items:
+  0px 4px 4px -4px rgba(30, 33, 44, 0.05),
+  0px 12px 10px -6px rgba(30, 33, 44, 0.08),
+  0px 26px 24px -10px rgba(30, 33, 44, 0.1),
+  0px 30px 120px -90px rgba(30, 33, 44, 0.16);
+
 .cart-empty {
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
   padding-block-start: toEm(58);
+
+  > * { min-width: 0; }
 
   &__body {
     min-height: 100%;
@@ -244,11 +265,7 @@ onMounted(() => {
     padding-block: toEm(12);
     border-radius: toRem(6) toRem(6) 0 0;
     background-color: var(--secondary-color);
-    box-shadow:
-      0px 4px 4px 5px rgba(30, 33, 44, 0.05),
-      0px 12px 10px -9px rgba(30, 33, 44, 0.08),
-      0px 26px 24px -120px rgba(30, 33, 44, 0.1),
-      0px 30px 0px -99px rgba(30, 33, 44, 0.16);
+    box-shadow: $shadow-cart-body;
   }
 
   &__list {
@@ -302,6 +319,8 @@ onMounted(() => {
 .cart-page {
   position: relative;
 
+  > * { min-width: 0; }
+
   &_empty {
     .cart-page__body {
       padding-block-start: toEm(12);
@@ -337,11 +356,7 @@ onMounted(() => {
     padding-block: toEm(16);
     border-radius: toEm(6);
     background-color: var(--secondary-color);
-    box-shadow:
-      0px 4px 4px -4px rgba(30, 33, 44, 0.05),
-      0px 12px 10px -6px rgba(30, 33, 44, 0.08),
-      0px 26px 24px -10px rgba(30, 33, 44, 0.1),
-      0px 30px 120px -90px rgba(30, 33, 44, 0.16);
+    box-shadow: $shadow-cart-items;
   }
 
   &__title {
@@ -374,6 +389,8 @@ onMounted(() => {
   grid-template-columns: repeat(auto-fit, minmax(toRem(262), 1fr));
   justify-items: center;
   gap: toEm(22);
+
+  > * { min-width: 0; }
 
   &__item {
     position: relative;
