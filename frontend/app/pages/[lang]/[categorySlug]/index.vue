@@ -257,7 +257,7 @@ watchEffect(() => {
             {{ product.name }}
           </h2>
           <UImage
-            v-if="product.image"
+            v-if="product.image?.length"
             :src="product.image[0]?.url"
             :alt="product.name"
             :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
