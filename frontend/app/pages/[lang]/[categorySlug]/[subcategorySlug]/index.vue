@@ -51,7 +51,7 @@ const { data, pending, error, refresh } = useAsyncData(
       // Запрос продуктов с фильтрацией по slug
       find("products", {
         filters: {
-          "subcategory.slug": { $eq: subcategorySlug },
+          subcategory: { slug: { $eq: subcategorySlug } },
           locale: { $eq: currentLocale.value },
         },
         populate: {
