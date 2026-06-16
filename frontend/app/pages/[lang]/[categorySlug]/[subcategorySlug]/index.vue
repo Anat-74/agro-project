@@ -6,9 +6,9 @@ import { buttonTranslations } from "~/locales/button";
 const { find } = useStrapi();
 const route = useRoute();
 const { currentLocale } = useLocale();
-const buttonT = useTranslation(buttonTranslations)
-const productFilterT = useTranslation(productFilterTranslations)
-const visuallyHiddenT = useTranslation(visuallyHiddenTranslations)
+const buttonT = computed(() => buttonTranslations[currentLocale.value])
+const productFilterT = computed(() => productFilterTranslations[currentLocale.value])
+const visuallyHiddenT = computed(() => visuallyHiddenTranslations[currentLocale.value])
 const { goBack, goForward } = useGoToForwardOrBack();
 const { isInCart } = useIsInCart();
 const cartStore = useCartStore();
