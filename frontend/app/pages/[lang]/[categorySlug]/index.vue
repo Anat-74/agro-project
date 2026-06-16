@@ -4,7 +4,7 @@ import { productFilterTranslations } from "~/locales/productFilter";
 
 const { find } = useStrapi();
 const route = useRoute();
-const { categorySlug } = route.params;
+const categorySlug = route.params.categorySlug as string;
 const { currentLocale } = useLocale();
 const buttonT = computed(() => buttonTranslations[currentLocale.value])
 const productFilterT = computed(() => productFilterTranslations[currentLocale.value])
