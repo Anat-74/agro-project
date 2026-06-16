@@ -79,8 +79,8 @@ const { data, pending, error, refresh } = useAsyncData(
 
     return {
       category: categoryRes.data[0] as Category,
-      subcategories: subcategoriesRes as any, // Временное решение
-      products: productsRes as any, // Временное решение
+      subcategories: subcategoriesRes as SubcategoriesResponse,
+      products: productsRes as ProductsResponse,
     };
   },
 );
@@ -257,7 +257,7 @@ watchEffect(() => {
             {{ product.name }}
           </h2>
           <UImage
-            v-if="product.image && product.image.length > 0 && product.image[0]"
+            v-if="product.image"
             :src="product.image[0]?.url"
             :alt="product.name"
             :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
