@@ -547,13 +547,6 @@ const openHamburger = () => {
   &__product-sub-title {
     font-weight: 800;
   }
-
-  .router-link-active {
-    cursor: default;
-    text-decoration: none;
-    font-weight: 600;
-    color: var(--danger-hover);
-  }
 }
 
 .dialog-hamburger {

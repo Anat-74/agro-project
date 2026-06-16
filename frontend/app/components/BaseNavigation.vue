@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { baseNavigationTranslations } from "~/locales/baseNavigation";
+import { VISIBILITY_KEY } from "#shared/utils/visibility";
 
 const { isContacts, visibleIsContacts, hideContacts } =
-  inject<VisibilityState>("visible")!;
+  inject<VisibilityState>(VISIBILITY_KEY)!;
 const { currentLocale } = useLocale();
 const t = computed(() => baseNavigationTranslations[currentLocale.value])
 

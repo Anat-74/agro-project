@@ -126,6 +126,13 @@ a {
 //! FORM ELEMENTS
 // ===================================================================
 
+.router-link-active {
+  cursor: default;
+  pointer-events: none;
+  text-decoration: none;
+  font-weight: 600;
+}
+
 button,
 label,
 select,
