@@ -32,12 +32,12 @@ const MAX_PRODUCTS_TO_SHOW = 6;
           {{ featuredProd?.[0].heading }}
         </h2>
       <div class="featured-products__items">
-         <NuxtLink class="featured-products__link"
+         <div class="featured-products__link"
          v-if="featuredProd?.[0]?.link" 
          >
-            <span>{{ featuredProd?.[0].link }}</span>
-             <Icon name="mingcute:arrow-right-line" />
-        </NuxtLink>
+             <span>{{ featuredProd?.[0].link }}</span>
+              <Icon name="mingcute:arrow-right-line" />
+         </div>
       <ul class="featured-products__card-list"
       v-if="featuredProd?.[0]?.products?.length" 
       >
@@ -78,10 +78,11 @@ const MAX_PRODUCTS_TO_SHOW = 6;
 
       @media (max-width:$tablet){
          grid-template-columns: 1fr auto;
-         display: grid;
-         column-gap: toEm(16);
-         padding-inline: toRem(5);
-         overflow-x: auto;
+          display: grid;
+          column-gap: toEm(16);
+          padding-inline: toRem(5);
+          overflow-x: auto;
+          > * { min-width: 0; }
          scrollbar-width: thin;
          scrollbar-color: var(--light-color) var(--light-color);
       }

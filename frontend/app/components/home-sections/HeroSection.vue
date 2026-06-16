@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import HeroGrids from "../HeroGrids.vue";
 import { VISIBILITY_KEY } from "#shared/utils/visibility";
 const { currentLocale } = useLocale();
 const { isContacts } = inject<VisibilityState>(VISIBILITY_KEY)!;
@@ -113,6 +112,8 @@ const { slides, heroGrids } = defineProps<Props>();
     display: grid;
     row-gap: toEm(12);
     padding-block: toEm(25);
+
+    > * { min-width: 0; }
 
     @media (max-width: $tablet) {
       justify-items: center;

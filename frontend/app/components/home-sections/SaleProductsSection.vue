@@ -52,13 +52,13 @@ const { saleProd } = defineProps<Props>();
                {{ saleProd?.[1].saleText }}
             </p>
             </div>
-               <NuxtLink
+               <div
                   class="sale-products__link"
                ><span v-if="saleProd?.[1]?.link">
                   {{ saleProd?.[1].link }}
                </span>
                   <Icon name="mingcute:arrow-right-line" />
-               </NuxtLink>
+               </div>
          </div>
        <UImage
           v-if="saleProd?.[1]?.image?.url"
@@ -91,6 +91,7 @@ const { saleProd } = defineProps<Props>();
          grid-template-columns: 1fr auto;
          align-items: center;
          column-gap: toEm(27);
+         > * { min-width: 0; }
       }
 
       @media (max-width:$mobileSmall){
@@ -112,6 +113,7 @@ const { saleProd } = defineProps<Props>();
       grid-template-columns: repeat(3, 1fr);
       row-gap: toEm(25);
       column-gap: toEm(12);
+      > * { min-width: 0; }
       @include adaptiveValue("row-gap", 25, 18, 0, $containerWidth, 1023.98);
 
       @media (max-width:toEm(800)){
