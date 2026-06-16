@@ -3,7 +3,6 @@ import { useChatMessages } from "../../composables/chat-assistant/useChatMessage
 import { useChatCart } from "../../composables/chat-assistant/useChatCart";
 import { parseAIResponse } from "../../composables/chat-assistant/useChatAssistant";
 import { chatAssistantTranslations } from "../../locales/chat-assistant";
-import ChatProductCard from "./ChatProductCard.vue";
 import VoiceInput from "./VoiceInput.vue";
 const { currentLocale } = useLocale();
 const chatMessages = useChatMessages();
@@ -11,10 +10,14 @@ const chatCart = useChatCart();
 const t = computed(() => chatAssistantTranslations[currentLocale.value]);
 
 // Реактивные переменные
-const isOpen = ref(false);
 const inputMessage = ref("");
 const isLoading = ref(false);
 const chatBody = ref<HTMLElement | null>(null);
+
+const dialogElement = useTemplateRef<HTMLDialogElement>("chat-dialog");
+const { open, close, isOpen } = useDialog("chatAssistant", dialogElement, {
+  useShowMethod: true,
+});
 
 // Использование методов из композаблов
 const {
@@ -40,12 +43,12 @@ const lastSearchResults = ref<any[]>([]);
 
 // Основные функции компонента
 const openChat = () => {
-  isOpen.value = true;
+  open?.();
   loadChatHistory();
 };
 
 const closeChat = () => {
-  isOpen.value = false;
+  close?.();
 };
 
 const sendQuickMessage = async (message: string) => {
@@ -69,8 +72,7 @@ const sendQuickMessage = async (message: string) => {
 
     const parsedResponse = parseAIResponse(response);
     processAIResponse(parsedResponse);
-  } catch (error: any) {
-    console.error("Quick message error:", error);
+  } catch {
     addErrorMessage(t.value.errorQuickMessage);
   } finally {
     isLoading.value = false;
@@ -102,8 +104,7 @@ const sendMessage = async () => {
 
     const parsedResponse = parseAIResponse(response);
     processAIResponse(parsedResponse);
-  } catch (error: any) {
-    console.error("Chat error:", error);
+  } catch {
     addErrorMessage(t.value.errorSendMessage);
   } finally {
     isLoading.value = false;
@@ -267,25 +268,19 @@ onMounted(() => {
 
 <template>
   <div class="chat-assistant">
-    <button
+    <ChatAssistantButton
       v-if="!isOpen"
-      class="chat-assistant__toggle"
+      variant="chat-toggle"
       @click="openChat"
-      :aria-label="t.chatButtonAria"
     >
-      <svg
-        class="chat-assistant__toggle-icon"
-        viewBox="0 0 24 24"
-        fill="currentColor"
-      >
-        <path
-          d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"
-        />
+      <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
       </svg>
-      <span class="chat-assistant__toggle-text">{{ t.title }}</span>
-    </button>
+      <span>{{ t.title }}</span>
+    </ChatAssistantButton>
 
-    <div v-if="isOpen" class="chat-assistant__modal">
+    <dialog ref="chat-dialog" class="chat-assistant__modal">
+      <div class="chat-assistant__items">
       <header class="chat-assistant__header" aria-label="chat assistant header">
         <div class="chat-assistant__header-content">
           <div class="chat-assistant__info">
@@ -396,11 +391,13 @@ onMounted(() => {
 
       <footer class="chat-assistant__footer" aria-label="chat assistant footer">
         <form @submit.prevent="sendMessage" class="chat-assistant__form">
-          <VoiceInput
-            :disabled="isLoading"
-            :locale="currentLocale"
-            @on-result="onVoiceResult"
-          />
+          <ClientOnly>
+            <VoiceInput
+              :disabled="isLoading"
+              :locale="currentLocale"
+              @on-result="onVoiceResult"
+            />
+          </ClientOnly>
           <UInput
             v-model="inputMessage"
             :placeholder="t.placeholder"
@@ -419,51 +416,19 @@ onMounted(() => {
           </p>
         </div>
       </footer>
-    </div>
+      </div>
+    </dialog>
   </div>
 </template>
 
 <style scoped lang="scss">
-.chat-assistant__toggle {
-  position: fixed;
-  bottom: toRem(24);
-  right: toRem(24);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: toRem(8);
-  padding: toRem(12) toRem(20);
-  background: linear-gradient(135deg, #4caf50, #2e7d32);
-  color: var(--light-color);
-  border: none;
-  border-radius: toRem(50);
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
-  transition: all var(--transition-duration);
-  font-weight: 500;
-  @include adaptiveValue("font-size", 14, 12);
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(76, 175, 80, 0.4);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-}
-
-.chat-assistant__toggle-icon {
-  width: toRem(20);
-  height: toRem(20);
-}
-
-.chat-assistant__toggle-text {
-  white-space: nowrap;
-}
-
 .chat-assistant__modal {
+  display: none;
+
+  &[open] {
+  display: block;
   position: fixed;
+  margin-inline-end: 0;
   bottom: toRem(24);
   right: toRem(24);
   z-index: 1001;
@@ -472,23 +437,25 @@ onMounted(() => {
   height: toRem(600);
   max-height: calc(100vh - toRem(48));
   background: var(--light-color);
+  border: none;
   border-radius: toRem(16);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  grid-template-areas:
-    "header"
-    "body"
-    "footer";
-  overflow: hidden;
+  padding: 0;
 
-  > * {
-    min-width: 0;
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.3);
+  }
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   }
 }
 
+.chat-assistant__items {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .chat-assistant__header {
-  grid-area: header;
+  flex-shrink: 0;
   padding: toRem(16) toRem(20);
   background: linear-gradient(135deg, #4caf50, #2e7d32);
   color: var(--light-color);
@@ -539,7 +506,7 @@ onMounted(() => {
 }
 
 .chat-assistant__body {
-  grid-area: body;
+  flex: 1;
   overflow-y: auto;
   padding: toRem(20);
   background: var(--bg);
@@ -693,7 +660,7 @@ onMounted(() => {
 }
 
 .chat-assistant__footer {
-  grid-area: footer;
+  flex-shrink: 0;
   padding: toRem(16) toRem(20);
   background: var(--light-color);
   border-top: toRem(1) solid var(--border-color);
