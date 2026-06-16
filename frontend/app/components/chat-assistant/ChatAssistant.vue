@@ -295,13 +295,11 @@ onMounted(() => {
           <div class="chat-assistant__actions">
             <ChatAssistantButton
               v-if="messages.length > 0"
-              variant="close"
+              variant="delete"
               :aria-label="t.clearHistory"
               :title="t.clearHistoryTitle"
               @click="clearChatHistory"
-            >
-              <Icon name="material-symbols:delete-outline-rounded" />
-            </ChatAssistantButton>
+            />
             <ChatAssistantButton
               variant="close"
               :aria-label="t.closeChat"

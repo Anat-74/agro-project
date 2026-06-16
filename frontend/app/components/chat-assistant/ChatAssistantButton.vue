@@ -4,6 +4,7 @@ type Variant =
   | "voice"
   | "suggestion"
   | "close"
+  | "delete"
   | "chat-toggle"
   | "cart-add"
   | "cart-remove"
@@ -47,6 +48,7 @@ const emit = defineEmits<{
     <Icon v-if="variant === 'send'" name="material-symbols:send" />
     <Icon v-else-if="icon" :name="icon" />
     <Icon v-else-if="variant === 'close'" name="material-symbols-light:close" />
+    <Icon v-else-if="variant === 'delete'" name="material-symbols:delete-outline-rounded" />
     <slot v-else />
   </button>
 </template>
@@ -157,6 +159,18 @@ const emit = defineEmits<{
     padding: toEm(4) toEm(12);
     background: transparent;
     color: var(--color);
+  }
+
+  &_delete {
+    background: transparent;
+    border: none;
+    font-size: toRem(20);
+    color: var(--light-color);
+
+    @include hover {
+      transform: scale(1.15);
+      color: var(--danger-color);
+    }
   }
 
   &_chat-toggle {
