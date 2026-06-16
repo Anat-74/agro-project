@@ -12,7 +12,7 @@ export type Category = {
   createdAt?: string;
   updatedAt?: string;
   publishedAt?: string;
-  image: Image[];
+  image: Image | null;
   subcategories?: Subcategory[];
   products?: Product[];
   seoTitle?: string;
@@ -37,7 +37,7 @@ export type Subcategory = {
   createdAt?: string;
   updatedAt?: string;
   publishedAt?: string;
-  image: Image[];
+  image: Image | null;
   products?: Product[];
   seoTitle?: string;
   seoDescription?: string;

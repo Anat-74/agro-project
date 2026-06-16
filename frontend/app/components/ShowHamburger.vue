@@ -27,97 +27,88 @@ const { open, close, isOpen } = useDialog("hamburgerDialog", dialogElement, {
 
 const { currentLocale } = useLocale();
 const config = useRuntimeConfig();
-const { find } = useStrapi();
+const { getProductLink } = useProductLink();
+
+const categoryKey = computed(() => `category-dialog-${currentLocale.value}`)
 
 const {
   data: category,
   pending: pendingCategories,
-  error,
-  refresh: refreshCategory,
-} = useAsyncData(`category-dialog-${currentLocale.value}`, async () => {
-  const response = await find<Category>("categories", {
-    filters: {
-      locale: { $eq: currentLocale.value },
-    },
-    populate: {
-      image: {
-        fields: ["alternativeText", "url"],
-      },
-      subcategories: {
-        fields: ["name", "slug"],
-      },
-      products: {
-        fields: ["name", "slug"],
-        populate: {
-          image: {
-            fields: ["alternativeText", "url"],
+  execute: executeCategory,
+} = useAsyncData(
+  categoryKey,
+  async () => {
+    const { find } = useStrapi()
+    const response = await find<Category>("categories", {
+      filters: { locale: { $eq: currentLocale.value } },
+      populate: {
+        image: { fields: ["alternativeText", "url"] },
+        subcategories: { fields: ["name", "slug"] },
+        products: {
+          fields: ["name", "slug"],
+          populate: {
+            image: { fields: ["alternativeText", "url"] },
+            category: { fields: ["slug"] },
+            subcategory: {
+              fields: ["slug"],
+              populate: { category: { fields: ["slug"] } },
+            },
           },
         },
       },
-    },
-  } as any);
+    } as any)
+    return response.data || []
+  },
+  { watch: [categoryKey], immediate: false, server: false, lazy: true }
+)
 
-  if (!response.data || response.data.length === 0) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: "Category - Not Found",
-    });
-  }
-  return response.data;
-});
+const productKey = computed(() => `product-dialog-${currentLocale.value}`)
 
 const {
   data: product,
   pending: pendingProducts,
+  execute: executeProduct,
   refresh: refreshProduct,
-} = useAsyncData(`product-dialog-${currentLocale.value}`, async () => {
-  const response = await find<Product>("products", {
-    filters: {
-      isDiscount: true,
-      locale: { $eq: currentLocale.value },
-    },
-    fields: [ "name", "isDiscount", "slug"],
-    pagination: {
-      pageSize: 100,
-    } as PaginationMeta,
-    populate: {
-      image: {
-        fields: ["alternativeText", "url"],
+  error: productError,
+} = useAsyncData(
+  productKey,
+  async () => {
+    const { find } = useStrapi()
+    const response = await find<Product>("products", {
+      filters: {
+        isDiscount: true,
+        locale: { $eq: currentLocale.value },
       },
-      subcategory: {
-        fields: ["name", "slug"],
-        populate: {
-          category: {
-            fields: ["name", "slug"],
-          },
+      fields: ["name", "isDiscount", "slug"],
+      pagination: { pageSize: 100 } as PaginationMeta,
+      populate: {
+        image: { fields: ["alternativeText", "url"] },
+        subcategory: {
+          fields: ["name", "slug"],
+          populate: { category: { fields: ["name", "slug"] } },
         },
       },
-    },
-  } as any);
-
-  if (!response.data || response.data.length === 0) {
-    throw createError({
-      statusCode: 404,
-      statusMessage: "Product - Not Found",
-    });
-  }
-  return response.data;
-});
+    } as any)
+    return response.data || []
+  },
+  { watch: [productKey], immediate: false, server: false, lazy: true }
+)
 
 const pending = computed(
   () => pendingCategories.value || pendingProducts.value,
-);
+)
 
-watch(currentLocale, () => {
-  refreshCategory();
-  refreshProduct();
-});
+const openHamburger = () => {
+  open?.()
+  if (!category.value) executeCategory()
+  if (!product.value) executeProduct()
+}
 </script>
 
 <template>
   <div class="hamburger-menu">
     <UButton
-      @click="isOpen ? close?.() : open?.()"
+      @click="isOpen ? close?.() : openHamburger()"
       :is-open="isOpen"
       variant="hamburger"
       :aria-label="
@@ -155,8 +146,8 @@ watch(currentLocale, () => {
           <details name="faq" class="accordion__details">
             <summary class="accordion__summary">
               <UImage
-                v-if="cat.image?.length"
-                :src="cat.image[0]?.url"
+                v-if="cat.image?.url"
+                :src="cat.image?.url"
                 :alt="cat.name"
                 class="accordion__product-image"
                 width="44"
@@ -191,11 +182,12 @@ watch(currentLocale, () => {
               >
                 <NuxtLink
                   class="accordion__product-link"
-                  :to="`/${currentLocale}/${prod?.subcategory?.category?.slug}/products/${prod.slug}`"
+                  :to="getProductLink(prod)"
+                  @click="close?.()"
                 >
                   <UImage
-                    v-if="prod.image?.length"
-                    :src="prod.image[0]?.url"
+                    v-if="prod.mainImage?.url || prod.image?.length"
+                    :src="prod.mainImage?.url || prod.image?.[0]?.url"
                     :alt="prod.name"
                     class="accordion__product-image-link"
                     width="32"
@@ -209,6 +201,19 @@ watch(currentLocale, () => {
           </div>
         </li>
       </ul>
+      <div
+        v-else-if="category && !category.length"
+        class="dialog-hamburger__empty"
+      >
+        {{ showHamburgerT.emptyCategory }}
+      </div>
+
+      <div v-if="productError" class="dialog-hamburger__error">
+        <p>{{ productError.message }}</p>
+        <UButton variant="close" @click="() => refreshProduct()">
+          {{ showHamburgerT.retry }}
+        </UButton>
+      </div>
 
       <div v-if="product?.length" class="accordion">
         <details name="faq" class="accordion__details">
@@ -234,11 +239,11 @@ watch(currentLocale, () => {
               <NuxtLink
                 class="accordion__product-link accordion__product-link_is-discount"
                 @click="close?.()"
-                :to="`/${currentLocale}/${prod?.subcategory?.category?.slug}/products/${prod.slug}`"
+                :to="getProductLink(prod)"
               >
                 <UImage
-                  v-if="prod.image?.length"
-                  :src="prod.image[0]?.url"
+                  v-if="prod.mainImage?.url || prod.image?.length"
+                  :src="prod.mainImage?.url || prod.image?.[0]?.url"
                   :alt="prod.name"
                   class="accordion__product-image-link"
                   width="32"
@@ -250,6 +255,12 @@ watch(currentLocale, () => {
             </li>
           </ul>
         </div>
+      </div>
+      <div
+        v-else-if="product && !product.length"
+        class="dialog-hamburger__empty"
+      >
+        {{ showHamburgerT.emptyDiscount }}
       </div>
 
       <div class="dialog-hamburger__contacts">
@@ -283,9 +294,6 @@ watch(currentLocale, () => {
       <Socials :is-open="isOpen" :socials="socials" />
     </div>
   </dialog>
-  <span v-if="error" class="error">
-    {{ error.message }}
-  </span>
 </template>
 
 <style lang="scss" scoped>
@@ -546,6 +554,24 @@ watch(currentLocale, () => {
     font-weight: 600;
     color: var(--danger-hover);
   }
+}
+
+.dialog-hamburger {
+  &__empty {
+    text-align: center;
+    padding: toEm(20);
+    color: var(--gray-color);
+    font-style: italic;
+    @include adaptiveValue("font-size", 14, 12);
+  }
+
+  &__error {
+    text-align: center;
+    padding: toEm(16);
+    color: var(--danger-color);
+    p { margin-block-end: toEm(8); }
+  }
+
 }
 
 .sidebar {
