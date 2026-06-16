@@ -17,15 +17,11 @@ const scrollToTop = () => {
 }
 
 onMounted(() => {
-  if (typeof window !== 'undefined') {
-    window.addEventListener('scroll', checkScroll);
-  }
+  window.addEventListener('scroll', checkScroll);
 })
 
 onUnmounted(() => {
-  if (typeof window !== 'undefined') {
-    window.removeEventListener('scroll', checkScroll);
-  }
+  window.removeEventListener('scroll', checkScroll);
 })
 </script>
 

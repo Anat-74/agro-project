@@ -74,7 +74,7 @@ const getPageLink = (newPage: number) => {
   transition: all var(--transition-duration);
 
   &_active {
-   background-color: var(--blue-color);
+    background-color: var(--warning-color);
    color: var(--light-color);
    font-weight: 600;
   }

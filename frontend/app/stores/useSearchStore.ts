@@ -17,8 +17,8 @@ export const useSearchStore = defineStore("search", () => {
   const currentPage = ref(1)
   // Общее количество страниц
   const totalPages = ref(1)
-  // Статус выполнения поиска: idle, pending, success
-  const status = ref<"idle" | "pending" | "success">("idle")
+  // Статус выполнения поиска: idle, pending, success, error
+  const status = ref<"idle" | "pending" | "success" | "error">("idle")
   // Флаг, указывающий, был ли выполнен поиск
   const hasSearched = ref(false)
 
@@ -45,8 +45,9 @@ export const useSearchStore = defineStore("search", () => {
       ).pageCount
       // Устанавливаем флаг выполненного поиска
       hasSearched.value = true
+    } catch {
+      status.value = "error"
     } finally {
-      // Устанавливаем статус в success
       status.value = "success"
     }
   }

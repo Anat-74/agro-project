@@ -8,12 +8,9 @@ interface Characteristic {
   value: string
 }
 
-defineProps({
-  specs: {
-    type: Array as PropType<Characteristic[]>,
-    default: () => []
-  }
-})
+defineProps<{
+  specs: Characteristic[]
+}>()
 </script>
 
 <template>
