@@ -85,7 +85,7 @@ const { data, pending, error, refresh } = useAsyncData(
   },
 );
 
-const visibleImagesCount = computed(() => {
+const visibleImagesCount = computed<number>(() => {
   if (width.value < 565.98) return 2;
   if (width.value < 878.98) return 4;
   if (width.value < 1215.98) return 6;
@@ -226,12 +226,8 @@ watchEffect(() => {
           </h2>
           <UImage
             class="category-content__image"
-            v-if="
-              subcategory.image &&
-              subcategory.image.length > 0 &&
-              subcategory.image[0]
-            "
-            :src="subcategory.image[0].url"
+            v-if="subcategory.image?.url"
+            :src="subcategory.image.url"
             :alt="subcategory.name"
             :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
             :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"

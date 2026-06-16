@@ -82,7 +82,7 @@ const { data, pending, error, refresh } = useAsyncData(
   },
 );
 
-const visibleImagesCount = computed(() => {
+const visibleImagesCount = computed<number>(() => {
   if (width.value < 565.98) return 2;
   if (width.value < 878.98) return 4;
   if (width.value < 1215.98) return 6;
