@@ -32,16 +32,20 @@ const visibleImagesCount = computed(() => {
 </script>
 
 <template>
-  <li class="discount-card">
+  <li class="discount-card" itemscope itemtype="https://schema.org/Product">
     <Icon
       v-if="product.isDiscount"
       class="discount-card__discount"
       name="mdi:discount"
     />
-    <NuxtLink class="discount-card__link" :to="getProductLink(product)">
+    <NuxtLink
+      class="discount-card__link"
+      :to="getProductLink(product)"
+      itemprop="url"
+    >
       <UImage
-        v-if="product.image?.length"
-        :src="product.image[0]?.url"
+        v-if="product.mainImage?.url || product.image?.length"
+        :src="product.mainImage?.url || product.image[0]?.url"
         :alt="product.name"
         :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
         :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
@@ -50,7 +54,7 @@ const visibleImagesCount = computed(() => {
         type="discount-product"
       />
     </NuxtLink>
-    <h3 class="discount-card__title">{{ product.name }}</h3>
+    <h3 class="discount-card__title" itemprop="name">{{ product.name }}</h3>
     <div class="discount-card__items-price">
       <UTooltip :text="tooltipT.byRuble">
         <Icon name="my-icon:icon-by-regular" />
@@ -60,11 +64,22 @@ const visibleImagesCount = computed(() => {
           'discount-card__price',
           { 'discount-card__price_discount': product?.isDiscount },
         ]"
+        itemprop="price"
       >
         {{ formatPrice(product.price) }}
       </span>
     </div>
-    <UButton class="discount-card__show" icon="mdi:show-outline" />
+    <div class="visually-hidden" itemprop="description">
+      {{ product.description }}
+    </div>
+    <meta itemprop="priceCurrency" content="BYN" />
+    <meta
+      itemprop="availability"
+      :content="product.isAvailable
+        ? 'https://schema.org/InStock'
+        : 'https://schema.org/OutOfStock'"
+    />
+    <ShowModalDiscountProduct :product="product" />
     <UButton
       class="discount-card__add"
       @click="handleAddToCart(product)"
@@ -166,7 +181,6 @@ const visibleImagesCount = computed(() => {
   }
 
   &__show {
-    grid-area: show;
     align-self: start;
     translate: toEm(-6) toRem(6);
     padding-inline: toEm(5);
