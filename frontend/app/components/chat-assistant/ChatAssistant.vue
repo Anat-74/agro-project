@@ -401,7 +401,6 @@ onMounted(() => {
             :locale="currentLocale"
             @on-result="onVoiceResult"
           />
-          <form @submit.prevent="sendMessage" class="chat-assistant__form">
           <UInput
             v-model="inputMessage"
             :placeholder="t.placeholder"
@@ -413,7 +412,6 @@ onMounted(() => {
             :isDisabled="!inputMessage.trim() || isLoading"
             :aria-label="t.sendButton"
           />
-          </form>
         </form>
         <div class="chat-assistant__footer-info">
           <p class="chat-assistant__footer-text">

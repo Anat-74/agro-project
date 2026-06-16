@@ -73,13 +73,21 @@ export const useDialog = (
     }
   };
 
+  // Обработчик Escape - для show() (show() не обрабатывает Escape нативно)
+  const closeOnEscape = (e: KeyboardEvent) => {
+    if (e.key === "Escape") {
+      close();
+    }
+  };
+
   // Добавление обработчика событий
   onMounted(() => {
     const storedElement = dialogElementMap.get(id)?.value;
     if (!storedElement) return;
 
-    // Добавляем обработчик клика только если используем showModal()
-    if (!useShowMethod) {
+    if (useShowMethod) {
+      storedElement.addEventListener("keydown", closeOnEscape);
+    } else {
       storedElement.addEventListener("click", closeOnBackdropClick);
     }
   });
@@ -87,7 +95,11 @@ export const useDialog = (
   // Удаление обработчика при размонтировании
   onUnmounted(() => {
     const storedElement = dialogElementMap.get(id)?.value;
-    if (!useShowMethod && storedElement) {
+    if (!storedElement) return;
+
+    if (useShowMethod) {
+      storedElement.removeEventListener("keydown", closeOnEscape);
+    } else {
       storedElement.removeEventListener("click", closeOnBackdropClick);
     }
   });
