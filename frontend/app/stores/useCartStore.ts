@@ -1,3 +1,6 @@
+import { defineStore } from "pinia"
+import { ref, computed } from "vue"
+
 export type CartProduct = Omit<Product, 'image'> & {
    image: string
    categorySlug: string
