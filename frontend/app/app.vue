@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { seoTranslations } from "~/locales/appSeo";
 import { VISIBILITY_KEY } from "#shared/utils/visibility";
+import { useWebVitals } from "~/composables/useWebVitals";
 
 const { currentLocale } = useLocale();
 const route = useRoute();
@@ -90,6 +91,8 @@ provide(VISIBILITY_KEY, {
   visibleIsContacts,
   hideContacts,
 });
+
+useWebVitals();
 </script>
 
 <template>
