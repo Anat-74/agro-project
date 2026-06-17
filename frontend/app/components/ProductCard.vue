@@ -30,7 +30,10 @@ const handleAddToCart = (product: Product) => {
   if (isInCart(product.documentId)) {
     cartStore.removeFromCart(product.documentId);
   } else {
-    cartStore.addToCart(product, route.params.categorySlug as string, null);
+    const slug = (route.params.categorySlug as string)
+      || product.subcategory?.category?.slug
+      || ''
+    cartStore.addToCart(product, slug, product.subcategory?.slug || null);
   }
 };
 

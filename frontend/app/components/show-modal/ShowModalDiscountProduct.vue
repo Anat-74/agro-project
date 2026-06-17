@@ -44,11 +44,13 @@ const parseCharacteristics = (char: string) => {
 }
 
 const handleAddToCart = () => {
-  const categorySlug = route.params.categorySlug as string
+  const categorySlug = (route.params.categorySlug as string)
+    || props.product.subcategory?.category?.slug
+    || ''
   if (isInCart(props.product.documentId)) {
     cartStore.removeFromCart(props.product.documentId)
   } else {
-    cartStore.addToCart(props.product, categorySlug, null)
+    cartStore.addToCart(props.product, categorySlug, props.product.subcategory?.slug || null)
   }
 }
 </script>
