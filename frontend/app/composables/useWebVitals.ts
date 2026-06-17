@@ -22,7 +22,13 @@ export const useWebVitals = () => {
 
     try {
       let clsValue = 0
+      let lastPath = location.pathname
       const clsObserver = new PerformanceObserver((list) => {
+        const currentPath = location.pathname
+        if (currentPath !== lastPath) {
+          clsValue = 0
+          lastPath = currentPath
+        }
         for (const entry of list.getEntries()) {
           if (!(entry as any).hadRecentInput) {
             clsValue += (entry as any).value || 0

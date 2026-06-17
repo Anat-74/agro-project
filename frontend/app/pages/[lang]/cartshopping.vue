@@ -122,6 +122,7 @@ onMounted(() => {
               src="/image/valberg_new-removebg-preview.png"
               alt="valberg"
               width="122"
+              height="60"
               :fromStrapi="false"
             />
           </li>
@@ -130,6 +131,7 @@ onMounted(() => {
               src="/image/aiko_new_1-removebg-preview.png"
               alt="aiko"
               width="122"
+              height="60"
               :fromStrapi="false"
             />
           </li>
@@ -138,6 +140,7 @@ onMounted(() => {
               src="/image/praktik_profi_rgb-removebg-preview.png"
               alt="praktik profi"
               width="122"
+              height="60"
               :fromStrapi="false"
             />
           </li>
@@ -146,6 +149,7 @@ onMounted(() => {
               src="/image/praktik-home_rgb-removebg-preview.png"
               alt="praktik home"
               width="122"
+              height="60"
               :fromStrapi="false"
             />
           </li>
