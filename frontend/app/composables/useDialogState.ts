@@ -1,3 +1,5 @@
+import { ref, onMounted, onUnmounted } from "vue"
+
 export interface UseDialogOptions {
   useShowMethod?: boolean; // Если true, используем show() вместо showModal()
 }
