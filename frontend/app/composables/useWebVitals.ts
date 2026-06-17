@@ -1,21 +1,24 @@
 export const useWebVitals = () => {
   if (import.meta.client) {
-    const report = (name: string, value: number) => {
+    const send = (name: string, value: number) => {
       console.debug(`[Web Vitals] ${name}:`, value)
+      try {
+        fetch("/api/web-vitals", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, value, path: location.pathname }),
+        })
+      } catch {}
     }
 
     try {
       const lcpObserver = new PerformanceObserver((list) => {
         const entries = list.getEntries()
         const lastEntry = entries[entries.length - 1]
-        if (lastEntry) {
-          report("LCP", lastEntry.startTime)
-        }
+        if (lastEntry) send("LCP", lastEntry.startTime)
       })
       lcpObserver.observe({ type: "largest-contentful-paint", buffered: true })
-    } catch {
-      // LCP not supported
-    }
+    } catch {}
 
     try {
       let clsValue = 0
@@ -25,25 +28,21 @@ export const useWebVitals = () => {
             clsValue += (entry as any).value || 0
           }
         }
-        report("CLS", clsValue)
+        send("CLS", clsValue)
       })
       clsObserver.observe({ type: "layout-shift", buffered: true })
-    } catch {
-      // CLS not supported
-    }
+    } catch {}
 
     try {
       const inpObserver = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
-          const eventEntry = entry as any
-          if (eventEntry.processingStart && eventEntry.startTime) {
-            report("INP", eventEntry.processingStart - eventEntry.startTime)
+          const e = entry as any
+          if (e.processingStart && e.startTime) {
+            send("INP", e.processingStart - e.startTime)
           }
         }
       })
       inpObserver.observe({ type: "first-input", buffered: true })
-    } catch {
-      // INP not supported
-    }
+    } catch {}
   }
 }
