@@ -11,10 +11,12 @@ interface Props {
   required?: boolean
   error?: string
   icon?: string
+  autocomplete?: string
 }
 
 const { type = 'text', label = '', placeholder = '', rows = 3,
-  disabled = false, readonly = false, required = false, error = '', icon = '' } = defineProps<Props>()
+  disabled = false, readonly = false, required = false, error = '', icon = '',
+  autocomplete = '' } = defineProps<Props>()
 
 const model = defineModel<any>()
 const inputId = useId()
@@ -35,6 +37,7 @@ const inputId = useId()
       :disabled="disabled"
       :readonly="readonly"
       :required="required"
+      :autocomplete="autocomplete || undefined"
       class="u-input__field u-input__field_textarea"
     />
 
@@ -45,6 +48,7 @@ const inputId = useId()
         :checked="!!model"
         :disabled="disabled"
         :required="required"
+        :autocomplete="autocomplete || undefined"
         @change="($e) => model = ($e.target as HTMLInputElement).checked"
         class="u-input__checkbox"
       />
@@ -63,6 +67,7 @@ const inputId = useId()
         :disabled="disabled"
         :readonly="readonly"
         :required="required"
+        :autocomplete="autocomplete || undefined"
         class="u-input__field"
       />
     </div>

@@ -1,8 +1,10 @@
 <script setup lang="ts">
 const { find } = useStrapi();
 const searchStore = useSearchStore();
+const { isAuthenticated } = useAuth();
 const { products, totalPages, currentPage } = storeToRefs(searchStore);
 const { currentLocale } = useLocale();
+console.debug("auth state:", isAuthenticated.value);
 
 const {
   data: global,
@@ -40,6 +42,13 @@ console.debug("global data:", global.value);
       <AnimateTitle class="hidden-mobile" />
       <ProductFilter class="header__search" />
       <Basket class="header__cart" />
+      <NuxtLink
+        :to="isAuthenticated ? `/${currentLocale}/cabinet` : `/${currentLocale}/login`"
+        class="header__profile"
+        :aria-label="isAuthenticated ? 'Личный кабинет' : 'Войти'"
+      >
+        <Icon name="cil:user" width="28" height="28" />
+      </NuxtLink>
     </div>
     <div class="header__bottom">
       <div class="header__container-bottom">
@@ -116,7 +125,7 @@ console.debug("global data:", global.value);
 
   &__container-top {
     display: grid;
-    grid-template-columns: auto auto 1fr auto;
+    grid-template-columns: auto auto 1fr auto auto;
     align-items: center;
     column-gap: toRem(22);
     padding-block: toEm(16);
@@ -149,6 +158,30 @@ console.debug("global data:", global.value);
     @media (max-width: $mobile) {
       grid-column: 1/2;
       grid-row: 1/2;
+    }
+  }
+
+  &__profile {
+    display: flex;
+    align-items: center;
+    transition: opacity var(--transition-duration);
+    translate: 0 toRem(3);
+
+    svg {
+      color: var(--primary-color);
+      transition: transform var(--transition-duration);
+    }
+
+    @include hover {
+      svg {
+        transform: scale(1.15);
+      }
+    }
+
+    @media (max-width: $mobile) {
+      grid-column: 2/3;
+      grid-row: 1/2;
+      justify-self: end;
     }
   }
 

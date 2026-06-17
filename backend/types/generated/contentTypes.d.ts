@@ -693,12 +693,18 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     phone: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
-    statusOrders: Schema.Attribute.Enumeration<['new', 'processed']> &
+    statusOrders: Schema.Attribute.Enumeration<
+      ['new', 'processed', 'confirmed', 'delivered', 'cancelled']
+    > &
       Schema.Attribute.DefaultTo<'new'>;
     total: Schema.Attribute.Decimal & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    user: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
   };
 }
 

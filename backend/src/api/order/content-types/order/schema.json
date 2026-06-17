@@ -31,9 +31,17 @@
       "type": "enumeration",
       "enum": [
         "new",
-        "processed"
+        "processed",
+        "confirmed",
+        "delivered",
+        "cancelled"
       ],
       "default": "new"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
     }
   }
 }
