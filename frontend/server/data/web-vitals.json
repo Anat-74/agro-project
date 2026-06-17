@@ -1,0 +1,196 @@
+{
+  "metrics": [
+    {
+      "name": "LCP",
+      "value": 37884,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:40:29.868Z"
+    },
+    {
+      "name": "LCP",
+      "value": 1592,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:40:35.717Z"
+    },
+    {
+      "name": "LCP",
+      "value": 36948,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:43:10.075Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006830133355587711,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:43:10.080Z"
+    },
+    {
+      "name": "LCP",
+      "value": 1512,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:43:14.899Z"
+    },
+    {
+      "name": "INP",
+      "value": 3.200000047683716,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:43:39.048Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/yagody/ezhevika/ezhevika-barhatnaya",
+      "timestamp": "2026-06-17T15:43:39.330Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/yagody/ezhevika/ezhevika-barhatnaya",
+      "timestamp": "2026-06-17T15:43:39.564Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08106062671743285,
+      "path": "/ru/yagody/ezhevika/ezhevika-barhatnaya",
+      "timestamp": "2026-06-17T15:43:43.382Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08106062671743285,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:43:44.631Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08106062671743285,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:43:45.001Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08106062671743285,
+      "path": "/ru/ovoshhi/tomat/tomat-sochnyj",
+      "timestamp": "2026-06-17T15:43:52.181Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08106062671743285,
+      "path": "/ru/ovoshhi/tomat/tomat-sochnyj",
+      "timestamp": "2026-06-17T15:43:52.540Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08106062671743285,
+      "path": "/ru/ovoshhi/tomat/tomat-sochnyj",
+      "timestamp": "2026-06-17T15:43:52.544Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08106062671743285,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:43:58.764Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08106062671743285,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:43:59.059Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08106062671743285,
+      "path": "/ru/services",
+      "timestamp": "2026-06-17T15:44:02.074Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08112785880933869,
+      "path": "/ru/blog",
+      "timestamp": "2026-06-17T15:44:03.814Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08112785880933869,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:44:05.982Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08112785880933869,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:44:06.261Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08112785880933869,
+      "path": "/ru/yagody/kryzhovnik/kryzhovnik-sladkij",
+      "timestamp": "2026-06-17T15:44:10.073Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08112785880933869,
+      "path": "/ru/yagody/kryzhovnik/kryzhovnik-sladkij",
+      "timestamp": "2026-06-17T15:44:10.082Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08112785880933869,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:44:11.964Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08112785880933869,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:44:12.313Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08119509090124453,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:45:31.801Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08139689272184733,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:45:31.862Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.32160985100412953,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-17T15:45:33.256Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.32161473005632507,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-17T15:45:33.550Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.32161473005632507,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-17T15:46:04.265Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.32161473005632507,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-17T15:46:04.565Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.32448063170397895,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-17T15:46:05.113Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.32455321180319546,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-17T15:46:05.146Z"
+    }
+  ]
+}

@@ -4,8 +4,17 @@ export const useOrderStore = defineStore('order', () => {
 
    const createOrder = async (email: string, phone: string) => {
       try {
+         const orderItems = cartStore.items.map((item: any) => ({
+            productId: item.product.documentId,
+            name: item.product.name,
+            price: item.product.price,
+            quantity: item.quantity,
+            categorySlug: item.product.categorySlug,
+            subcategorySlug: item.product.subcategorySlug || null,
+         }))
+
          const orderData = {
-            items: cartStore.items,
+            items: orderItems,
             total: cartStore.totalPrice,
             email,
             phone,
@@ -16,7 +25,7 @@ export const useOrderStore = defineStore('order', () => {
          cartStore.clearCart()
          return response
       } catch (error) {
-         console.error('Ошибка при создании заказа:', error)
+         console.error('Error creating order:', error)
          throw error
       }
    }

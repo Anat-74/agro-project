@@ -3,6 +3,7 @@ import { useChatMessages } from "../../composables/chat-assistant/useChatMessage
 import { useChatCart } from "../../composables/chat-assistant/useChatCart";
 import { parseAIResponse } from "../../composables/chat-assistant/useChatAssistant";
 import { chatAssistantTranslations } from "../../locales/chat-assistant";
+import ChatProductCard from "./ChatProductCard.vue";
 import VoiceInput from "./VoiceInput.vue";
 const { currentLocale } = useLocale();
 const chatMessages = useChatMessages();
