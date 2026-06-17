@@ -16,7 +16,7 @@ interface Props {
 const { type = 'text', label = '', placeholder = '', rows = 3,
   disabled = false, readonly = false, required = false, error = '', icon = '' } = defineProps<Props>()
 
-const model = defineModel<string | number | boolean>()
+const model = defineModel<any>()
 const inputId = useId()
 </script>
 

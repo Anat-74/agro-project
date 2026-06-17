@@ -191,6 +191,282 @@
       "value": 0.32455321180319546,
       "path": "/ru/cartshopping",
       "timestamp": "2026-06-17T15:46:05.146Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.32455321180319546,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:49:24.299Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.6741516212919985,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:49:25.335Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.6741516212919985,
+      "path": "/ru/ovoshhi/tomat/tomat-sochnyj",
+      "timestamp": "2026-06-17T15:49:28.455Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.6741516212919985,
+      "path": "/ru/ovoshhi/tomat/tomat-sochnyj",
+      "timestamp": "2026-06-17T15:49:28.542Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.6741516212919985,
+      "path": "/ru/ovoshhi/tomat/tomat-sochnyj",
+      "timestamp": "2026-06-17T15:49:29.108Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.6741516212919985,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:49:38.083Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.6741516212919985,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:49:38.894Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.6741516212919985,
+      "path": "/ru/korneplody/kartofel/kartofel-vkusnyj",
+      "timestamp": "2026-06-17T15:49:41.792Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.6741516212919985,
+      "path": "/ru/korneplody/kartofel/kartofel-vkusnyj",
+      "timestamp": "2026-06-17T15:49:41.866Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.6741516212919985,
+      "path": "/ru/korneplody/kartofel/kartofel-vkusnyj",
+      "timestamp": "2026-06-17T15:49:42.359Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.6741516212919985,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:49:47.913Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.6741516212919985,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:49:48.741Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.6741516212919985,
+      "path": "/ru/yagody/ezhevika/ezhevika-barhatnaya",
+      "timestamp": "2026-06-17T15:49:50.908Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.6741516212919985,
+      "path": "/ru/yagody/ezhevika/ezhevika-barhatnaya",
+      "timestamp": "2026-06-17T15:49:51.785Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.6741516212919985,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:49:56.974Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.6741516212919985,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:49:58.066Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.0183088934260869,
+      "path": "/ru/bobovye/products/goroh-struchkovyj",
+      "timestamp": "2026-06-17T15:50:01.758Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.0669940584605446,
+      "path": "/ru/bobovye/products/goroh-struchkovyj",
+      "timestamp": "2026-06-17T15:50:01.925Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1199357781415902,
+      "path": "/ru/bobovye/products/goroh-struchkovyj",
+      "timestamp": "2026-06-17T15:50:01.935Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1199357781415902,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:50:06.317Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1199357781415902,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:50:07.371Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1199357781415902,
+      "path": "/ru/yagody/ezhevika/ezhevika-barhatnaya",
+      "timestamp": "2026-06-17T15:51:49.227Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1199357781415902,
+      "path": "/ru/yagody/ezhevika/ezhevika-barhatnaya",
+      "timestamp": "2026-06-17T15:51:49.612Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1199357781415902,
+      "path": "/ru/yagody/ezhevika/ezhevika-barhatnaya",
+      "timestamp": "2026-06-17T15:51:49.619Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1199357781415902,
+      "path": "/ru/yagody/ezhevika/ezhevika-barhatnaya",
+      "timestamp": "2026-06-17T15:51:55.751Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1199357781415902,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:51:57.696Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1199357781415902,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:51:58.076Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1199357781415902,
+      "path": "/ru/bobovye/products/goroh-struchkovyj",
+      "timestamp": "2026-06-17T15:52:01.755Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1199357781415902,
+      "path": "/ru/bobovye/products/goroh-struchkovyj",
+      "timestamp": "2026-06-17T15:52:01.792Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1199357781415902,
+      "path": "/ru/bobovye/products/goroh-struchkovyj",
+      "timestamp": "2026-06-17T15:52:02.013Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1199357781415902,
+      "path": "/ru/bobovye/products/goroh-struchkovyj",
+      "timestamp": "2026-06-17T15:52:06.551Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1199357781415902,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-17T15:52:08.368Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1200030102334961,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-17T15:52:08.889Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.120338978793234,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-17T15:52:09.191Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.120338978793234,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-17T15:52:25.208Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.120338978793234,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-17T15:52:25.507Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1209087282243542,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-17T15:52:26.047Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1209813083235707,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-17T15:52:26.056Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1209813083235707,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:56:58.963Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1209813083235707,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:56:59.336Z"
+    },
+    {
+      "name": "LCP",
+      "value": 1512,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:57:57.341Z"
+    },
+    {
+      "name": "LCP",
+      "value": 1512,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:57:57.347Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1209813083235707,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:57:57.351Z"
+    },
+    {
+      "name": "INP",
+      "value": 3.200000047683716,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:57:57.361Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1209813083235707,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:57:57.366Z"
+    },
+    {
+      "name": "INP",
+      "value": 3.200000047683716,
+      "path": "/ru",
+      "timestamp": "2026-06-17T15:57:57.402Z"
     }
   ]
 }
