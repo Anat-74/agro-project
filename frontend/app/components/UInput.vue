@@ -13,17 +13,8 @@ interface Props {
   icon?: string
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  type: 'text',
-  label: '',
-  placeholder: '',
-  rows: 3,
-  disabled: false,
-  readonly: false,
-  required: false,
-  error: '',
-  icon: ''
-})
+const { type = 'text', label = '', placeholder = '', rows = 3,
+  disabled = false, readonly = false, required = false, error = '', icon = '' } = defineProps<Props>()
 
 const model = defineModel<string | number | boolean>()
 const inputId = useId()

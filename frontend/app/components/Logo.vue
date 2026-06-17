@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { logoTranslations } from "~/locales/logo";
+
 const { currentLocale } = useLocale();
 const t = computed(() => logoTranslations[currentLocale.value])
-import { logoTranslations } from "~/locales/logo";
 
 interface Props {
   global: GlobalData;
@@ -9,10 +10,7 @@ interface Props {
   height?: string | number;
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  width: 45,
-  height: 45,
-});
+const { width = 45, height = 45, ...props } = defineProps<Props>()
 </script>
 
 <template>
@@ -26,8 +24,8 @@ const props = withDefaults(defineProps<Props>(), {
       v-if="props.global?.footer?.logo?.url"
       :src="props.global?.footer?.logo?.url"
       :smooth-load="false"
-      :width="props.width"
-      :height="props.height"
+      :width="width"
+      :height="height"
       :alt="t.alt"
       type="icon"
     />

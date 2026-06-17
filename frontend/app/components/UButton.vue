@@ -40,15 +40,8 @@ interface Emits {
   (e: "click", event: MouseEvent): void;
 }
 
-withDefaults(defineProps<Props>(), {
-  variant: "primary",
-  size: "normal",
-  isLoading: false,
-  isDisabled: false,
-  type: "button",
-   isOpen: false,
-  isInCart: false
-});
+const { variant = "primary", size = "normal", isLoading = false,
+  isDisabled = false, type = "button", isOpen = false, isInCart = false } = defineProps<Props>()
 
 defineEmits<Emits>();
 </script>

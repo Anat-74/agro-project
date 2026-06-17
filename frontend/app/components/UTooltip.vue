@@ -5,10 +5,7 @@ interface Props {
   tag?: 'button' | 'span' | 'div';
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  position: 'top',
-  tag: 'span',
-});
+const { position = 'top', tag = 'span' } = defineProps<Props>()
 
 const showTooltip = ref(false);
 </script>

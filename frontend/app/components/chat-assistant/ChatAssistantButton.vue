@@ -21,13 +21,8 @@ interface Props {
   type?: "button" | "submit"
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  variant: "send",
-  isDisabled: false,
-  isListening: false,
-  icon: "",
-  type: "button",
-})
+const { variant = "send", isDisabled = false, isListening = false,
+  icon = "", type = "button" } = defineProps<Props>()
 
 const emit = defineEmits<{
   click: [e: MouseEvent]
