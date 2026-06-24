@@ -35,7 +35,7 @@ console.debug("global data:", global.value);
     <div class="header__container-top">
       <Logo
         class="header__logo hidden-mobile"
-        :global="global"
+        :global="global" 
         width="48"
         height="48"
       />
