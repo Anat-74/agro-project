@@ -27,7 +27,15 @@ const cancelOrder = async (order: any) => {
 const canCancel = (order: any) =>
   order.statusOrders === 'new' || order.statusOrders === 'processed'
 
-const ordersKey = computed(() => `orders-user-${authStore.user?.email}`)
+const statusFilter = ref<string | null>(null)
+const currentPage = ref(1)
+const totalPages = ref(1)
+
+watch(statusFilter, () => { currentPage.value = 1 })
+
+const ordersKey = computed(() =>
+  `orders-user-${authStore.user?.email}-${statusFilter.value || 'all'}-p${currentPage.value}`
+)
 
 const { data: orders, status } = useAsyncData(
   ordersKey,
@@ -36,20 +44,26 @@ const { data: orders, status } = useAsyncData(
       console.debug('OrderHistory: no user email', authStore.user)
       return []
     }
-    console.debug('OrderHistory: fetching orders for', authStore.user.email)
+    console.debug('OrderHistory: fetching orders for', authStore.user.email, 'page', currentPage.value)
+
+    const filters: Record<string, any> = { email: { $eq: authStore.user.email } }
+    if (statusFilter.value) {
+      filters.statusOrders = { $eq: statusFilter.value }
+    }
 
     const ordersResponse = await find('orders', {
-      filters: { email: { $eq: authStore.user.email } } as any,
+      filters: filters as any,
       sort: ['createdAt:desc'],
-      pagination: { page: 1, pageSize: 50 },
+      pagination: { page: currentPage.value, pageSize: 5 },
     })
     console.debug('orders response:', ordersResponse)
+    totalPages.value = (ordersResponse as any)?.meta?.pagination?.pageCount || 1
     return ordersResponse
   },
   {
     server: false,
     lazy: true,
-    watch: [() => authStore.user?.email],
+    watch: [() => authStore.user?.email, statusFilter, currentPage],
     transform: (response: any) => (response?.data as any[]) || [],
   },
 )
@@ -66,6 +80,17 @@ const statusLabel: Record<string, string> = {
 <template>
   <ClientOnly>
     <div class="order-history">
+      <div class="order-history__filters">
+        <button
+          v-for="[key, label] of [['', 'Все'], ['new', 'Новые'], ['processed', 'В обработке'], ['delivered', 'Доставлен'], ['cancelled', 'Отменён']]"
+          :key="key"
+          class="order-history__filter-btn"
+          :class="{ 'order-history__filter-btn_active': statusFilter === key || (!statusFilter && !key) }"
+          @click="statusFilter = key || null"
+        >
+          {{ label }}
+        </button>
+      </div>
       <OrderHistorySkeleton v-if="status === 'pending'" />
 
       <p v-else-if="status === 'error'" class="order-history__empty">
@@ -124,6 +149,23 @@ const statusLabel: Record<string, string> = {
           </div>
         </li>
       </ul>
+      <div v-if="totalPages > 1" class="order-history__pagination">
+        <UButton
+          variant="secondary"
+          :is-disabled="currentPage <= 1"
+          @click="currentPage--"
+        >
+          ← Назад
+        </UButton>
+        <span class="order-history__page-info">{{ currentPage }} / {{ totalPages }}</span>
+        <UButton
+          variant="secondary"
+          :is-disabled="currentPage >= totalPages"
+          @click="currentPage++"
+        >
+          Вперёд →
+        </UButton>
+      </div>
     </div>
   </ClientOnly>
 </template>
@@ -204,6 +246,46 @@ const statusLabel: Record<string, string> = {
   &__cancel-btn {
     font-size: toRem(12);
     padding: toRem(2) toRem(8);
+  }
+
+  &__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: toRem(8);
+    margin-block-end: toRem(16);
+  }
+
+  &__pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: toRem(16);
+    margin-block-start: toRem(20);
+  }
+
+  &__page-info {
+    font-size: toRem(14);
+    color: var(--text-muted);
+  }
+
+  &__filter-btn {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: toRem(20);
+    padding: toRem(4) toRem(14);
+    font-size: toRem(13);
+    cursor: pointer;
+    transition: all var(--transition-duration);
+
+    &_active {
+      background: var(--primary-color);
+      color: #fff;
+      border-color: var(--primary-color);
+    }
+
+    @include hover {
+      opacity: 0.85;
+    }
   }
 
   &__badge {
