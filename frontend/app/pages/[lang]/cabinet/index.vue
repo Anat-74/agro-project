@@ -7,20 +7,41 @@ const { currentLocale } = useLocale()
 const authStore = useAuthStore()
 const router = useRouter()
 
-const handleLogout = () => {
+const showToast = ref(false)
+
+import OrderHistory from '~/components/OrderHistory.vue'
+import ConfirmDeleteModal from '~/components/auth/ConfirmDeleteModal.vue'
+
+const confirmModal = useTemplateRef<InstanceType<typeof ConfirmDeleteModal>>('confirm-modal')
+
+const handleLogout = async () => {
   authStore.logout()
+  showToast.value = true
+  await new Promise(r => setTimeout(r, 1500))
   router.push(`/${currentLocale.value}/login`)
+}
+
+const confirmLogout = () => {
+  confirmModal.value?.open?.()
 }
 </script>
 
 <template>
   <div class="cabinet">
+    <AppNotification
+      v-if="showToast"
+      type="success"
+      @close="showToast = false"
+    >
+      Вы вышли из аккаунта
+    </AppNotification>
+
     <div class="cabinet__header">
       <h1 class="cabinet__title">Личный кабинет</h1>
       <UButton
         variant="secondary"
         :is-disabled="false"
-        @click="handleLogout"
+        @click="confirmLogout"
       >
         Выйти
       </UButton>
@@ -33,6 +54,7 @@ const handleLogout = () => {
       <div class="cabinet__details">
         <p class="cabinet__name">{{ authStore.user.username }}</p>
         <p class="cabinet__email">{{ authStore.user.email }}</p>
+        <NuxtLink :to="`/${currentLocale}/cabinet/edit`" class="cabinet__edit-link">Редактировать профиль</NuxtLink>
       </div>
     </div>
 
@@ -40,6 +62,16 @@ const handleLogout = () => {
       <h2 class="cabinet__section-title">История заказов</h2>
       <OrderHistory />
     </section>
+
+    <ConfirmDeleteModal
+      ref="confirm-modal"
+      title="Выход из аккаунта"
+      message="Вы уверены, что хотите выйти? Для входа потребуется повторный ввод пароля."
+      confirm-text="Выйти"
+      cancel-text="Отмена"
+      @confirm="handleLogout"
+      @cancel="() => {}"
+    />
   </div>
 </template>
 
@@ -93,6 +125,17 @@ const handleLogout = () => {
   &__email {
     color: var(--text-muted);
     font-size: toRem(14);
+  }
+
+  &__edit-link {
+    font-size: toRem(13);
+    color: var(--primary-color);
+    text-decoration: underline;
+    justify-self: start;
+
+    @include hover {
+      color: var(--primary-hover);
+    }
   }
 
   &__section-title {

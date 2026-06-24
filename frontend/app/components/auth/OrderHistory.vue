@@ -1,31 +1,7 @@
 <script setup lang="ts">
 const { currentLocale } = useLocale()
-const { find, update: strapiUpdate } = useStrapi()
+const { find } = useStrapi()
 const authStore = useAuthStore()
-const config = useRuntimeConfig()
-
-const cancellingId = ref<string | null>(null)
-
-const cancelOrder = async (order: any) => {
-  const id = order.documentId || order.id
-  cancellingId.value = id
-  try {
-    await strapiUpdate('orders', id, { statusOrders: 'cancelled' } as any)
-    if (orders.value) {
-      const idx = orders.value.findIndex((o: any) => (o.documentId || o.id) === id)
-      if (idx !== -1) orders.value[idx].statusOrders = 'cancelled'
-    }
-  } catch (e: any) {
-    console.error('Cancel order full error:', e)
-    const errText = JSON.stringify(e, Object.getOwnPropertyNames(e))
-    alert('Ошибка отмены:\n' + errText.slice(0, 500))
-  } finally {
-    cancellingId.value = null
-  }
-}
-
-const canCancel = (order: any) =>
-  order.statusOrders === 'new' || order.statusOrders === 'processed'
 
 const ordersKey = computed(() => `orders-user-${authStore.user?.email}`)
 
@@ -82,12 +58,6 @@ const statusLabel: Record<string, string> = {
           :key="order.documentId || order.id"
           class="order-history__item"
         >
-          <img
-            v-if="order.items?.[0]?.image"
-            :src="`${config.public.strapi.url}${order.items[0].image}`"
-            :alt="order.items[0].name"
-            class="order-history__thumb"
-          />
           <div class="order-history__item-info">
             <p class="order-history__item-id">
               Заказ #{{ order.documentId || order.id }}
@@ -105,23 +75,12 @@ const statusLabel: Record<string, string> = {
           <div class="order-history__item-total">
             {{ order.total }} ₽
           </div>
-          <div class="order-history__item-actions">
-            <NuxtLink
-              :to="`/${currentLocale}/cabinet/${order.documentId || order.id}`"
-              class="order-history__item-link"
-            >
-              Просмотр
-            </NuxtLink>
-            <UButton
-              v-if="canCancel(order)"
-              variant="secondary"
-              :is-disabled="cancellingId === (order.documentId || order.id)"
-              class="order-history__cancel-btn"
-              @click="cancelOrder(order)"
-            >
-              {{ cancellingId === (order.documentId || order.id) ? '...' : 'Отменить' }}
-            </UButton>
-          </div>
+          <NuxtLink
+            :to="`/${currentLocale}/cabinet/${order.documentId || order.id}`"
+            class="order-history__item-link"
+          >
+            Просмотр
+          </NuxtLink>
         </li>
       </ul>
     </div>
@@ -143,10 +102,10 @@ const statusLabel: Record<string, string> = {
 
   &__item {
     display: grid;
-    grid-template-columns: auto 1fr auto auto;
-    gap: toRem(12);
+    grid-template-columns: 1fr auto auto;
+    gap: toRem(16);
     align-items: center;
-    padding: toRem(12);
+    padding: toRem(16);
     background: var(--bg-secondary);
     border-radius: toRem(10);
     transition: background var(--transition-duration);
@@ -154,13 +113,6 @@ const statusLabel: Record<string, string> = {
     @include hover {
       background: var(--bg-hover);
     }
-  }
-
-  &__thumb {
-    width: toRem(48);
-    height: toRem(48);
-    object-fit: cover;
-    border-radius: toRem(6);
   }
 
   &__item-info {
@@ -183,13 +135,6 @@ const statusLabel: Record<string, string> = {
     white-space: nowrap;
   }
 
-  &__item-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: toRem(6);
-  }
-
   &__item-link {
     color: var(--primary-color);
     text-decoration: underline;
@@ -199,11 +144,6 @@ const statusLabel: Record<string, string> = {
     @include hover {
       color: var(--primary-hover);
     }
-  }
-
-  &__cancel-btn {
-    font-size: toRem(12);
-    padding: toRem(2) toRem(8);
   }
 
   &__badge {

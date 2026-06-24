@@ -2,14 +2,13 @@ export default [
   'strapi::logger',
    'strapi::errors',
    'strapi::security',
-    {
+     {
     name: 'strapi::cors',
     config: {
-      origin: ['*'], // Разрешить ВСЕ домены
-      methods: ['GET'] // Разрешить только GET-запросы (для изображений)
+      origin: ['*'],
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
     }
   },
-  'strapi::cors',
   'strapi::poweredBy',
   'strapi::query',
   'strapi::body',

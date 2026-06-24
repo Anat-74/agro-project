@@ -4,6 +4,7 @@ interface Props {
   email: string
   password: string
   error: string | null
+  fieldErrors?: Record<string, string>
   isSubmitting: boolean
 }
 
@@ -14,12 +15,42 @@ interface Emits {
   (e: 'submit'): void
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  fieldErrors: () => ({}),
+})
 const emit = defineEmits<Emits>()
+
+/** Client-side валидация */
+const usernameError = computed(() => {
+  if (!props.username) return 'Обязательное поле'
+  if (props.username.length < 2) return 'Минимум 2 символа'
+  return ''
+})
+
+const emailError = computed(() => {
+  if (!props.email) return 'Обязательное поле'
+  if (!/^\S+@\S+\.\S+$/.test(props.email)) return 'Введите корректный email'
+  return ''
+})
+
+const passwordError = computed(() => {
+  if (!props.password) return 'Обязательное поле'
+  if (props.password.length < 6) return 'Минимум 6 символов'
+  return ''
+})
+
+const canSubmit = computed(() =>
+  !usernameError.value && !emailError.value && !passwordError.value
+)
+
+const handleSubmit = () => {
+  if (!canSubmit.value) return
+  emit('submit')
+}
 </script>
 
 <template>
-  <form class="auth-form" @submit.prevent="emit('submit')">
+  <form class="auth-form" @submit.prevent="handleSubmit">
     <UInput
       type="text"
       :model-value="props.username"
@@ -27,6 +58,7 @@ const emit = defineEmits<Emits>()
       label="Имя пользователя"
       required
       autocomplete="username"
+      :error="fieldErrors['username'] || usernameError"
       class="auth-form__field"
       @update:model-value="emit('update:username', $event)"
     />
@@ -38,6 +70,7 @@ const emit = defineEmits<Emits>()
       label="Email"
       required
       autocomplete="email"
+      :error="fieldErrors['email'] || emailError"
       class="auth-form__field"
       @update:model-value="emit('update:email', $event)"
     />
@@ -49,16 +82,19 @@ const emit = defineEmits<Emits>()
       label="Пароль"
       required
       autocomplete="new-password"
+      :error="fieldErrors['password'] || passwordError"
       class="auth-form__field"
       @update:model-value="emit('update:password', $event)"
     />
 
-    <p v-if="props.error" class="auth-form__error">{{ props.error }}</p>
+    <p v-if="props.error && canSubmit" class="auth-form__error">
+      {{ props.error }}
+    </p>
 
     <UButton
       type="submit"
       variant="primary"
-      :is-disabled="props.isSubmitting"
+      :is-disabled="props.isSubmitting || !canSubmit"
       class="auth-form__submit"
     >
       {{ props.isSubmitting ? 'Регистрация...' : 'Зарегистрироваться' }}

@@ -1,3 +1,5 @@
+import { authTranslations } from '~/locales/auth'
+
 interface AuthStoreUser {
   id: number
   username?: string
@@ -7,6 +9,38 @@ interface AuthStoreUser {
   blocked?: boolean
   createdAt?: string
   updatedAt?: string
+}
+
+/** Карта известных ошибок Strapi → ключ локали */
+const STRAPI_ERROR_MAP: Record<string, keyof typeof authTranslations.ru.errors> = {
+  'Invalid identifier or password': 'invalidCredentials',
+  'Email already taken': 'emailTaken',
+  'Username already taken': 'usernameTaken',
+  'password must be at least 6 characters': 'weakPassword',
+  'Password must be at least 6 characters': 'weakPassword',
+}
+
+/** Достаёт locale из текущего маршрута или куки */
+const getCurrentLocale = (): LocaleCode => {
+  try {
+    const route = useRoute()
+    const lang = route.params.lang as string
+    if (lang === 'be' || lang === 'ru') return lang
+  } catch {
+    // вне компонента route может быть недоступен
+  }
+  const cookie = useCookie<LocaleCode>('lang')
+  return cookie.value || 'ru'
+}
+
+/** Маппит Strapi-ошибку → читаемое сообщение из локали */
+const mapStrapiError = (rawMessage: string): string => {
+  const locale = getCurrentLocale()
+  const key = STRAPI_ERROR_MAP[rawMessage]
+  if (key) {
+    return authTranslations[locale]?.errors?.[key] || rawMessage
+  }
+  return rawMessage
 }
 
 export const useAuthStore = defineStore('auth', () => {
@@ -23,8 +57,14 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
+  const fieldErrors = ref<Record<string, string>>({})
 
   const isAuthenticated = computed(() => !!user.value && !!token.value)
+
+  const clearError = () => {
+    error.value = null
+    fieldErrors.value = {}
+  }
 
   const init = async () => {
     try {
@@ -45,15 +85,15 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const login = async (identifier: string, password: string) => {
-    error.value = null
+    clearError()
     loading.value = true
     try {
       const response: any = await strapiLogin({ identifier, password })
       user.value = response?.user?.value || null
       token.value = response?.jwt || null
     } catch (e: any) {
-      const message = e?.response?.data?.error?.message || e?.message || 'Ошибка входа'
-      error.value = message
+      const raw = e?.response?.data?.error?.message || e?.message || ''
+      error.value = mapStrapiError(raw)
       throw e
     } finally {
       loading.value = false
@@ -61,15 +101,26 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const register = async (username: string, email: string, password: string) => {
-    error.value = null
+    clearError()
     loading.value = true
     try {
       const response: any = await strapiRegister({ username, email, password })
       user.value = response?.user?.value || null
       token.value = response?.jwt || null
     } catch (e: any) {
-      const message = e?.response?.data?.error?.message || e?.message || 'Ошибка регистрации'
-      error.value = message
+      const raw = e?.response?.data?.error?.message || e?.message || ''
+      error.value = mapStrapiError(raw)
+
+      // Field-level: парсим validation errors из details
+      const details = e?.response?.data?.error?.details
+      if (details?.errors) {
+        for (const err of details.errors) {
+          const path = err.path?.[0]
+          if (path) {
+            fieldErrors.value[path] = err.message
+          }
+        }
+      }
       throw e
     } finally {
       loading.value = false
@@ -81,10 +132,7 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = null
     token.value = null
     error.value = null
-  }
-
-  const clearError = () => {
-    error.value = null
+    fieldErrors.value = {}
   }
 
   return {
@@ -92,6 +140,7 @@ export const useAuthStore = defineStore('auth', () => {
     token,
     loading,
     error,
+    fieldErrors,
     isAuthenticated,
     init,
     login,

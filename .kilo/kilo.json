@@ -1,9 +1,12 @@
 {
-  "$schema": "https://app.kilo.ai/config.json",
   "mcp": {
     "strapi": {
       "type": "local",
-      "command": ["npx.cmd", "-y", "strapi-mcp"],
+      "command": [
+        "npx.cmd",
+        "-y",
+        "strapi-mcp"
+      ],
       "environment": {
         "STRAPI_URL": "http://127.0.0.1:1337",
         "STRAPI_ADMIN_EMAIL": "mcp-bot@local.test",
@@ -12,5 +15,6 @@
       },
       "enabled": true
     }
-  }
+  },
+  "snapshot": false
 }

@@ -1379,6 +1379,2094 @@
       "value": 0,
       "path": "/ru",
       "timestamp": "2026-06-17T18:24:29.914Z"
+    },
+    {
+      "name": "LCP",
+      "value": 4548,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:24:27.080Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.000006938751635936351,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:24:27.090Z"
+    },
+    {
+      "name": "LCP",
+      "value": 3708,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:26:31.847Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0000010012392697376375,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:26:51.067Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0008788276449044133,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:26:51.074Z"
+    },
+    {
+      "name": "LCP",
+      "value": 2740,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:29:20.780Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0021047136967928875,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:29:20.785Z"
+    },
+    {
+      "name": "INP",
+      "value": 1,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:29:27.795Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0021047136967928875,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:29:30.215Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0021047136967928875,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:29:31.843Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0036846463372382154,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:29:38.657Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.4476454733230924,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:29:39.958Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.4476454733230924,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:29:48.061Z"
+    },
+    {
+      "name": "LCP",
+      "value": 8508,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:40:51.796Z"
+    },
+    {
+      "name": "LCP",
+      "value": 1932,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:40:57.737Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0008778264056346757,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:41:58.563Z"
+    },
+    {
+      "name": "LCP",
+      "value": 1036,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:46:07.502Z"
+    },
+    {
+      "name": "INP",
+      "value": 2.200000000069849,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:46:08.417Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T16:46:08.839Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006723209190584744,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T16:46:09.772Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0001344641838116949,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T16:46:09.792Z"
+    },
+    {
+      "name": "LCP",
+      "value": 728,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T16:48:10.510Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0008641639463184621,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T16:48:50.902Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0031863912966128435,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T16:50:28.028Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.004064217702247519,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T16:51:05.635Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.004942044107882195,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T16:53:20.545Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.005819870513516871,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T16:53:23.741Z"
+    },
+    {
+      "name": "INP",
+      "value": 1.2000000001862645,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T16:53:43.440Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:53:43.790Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:53:43.794Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:53:43.957Z"
+    },
+    {
+      "name": "LCP",
+      "value": 1540,
+      "path": "/ru",
+      "timestamp": "2026-06-24T16:55:23.036Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:00:04.623Z"
+    },
+    {
+      "name": "INP",
+      "value": 2.1000000000931323,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:00:04.628Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0004914884046912333,
+      "path": "/ru/register",
+      "timestamp": "2026-06-24T17:00:45.660Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0009621150157546356,
+      "path": "/ru/register",
+      "timestamp": "2026-06-24T17:00:58.662Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0014107208446553273,
+      "path": "/ru/register",
+      "timestamp": "2026-06-24T17:01:06.931Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0014107208446553273,
+      "path": "/ru/register",
+      "timestamp": "2026-06-24T17:01:09.093Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0014107208446553273,
+      "path": "/ru/register",
+      "timestamp": "2026-06-24T17:01:09.558Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.05005043532711295,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:01:10.683Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/edit",
+      "timestamp": "2026-06-24T17:01:58.892Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006723209190584744,
+      "path": "/ru/cabinet/edit",
+      "timestamp": "2026-06-24T17:02:40.374Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0001344641838116949,
+      "path": "/ru/cabinet/edit",
+      "timestamp": "2026-06-24T17:02:40.393Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:02:43.927Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006723209190584744,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:02:44.760Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0001344641838116949,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:02:45.358Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0001344641838116949,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:03:21.245Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06335927481657284,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:03:22.788Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06335927481657284,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:04:04.293Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06335927481657284,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:04:16.737Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.05005043532711295,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:04:19.686Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.05005043532711295,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:04:23.424Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.050117667419018797,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:04:23.715Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.05018489951092464,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:04:25.343Z"
+    },
+    {
+      "name": "LCP",
+      "value": 736,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:04:29.174Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006723209190584744,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:04:32.293Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0001344641838116949,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:04:32.303Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00020169627571754235,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:04:33.909Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0002689283676233898,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:04:34.209Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0011467547732580655,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:06:08.028Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0014865400961608355,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:06:13.018Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0019041681920263852,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:06:17.922Z"
+    },
+    {
+      "name": "LCP",
+      "value": 488,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:06:40.329Z"
+    },
+    {
+      "name": "INP",
+      "value": 6.100000000093132,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:07:12.521Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:07:13.620Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:07:13.656Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06335927481657284,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:07:15.143Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06335927481657284,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:07:59.765Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06335927481657284,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:08:12.020Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06335927481657284,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:08:13.706Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.05005043532711295,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:08:14.953Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.05005043532711295,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:08:20.132Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06335927481657284,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:08:21.658Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06342650690847869,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:08:40.490Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06362434599838973,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:08:40.740Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06362434599838973,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:08:53.235Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06362434599838973,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:08:59.710Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06362434599838973,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:09:02.144Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06362434599838973,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:09:03.073Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06362434599838973,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:09:18.488Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.05005043532711295,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:09:19.724Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.05005043532711295,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:09:27.184Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06335927481657284,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:09:28.711Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00034941480383504837,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:11:47.187Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06901714390570603,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:11:47.610Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06992562011874115,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:11:47.686Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:11:50.298Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:11:50.866Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006723209190584744,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:11:55.418Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00017847640096199064,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:11:55.446Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:11:56.755Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:11:56.823Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006723209190584744,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:11:58.257Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0001344641838116949,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:11:58.508Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0001344641838116949,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:12:22.558Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0001344641838116949,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:12:22.850Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00020169627571754235,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:12:41.611Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0005376648354554114,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:12:41.885Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0006048969273612589,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:12:51.684Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.000940865487099128,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:12:51.943Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:14:10.720Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:14:11.360Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006723209190584744,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:14:14.142Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0001344641838116949,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:14:14.174Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:14:14.803Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:14:15.212Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006723209190584744,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:14:15.483Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006723209190584744,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:14:40.274Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006723209190584744,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:14:40.559Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0001344641838116949,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:16:58.091Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00047043274354956395,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:16:58.373Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:16:59.091Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006723209190584744,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:17:00.260Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00017847640096199064,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:17:00.277Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00017847640096199064,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:17:17.116Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00017847640096199064,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:17:26.683Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00017847640096199064,
+      "path": "/ru/login",
+      "timestamp": "2026-06-24T17:17:28.108Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.05005043532711295,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:17:29.355Z"
+    },
+    {
+      "name": "LCP",
+      "value": 308,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:19:23.192Z"
+    },
+    {
+      "name": "LCP",
+      "value": 276,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:19:25.594Z"
+    },
+    {
+      "name": "LCP",
+      "value": 240,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:19:26.873Z"
+    },
+    {
+      "name": "LCP",
+      "value": 236,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:19:30.860Z"
+    },
+    {
+      "name": "LCP",
+      "value": 256,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:19:32.038Z"
+    },
+    {
+      "name": "LCP",
+      "value": 244,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:20:45.309Z"
+    },
+    {
+      "name": "INP",
+      "value": 2.400000000372529,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:20:46.392Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:20:47.043Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:20:47.493Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006723209190584744,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:20:50.456Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00017847640096199064,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:20:50.508Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:20:51.162Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:20:51.223Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:21:26.126Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:21:26.490Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.001484351782631748,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:21:26.655Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0015515838745375954,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:21:32.058Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0018799244175685787,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:21:32.345Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:21:33.193Z"
+    },
+    {
+      "name": "LCP",
+      "value": 236,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:21:36.179Z"
+    },
+    {
+      "name": "LCP",
+      "value": 256,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:22:40.470Z"
+    },
+    {
+      "name": "LCP",
+      "value": 248,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:22:42.256Z"
+    },
+    {
+      "name": "LCP",
+      "value": 440,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:22:43.494Z"
+    },
+    {
+      "name": "LCP",
+      "value": 528,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:22:45.657Z"
+    },
+    {
+      "name": "LCP",
+      "value": 220,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:23:26.656Z"
+    },
+    {
+      "name": "INP",
+      "value": 0.5,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:23:27.491Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:23:29.037Z"
+    },
+    {
+      "name": "LCP",
+      "value": 396,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:23:34.869Z"
+    },
+    {
+      "name": "LCP",
+      "value": 37592,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:25:13.633Z"
+    },
+    {
+      "name": "LCP",
+      "value": 596,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:25:18.960Z"
+    },
+    {
+      "name": "INP",
+      "value": 11.199999999720603,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:26:00.538Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.008117345955642506,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:26:17.259Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.008117345955642506,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:26:17.449Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.008117345955642506,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:26:17.909Z"
+    },
+    {
+      "name": "LCP",
+      "value": 952,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:26:25.038Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.04909821528021729,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:26:25.529Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.051213500209916635,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:26:25.557Z"
+    },
+    {
+      "name": "INP",
+      "value": 3.5,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:26:27.962Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.051213500209916635,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:26:29.802Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.051213500209916635,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:26:34.910Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/u49lgubt23tiwt3d41c68rk0",
+      "timestamp": "2026-06-24T17:27:07.767Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/u49lgubt23tiwt3d41c68rk0",
+      "timestamp": "2026-06-24T17:27:07.795Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:28:32.577Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:28:32.594Z"
+    },
+    {
+      "name": "LCP",
+      "value": 308,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:29:45.894Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.04909821528021729,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:29:46.331Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.051213500209916635,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:29:46.361Z"
+    },
+    {
+      "name": "INP",
+      "value": 1.6999999997206032,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:29:48.589Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/u49lgubt23tiwt3d41c68rk0",
+      "timestamp": "2026-06-24T17:29:49.143Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/u49lgubt23tiwt3d41c68rk0",
+      "timestamp": "2026-06-24T17:29:49.175Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:29:51.526Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:29:51.541Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.05631690843407123,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:29:55.529Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.40597429450074757,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:29:55.912Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.4060415265926534,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:30:00.353Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.40615277090170954,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:30:00.382Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:30:01.589Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:30:01.626Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:30:01.846Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006723209190584744,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:30:02.141Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006723209190584744,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:30:34.493Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006723209190584744,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:30:34.818Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006723209190584744,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:30:35.019Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0001344641838116949,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:30:35.824Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0002457084928678381,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T17:30:35.860Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:30:37.169Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:30:37.205Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/h4rvrtua2wfsmebo1uv9avz0",
+      "timestamp": "2026-06-24T17:30:42.772Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/h4rvrtua2wfsmebo1uv9avz0",
+      "timestamp": "2026-06-24T17:30:42.825Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:30:52.908Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:30:52.941Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/h4rvrtua2wfsmebo1uv9avz0",
+      "timestamp": "2026-06-24T17:30:58.258Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/h4rvrtua2wfsmebo1uv9avz0",
+      "timestamp": "2026-06-24T17:30:58.291Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:31:00.656Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:31:00.678Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/u49lgubt23tiwt3d41c68rk0",
+      "timestamp": "2026-06-24T17:31:01.861Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/u49lgubt23tiwt3d41c68rk0",
+      "timestamp": "2026-06-24T17:31:01.907Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:31:03.869Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:31:03.907Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/h4rvrtua2wfsmebo1uv9avz0",
+      "timestamp": "2026-06-24T17:31:08.500Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/h4rvrtua2wfsmebo1uv9avz0",
+      "timestamp": "2026-06-24T17:31:08.524Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:31:10.953Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:31:10.974Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/h4rvrtua2wfsmebo1uv9avz0",
+      "timestamp": "2026-06-24T17:31:17.624Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/h4rvrtua2wfsmebo1uv9avz0",
+      "timestamp": "2026-06-24T17:31:17.657Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:31:19.699Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:31:19.725Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/h4rvrtua2wfsmebo1uv9avz0",
+      "timestamp": "2026-06-24T17:31:57.626Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/h4rvrtua2wfsmebo1uv9avz0",
+      "timestamp": "2026-06-24T17:31:57.658Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:32:02.110Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:32:02.140Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.007448372289290825,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:34:59.119Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.01489674457858165,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:34:59.163Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.1016266004358269,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:35:04.961Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.34519277271990645,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:35:09.824Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.36017650953585667,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:35:54.074Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.37646633479096964,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:35:54.527Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/h4rvrtua2wfsmebo1uv9avz0",
+      "timestamp": "2026-06-24T17:35:55.426Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/h4rvrtua2wfsmebo1uv9avz0",
+      "timestamp": "2026-06-24T17:35:55.436Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:35:57.878Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:35:58.346Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006635310090835392,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:35:59.322Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0003911352895852933,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:36:04.458Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0003911352895852933,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:36:34.390Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0003911352895852933,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:36:34.405Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0003911352895852933,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:36:37.187Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0003911352895852933,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:36:37.205Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0003911352895852933,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:36:39.470Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0003911352895852933,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:36:39.487Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/h4rvrtua2wfsmebo1uv9avz0",
+      "timestamp": "2026-06-24T17:36:41.201Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:36:44.908Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:36:44.925Z"
+    },
+    {
+      "name": "LCP",
+      "value": 636,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:36:48.317Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.053786639020503284,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:36:48.742Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06049848238842288,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:36:48.762Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06049848238842288,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:36:50.923Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06049848238842288,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:36:50.939Z"
+    },
+    {
+      "name": "INP",
+      "value": 1.8000000002793968,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:36:51.128Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06049848238842288,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:36:52.023Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06049848238842288,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:36:52.040Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06049848238842288,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:36:55.674Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06049848238842288,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:36:55.690Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/h4rvrtua2wfsmebo1uv9avz0",
+      "timestamp": "2026-06-24T17:37:06.193Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/h4rvrtua2wfsmebo1uv9avz0",
+      "timestamp": "2026-06-24T17:37:06.229Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:37:22.878Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:37:22.907Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:37:24.473Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:37:24.491Z"
+    },
+    {
+      "name": "LCP",
+      "value": 384,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:37:59.834Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.04909821528021729,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:38:00.500Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:38:00.544Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:38:02.726Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:38:02.742Z"
+    },
+    {
+      "name": "INP",
+      "value": 1.7999999998137355,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:38:02.782Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:38:05.645Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:38:05.662Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.059909725137731025,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:39:15.363Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0653154800664879,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:39:15.969Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.07072123499524476,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:39:21.162Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.07612698992400162,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:39:21.293Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08153274485275848,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:39:29.779Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08693849978151534,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:39:30.275Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08694117678360493,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:39:39.978Z"
+    },
+    {
+      "name": "LCP",
+      "value": 500,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:40:26.038Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.04909821528021729,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:40:26.411Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:40:26.418Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:40:31.860Z"
+    },
+    {
+      "name": "INP",
+      "value": 1.1999999997206032,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:40:31.868Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:40:33.724Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:40:44.720Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.059909725137731025,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:40:47.296Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0653154800664879,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:40:47.734Z"
+    },
+    {
+      "name": "LCP",
+      "value": 432,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:41:28.601Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.04909821528021729,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:41:29.127Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:41:29.162Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:41:30.479Z"
+    },
+    {
+      "name": "INP",
+      "value": 3.6999999997206032,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:41:30.488Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:41:41.267Z"
+    },
+    {
+      "name": "LCP",
+      "value": 488,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:41:41.977Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.04909821528021729,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:41:42.510Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:41:42.523Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:41:43.842Z"
+    },
+    {
+      "name": "INP",
+      "value": 3.7999999998137355,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:41:45.096Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:41:45.104Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:41:46.243Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:41:47.124Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:41:48.108Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:41:49.004Z"
+    },
+    {
+      "name": "LCP",
+      "value": 240,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:42:06.017Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.04909821528021729,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:42:06.522Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:42:06.540Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:42:07.407Z"
+    },
+    {
+      "name": "INP",
+      "value": 1.5,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:42:08.682Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:42:08.691Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.059909725137731025,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:42:49.333Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0653154800664879,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:42:49.338Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0653154800664879,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:43:07.523Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0653154800664879,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:43:07.529Z"
+    },
+    {
+      "name": "LCP",
+      "value": 824,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:43:13.852Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.07379455492069058,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:43:14.900Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08201660192055318,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:43:14.954Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08201660192055318,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:43:51.776Z"
+    },
+    {
+      "name": "INP",
+      "value": 1.599999999627471,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:43:51.786Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08201660192055318,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:43:52.387Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0827408764848078,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:43:52.474Z"
+    },
+    {
+      "name": "LCP",
+      "value": 268,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:45:08.074Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.04909821528021729,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:45:08.524Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:45:08.529Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:45:10.992Z"
+    },
+    {
+      "name": "INP",
+      "value": 0.8999999999068677,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:45:11.005Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:45:11.295Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:47:52.396Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.054503970208974156,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:47:52.403Z"
+    },
+    {
+      "name": "LCP",
+      "value": 408,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:47:57.449Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.07379455492069058,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:47:58.616Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08201660192055318,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:47:58.680Z"
+    },
+    {
+      "name": "INP",
+      "value": 6.400000000372529,
+      "path": "/ru/cabinet/h4rvrtua2wfsmebo1uv9avz0",
+      "timestamp": "2026-06-24T17:48:10.975Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/h4rvrtua2wfsmebo1uv9avz0",
+      "timestamp": "2026-06-24T17:48:10.982Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/h4rvrtua2wfsmebo1uv9avz0",
+      "timestamp": "2026-06-24T17:48:11.045Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:48:15.278Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:48:16.079Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:48:17.125Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:48:17.179Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:48:18.836Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006723209190584744,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:48:32.811Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/blog",
+      "timestamp": "2026-06-24T17:48:33.945Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:48:36.129Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:48:36.511Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/be",
+      "timestamp": "2026-06-24T17:48:40.513Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/be",
+      "timestamp": "2026-06-24T17:48:40.580Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/be",
+      "timestamp": "2026-06-24T17:48:40.880Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:48:41.838Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:48:41.877Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:48:42.253Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006723209190584744,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:48:49.930Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00026818955342662224,
+      "path": "/ru",
+      "timestamp": "2026-06-24T17:48:49.975Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:48:50.775Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:48:50.809Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/be/cabinet",
+      "timestamp": "2026-06-24T17:48:52.655Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/be/cabinet",
+      "timestamp": "2026-06-24T17:48:52.728Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/be/cabinet",
+      "timestamp": "2026-06-24T17:48:52.962Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:48:54.987Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:48:55.043Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:48:55.078Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/be/cabinet",
+      "timestamp": "2026-06-24T17:48:56.263Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/be/cabinet",
+      "timestamp": "2026-06-24T17:48:56.305Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/be/cabinet",
+      "timestamp": "2026-06-24T17:48:56.541Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:48:58.753Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:48:58.796Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T17:48:59.062Z"
     }
   ]
 }

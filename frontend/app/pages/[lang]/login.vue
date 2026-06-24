@@ -3,16 +3,22 @@ const { currentLocale } = useLocale()
 const authStore = useAuthStore()
 const route = useRoute()
 const router = useRouter()
+const { showNotification } = useNotification()
 
 const identifier = ref('')
 const password = ref('')
 const isSubmitting = ref(false)
+const showToast = ref(false)
+const toastMessage = ref('')
 
 const handleLogin = async () => {
   if (!identifier.value || !password.value) return
   isSubmitting.value = true
   try {
     await authStore.login(identifier.value, password.value)
+    toastMessage.value = `Вы вошли как ${identifier.value}`
+    showToast.value = true
+    await new Promise(r => setTimeout(r, 1200))
     const redirect = (route.query.redirect as string) || `/${currentLocale.value}/cabinet`
     await router.push(redirect)
   } catch {
@@ -25,12 +31,21 @@ const handleLogin = async () => {
 
 <template>
   <div class="auth-page">
+    <AppNotification
+      v-if="showToast"
+      type="success"
+      @close="showToast = false"
+    >
+      {{ toastMessage }}
+    </AppNotification>
+
     <section class="auth-page__form-wrapper">
       <h1 class="auth-page__title">Вход</h1>
       <AuthLogin
         :identifier="identifier"
         :password="password"
         :error="authStore.error"
+        :field-errors="authStore.fieldErrors"
         :is-submitting="isSubmitting"
         @update:identifier="identifier = $event"
         @update:password="password = $event"

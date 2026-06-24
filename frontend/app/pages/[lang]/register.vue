@@ -7,12 +7,15 @@ const username = ref('')
 const email = ref('')
 const password = ref('')
 const isSubmitting = ref(false)
+const showToast = ref(false)
 
 const handleRegister = async () => {
   if (!username.value || !email.value || !password.value) return
   isSubmitting.value = true
   try {
     await authStore.register(username.value, email.value, password.value)
+    showToast.value = true
+    await new Promise(r => setTimeout(r, 1200))
     await router.push(`/${currentLocale.value}/cabinet`)
   } catch {
     // ошибка уже в authStore.error
@@ -24,6 +27,14 @@ const handleRegister = async () => {
 
 <template>
   <div class="auth-page">
+    <AppNotification
+      v-if="showToast"
+      type="success"
+      @close="showToast = false"
+    >
+      Аккаунт создан! Добро пожаловать, {{ username }}
+    </AppNotification>
+
     <section class="auth-page__form-wrapper">
       <h1 class="auth-page__title">Регистрация</h1>
       <AuthRegister
@@ -31,6 +42,7 @@ const handleRegister = async () => {
         :email="email"
         :password="password"
         :error="authStore.error"
+        :field-errors="authStore.fieldErrors"
         :is-submitting="isSubmitting"
         @update:username="username = $event"
         @update:email="email = $event"

@@ -1,6 +1,7 @@
 export const useOrderStore = defineStore('order', () => {
    const { create } = useStrapi()
    const cartStore = useCartStore()
+   const authStore = useAuthStore()
 
    const createOrder = async (email: string, phone: string) => {
       try {
@@ -9,16 +10,22 @@ export const useOrderStore = defineStore('order', () => {
             name: item.product.name,
             price: item.product.price,
             quantity: item.quantity,
+            image: item.product.image || '',
             categorySlug: item.product.categorySlug,
             subcategorySlug: item.product.subcategorySlug || null,
          }))
 
-         const orderData = {
+         const orderData: Record<string, any> = {
             items: orderItems,
             total: cartStore.totalPrice,
             email,
             phone,
-            statusOrders: 'new'
+            statusOrders: 'new',
+         }
+
+         // Если пользователь авторизован — привязываем заказ к его аккаунту
+         if (authStore.isAuthenticated && authStore.user?.documentId) {
+            orderData.user = authStore.user.documentId
          }
 
          const response = await create('orders', orderData)
@@ -29,5 +36,6 @@ export const useOrderStore = defineStore('order', () => {
          throw error
       }
    }
+
    return {createOrder}
 })

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { find } = useStrapi();
 const searchStore = useSearchStore();
-const { isAuthenticated } = useAuth();
+const { isAuthenticated, user } = useAuth();
 const { products, totalPages, currentPage } = storeToRefs(searchStore);
 const { currentLocale } = useLocale();
 console.debug("auth state:", isAuthenticated.value);
@@ -47,7 +47,8 @@ console.debug("global data:", global.value);
         class="header__profile"
         :aria-label="isAuthenticated ? 'Личный кабинет' : 'Войти'"
       >
-        <Icon name="cil:user" width="28" height="28" />
+        <span v-if="isAuthenticated && user?.username" class="header__initials">{{ user.username.charAt(0).toUpperCase() }}</span>
+        <Icon v-else name="cil:user" width="28" height="28" />
       </NuxtLink>
     </div>
     <div class="header__bottom">
@@ -182,6 +183,29 @@ console.debug("global data:", global.value);
       grid-column: 2/3;
       grid-row: 1/2;
       justify-self: end;
+    }
+  }
+
+  &__initials {
+    width: toRem(32);
+    height: toRem(32);
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+    @include adaptiveValue("font-size", 15, 13);
+    transition: transform var(--transition-duration);
+  }
+
+  &__profile_auth {
+    text-decoration: none;
+
+    @include hover {
+      .header__initials {
+        transform: scale(1.15);
+      }
     }
   }
 

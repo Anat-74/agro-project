@@ -7,19 +7,46 @@ const { currentLocale } = useLocale()
 const route = useRoute()
 const router = useRouter()
 const orderId = computed(() => route.params.orderId as string)
+const config = useRuntimeConfig()
 
-const { findOne } = useStrapi()
-const { data: order, pending } = useAsyncData(
-  `order-${orderId.value}`,
+const { findOne, update: updateStrapi } = useStrapi()
+
+const cancelling = ref(false)
+
+const cancelOrder = async () => {
+  if (!order.value || !confirm('Отменить заказ?')) return
+  cancelling.value = true
+  try {
+    const id = order.value.documentId || order.value.id
+    await updateStrapi('orders', id, { statusOrders: 'cancelled' } as any)
+    order.value.statusOrders = 'cancelled'
+  } catch (e) {
+    console.error('Cancel error:', e)
+  } finally {
+    cancelling.value = false
+  }
+}
+const orderKey = computed(() => `order-${route.params.orderId}`)
+
+const { data: order, status } = useAsyncData(
+  orderKey,
   async () => {
-    const response = await findOne('orders', orderId.value)
-    return response.data as any
+    return await findOne('orders', route.params.orderId as string)
   },
   {
     server: false,
     lazy: true,
+    transform: (response: any) => response?.data || null,
   },
 )
+
+const statusLabel: Record<string, string> = {
+  new: 'Новый',
+  processed: 'В обработке',
+  confirmed: 'Подтверждён',
+  delivered: 'Доставлен',
+  cancelled: 'Отменён',
+}
 
 const goBack = () => {
   router.push(`/${currentLocale.value}/cabinet`)
@@ -39,15 +66,36 @@ const goBack = () => {
 
     <h1 class="order-detail__title">Заказ #{{ orderId }}</h1>
 
-    <p v-if="pending" class="order-detail__loading">Загрузка...</p>
+    <p v-if="status === 'pending'" class="order-detail__loading">Загрузка...</p>
 
-    <div v-else-if="!order" class="order-detail__loading">
+    <p v-else-if="status === 'error'" class="order-detail__loading">
+      Ошибка загрузки заказа
+    </p>
+
+    <p v-else-if="!order" class="order-detail__loading">
       Заказ не найден
-    </div>
+    </p>
 
     <div v-else class="order-detail__card">
       <div class="order-detail__meta">
-        <p><strong>Статус:</strong> {{ order.statusOrders || 'Новый' }}</p>
+        <p>
+          <strong>Статус:</strong>
+          <span
+            class="order-detail__badge"
+            :class="`order-detail__badge_${order.statusOrders || 'new'}`"
+          >
+            {{ statusLabel[order.statusOrders] || 'Новый' }}
+          </span>
+          <UButton
+            v-if="order.statusOrders === 'new' || order.statusOrders === 'processed'"
+            variant="secondary"
+            :is-disabled="cancelling"
+            class="order-detail__cancel-btn"
+            @click="cancelOrder"
+          >
+            {{ cancelling ? 'Отмена...' : 'Отменить заказ' }}
+          </UButton>
+        </p>
         <p><strong>Дата:</strong> {{ new Date(order.createdAt).toLocaleDateString() }}</p>
         <p><strong>Email:</strong> {{ order.email }}</p>
         <p><strong>Телефон:</strong> {{ order.phone }}</p>
@@ -60,6 +108,12 @@ const goBack = () => {
           :key="idx"
           class="order-detail__item"
         >
+          <img
+            v-if="item.image"
+            :src="`${config.public.strapi.url}${item.image}`"
+            :alt="item.name"
+            class="order-detail__item-img"
+          />
           <span class="order-detail__item-name">{{ item.name }}</span>
           <span class="order-detail__item-qty">{{ item.quantity }} шт.</span>
           <span class="order-detail__item-price">{{ item.price }} ₽</span>
@@ -120,14 +174,22 @@ const goBack = () => {
 
   &__item {
     display: grid;
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: auto 1fr auto auto;
     gap: toRem(12);
+    align-items: center;
     padding: toRem(8) 0;
     border-block-end: 1px solid var(--border-color);
 
     &:last-child {
       border-block-end: none;
     }
+  }
+
+  &__item-img {
+    width: toRem(48);
+    height: toRem(48);
+    object-fit: cover;
+    border-radius: toRem(6);
   }
 
   &__item-name {
@@ -148,6 +210,44 @@ const goBack = () => {
     margin-block-start: toRem(20);
     text-align: end;
     @include adaptiveValue("font-size", 20, 18);
+  }
+
+  &__cancel-btn {
+    margin-inline-start: toRem(16);
+  }
+
+  &__badge {
+    display: inline-block;
+    font-size: toRem(12);
+    font-weight: 600;
+    padding: toRem(2) toRem(10);
+    border-radius: toRem(20);
+    margin-inline-start: toRem(8);
+
+    &_new {
+      color: #2e7d32;
+      background: #e8f5e9;
+    }
+
+    &_processed {
+      color: #f57f17;
+      background: #fff8e1;
+    }
+
+    &_confirmed {
+      color: #1565c0;
+      background: #e3f2fd;
+    }
+
+    &_delivered {
+      color: #2e7d32;
+      background: #e8f5e9;
+    }
+
+    &_cancelled {
+      color: #c62828;
+      background: #ffebee;
+    }
   }
 }
 </style>
