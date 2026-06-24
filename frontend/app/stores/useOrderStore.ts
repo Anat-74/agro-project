@@ -11,6 +11,7 @@ export const useOrderStore = defineStore('order', () => {
             price: item.product.price,
             quantity: item.quantity,
             image: item.product.image || '',
+            slug: item.product.slug || '',
             categorySlug: item.product.categorySlug,
             subcategorySlug: item.product.subcategorySlug || null,
          }))

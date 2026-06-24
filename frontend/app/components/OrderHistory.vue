@@ -68,6 +68,30 @@ const { data: orders, status } = useAsyncData(
   },
 )
 
+import ShowModalDiscountProduct from '~/components/show-modal/ShowModalDiscountProduct.vue'
+import { nextTick } from 'vue'
+
+const productModalRef = useTemplateRef<InstanceType<typeof ShowModalDiscountProduct>>('product-modal')
+const previewProduct = ref<any>(null)
+
+const openProductModal = (item: any) => {
+  if (!item.slug) return
+  previewProduct.value = {
+    documentId: item.productId || item.documentId,
+    slug: item.slug,
+    name: item.name,
+    price: item.price,
+    image: item.image ? [{ url: item.image.replace(/^\//, '') }] : [],
+    mainImage: null,
+    description: '',
+    characteristics: '',
+    subcategory: item.subcategorySlug
+      ? { slug: item.subcategorySlug, category: { slug: item.categorySlug || '' } }
+      : null,
+  }
+  nextTick(() => productModalRef.value?.openModal?.())
+}
+
 const statusLabel: Record<string, string> = {
   new: 'Новый',
   processed: 'В обработке',
@@ -111,7 +135,11 @@ const statusLabel: Record<string, string> = {
             v-if="order.items?.[0]?.image"
             :src="`${config.public.strapi.url}${order.items[0].image}`"
             :alt="order.items[0].name"
-            class="order-history__thumb"
+            :class="[
+              'order-history__thumb',
+              { 'order-history__thumb_clickable': order.items[0]?.slug },
+            ]"
+            @click="order.items[0]?.slug && openProductModal(order.items[0])"
           />
           <div class="order-history__item-info">
             <p class="order-history__item-id">
@@ -167,6 +195,12 @@ const statusLabel: Record<string, string> = {
         </UButton>
       </div>
     </div>
+
+    <ShowModalDiscountProduct
+      v-if="previewProduct"
+      ref="product-modal"
+      :product="previewProduct"
+    />
   </ClientOnly>
 </template>
 
@@ -253,6 +287,14 @@ const statusLabel: Record<string, string> = {
     flex-wrap: wrap;
     gap: toRem(8);
     margin-block-end: toRem(16);
+  }
+
+  &__thumb_clickable {
+    cursor: pointer;
+
+    @include hover {
+      transform: scale(1.1);
+    }
   }
 
   &__pagination {

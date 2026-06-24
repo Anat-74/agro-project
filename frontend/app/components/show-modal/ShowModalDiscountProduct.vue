@@ -43,6 +43,8 @@ const parseCharacteristics = (char: string) => {
   }
 }
 
+defineExpose({ openModal })
+
 const handleAddToCart = () => {
   const categorySlug = (route.params.categorySlug as string)
     || props.product.subcategory?.category?.slug
