@@ -10,7 +10,7 @@ export const useOrderStore = defineStore('order', () => {
             name: item.product.name,
             price: item.product.price,
             quantity: item.quantity,
-            image: item.product.image || '',
+            mainImage: item.product.mainImage || '',
             slug: item.product.slug || '',
             categorySlug: item.product.categorySlug,
             subcategorySlug: item.product.subcategorySlug || null,

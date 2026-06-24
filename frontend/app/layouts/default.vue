@@ -42,14 +42,16 @@ console.debug("global data:", global.value);
       <AnimateTitle class="hidden-mobile" />
       <ProductFilter class="header__search" />
       <Basket class="header__cart" />
-      <NuxtLink
-        :to="isAuthenticated ? `/${currentLocale}/cabinet` : `/${currentLocale}/login`"
-        class="header__profile"
-        :aria-label="isAuthenticated ? 'Личный кабинет' : 'Войти'"
-      >
-        <span v-if="isAuthenticated && user?.username" class="header__initials">{{ user.username.charAt(0).toUpperCase() }}</span>
-        <Icon v-else name="cil:user" width="28" height="28" />
-      </NuxtLink>
+      <ClientOnly>
+        <NuxtLink
+          :to="isAuthenticated ? `/${currentLocale}/cabinet` : `/${currentLocale}/login`"
+          class="header__profile"
+          :aria-label="isAuthenticated ? 'Личный кабинет' : 'Войти'"
+        >
+          <span v-if="isAuthenticated && user?.username" class="header__initials">{{ user.username.charAt(0).toUpperCase() }}</span>
+          <Icon v-else name="cil:user" width="28" height="28" />
+        </NuxtLink>
+      </ClientOnly>
     </div>
     <div class="header__bottom">
       <div class="header__container-bottom">

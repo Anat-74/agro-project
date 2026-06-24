@@ -7,7 +7,6 @@ const { currentLocale } = useLocale()
 const route = useRoute()
 const router = useRouter()
 const orderId = computed(() => route.params.orderId as string)
-const config = useRuntimeConfig()
 
 const { findOne, update: updateStrapi } = useStrapi()
 
@@ -108,10 +107,11 @@ const goBack = () => {
           :key="idx"
           class="order-detail__item"
         >
-          <img
-            v-if="item.image"
-            :src="`${config.public.strapi.url}${item.image}`"
+          <UImage
+            v-if="item.mainImage"
+            :src="item.mainImage"
             :alt="item.name"
+            type="thumbnail"
             class="order-detail__item-img"
           />
           <span class="order-detail__item-name">{{ item.name }}</span>
@@ -188,8 +188,13 @@ const goBack = () => {
   &__item-img {
     width: toRem(48);
     height: toRem(48);
-    object-fit: cover;
-    border-radius: toRem(6);
+
+    :deep(.app-image__img) {
+      width: toRem(48);
+      height: toRem(48);
+      object-fit: cover;
+      border-radius: toRem(6);
+    }
   }
 
   &__item-name {

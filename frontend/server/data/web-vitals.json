@@ -5219,6 +5219,390 @@
       "value": 0.07857664238542117,
       "path": "/ru/cabinet",
       "timestamp": "2026-06-24T19:12:17.909Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.10017095921388072,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T19:22:19.819Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.11996470541181925,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T19:22:19.828Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.15298435463770338,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T19:27:12.549Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.1727781008356419,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T19:27:23.629Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.19257184703358043,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T19:27:23.638Z"
+    },
+    {
+      "name": "LCP",
+      "value": 636,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T19:28:15.591Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.05792728030867742,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T19:28:16.421Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.07772102650661596,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T19:28:16.447Z"
+    },
+    {
+      "name": "INP",
+      "value": 4.200000001117587,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T19:28:18.995Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T19:28:19.129Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T19:28:19.532Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00006723209190584744,
+      "path": "/ru",
+      "timestamp": "2026-06-24T19:28:22.282Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0001344641838116949,
+      "path": "/ru",
+      "timestamp": "2026-06-24T19:28:22.306Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:28:22.838Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:28:22.876Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.000404919860135936,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:29:22.299Z"
+    },
+    {
+      "name": "LCP",
+      "value": 1656,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:29:48.547Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.4144764169923697,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:29:49.030Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.41448129604456524,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:29:49.314Z"
+    },
+    {
+      "name": "INP",
+      "value": 3.900000000372529,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:29:49.930Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.41448129604456524,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:29:51.710Z"
+    },
+    {
+      "name": "LCP",
+      "value": 752,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:29:58.265Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.7715076081248857,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:29:59.309Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.7715185637433987,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:29:59.377Z"
+    },
+    {
+      "name": "INP",
+      "value": 3.699999999254942,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:30:13.812Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T19:30:14.476Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T19:30:14.518Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-24T19:30:14.543Z"
+    },
+    {
+      "name": "LCP",
+      "value": 2940,
+      "path": "/ru",
+      "timestamp": "2026-06-24T19:30:19.619Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.000013538077261327718,
+      "path": "/ru",
+      "timestamp": "2026-06-24T19:30:20.682Z"
+    },
+    {
+      "name": "LCP",
+      "value": 976,
+      "path": "/ru",
+      "timestamp": "2026-06-24T19:30:31.034Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.000013538077261327718,
+      "path": "/ru",
+      "timestamp": "2026-06-24T19:30:31.874Z"
+    },
+    {
+      "name": "LCP",
+      "value": 1536,
+      "path": "/ru",
+      "timestamp": "2026-06-24T19:31:13.722Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0011118981634646952,
+      "path": "/ru",
+      "timestamp": "2026-06-24T19:31:14.992Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.001256387889297014,
+      "path": "/ru",
+      "timestamp": "2026-06-24T19:31:19.060Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0014008776151293327,
+      "path": "/ru",
+      "timestamp": "2026-06-24T19:31:19.083Z"
+    },
+    {
+      "name": "INP",
+      "value": 5.099999999627471,
+      "path": "/ru",
+      "timestamp": "2026-06-24T19:31:21.832Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T19:31:22.351Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T19:31:22.360Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T19:31:22.365Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00014448972583231868,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T19:31:22.674Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:31:25.487Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:31:25.604Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00028897945166463736,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:31:26.622Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00043346917749695606,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:31:26.930Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0005779589033292747,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:31:26.939Z"
+    },
+    {
+      "name": "LCP",
+      "value": 1172,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:31:31.187Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.811996335221071,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:31:32.704Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.8120072908395839,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:31:32.815Z"
+    },
+    {
+      "name": "INP",
+      "value": 3.5,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:31:35.197Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/yagody/ezhevika/ezhevika-barhatnaya",
+      "timestamp": "2026-06-24T19:31:36.313Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/yagody/ezhevika/ezhevika-barhatnaya",
+      "timestamp": "2026-06-24T19:31:36.324Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.05778725092137223,
+      "path": "/ru/yagody/ezhevika/ezhevika-barhatnaya",
+      "timestamp": "2026-06-24T19:31:36.754Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:31:37.776Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:32:00.840Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:32:01.246Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:32:01.276Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00014448972583231868,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:32:01.678Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00028897945166463736,
+      "path": "/ru/cartshopping",
+      "timestamp": "2026-06-24T19:32:01.688Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T19:32:02.126Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T19:32:02.182Z"
+    },
+    {
+      "name": "LCP",
+      "value": 508,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T19:37:31.908Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.09632564211090332,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T19:37:32.813Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.12726736407656666,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-24T19:37:32.872Z"
     }
   ]
 }

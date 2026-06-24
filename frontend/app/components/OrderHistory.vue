@@ -2,7 +2,6 @@
 const { currentLocale } = useLocale()
 const { find, update: strapiUpdate } = useStrapi()
 const authStore = useAuthStore()
-const config = useRuntimeConfig()
 
 const cancellingId = ref<string | null>(null)
 
@@ -81,7 +80,7 @@ const openProductModal = (item: any) => {
     slug: item.slug,
     name: item.name,
     price: item.price,
-    image: item.image ? [{ url: item.image.replace(/^\//, '') }] : [],
+    image: item.mainImage ? [{ url: item.mainImage.replace(/^\//, '') }] : [],
     mainImage: null,
     description: '',
     characteristics: '',
@@ -131,15 +130,14 @@ const statusLabel: Record<string, string> = {
           :key="order.documentId || order.id"
           class="order-history__item"
         >
-          <img
-            v-if="order.items?.[0]?.image"
-            :src="`${config.public.strapi.url}${order.items[0].image}`"
+          <UImage
+            v-if="order.items?.[0]?.mainImage"
+            :src="order.items[0].mainImage"
             :alt="order.items[0].name"
-            :class="[
-              'order-history__thumb',
-              { 'order-history__thumb_clickable': order.items[0]?.slug },
-            ]"
-            @click="order.items[0]?.slug && openProductModal(order.items[0])"
+            type="thumbnail"
+            class="order-history__thumb"
+            :class="{ 'order-history__thumb_clickable': order.items[0]?.slug }"
+            @click="order.items[0]?.mainImage && order.items[0]?.slug && openProductModal(order.items[0])"
           />
           <div class="order-history__item-info">
             <p class="order-history__item-id">
@@ -235,8 +233,13 @@ const statusLabel: Record<string, string> = {
   &__thumb {
     width: toRem(48);
     height: toRem(48);
-    object-fit: cover;
-    border-radius: toRem(6);
+
+    :deep(.app-image__img) {
+      width: toRem(48);
+      height: toRem(48);
+      object-fit: cover;
+      border-radius: toRem(6);
+    }
   }
 
   &__item-info {
@@ -293,7 +296,9 @@ const statusLabel: Record<string, string> = {
     cursor: pointer;
 
     @include hover {
-      transform: scale(1.1);
+      :deep(.app-image__img) {
+        transform: scale(1.1);
+      }
     }
   }
 

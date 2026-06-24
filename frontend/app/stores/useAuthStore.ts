@@ -2,6 +2,7 @@ import { authTranslations } from '~/locales/auth'
 
 interface AuthStoreUser {
   id: number
+  documentId?: string
   username?: string
   email?: string
   provider?: string

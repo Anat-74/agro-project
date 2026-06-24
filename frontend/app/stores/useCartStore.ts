@@ -1,8 +1,8 @@
 import { defineStore } from "pinia"
 import { ref, computed } from "vue"
 
-export type CartProduct = Omit<Product, 'image'> & {
-   image: string
+export type CartProduct = Omit<Product, 'image' | 'mainImage'> & {
+   mainImage: string
    categorySlug: string
    subcategorySlug: string | null
    originalLocale: string
@@ -33,12 +33,12 @@ export const useCartStore = defineStore('cart', () => {
     ) => {
       const existingItem = items.value.find(item => item.product.documentId === product.documentId)
       
-      // Нормализация изображения
-      const normalizedImage = typeof product.image === 'string'
-        ? product.image
-        : Array.isArray(product.image)
-          ? product.image[0]?.url || ''
-          : ''
+      const normalizedMainImage = product.mainImage?.url
+        || (typeof product.image === 'string'
+          ? product.image
+          : Array.isArray(product.image)
+            ? product.image[0]?.url || ''
+            : '')
   
       if (existingItem) {
         existingItem.quantity += 1
@@ -46,7 +46,7 @@ export const useCartStore = defineStore('cart', () => {
         items.value.push({
           product: {
             ...product,
-            image: normalizedImage,
+            mainImage: normalizedMainImage,
             categorySlug,
             subcategorySlug,
             originalLocale: currentLocale.value // Сохраняем язык добавления
