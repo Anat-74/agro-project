@@ -23,6 +23,7 @@ const handleAddToCart = (product: Product) => {
   } else {
     const slug = (route.params.categorySlug as string)
       || product.subcategory?.category?.slug
+      || product.category?.slug
       || ''
     cartStore.addToCart(product, slug, product.subcategory?.slug || null);
   }

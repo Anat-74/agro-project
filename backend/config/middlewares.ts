@@ -7,6 +7,7 @@ export default [
     config: {
       origin: ['*'],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
+      headers: ['Content-Type', 'Authorization', 'Origin', 'Accept', 'x-spyglass-page'],
     }
   },
   'strapi::poweredBy',

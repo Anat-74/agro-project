@@ -5,22 +5,59 @@ const { currentLocale } = useLocale()
 const t = computed(() => orderFormTranslations[currentLocale.value])
 const cartStore = useCartStore()
 const orderStore = useOrderStore()
+const authStore = useAuthStore()
 
 const emit = defineEmits(['order-success'])
 
 const isSubmitting = ref(false)
+const errors = reactive({ email: '', phone: '', agree: '' })
 const form = reactive({
   email: '',
   phone: '',
   agree: false
 })
 
+const phoneDigits = computed(() => form.phone.replace(/\D/g, ''))
+const phoneValid = computed(() => phoneDigits.value.length >= 6)
+const canSubmit = computed(() =>
+  form.agree && form.phone && phoneValid.value && (authStore.isAuthenticated || form.email)
+)
+
+watch(() => authStore.user?.email, (email) => {
+  if (email) form.email = email
+})
+
+const validate = () => {
+  errors.email = ''
+  errors.phone = ''
+  errors.agree = ''
+  let valid = true
+
+  if (!authStore.isAuthenticated && !form.email) {
+    errors.email = t.value.errorRequired
+    valid = false
+  }
+  if (!form.phone) {
+    errors.phone = t.value.errorRequired
+    valid = false
+  } else if (!phoneValid.value) {
+    errors.phone = t.value.errorPhoneFormat
+    valid = false
+  }
+  if (!form.agree) {
+    errors.agree = t.value.errorRequired
+    valid = false
+  }
+  return valid
+}
+
 const submitOrder = async () => {
-  if (!form.agree || !form.email || !form.phone) return
+  if (!validate()) return
 
   isSubmitting.value = true
   try {
-    const order = await orderStore.createOrder(form.email, form.phone)
+    const email = authStore.isAuthenticated && authStore.user?.email ? authStore.user.email : form.email
+    const order = await orderStore.createOrder(email, form.phone)
     emit('order-success', order.data.documentId)
 
     form.email = ''
@@ -41,14 +78,14 @@ const submitOrder = async () => {
   >
     <h3 class="order-form__title">{{ t.title }}</h3>
 
-    <UInput v-model="form.email" :label="t.email" type="email" class="order-form__input" />
-    <UInput v-model="form.phone" :label="t.phone + '*'" type="tel" required class="order-form__input" />
-    <UInput v-model="form.agree" :label="t.checkbox" type="checkbox" class="order-form__checkbox" />
+    <UInput v-if="!authStore.isAuthenticated" v-model="form.email" :label="t.email" type="email" :error="errors.email" class="order-form__input" />
+    <UInput v-model="form.phone" :label="t.phone + '*'" type="tel" required :error="errors.phone" placeholder="+375 (29) XXX-XX-XX" class="order-form__input" @input="form.phone = form.phone.replace(/[^\d+]/g, '')" />
+    <UInput v-model="form.agree" :label="t.checkbox" type="checkbox" :error="errors.agree" class="order-form__checkbox" />
 
     <div class="order-form__submit-wrapper">
       <UButton
         class="order-form__submit"
-        :disabled="isSubmitting"
+        :is-disabled="isSubmitting || !canSubmit"
         @click="submitOrder"
       >{{ isSubmitting ? t.submitting : t.checkout }}</UButton>
       <b>{{ t.total }}</b>

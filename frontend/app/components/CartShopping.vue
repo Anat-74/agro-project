@@ -9,10 +9,12 @@ const buttonT = computed(() => buttonTranslations[currentLocale.value])
 const config = useRuntimeConfig();
 
 const getProductLink = (product: CartItem["product"]) => {
+  const catSlug = product.categorySlug || (product as any).subcategory?.category?.slug || ''
+  if (!catSlug) return ''
   if (product.subcategorySlug) {
-    return `/${currentLocale.value}/${product.categorySlug}/${product.subcategorySlug}/${product.slug}`;
+    return `/${currentLocale.value}/${catSlug}/${product.subcategorySlug}/${product.slug}`;
   } else {
-    return `/${currentLocale.value}/${product.categorySlug}/products/${product.slug}`;
+    return `/${currentLocale.value}/${catSlug}/products/${product.slug}`;
   }
 };
 
@@ -53,6 +55,7 @@ onMounted(() => {
       />
       <h3 class="cart-item__title">{{ item.product.name }}</h3>
       <NuxtLink
+        v-if="getProductLink(item.product)"
         :to="getProductLink(item.product)"
         :class="[
           'cart-item__link',
@@ -73,6 +76,17 @@ onMounted(() => {
           height="108"
         />
       </NuxtLink>
+      <NuxtImg
+        v-else
+        class="cart-item__image"
+        :src="`${config.public.strapi.url}${item.product.mainImage}`"
+        :alt="item.product.name"
+        format="webp"
+        loading="lazy"
+        decoding="async"
+        width="144"
+        height="108"
+      />
       <span class="cart-item__price">
         <Icon name="my-icon:icon-by-regular" />
         {{ formatPrice(item.product.price) }}
