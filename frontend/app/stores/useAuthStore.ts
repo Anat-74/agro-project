@@ -99,7 +99,7 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = response?.user?.value || null
       token.value = response?.jwt || null
     } catch (e: any) {
-      const raw = e?.response?.data?.error?.message || e?.message || ''
+      const raw = e?.error?.message || e?.message || ''
       error.value = mapStrapiError(raw)
       throw e
     } finally {
@@ -115,7 +115,7 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = response?.user?.value || null
       token.value = response?.jwt || null
     } catch (e: any) {
-      const raw = e?.response?.data?.error?.message || e?.message || ''
+      const raw = e?.error?.message || e?.message || ''
       error.value = mapStrapiError(raw)
 
       // Field-level: парсим validation errors из details
@@ -140,7 +140,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       await strapiForgotPassword({ email })
     } catch (e: any) {
-      const raw = e?.response?.data?.error?.message || e?.message || ''
+      const raw = e?.error?.message || e?.message || ''
       error.value = mapStrapiError(raw)
       throw e
     } finally {
@@ -156,7 +156,7 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = response?.user?.value || null
       token.value = response?.jwt || null
     } catch (e: any) {
-      const raw = e?.response?.data?.error?.message || e?.message || ''
+      const raw = e?.error?.message || e?.message || ''
       error.value = mapStrapiError(raw)
       throw e
     } finally {

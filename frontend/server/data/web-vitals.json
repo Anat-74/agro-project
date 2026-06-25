@@ -7355,6 +7355,78 @@
       "value": 0.019468626028534268,
       "path": "/ru/cabinet",
       "timestamp": "2026-06-25T18:21:32.550Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.019468626028534268,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:26:36.704Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0252239600136415,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:26:38.231Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0252239600136415,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:26:41.335Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0252239600136415,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:26:43.854Z"
+    },
+    {
+      "name": "LCP",
+      "value": 688,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:28:36.176Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0005476046523549444,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:28:37.069Z"
+    },
+    {
+      "name": "INP",
+      "value": 8.600000008940697,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:28:42.651Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0005476046523549444,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:28:43.936Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0005476046523549444,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:28:46.238Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0005476046523549444,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:28:48.318Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0005476046523549444,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:28:52.603Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0005476046523549444,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:28:53.886Z"
     }
   ]
 }
