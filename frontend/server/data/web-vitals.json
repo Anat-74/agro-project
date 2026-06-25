@@ -8225,6 +8225,276 @@
       "value": 0.14547531049743018,
       "path": "/ru/cabinet",
       "timestamp": "2026-06-25T19:17:02.943Z"
+    },
+    {
+      "name": "LCP",
+      "value": 1224,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:23:05.463Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.09434831790069519,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:23:06.385Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.11905783133569882,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:23:06.453Z"
+    },
+    {
+      "name": "INP",
+      "value": 0.7000000029802322,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:23:10.191Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-25T19:23:10.884Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru",
+      "timestamp": "2026-06-25T19:23:10.922Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00015279420718354461,
+      "path": "/ru",
+      "timestamp": "2026-06-25T19:24:23.015Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0004082428799076242,
+      "path": "/ru",
+      "timestamp": "2026-06-25T19:24:23.216Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:24:24.179Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:24:24.217Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00015279420718354461,
+      "path": "/ru/cabinet/edit",
+      "timestamp": "2026-06-25T19:24:28.483Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0007836005404120233,
+      "path": "/ru/cabinet/edit",
+      "timestamp": "2026-06-25T19:24:28.839Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0009363947475955678,
+      "path": "/ru/cabinet/edit",
+      "timestamp": "2026-06-25T19:24:29.160Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0014577420149635965,
+      "path": "/ru/cabinet/edit",
+      "timestamp": "2026-06-25T19:24:29.873Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/be/cabinet/edit",
+      "timestamp": "2026-06-25T19:24:31.436Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/edit",
+      "timestamp": "2026-06-25T19:24:33.823Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00030558841436708923,
+      "path": "/ru/cabinet/edit",
+      "timestamp": "2026-06-25T19:24:41.710Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:24:43.069Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:24:43.123Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/be/cabinet/edit",
+      "timestamp": "2026-06-25T19:24:47.975Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/edit",
+      "timestamp": "2026-06-25T19:24:49.873Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/be/cabinet/edit",
+      "timestamp": "2026-06-25T19:24:53.428Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.04101844002846181,
+      "path": "/be/cabinet/edit",
+      "timestamp": "2026-06-25T19:25:45.424Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.08203688005692363,
+      "path": "/be/cabinet/edit",
+      "timestamp": "2026-06-25T19:25:53.883Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.12305532008538544,
+      "path": "/be/cabinet/edit",
+      "timestamp": "2026-06-25T19:25:54.577Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.16407376011384725,
+      "path": "/be/cabinet/edit",
+      "timestamp": "2026-06-25T19:26:04.486Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.16422554909598353,
+      "path": "/be/cabinet/edit",
+      "timestamp": "2026-06-25T19:26:56.714Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.1643773380781198,
+      "path": "/be/cabinet/edit",
+      "timestamp": "2026-06-25T19:26:56.739Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/edit",
+      "timestamp": "2026-06-25T19:26:58.573Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/be/cabinet/edit",
+      "timestamp": "2026-06-25T19:27:00.405Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/edit",
+      "timestamp": "2026-06-25T19:27:01.997Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/be/cabinet/edit",
+      "timestamp": "2026-06-25T19:27:04.468Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/be/cabinet",
+      "timestamp": "2026-06-25T19:27:05.920Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/be/cabinet",
+      "timestamp": "2026-06-25T19:27:06.087Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:27:08.554Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:27:08.647Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:27:08.751Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/be/cabinet",
+      "timestamp": "2026-06-25T19:27:11.421Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/be/cabinet",
+      "timestamp": "2026-06-25T19:27:11.612Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.020449043815056887,
+      "path": "/be/cabinet",
+      "timestamp": "2026-06-25T19:27:12.445Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:27:13.609Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:27:13.763Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:27:13.862Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00015279420718354461,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:27:15.052Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00030558841436708923,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:27:15.069Z"
     }
   ]
 }

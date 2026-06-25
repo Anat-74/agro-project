@@ -38,6 +38,23 @@ export const cabinetTranslations: Record<LocaleCode, {
   filterProcessed: string
   filterDelivered: string
   filterCancelled: string
+  editTitle: string
+  editBack: string
+  editSaved: string
+  editUsername: string
+  editEmail: string
+  editAvatar: string
+  editChoosePhoto: string
+  editPasswordSection: string
+  editCurrentPassword: string
+  editNewPassword: string
+  editConfirmPassword: string
+  editSave: string
+  editSaving: string
+  editErrorRequired: string
+  editErrorEmail: string
+  editErrorPasswordLength: string
+  editErrorPasswordMatch: string
 }> = {
   ru: {
     title: 'Личный кабинет',
@@ -79,6 +96,23 @@ export const cabinetTranslations: Record<LocaleCode, {
     filterProcessed: 'В обработке',
     filterDelivered: 'Доставлен',
     filterCancelled: 'Отменён',
+    editTitle: 'Редактирование профиля',
+    editBack: '← Назад',
+    editSaved: 'Профиль сохранён',
+    editUsername: 'Имя пользователя',
+    editEmail: 'Email',
+    editAvatar: 'Аватар',
+    editChoosePhoto: 'Выбрать фото',
+    editPasswordSection: 'Заполните только если хотите сменить пароль',
+    editCurrentPassword: 'Текущий пароль',
+    editNewPassword: 'Новый пароль',
+    editConfirmPassword: 'Подтвердите новый пароль',
+    editSave: 'Сохранить',
+    editSaving: 'Сохранение...',
+    editErrorRequired: 'Обязательное поле',
+    editErrorEmail: 'Введите корректный email',
+    editErrorPasswordLength: 'Новый пароль: минимум 6 символов',
+    editErrorPasswordMatch: 'Новый пароль и подтверждение не совпадают',
   },
   be: {
     title: 'Асабісты кабінет',
@@ -120,5 +154,22 @@ export const cabinetTranslations: Record<LocaleCode, {
     filterProcessed: 'У апрацоўцы',
     filterDelivered: 'Дастаўлены',
     filterCancelled: 'Адменены',
+    editTitle: 'Рэдагаванне профілю',
+    editBack: '← Назад',
+    editSaved: 'Профіль захаваны',
+    editUsername: 'Імя карыстальніка',
+    editEmail: 'Email',
+    editAvatar: 'Аватар',
+    editChoosePhoto: 'Выбраць фота',
+    editPasswordSection: 'Запоўніце толькі калі хочаце змяніць пароль',
+    editCurrentPassword: 'Бягучы пароль',
+    editNewPassword: 'Новы пароль',
+    editConfirmPassword: 'Пацвердзіце новы пароль',
+    editSave: 'Захаваць',
+    editSaving: 'Захаванне...',
+    editErrorRequired: 'Абавязковае поле',
+    editErrorEmail: 'Увядзіце карэктны email',
+    editErrorPasswordLength: 'Новы пароль: мінімум 6 сімвалаў',
+    editErrorPasswordMatch: 'Новы пароль і пацвярджэнне не супадаюць',
   },
 }

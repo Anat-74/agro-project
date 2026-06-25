@@ -3,10 +3,13 @@ definePageMeta({
   middleware: 'auth',
 })
 
+import { cabinetTranslations } from '~/locales/cabinet'
+
 const { currentLocale } = useLocale()
 const authStore = useAuthStore()
 const router = useRouter()
 const strapiClient = useStrapiClient()
+const t = computed(() => cabinetTranslations[currentLocale.value])
 
 const username = ref(authStore.user?.username || '')
 const email = ref(authStore.user?.email || '')
@@ -35,17 +38,17 @@ const handleSave = async () => {
   success.value = false
 
   // Client-side validation
-  if (!username.value) { error.value = 'Имя обязательно'; return }
+  if (!username.value) { error.value = t.value.editErrorRequired; return }
   if (!email.value || !/^\S+@\S+\.\S+$/.test(email.value)) {
-    error.value = 'Введите корректный email'
+    error.value = t.value.editErrorEmail
     return
   }
   if (newPassword.value && newPassword.value.length < 6) {
-    error.value = 'Новый пароль: минимум 6 символов'
+    error.value = t.value.editErrorPasswordLength
     return
   }
   if (newPassword.value && newPassword.value !== confirmPassword.value) {
-    error.value = 'Новый пароль и подтверждение не совпадают'
+    error.value = t.value.editErrorPasswordMatch
     return
   }
 
@@ -89,7 +92,7 @@ const handleSave = async () => {
     // Скрыть уведомление через 3 секунды
     setTimeout(() => { success.value = false }, 3000)
   } catch (e: any) {
-    const raw = e?.error?.message || e?.message || 'Ошибка сохранения'
+    const raw = e?.error?.message || e?.message || t.value.error
     console.error('Profile save error:', e)
     error.value = raw
   } finally {
@@ -110,25 +113,25 @@ const goBack = () => {
       class="profile-edit__back"
       @click="goBack"
     >
-      ← Назад
+      {{ t.editBack }}
     </UButton>
 
-    <h1 class="profile-edit__title">Редактирование профиля</h1>
+    <h1 class="profile-edit__title">{{ t.editTitle }}</h1>
 
     <AppNotification
       v-if="success"
       type="success"
       @close="success = false"
     >
-      Профиль сохранён
+      {{ t.editSaved }}
     </AppNotification>
 
     <form class="profile-edit__form" @submit.prevent="handleSave">
       <UInput
         v-model="username"
         type="text"
-        label="Имя пользователя"
-        placeholder="Имя"
+        :label="t.editUsername"
+        :placeholder="t.editUsername"
         required
         autocomplete="username"
         class="profile-edit__field"
@@ -137,15 +140,15 @@ const goBack = () => {
       <UInput
         v-model="email"
         type="email"
-        label="Email"
-        placeholder="Email"
+        :label="t.editEmail"
+        :placeholder="t.editEmail"
         required
         autocomplete="email"
         class="profile-edit__field"
       />
 
       <div class="profile-edit__avatar-section">
-        <p class="profile-edit__avatar-label">Аватар</p>
+        <p class="profile-edit__avatar-label">{{ t.editAvatar }}</p>
         <div class="profile-edit__avatar-preview">
           <img
             v-if="avatarPreview"
@@ -159,19 +162,19 @@ const goBack = () => {
         </div>
         <div class="profile-edit__avatar-upload">
           <input ref="fileInput" type="file" accept="image/*" @change="handleAvatarChange" />
-          <UButton variant="secondary" :is-disabled="false" @click="fileInput?.click()">Выбрать фото</UButton>
+          <UButton variant="secondary" :is-disabled="false" @click="fileInput?.click()">{{ t.editChoosePhoto }}</UButton>
         </div>
       </div>
 
       <hr class="profile-edit__divider">
 
-      <p class="profile-edit__section-hint">Заполните только если хотите сменить пароль</p>
+      <p class="profile-edit__section-hint">{{ t.editPasswordSection }}</p>
 
       <UInput
         v-model="currentPassword"
         type="password"
-        label="Текущий пароль"
-        placeholder="Текущий пароль"
+        :label="t.editCurrentPassword"
+        :placeholder="t.editCurrentPassword"
         autocomplete="current-password"
         class="profile-edit__field"
       />
@@ -179,8 +182,8 @@ const goBack = () => {
       <UInput
         v-model="newPassword"
         type="password"
-        label="Новый пароль"
-        placeholder="Новый пароль (мин. 6 символов)"
+        :label="t.editNewPassword"
+        :placeholder="t.editNewPassword"
         autocomplete="new-password"
         class="profile-edit__field"
       />
@@ -188,8 +191,8 @@ const goBack = () => {
       <UInput
         v-model="confirmPassword"
         type="password"
-        label="Подтвердите новый пароль"
-        placeholder="Повторите новый пароль"
+        :label="t.editConfirmPassword"
+        :placeholder="t.editConfirmPassword"
         autocomplete="new-password"
         class="profile-edit__field"
       />
@@ -202,7 +205,7 @@ const goBack = () => {
           variant="primary"
           :is-disabled="isSubmitting"
         >
-          {{ isSubmitting ? 'Сохранение...' : 'Сохранить' }}
+          {{ isSubmitting ? t.editSaving : t.editSave }}
         </UButton>
       </div>
     </form>
