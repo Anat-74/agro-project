@@ -8213,6 +8213,18 @@
       "value": 0.11905783133569882,
       "path": "/ru/cabinet",
       "timestamp": "2026-06-25T19:14:13.802Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.12076579706242656,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:17:02.847Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.14547531049743018,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:17:02.943Z"
     }
   ]
 }

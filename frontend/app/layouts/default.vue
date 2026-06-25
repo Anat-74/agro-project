@@ -39,8 +39,9 @@ console.debug("global data:", global.value);
     <BannerLayouts class="header__banner" />
     <div class="header__container-top">
       <Logo
+        v-if="global"
         class="header__logo hidden-mobile"
-        :global="global" 
+        :global="global"
         width="48"
         height="48"
       />
@@ -62,6 +63,7 @@ console.debug("global data:", global.value);
     <div class="header__bottom">
       <div class="header__container-bottom">
         <Logo
+          v-if="global"
           class="header__logo visible-mobile"
           :global="global"
           width="36"
