@@ -79,7 +79,7 @@ const handleSubmit = async () => {
       </form>
 
       <p class="auth-page__footer-text">
-        <NuxtLink :to="`/${currentLocale}/login`" class="auth-page__link">
+        <NuxtLink :to="`/${currentLocale}/auth/login`" class="auth-page__link">
           {{ t.backToLogin }}
         </NuxtLink>
       </p>

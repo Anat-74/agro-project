@@ -1,6 +1,6 @@
 export default defineNuxtRouteMiddleware(async (to) => {
   // Не проверяем на страницах входа/регистрации
-  if (to.path.includes('/login') || to.path.includes('/register') || to.path.includes('/forgot-password') || to.path.includes('/reset-password')) {
+  if (to.path.includes('/auth/login') || to.path.includes('/auth/register') || to.path.includes('/auth/forgot-password') || to.path.includes('/auth/reset-password') || to.path.includes('/auth/')) {
     return
   }
 
@@ -14,6 +14,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // Если всё ещё не авторизован — редирект на логин
   if (!authStore.isAuthenticated) {
     const lang = to.params.lang || 'ru'
-    return navigateTo(`/${lang}/login?redirect=${encodeURIComponent(to.fullPath)}`)
+    return navigateTo(`/${lang}/auth/login?redirect=${encodeURIComponent(to.fullPath)}`)
   }
 })

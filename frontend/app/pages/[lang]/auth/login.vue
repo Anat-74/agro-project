@@ -4,22 +4,26 @@ import { authTranslations } from '~/locales/auth'
 const { currentLocale } = useLocale()
 const t = computed(() => authTranslations[currentLocale.value])
 const authStore = useAuthStore()
+const route = useRoute()
 const router = useRouter()
+const { showNotification } = useNotification()
 
-const username = ref('')
-const email = ref('')
+const identifier = ref('')
 const password = ref('')
 const isSubmitting = ref(false)
 const showToast = ref(false)
+const toastMessage = ref('')
 
-const handleRegister = async () => {
-  if (!username.value || !email.value || !password.value) return
+const handleLogin = async () => {
+  if (!identifier.value || !password.value) return
   isSubmitting.value = true
   try {
-    await authStore.register(username.value, email.value, password.value)
+    await authStore.login(identifier.value, password.value)
+    toastMessage.value = `Вы вошли как ${identifier.value}`
     showToast.value = true
     await new Promise(r => setTimeout(r, 1200))
-    await router.push(`/${currentLocale.value}/cabinet`)
+    const redirect = (route.query.redirect as string) || `/${currentLocale.value}/cabinet`
+    await router.push(redirect)
   } catch {
     // ошибка уже в authStore.error
   } finally {
@@ -35,27 +39,30 @@ const handleRegister = async () => {
       type="success"
       @close="showToast = false"
     >
-      Аккаунт создан! Добро пожаловать, {{ username }}
+      {{ toastMessage }}
     </AppNotification>
 
     <section class="auth-page__form-wrapper">
-      <h1 class="auth-page__title">{{ t.registerTitle }}</h1>
-      <AuthRegister
-        :username="username"
-        :email="email"
+      <h1 class="auth-page__title">{{ t.loginTitle }}</h1>
+      <AuthLogin
+        :identifier="identifier"
         :password="password"
         :error="authStore.error"
         :field-errors="authStore.fieldErrors"
         :is-submitting="isSubmitting"
-        @update:username="username = $event"
-        @update:email="email = $event"
+        @update:identifier="identifier = $event"
         @update:password="password = $event"
-        @submit="handleRegister"
+        @submit="handleLogin"
       />
+      <p class="auth-page__forgot">
+        <NuxtLink :to="`/${currentLocale}/auth/forgot-password`" class="auth-page__link">
+          {{ t.forgotLink }}
+        </NuxtLink>
+      </p>
       <p class="auth-page__footer-text">
-        {{ t.hasAccount }}
-        <NuxtLink :to="`/${currentLocale}/login`" class="auth-page__link">
-          {{ t.loginButton }}
+        {{ t.noAccount }}
+        <NuxtLink :to="`/${currentLocale}/auth/register`" class="auth-page__link">
+          {{ t.registerButton }}
         </NuxtLink>
       </p>
     </section>
@@ -80,6 +87,11 @@ const handleRegister = async () => {
     font-weight: 700;
     margin-block-end: toRem(24);
     text-align: center;
+  }
+
+  &__forgot {
+    text-align: center;
+    margin-block-start: toRem(12);
   }
 
   &__footer-text {

@@ -7427,6 +7427,396 @@
       "value": 0.0005476046523549444,
       "path": "/ru/login",
       "timestamp": "2026-06-25T18:28:53.886Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0006181292270744426,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:30:09.115Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0006886538017939407,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:30:09.143Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0011276193010310168,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:30:13.038Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0011276193010310168,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:30:15.280Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0011276193010310168,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:30:16.951Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0011276193010310168,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:30:18.570Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0011276193010310168,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:30:21.873Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0011276193010310168,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:30:22.204Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0011276193010310168,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:30:26.028Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0011276193010310168,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:30:26.353Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0011276193010310168,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:30:27.070Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0011276193010310168,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:30:27.464Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0011276193010310168,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:30:31.420Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.004217740608247048,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:30:32.906Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.019468626028534268,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:30:32.973Z"
+    },
+    {
+      "name": "LCP",
+      "value": 2140,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:35:42.647Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06103872596573226,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:35:44.263Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.07628961138601947,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:35:44.315Z"
+    },
+    {
+      "name": "LCP",
+      "value": 2196,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:35:50.257Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0013740908638414354,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:35:50.267Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0624128168295737,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:35:51.719Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.07766370224986091,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:35:51.731Z"
+    },
+    {
+      "name": "LCP",
+      "value": 118012,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:37:46.527Z"
+    },
+    {
+      "name": "LCP",
+      "value": 121412,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:37:48.905Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.09291458767014812,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:40:03.954Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.10816547309043534,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:40:04.035Z"
+    },
+    {
+      "name": "LCP",
+      "value": 624,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:41:38.684Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06103872596573226,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:41:39.221Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.07628961138601947,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:41:39.230Z"
+    },
+    {
+      "name": "INP",
+      "value": 0.8999999910593033,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:41:41.415Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.07628961138601947,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:41:42.586Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.07628961138601947,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:41:42.602Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0252239600136415,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T18:41:44.204Z"
+    },
+    {
+      "name": "LCP",
+      "value": 356,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T18:41:46.068Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0005476046523549444,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T18:41:46.461Z"
+    },
+    {
+      "name": "INP",
+      "value": 1.2000000029802322,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T18:43:16.938Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0005476046523549444,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T18:43:27.800Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0005476046523549444,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T18:43:30.750Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0005476046523549444,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T18:43:31.871Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0005476046523549444,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T18:43:32.749Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0005476046523549444,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T18:43:49.743Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0005476046523549444,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T18:43:51.488Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0005476046523549444,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T18:44:27.913Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0005476046523549444,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T18:44:28.650Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0005476046523549444,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T18:44:33.740Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.004217740608247048,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:44:35.088Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.019468626028534268,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:44:35.214Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/be/cabinet",
+      "timestamp": "2026-06-25T18:44:48.104Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/be/cabinet",
+      "timestamp": "2026-06-25T18:44:48.148Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:44:54.748Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:44:55.211Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.1446800227298798,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:44:58.111Z"
+    },
+    {
+      "name": "LCP",
+      "value": 714588,
+      "path": "/ru/forgot-password",
+      "timestamp": "2026-06-25T18:47:46.515Z"
+    },
+    {
+      "name": "LCP",
+      "value": 1160,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:49:47.033Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06103872596573226,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:49:48.252Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.07628961138601947,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:49:48.300Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.09154049680630669,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:51:26.754Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.1067913822265939,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:51:26.773Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.10770947993699252,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:51:58.469Z"
+    },
+    {
+      "name": "INP",
+      "value": 2.4000000059604645,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:56:41.099Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.10770947993699252,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:56:43.736Z"
+    },
+    {
+      "name": "LCP",
+      "value": 2920,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:56:54.703Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.09434831790069519,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:56:55.938Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.11905783133569882,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:56:56.022Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.11905783133569882,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:57:00.113Z"
     }
   ]
 }

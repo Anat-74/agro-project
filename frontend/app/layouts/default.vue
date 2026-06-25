@@ -1,7 +1,12 @@
 <script setup lang="ts">
+import { cabinetTranslations } from '~/locales/cabinet'
+import { authTranslations } from '~/locales/auth'
+
 const { find } = useStrapi();
 const searchStore = useSearchStore();
 const { isAuthenticated, user } = useAuth();
+const cabinetT = computed(() => cabinetTranslations[currentLocale.value])
+const authT = computed(() => authTranslations[currentLocale.value])
 const { products, totalPages, currentPage } = storeToRefs(searchStore);
 const { currentLocale } = useLocale();
 console.debug("auth state:", isAuthenticated.value);
@@ -44,11 +49,12 @@ console.debug("global data:", global.value);
       <Basket class="header__cart" />
       <ClientOnly>
         <NuxtLink
-          :to="isAuthenticated ? `/${currentLocale}/cabinet` : `/${currentLocale}/login`"
+          :to="isAuthenticated ? `/${currentLocale}/cabinet` : `/${currentLocale}/auth/login`"
           class="header__profile"
-          :aria-label="isAuthenticated ? 'Личный кабинет' : 'Войти'"
+          :aria-label="isAuthenticated ? cabinetT.title : authT.loginButton"
         >
-          <span v-if="isAuthenticated && user?.username" class="header__initials">{{ user.username.charAt(0).toUpperCase() }}</span>
+          <UImage v-if="isAuthenticated && user?.avatar" :src="user.avatar" :alt="user.username" type="avatar" class="header__avatar" />
+          <span v-else-if="isAuthenticated && user?.username" class="header__initials">{{ user.username.charAt(0).toUpperCase() }}</span>
           <Icon v-else name="cil:user" width="28" height="28" />
         </NuxtLink>
       </ClientOnly>
@@ -185,6 +191,18 @@ console.debug("global data:", global.value);
       grid-column: 2/3;
       grid-row: 1/2;
       justify-self: end;
+    }
+  }
+
+  &__avatar {
+    width: toRem(32);
+    height: toRem(32);
+
+    :deep(.app-image__img) {
+      width: toRem(32);
+      height: toRem(32);
+      object-fit: cover;
+      border-radius: 50%;
     }
   }
 

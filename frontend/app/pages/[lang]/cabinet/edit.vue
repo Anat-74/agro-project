@@ -7,15 +7,29 @@ const { currentLocale } = useLocale()
 const authStore = useAuthStore()
 const router = useRouter()
 const { update } = useStrapi()
+const strapiClient = useStrapiClient()
+const config = useRuntimeConfig()
 
 const username = ref(authStore.user?.username || '')
 const email = ref(authStore.user?.email || '')
 const currentPassword = ref('')
 const newPassword = ref('')
 const confirmPassword = ref('')
+const avatarFile = ref<File | null>(null)
+const avatarPreview = ref(authStore.user?.avatar || '')
 const isSubmitting = ref(false)
 const error = ref<string | null>(null)
 const success = ref(false)
+
+const handleAvatarChange = (e: Event) => {
+  const input = e.target as HTMLInputElement
+  if (input.files?.[0]) {
+    avatarFile.value = input.files[0]
+    const reader = new FileReader()
+    reader.onload = (ev) => { avatarPreview.value = ev.target?.result as string }
+    reader.readAsDataURL(input.files[0])
+  }
+}
 
 const handleSave = async () => {
   error.value = null
@@ -38,11 +52,22 @@ const handleSave = async () => {
 
   isSubmitting.value = true
   try {
+    // Загрузка аватара
+    let avatarUrl = ''
+    if (avatarFile.value) {
+      const formData = new FormData()
+      formData.append('files', avatarFile.value)
+      const uploadResponse = await strapiClient('/upload', { method: 'POST', body: formData })
+      avatarUrl = uploadResponse?.[0]?.url || ''
+    }
+
     // Обновление профиля
-    await update('users/me', {
+    const userData: Record<string, any> = {
       username: username.value,
       email: email.value,
-    })
+    }
+    if (avatarUrl) userData.avatar = avatarUrl
+    await update('users/me', userData)
 
     // Смена пароля, если указан
     if (newPassword.value && currentPassword.value) {
@@ -56,6 +81,7 @@ const handleSave = async () => {
 
     // Обновить локального пользователя
     await authStore.init()
+    avatarFile.value = null
     success.value = true
     currentPassword.value = ''
     newPassword.value = ''
@@ -117,6 +143,25 @@ const goBack = () => {
         autocomplete="email"
         class="profile-edit__field"
       />
+
+      <div class="profile-edit__avatar-section">
+        <p class="profile-edit__avatar-label">Аватар</p>
+        <div class="profile-edit__avatar-preview">
+          <img
+            v-if="avatarPreview"
+            :src="avatarPreview"
+            alt="Avatar"
+            class="profile-edit__avatar-img"
+          />
+          <span v-else class="profile-edit__avatar-placeholder">
+            {{ authStore.user?.username?.charAt(0)?.toUpperCase() || '?' }}
+          </span>
+        </div>
+        <label class="profile-edit__avatar-upload">
+          <input type="file" accept="image/*" @change="handleAvatarChange" />
+          <UButton variant="secondary" :is-disabled="false" @click.prevent>Выбрать фото</UButton>
+        </label>
+      </div>
 
       <hr class="profile-edit__divider">
 
@@ -200,6 +245,49 @@ const goBack = () => {
     font-size: toRem(13);
     color: var(--text-muted);
     margin: 0;
+  }
+
+  &__avatar-section {
+    display: flex;
+    align-items: center;
+    gap: toRem(16);
+    flex-wrap: wrap;
+  }
+
+  &__avatar-label {
+    font-size: toRem(14);
+    font-weight: 600;
+    margin: 0;
+    min-width: toRem(80);
+  }
+
+  &__avatar-preview {
+    width: toRem(64);
+    height: toRem(64);
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--bg-secondary);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+  }
+
+  &__avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  &__avatar-placeholder {
+    font-weight: 700;
+    font-size: toRem(20);
+    color: var(--text-muted);
+  }
+
+  &__avatar-upload {
+    input[type="file"] {
+      display: none;
+    }
   }
 
   &__error {

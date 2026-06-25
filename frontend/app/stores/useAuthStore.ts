@@ -8,6 +8,7 @@ interface AuthStoreUser {
   provider?: string
   confirmed?: boolean
   blocked?: boolean
+  avatar?: string
   createdAt?: string
   updatedAt?: string
 }

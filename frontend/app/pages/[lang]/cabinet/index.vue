@@ -23,7 +23,7 @@ const handleLogout = async () => {
   authStore.logout()
   showToast.value = true
   await new Promise(r => setTimeout(r, 1500))
-  router.push(`/${currentLocale.value}/login`)
+  router.push(`/${currentLocale.value}/auth/login`)
 }
 
 const confirmLogout = () => {
@@ -54,7 +54,16 @@ const confirmLogout = () => {
 
     <div class="cabinet__info" v-if="authStore.user">
       <div class="cabinet__avatar">
-        {{ authStore.user.username?.charAt(0)?.toUpperCase() || '?' }}
+        <UImage
+          v-if="authStore.user?.avatar"
+          :src="authStore.user.avatar"
+          :alt="authStore.user.username"
+          type="avatar"
+          class="cabinet__avatar-img"
+        />
+        <span v-else>
+          {{ authStore.user.username?.charAt(0)?.toUpperCase() || '?' }}
+        </span>
       </div>
       <div class="cabinet__details">
         <p class="cabinet__name">{{ authStore.user.username }}</p>
@@ -120,6 +129,19 @@ const confirmLogout = () => {
     font-size: toRem(24);
     font-weight: 700;
     flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  &__avatar-img {
+    width: toRem(56);
+    height: toRem(56);
+
+    :deep(.app-image__img) {
+      width: toRem(56);
+      height: toRem(56);
+      object-fit: cover;
+      border-radius: 50%;
+    }
   }
 
   &__name {
