@@ -6,9 +6,7 @@ definePageMeta({
 const { currentLocale } = useLocale()
 const authStore = useAuthStore()
 const router = useRouter()
-const { update } = useStrapi()
 const strapiClient = useStrapiClient()
-const config = useRuntimeConfig()
 
 const username = ref(authStore.user?.username || '')
 const email = ref(authStore.user?.email || '')
@@ -17,6 +15,7 @@ const newPassword = ref('')
 const confirmPassword = ref('')
 const avatarFile = ref<File | null>(null)
 const avatarPreview = ref(authStore.user?.avatar || '')
+const fileInput = ref<HTMLInputElement | null>(null)
 const isSubmitting = ref(false)
 const error = ref<string | null>(null)
 const success = ref(false)
@@ -57,7 +56,7 @@ const handleSave = async () => {
     if (avatarFile.value) {
       const formData = new FormData()
       formData.append('files', avatarFile.value)
-      const uploadResponse = await strapiClient('/upload', { method: 'POST', body: formData })
+      const uploadResponse = await strapiClient('/upload', { method: 'POST', body: formData }) as any[]
       avatarUrl = uploadResponse?.[0]?.url || ''
     }
 
@@ -67,7 +66,7 @@ const handleSave = async () => {
       email: email.value,
     }
     if (avatarUrl) userData.avatar = avatarUrl
-    await update('users/me', userData)
+    await strapiClient('/users/' + authStore.user?.id, { method: 'PUT', body: userData })
 
     // Смена пароля, если указан
     if (newPassword.value && currentPassword.value) {
@@ -90,7 +89,8 @@ const handleSave = async () => {
     // Скрыть уведомление через 3 секунды
     setTimeout(() => { success.value = false }, 3000)
   } catch (e: any) {
-    const raw = e?.response?.data?.error?.message || e?.message || 'Ошибка сохранения'
+    const raw = e?.error?.message || e?.message || 'Ошибка сохранения'
+    console.error('Profile save error:', e)
     error.value = raw
   } finally {
     isSubmitting.value = false
@@ -157,10 +157,10 @@ const goBack = () => {
             {{ authStore.user?.username?.charAt(0)?.toUpperCase() || '?' }}
           </span>
         </div>
-        <label class="profile-edit__avatar-upload">
-          <input type="file" accept="image/*" @change="handleAvatarChange" />
-          <UButton variant="secondary" :is-disabled="false" @click.prevent>Выбрать фото</UButton>
-        </label>
+        <div class="profile-edit__avatar-upload">
+          <input ref="fileInput" type="file" accept="image/*" @change="handleAvatarChange" />
+          <UButton variant="secondary" :is-disabled="false" @click="fileInput?.click()">Выбрать фото</UButton>
+        </div>
       </div>
 
       <hr class="profile-edit__divider">
