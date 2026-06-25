@@ -20,7 +20,7 @@ const cancelOrder = async (order: any) => {
   } catch (e: any) {
     console.error('Cancel order full error:', e)
     const errText = JSON.stringify(e, Object.getOwnPropertyNames(e))
-    alert('Ошибка отмены:\n' + errText.slice(0, 500))
+    alert(cabinetT.value.cancelError + ':\n' + errText.slice(0, 500))
   } finally {
     cancellingId.value = null
   }
@@ -109,28 +109,28 @@ const openProductModal = (item: any) => {
   nextTick(() => productModalRef.value?.openModal?.())
 }
 
-const statusLabel: Record<string, string> = {
-  new: 'Новый',
-  processed: 'В обработке',
-  confirmed: 'Подтверждён',
-  delivered: 'Доставлен',
-  cancelled: 'Отменён',
-}
+const statusLabel = computed(() => ({
+  new: cabinetT.value.statusNew,
+  processed: cabinetT.value.statusProcessed,
+  confirmed: cabinetT.value.statusConfirmed,
+  delivered: cabinetT.value.statusDelivered,
+  cancelled: cabinetT.value.statusCancelled,
+}))
 </script>
 
 <template>
   <ClientOnly>
     <div class="order-history">
       <div class="order-history__filters">
-        <button
-          v-for="[key, label] of [['', 'Все'], ['new', 'Новые'], ['processed', 'В обработке'], ['delivered', 'Доставлен'], ['cancelled', 'Отменён']]"
+        <UButton
+          v-for="[key, labelKey] of [['', 'filterAll'], ['new', 'filterNew'], ['processed', 'filterProcessed'], ['delivered', 'filterDelivered'], ['cancelled', 'filterCancelled']]"
           :key="key"
           class="order-history__filter-btn"
           :class="{ 'order-history__filter-btn_active': statusFilter === key || (!statusFilter && !key) }"
           @click="statusFilter = key || null"
         >
-          {{ label }}
-        </button>
+          {{ cabinetT[labelKey] }}
+        </UButton>
       </div>
       <OrderHistorySkeleton v-if="status === 'pending'" />
 
@@ -159,7 +159,7 @@ const statusLabel: Record<string, string> = {
           />
           <div class="order-history__item-info">
             <p class="order-history__item-id">
-              Заказ #{{ order.documentId || order.id }}
+              {{ cabinetT.orderPrefix }}{{ order.documentId || order.id }}
             </p>
             <p class="order-history__item-date">
               {{ new Date(order.createdAt).toLocaleDateString() }}
@@ -168,7 +168,7 @@ const statusLabel: Record<string, string> = {
               class="order-history__badge"
               :class="`order-history__badge_${order.statusOrders || 'new'}`"
             >
-              {{ statusLabel[order.statusOrders] || 'Новый' }}
+              {{ (statusLabel as any)[order.statusOrders] || cabinetT.statusNew }}
             </span>
           </div>
           <div class="order-history__item-total">
@@ -176,7 +176,7 @@ const statusLabel: Record<string, string> = {
           </div>
           <div class="order-history__item-actions">
             <UButton variant="secondary" :is-disabled="false" class="order-history__repeat-btn" @click="repeatOrder(order)">
-              Повторить
+              {{ cabinetT.repeat }}
             </UButton>
             <NuxtLink
               :to="`/${currentLocale}/cabinet/${order.documentId || order.id}`"
@@ -191,7 +191,7 @@ const statusLabel: Record<string, string> = {
               class="order-history__cancel-btn"
               @click="cancelOrder(order)"
             >
-              {{ cancellingId === (order.documentId || order.id) ? '...' : 'Отменить' }}
+              {{ cancellingId === (order.documentId || order.id) ? '...' : cabinetT.cancel }}
             </UButton>
           </div>
         </li>
@@ -202,7 +202,7 @@ const statusLabel: Record<string, string> = {
           :is-disabled="currentPage <= 1"
           @click="currentPage--"
         >
-          ← Назад
+          {{ cabinetT.back }}
         </UButton>
         <span class="order-history__page-info">{{ currentPage }} / {{ totalPages }}</span>
         <UButton
@@ -210,7 +210,7 @@ const statusLabel: Record<string, string> = {
           :is-disabled="currentPage >= totalPages"
           @click="currentPage++"
         >
-          Вперёд →
+          {{ cabinetT.forward }}
         </UButton>
       </div>
     </div>

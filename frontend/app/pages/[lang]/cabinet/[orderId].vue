@@ -16,7 +16,7 @@ const { findOne, update: updateStrapi } = useStrapi()
 const cancelling = ref(false)
 
 const cancelOrder = async () => {
-  if (!order.value || !confirm('Отменить заказ?')) return
+  if (!order.value || !confirm(t.value.cancelOrder + '?')) return
   cancelling.value = true
   try {
     const id = order.value.documentId || order.value.id
@@ -42,13 +42,13 @@ const { data: order, status } = useAsyncData(
   },
 )
 
-const statusLabel: Record<string, string> = {
-  new: '{{ statusLabel[order.statusOrders] || "Новый"}}',
-  processed: 'В обработке',
-  confirmed: 'Подтверждён',
-  delivered: 'Доставлен',
-  cancelled: 'Отменён',
-}
+const statusLabel = computed(() => ({
+  new: t.value.statusNew,
+  processed: t.value.statusProcessed,
+  confirmed: t.value.statusConfirmed,
+  delivered: t.value.statusDelivered,
+  cancelled: t.value.statusCancelled,
+}))
 
 const goBack = () => {
   router.push(`/${currentLocale.value}/cabinet`)
@@ -86,7 +86,7 @@ const goBack = () => {
             class="order-detail__badge"
             :class="`order-detail__badge_${order.statusOrders || 'new'}`"
           >
-            {{ statusLabel[order.statusOrders] || 'Новый' }}
+            {{ (statusLabel as any)[order.statusOrders] || t.statusNew }}
           </span>
           <UButton
             v-if="order.statusOrders === 'new' || order.statusOrders === 'processed'"
@@ -95,7 +95,7 @@ const goBack = () => {
             class="order-detail__cancel-btn"
             @click="cancelOrder"
           >
-            {{ cancelling ? 'Отмена...' : 'Отменить заказ' }}
+            {{ cancelling ? t.cancelling : t.cancelOrder }}
           </UButton>
         </p>
         <p><strong>{{ t.date }}:</strong> {{ new Date(order.createdAt).toLocaleDateString() }}</p>

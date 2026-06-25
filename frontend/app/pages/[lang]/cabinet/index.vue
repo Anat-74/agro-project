@@ -70,10 +70,10 @@ const confirmLogout = () => {
 
     <ConfirmDeleteModal
       ref="confirm-modal"
-      title="Выход из аккаунта"
-      message="Вы уверены, что хотите выйти? Для входа потребуется повторный ввод пароля."
-      confirm-text="Выйти"
-      cancel-text="Отмена"
+      :title="t.logoutTitle"
+      :message="t.logoutConfirm"
+      :confirm-text="t.confirmLogout"
+      :cancel-text="t.cancel"
       @confirm="handleLogout"
       @cancel="() => {}"
     />

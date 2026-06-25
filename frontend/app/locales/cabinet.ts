@@ -13,16 +13,31 @@ export const cabinetTranslations: Record<LocaleCode, {
   noOrders: string
   viewOrder: string
   logout: string
+  logoutTitle: string
+  logoutConfirm: string
+  confirmLogout: string
+  cancel: string
+  cancelOrder: string
+  cancelling: string
   editProfile: string
   loggedOut: string
   error: string
   notFound: string
-  cancelOrder: string
-  cancelling: string
-  statusLabel: string
-  dateLabel: string
-  totalLabel: string
-  itemsLabel: string
+  orderPrefix: string
+  repeat: string
+  back: string
+  forward: string
+  cancelError: string
+  statusNew: string
+  statusProcessed: string
+  statusConfirmed: string
+  statusDelivered: string
+  statusCancelled: string
+  filterAll: string
+  filterNew: string
+  filterProcessed: string
+  filterDelivered: string
+  filterCancelled: string
 }> = {
   ru: {
     title: 'Личный кабинет',
@@ -39,16 +54,31 @@ export const cabinetTranslations: Record<LocaleCode, {
     noOrders: 'У вас пока нет заказов',
     viewOrder: 'Просмотр',
     logout: 'Выйти',
+    logoutTitle: 'Выход из аккаунта',
+    logoutConfirm: 'Вы уверены, что хотите выйти? Для входа потребуется повторный ввод пароля.',
+    confirmLogout: 'Выйти',
+    cancel: 'Отмена',
+    cancelOrder: 'Отменить заказ',
+    cancelling: 'Отмена...',
     editProfile: 'Редактировать профиль',
     loggedOut: 'Вы вышли из аккаунта',
     error: 'Ошибка загрузки заказов',
     notFound: 'Заказ не найден',
-    cancelOrder: 'Отменить заказ',
-    cancelling: 'Отмена...',
-    statusLabel: 'Статус:',
-    dateLabel: 'Дата:',
-    totalLabel: 'Итого:',
-    itemsLabel: 'Товары',
+    orderPrefix: 'Заказ #',
+    repeat: 'Повторить',
+    back: '← Назад',
+    forward: 'Вперёд →',
+    cancelError: 'Ошибка отмены',
+    statusNew: 'Новый',
+    statusProcessed: 'В обработке',
+    statusConfirmed: 'Подтверждён',
+    statusDelivered: 'Доставлен',
+    statusCancelled: 'Отменён',
+    filterAll: 'Все',
+    filterNew: 'Новые',
+    filterProcessed: 'В обработке',
+    filterDelivered: 'Доставлен',
+    filterCancelled: 'Отменён',
   },
   be: {
     title: 'Асабісты кабінет',
@@ -65,15 +95,30 @@ export const cabinetTranslations: Record<LocaleCode, {
     noOrders: 'У вас пакуль няма заказаў',
     viewOrder: 'Прагляд',
     logout: 'Выйсці',
+    logoutTitle: 'Выхад з акаунта',
+    logoutConfirm: 'Вы ўпэўненыя, што хочаце выйсці? Для ўваходу спатрэбіцца паўторны ўвод пароля.',
+    confirmLogout: 'Выйсці',
+    cancel: 'Адмена',
+    cancelOrder: 'Адмяніць замову',
+    cancelling: 'Адмяна...',
     editProfile: 'Рэдагаваць прафіль',
     loggedOut: 'Вы выйшлі з акаунта',
     error: 'Памылка загрузкі замоў',
     notFound: 'Заказ не знойдзены',
-    cancelOrder: 'Адмяніць замову',
-    cancelling: 'Адмяна...',
-    statusLabel: 'Статус:',
-    dateLabel: 'Дата:',
-    totalLabel: 'Вынік:',
-    itemsLabel: 'Тавары',
+    orderPrefix: 'Заказ #',
+    repeat: 'Паўтарыць',
+    back: '← Назад',
+    forward: 'Наперад →',
+    cancelError: 'Памылка адмены',
+    statusNew: 'Новы',
+    statusProcessed: 'У апрацоўцы',
+    statusConfirmed: 'Пацверджаны',
+    statusDelivered: 'Дастаўлены',
+    statusCancelled: 'Адменены',
+    filterAll: 'Усе',
+    filterNew: 'Новыя',
+    filterProcessed: 'У апрацоўцы',
+    filterDelivered: 'Дастаўлены',
+    filterCancelled: 'Адменены',
   },
 }
