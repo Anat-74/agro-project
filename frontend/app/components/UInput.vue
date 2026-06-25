@@ -20,6 +20,11 @@ const { type = 'text', label = '', placeholder = '', rows = 3,
 
 const model = defineModel<any>()
 const inputId = useId()
+const showPassword = ref(false)
+const inputType = computed(() => {
+  if (type === 'password' && showPassword.value) return 'text'
+  return type
+})
 </script>
 
 <template>
@@ -62,14 +67,24 @@ const inputId = useId()
       <Icon v-if="icon" :name="icon" class="u-input__icon" />
       <input
         v-model="model"
-        :type="type"
+        :type="inputType"
         :placeholder="placeholder"
         :disabled="disabled"
         :readonly="readonly"
         :required="required"
         :autocomplete="autocomplete || undefined"
         class="u-input__field"
+        :class="{ 'u-input__field_password': type === 'password' }"
       />
+      <button
+        v-if="type === 'password'"
+        type="button"
+        class="u-input__toggle-password"
+        @click="showPassword = !showPassword"
+        :aria-label="showPassword ? 'Скрыть пароль' : 'Показать пароль'"
+      >
+        <Icon :name="showPassword ? 'mdi:eye-off' : 'mdi:eye'" width="20" height="20" />
+      </button>
     </div>
 
     <span v-if="error" class="u-input__error">{{ error }}</span>
@@ -188,6 +203,27 @@ const inputId = useId()
     font-size: toRem(14);
     color: var(--color);
     user-select: none;
+  }
+
+  &__field_password {
+    padding-inline-end: toRem(36);
+  }
+
+  &__toggle-password {
+    position: absolute;
+    right: toRem(8);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: toRem(4);
+    display: flex;
+    align-items: center;
+    color: var(--text-muted);
+    transition: color var(--transition-duration);
+
+    @include hover {
+      color: var(--primary-color);
+    }
   }
 
   &__error {
