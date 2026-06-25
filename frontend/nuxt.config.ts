@@ -16,6 +16,7 @@ export default defineNuxtConfig({
     "@nuxtjs/seo",
     "@vite-pwa/nuxt",
     "@nuxtjs/mcp-toolkit",
+    "nuxt-spyglass",
   ],
   nitro: {
     preset: "netlify",

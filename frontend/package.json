@@ -24,6 +24,7 @@
     "dotenv": "^17.2.3",
     "h3": "^1.15.8",
     "nuxt": "^4.0.2",
+    "nuxt-spyglass": "^1.0.0-alpha.1",
     "pinia": "^3.0.0",
     "pinia-plugin-persistedstate": "^4.2.0",
     "sharp": "^0.34.3",

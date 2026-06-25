@@ -1,5 +1,4 @@
 {
-  "$schema": "https://app.kilo.ai/config.json",
   "mcp": {
     "strapi": {
       "type": "local",
@@ -14,6 +13,16 @@
         "STRAPI_ADMIN_PASSWORD": "RESAM6bUEaKF2s7",
         "STRAPI_DEV_MODE": "true"
       },
+      "enabled": true
+    },
+    "spyglass": {
+      "type": "local",
+      "command": [
+        "npx.cmd",
+        "-y",
+        "nuxt-spyglass-mcp",
+        "C:\\agro-project\\frontend\\.data\\spyglass\\logs.ndjson"
+      ],
       "enabled": true
     }
   },
