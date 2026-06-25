@@ -21,6 +21,11 @@ const { type = 'text', label = '', placeholder = '', rows = 3,
 const model = defineModel<any>()
 const inputId = useId()
 const showPassword = ref(false)
+const { currentLocale } = useLocale()
+const passwordLabels = { ru: { show: 'Показать пароль', hide: 'Скрыть пароль' }, be: { show: 'Паказаць пароль', hide: 'Схаваць пароль' } }
+const passwordLabel = computed(() => showPassword.value
+  ? passwordLabels[currentLocale.value]?.hide || passwordLabels.ru.hide
+  : passwordLabels[currentLocale.value]?.show || passwordLabels.ru.show)
 const inputType = computed(() => {
   if (type === 'password' && showPassword.value) return 'text'
   return type
@@ -76,15 +81,15 @@ const inputType = computed(() => {
         class="u-input__field"
         :class="{ 'u-input__field_password': type === 'password' }"
       />
-      <button
+      <UButton
         v-if="type === 'password'"
-        type="button"
+        variant="icon"
         class="u-input__toggle-password"
+        :aria-label="passwordLabel"
         @click="showPassword = !showPassword"
-        :aria-label="showPassword ? 'Скрыть пароль' : 'Показать пароль'"
       >
         <Icon :name="showPassword ? 'mdi:eye-off' : 'mdi:eye'" width="20" height="20" />
-      </button>
+      </UButton>
     </div>
 
     <span v-if="error" class="u-input__error">{{ error }}</span>
@@ -211,15 +216,11 @@ const inputType = computed(() => {
 
   &__toggle-password {
     position: absolute;
-    right: toRem(8);
+    right: toRem(4);
+    padding: toRem(2);
     background: none;
     border: none;
-    cursor: pointer;
-    padding: toRem(4);
-    display: flex;
-    align-items: center;
     color: var(--text-muted);
-    transition: color var(--transition-duration);
 
     @include hover {
       color: var(--primary-color);

@@ -9389,6 +9389,18 @@
       "value": 0.00102289381059085,
       "path": "/ru/auth/login",
       "timestamp": "2026-06-25T20:04:28.813Z"
+    },
+    {
+      "name": "LCP",
+      "value": 2256,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T20:08:22.128Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00102289381059085,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T20:08:23.739Z"
     }
   ]
 }
