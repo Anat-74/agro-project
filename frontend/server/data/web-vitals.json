@@ -8825,6 +8825,450 @@
       "value": 0.11905783133569882,
       "path": "/ru/cabinet",
       "timestamp": "2026-06-25T19:35:22.383Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.16007627136416064,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:37:32.039Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.18478578479916427,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:37:32.050Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.22580422482762608,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:37:39.805Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.2505137382626297,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:37:39.818Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.2915321782910915,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:37:47.773Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.3162416917260951,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:37:47.785Z"
+    },
+    {
+      "name": "LCP",
+      "value": 1604,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:41:09.352Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0024987890999360945,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:41:09.362Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.09684710700063127,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:41:10.218Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.12155662043563491,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:41:10.226Z"
+    },
+    {
+      "name": "INP",
+      "value": 1.7999999970197678,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:41:15.603Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet/edit",
+      "timestamp": "2026-06-25T19:41:44.505Z"
+    },
+    {
+      "name": "LCP",
+      "value": 2424,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:44:28.296Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00102289381059085,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:44:29.254Z"
+    },
+    {
+      "name": "INP",
+      "value": 1.2999999970197678,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:44:32.443Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00102289381059085,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:44:45.454Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00102289381059085,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:44:48.224Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00102289381059085,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:44:54.393Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00102289381059085,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:45:05.836Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00102289381059085,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:45:06.311Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00102289381059085,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:45:08.069Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00102289381059085,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:45:08.082Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:45:23.987Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:45:25.135Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:45:26.188Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:45:40.239Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:46:09.587Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:46:09.989Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:46:19.759Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:46:26.358Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:46:26.684Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0063472414779604325,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:46:27.947Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.03105675491296406,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:46:28.001Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.4567901234567901,
+      "path": "/ru",
+      "timestamp": "2026-06-25T19:46:43.280Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.45694291766397366,
+      "path": "/ru",
+      "timestamp": "2026-06-25T19:46:44.952Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.45719836633669775,
+      "path": "/ru",
+      "timestamp": "2026-06-25T19:46:45.008Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:46:46.210Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00015279420718354461,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:46:46.820Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00030558841436708923,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:46:47.119Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00030558841436708923,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:46:53.625Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00030558841436708923,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:47:03.570Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00030558841436708923,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:47:05.067Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:47:11.255Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:47:18.242Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:47:20.802Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:47:23.057Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:47:24.280Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:47:25.286Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:47:27.120Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0063472414779604325,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:47:28.585Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.03105675491296406,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:47:28.632Z"
+    },
+    {
+      "name": "LCP",
+      "value": 356,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:48:17.383Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.09434831790069519,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:48:18.442Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.11905783133569882,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:48:18.489Z"
+    },
+    {
+      "name": "INP",
+      "value": 2.6000000089406967,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:48:19.369Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.18960351719425694,
+      "path": "/ru",
+      "timestamp": "2026-06-25T19:50:29.601Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.18960580489239626,
+      "path": "/ru",
+      "timestamp": "2026-06-25T19:50:29.617Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.6463959283491864,
+      "path": "/ru",
+      "timestamp": "2026-06-25T19:50:30.261Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.6465487225563699,
+      "path": "/ru",
+      "timestamp": "2026-06-25T19:50:31.575Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.6467015167635534,
+      "path": "/ru",
+      "timestamp": "2026-06-25T19:50:31.628Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:50:32.428Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:50:32.857Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:50:32.869Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:50:39.279Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/login",
+      "timestamp": "2026-06-25T19:50:42.269Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:50:50.270Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:50:55.280Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:50:57.343Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:50:59.589Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:51:01.718Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:51:02.069Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/auth/register",
+      "timestamp": "2026-06-25T19:51:02.079Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0063472414779604325,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:51:03.202Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.031024240223586626,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T19:51:03.233Z"
     }
   ]
 }

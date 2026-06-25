@@ -4,11 +4,13 @@ definePageMeta({
 })
 
 import { cabinetTranslations } from '~/locales/cabinet'
+import ConfirmDeleteModal from '~/components/auth/ConfirmDeleteModal.vue'
 
 const { currentLocale } = useLocale()
 const authStore = useAuthStore()
 const router = useRouter()
 const strapiClient = useStrapiClient()
+const { logout: strapiLogout } = useStrapiAuth()
 const t = computed(() => cabinetTranslations[currentLocale.value])
 
 const username = ref(authStore.user?.username || '')
@@ -97,6 +99,41 @@ const handleSave = async () => {
     error.value = raw
   } finally {
     isSubmitting.value = false
+  }
+}
+
+const deleteModal = useTemplateRef<InstanceType<typeof ConfirmDeleteModal>>('delete-modal')
+const isDeleting = ref(false)
+
+const confirmDelete = () => {
+  deleteModal.value?.open?.()
+}
+
+const deleteAccount = async () => {
+  isDeleting.value = true
+  try {
+    // Удалить все заказы пользователя
+    if (authStore.user?.email) {
+      const orders = await strapiClient('/orders?filters[email][$eq]=' + encodeURIComponent(authStore.user.email), { method: 'GET' }) as any
+      const items = orders?.data || []
+      for (const order of items) {
+        const id = order.documentId || order.id
+        if (id) {
+          await strapiClient('/orders/' + id, { method: 'DELETE' }).catch(() => {})
+        }
+      }
+    }
+
+    await strapiClient('/users/' + authStore.user?.id, { method: 'DELETE' })
+    strapiLogout()
+    authStore.user = null
+    authStore.token = null
+    authStore.error = null
+    router.push('/' + currentLocale.value)
+  } catch (e: any) {
+    error.value = e?.error?.message || e?.message || 'Ошибка удаления'
+  } finally {
+    isDeleting.value = false
   }
 }
 
@@ -209,6 +246,29 @@ const goBack = () => {
         </UButton>
       </div>
     </form>
+
+    <hr class="profile-edit__divider">
+
+    <div class="profile-edit__delete-section">
+      <UButton
+        variant="secondary"
+        :is-disabled="isDeleting"
+        class="profile-edit__delete-btn"
+        @click="confirmDelete"
+      >
+        {{ t.deleteButton }}
+      </UButton>
+    </div>
+
+    <ConfirmDeleteModal
+      ref="delete-modal"
+      :title="t.deleteTitle"
+      :message="t.deleteConfirm"
+      :confirm-text="t.deleteButton"
+      :cancel-text="t.cancel"
+      @confirm="deleteAccount"
+      @cancel="() => {}"
+    />
   </div>
 </template>
 
@@ -303,6 +363,18 @@ const goBack = () => {
     display: flex;
     justify-content: flex-end;
     margin-block-start: toRem(8);
+  }
+
+  &__delete-section {
+    display: flex;
+    justify-content: center;
+    margin-block-start: toRem(16);
+  }
+
+  &__delete-btn {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+    font-size: toRem(13);
   }
 }
 </style>

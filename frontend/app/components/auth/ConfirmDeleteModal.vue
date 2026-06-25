@@ -59,7 +59,7 @@ defineExpose({ open })
   padding: 0;
   border: none;
   border-radius: toRem(12);
-  background: var(--bg-secondary);
+  background: var(--secondary-color);
   max-width: toRem(400);
   width: 90vw;
 

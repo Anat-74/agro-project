@@ -55,6 +55,10 @@ export const cabinetTranslations: Record<LocaleCode, {
   editErrorEmail: string
   editErrorPasswordLength: string
   editErrorPasswordMatch: string
+  deleteTitle: string
+  deleteConfirm: string
+  deleteButton: string
+  deleteSuccess: string
 }> = {
   ru: {
     title: 'Личный кабинет',
@@ -113,6 +117,10 @@ export const cabinetTranslations: Record<LocaleCode, {
     editErrorEmail: 'Введите корректный email',
     editErrorPasswordLength: 'Новый пароль: минимум 6 символов',
     editErrorPasswordMatch: 'Новый пароль и подтверждение не совпадают',
+    deleteTitle: 'Удаление аккаунта',
+    deleteConfirm: 'Вы уверены, что хотите удалить аккаунт? Все данные будут потеряны. Это действие нельзя отменить.',
+    deleteButton: 'Удалить аккаунт',
+    deleteSuccess: 'Аккаунт удалён',
   },
   be: {
     title: 'Асабісты кабінет',
@@ -171,5 +179,9 @@ export const cabinetTranslations: Record<LocaleCode, {
     editErrorEmail: 'Увядзіце карэктны email',
     editErrorPasswordLength: 'Новы пароль: мінімум 6 сімвалаў',
     editErrorPasswordMatch: 'Новы пароль і пацвярджэнне не супадаюць',
+    deleteTitle: 'Выдаленне акаўнта',
+    deleteConfirm: 'Вы ўпэўненыя, што хочаце выдаліць акаўнт? Усе даныя будуць страчаны. Гэта дзеянне нельга адмяніць.',
+    deleteButton: 'Выдаліць акаўнт',
+    deleteSuccess: 'Акаўнт выдалены',
   },
 }
