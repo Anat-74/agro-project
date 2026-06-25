@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { cabinetTranslations } from '~/locales/cabinet'
 import { authTranslations } from '~/locales/auth'
+import ShowHamburger from '~/components/show-modal/ShowHamburger.vue'
 
 const { find } = useStrapi();
 const searchStore = useSearchStore();
