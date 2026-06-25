@@ -1,6 +1,6 @@
 export default defineNuxtRouteMiddleware(async (to) => {
   // Не проверяем на страницах входа/регистрации
-  if (to.path.includes('/login') || to.path.includes('/register')) {
+  if (to.path.includes('/login') || to.path.includes('/register') || to.path.includes('/forgot-password') || to.path.includes('/reset-password')) {
     return
   }
 

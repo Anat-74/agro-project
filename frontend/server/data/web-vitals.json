@@ -6899,6 +6899,462 @@
       "value": 0,
       "path": "/be/cabinet",
       "timestamp": "2026-06-25T17:40:13.111Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T17:42:30.732Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T17:42:31.311Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.012636660113279135,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T17:45:57.583Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.027887545533566354,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T17:45:58.386Z"
+    },
+    {
+      "name": "LCP",
+      "value": 7008,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T17:47:27.229Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06103872596573226,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T17:47:28.359Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.07628961138601947,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T17:47:28.535Z"
+    },
+    {
+      "name": "LCP",
+      "value": 1436,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:05:22.585Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.06103872596573226,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:05:23.150Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.07628961138601947,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:05:23.163Z"
+    },
+    {
+      "name": "INP",
+      "value": 2.800000011920929,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:05:24.002Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.07628961138601947,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:05:26.252Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.07628961138601947,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:05:55.869Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.07628961138601947,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:05:56.280Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.03871562850729518,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:05:57.556Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/forgot-password",
+      "timestamp": "2026-06-25T18:07:44.446Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00003484371676092809,
+      "path": "/ru/forgot-password",
+      "timestamp": "2026-06-25T18:07:44.986Z"
+    },
+    {
+      "name": "LCP",
+      "value": 840,
+      "path": "/ru/forgot-password",
+      "timestamp": "2026-06-25T18:10:43.461Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00102289381059085,
+      "path": "/ru/forgot-password",
+      "timestamp": "2026-06-25T18:10:44.307Z"
+    },
+    {
+      "name": "INP",
+      "value": 1.0999999940395355,
+      "path": "/ru/forgot-password",
+      "timestamp": "2026-06-25T18:10:48.169Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00102289381059085,
+      "path": "/ru/forgot-password",
+      "timestamp": "2026-06-25T18:11:01.288Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00102289381059085,
+      "path": "/ru/forgot-password",
+      "timestamp": "2026-06-25T18:11:01.648Z"
+    },
+    {
+      "name": "LCP",
+      "value": 444,
+      "path": "/ru/forgot-password",
+      "timestamp": "2026-06-25T18:13:15.874Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00102289381059085,
+      "path": "/ru/forgot-password",
+      "timestamp": "2026-06-25T18:13:16.731Z"
+    },
+    {
+      "name": "INP",
+      "value": 7.5,
+      "path": "/ru/forgot-password",
+      "timestamp": "2026-06-25T18:13:43.754Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00102289381059085,
+      "path": "/ru/forgot-password",
+      "timestamp": "2026-06-25T18:13:46.547Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00102289381059085,
+      "path": "/ru/forgot-password",
+      "timestamp": "2026-06-25T18:13:46.849Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00102289381059085,
+      "path": "/ru/forgot-password",
+      "timestamp": "2026-06-25T18:15:00.857Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.00102289381059085,
+      "path": "/ru/forgot-password",
+      "timestamp": "2026-06-25T18:15:00.911Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0011756880177743946,
+      "path": "/ru/forgot-password",
+      "timestamp": "2026-06-25T18:18:04.296Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0013284822249579392,
+      "path": "/ru/forgot-password",
+      "timestamp": "2026-06-25T18:18:04.306Z"
+    },
+    {
+      "name": "LCP",
+      "value": 576,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:18:10.009Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0005476046523549444,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:18:10.500Z"
+    },
+    {
+      "name": "INP",
+      "value": 2,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:18:20.067Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.0005476046523549444,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:18:50.334Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:18:50.780Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:18:51.049Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:18:56.670Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:19:33.768Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:19:33.788Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:19:37.600Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:19:37.621Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:41.620Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:41.664Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:43.683Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:43.703Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:45.019Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:45.036Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:45.835Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:45.856Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:46.384Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:46.404Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:47.036Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:47.069Z"
+    },
+    {
+      "name": "LCP",
+      "value": 144,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:52.736Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.3433105181156996,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:52.747Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.34334897006396903,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:52.756Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.34343090716435376,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:52.789Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.3435340352876465,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:52.799Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.3436249798215389,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:52.806Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.34369591666294846,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:52.892Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.34374866867464,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:52.902Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.3438152303230235,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:52.909Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.3437873858087595,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:52.918Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1147254288463768,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:53.578Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1147324943881856,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:53.587Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.114746673279956,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:53.594Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1147660481631207,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:53.602Z"
+    },
+    {
+      "name": "CLS",
+      "value": 1.1147849701269388,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:53.606Z"
+    },
+    {
+      "name": "INP",
+      "value": 2.1000000089406967,
+      "path": "/ru/reset-password",
+      "timestamp": "2026-06-25T18:20:55.585Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:21:14.970Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:21:17.536Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:21:26.498Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0,
+      "path": "/ru/login",
+      "timestamp": "2026-06-25T18:21:27.106Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.004217740608247048,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:21:32.493Z"
+    },
+    {
+      "name": "CLS",
+      "value": 0.019468626028534268,
+      "path": "/ru/cabinet",
+      "timestamp": "2026-06-25T18:21:32.550Z"
     }
   ]
 }

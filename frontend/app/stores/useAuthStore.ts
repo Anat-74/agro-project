@@ -19,6 +19,10 @@ const STRAPI_ERROR_MAP: Record<string, keyof typeof authTranslations.ru.errors> 
   'Username already taken': 'usernameTaken',
   'password must be at least 6 characters': 'weakPassword',
   'Password must be at least 6 characters': 'weakPassword',
+  'There is no user with this email address': 'emailNotFound',
+  'No user found for this email': 'emailNotFound',
+  'Invalid code': 'invalidCode',
+  'Passwords do not match': 'passwordsDontMatch',
 }
 
 /** Достаёт locale из текущего маршрута или куки */
@@ -50,6 +54,8 @@ export const useAuthStore = defineStore('auth', () => {
     register: strapiRegister,
     logout: strapiLogout,
     fetchUser: strapiFetchUser,
+    forgotPassword: strapiForgotPassword,
+    resetPassword: strapiResetPassword,
   } = useStrapiAuth()
 
   const strapiToken = useStrapiToken()
@@ -128,6 +134,36 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const forgotPassword = async (email: string) => {
+    clearError()
+    loading.value = true
+    try {
+      await strapiForgotPassword({ email })
+    } catch (e: any) {
+      const raw = e?.response?.data?.error?.message || e?.message || ''
+      error.value = mapStrapiError(raw)
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const resetPassword = async (code: string, password: string, passwordConfirmation: string) => {
+    clearError()
+    loading.value = true
+    try {
+      const response: any = await strapiResetPassword({ code, password, passwordConfirmation })
+      user.value = response?.user?.value || null
+      token.value = response?.jwt || null
+    } catch (e: any) {
+      const raw = e?.response?.data?.error?.message || e?.message || ''
+      error.value = mapStrapiError(raw)
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
   const logout = () => {
     strapiLogout()
     user.value = null
@@ -146,6 +182,8 @@ export const useAuthStore = defineStore('auth', () => {
     init,
     login,
     register,
+    forgotPassword,
+    resetPassword,
     logout,
     clearError,
   }

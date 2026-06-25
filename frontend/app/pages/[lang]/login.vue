@@ -54,6 +54,11 @@ const handleLogin = async () => {
         @update:password="password = $event"
         @submit="handleLogin"
       />
+      <p class="auth-page__forgot">
+        <NuxtLink :to="`/${currentLocale}/forgot-password`" class="auth-page__link">
+          {{ t.forgotLink }}
+        </NuxtLink>
+      </p>
       <p class="auth-page__footer-text">
         {{ t.noAccount }}
         <NuxtLink :to="`/${currentLocale}/register`" class="auth-page__link">
@@ -82,6 +87,11 @@ const handleLogin = async () => {
     font-weight: 700;
     margin-block-end: toRem(24);
     text-align: center;
+  }
+
+  &__forgot {
+    text-align: center;
+    margin-block-start: toRem(12);
   }
 
   &__footer-text {
