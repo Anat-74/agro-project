@@ -12,6 +12,17 @@ export const cabinetTranslations: Record<LocaleCode, {
   loading: string
   noOrders: string
   viewOrder: string
+  logout: string
+  editProfile: string
+  loggedOut: string
+  error: string
+  notFound: string
+  cancelOrder: string
+  cancelling: string
+  statusLabel: string
+  dateLabel: string
+  totalLabel: string
+  itemsLabel: string
 }> = {
   ru: {
     title: 'Личный кабинет',
@@ -27,6 +38,17 @@ export const cabinetTranslations: Record<LocaleCode, {
     loading: 'Загрузка...',
     noOrders: 'У вас пока нет заказов',
     viewOrder: 'Просмотр',
+    logout: 'Выйти',
+    editProfile: 'Редактировать профиль',
+    loggedOut: 'Вы вышли из аккаунта',
+    error: 'Ошибка загрузки заказов',
+    notFound: 'Заказ не найден',
+    cancelOrder: 'Отменить заказ',
+    cancelling: 'Отмена...',
+    statusLabel: 'Статус:',
+    dateLabel: 'Дата:',
+    totalLabel: 'Итого:',
+    itemsLabel: 'Товары',
   },
   be: {
     title: 'Асабісты кабінет',
@@ -42,5 +64,16 @@ export const cabinetTranslations: Record<LocaleCode, {
     loading: 'Загрузка...',
     noOrders: 'У вас пакуль няма заказаў',
     viewOrder: 'Прагляд',
+    logout: 'Выйсці',
+    editProfile: 'Рэдагаваць прафіль',
+    loggedOut: 'Вы выйшлі з акаунта',
+    error: 'Памылка загрузкі замоў',
+    notFound: 'Заказ не знойдзены',
+    cancelOrder: 'Адмяніць замову',
+    cancelling: 'Адмяна...',
+    statusLabel: 'Статус:',
+    dateLabel: 'Дата:',
+    totalLabel: 'Вынік:',
+    itemsLabel: 'Тавары',
   },
 }

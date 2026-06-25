@@ -3,7 +3,12 @@ definePageMeta({
   middleware: 'auth',
 })
 
+import { cabinetTranslations } from '~/locales/cabinet'
+import { authTranslations } from '~/locales/auth'
+
 const { currentLocale } = useLocale()
+const t = computed(() => cabinetTranslations[currentLocale.value])
+const authT = computed(() => authTranslations[currentLocale.value])
 const authStore = useAuthStore()
 const router = useRouter()
 
@@ -33,17 +38,17 @@ const confirmLogout = () => {
       type="success"
       @close="showToast = false"
     >
-      Вы вышли из аккаунта
+      {{ t.loggedOut }}
     </AppNotification>
 
     <div class="cabinet__header">
-      <h1 class="cabinet__title">Личный кабинет</h1>
+      <h1 class="cabinet__title">{{ t.title }}</h1>
       <UButton
         variant="secondary"
         :is-disabled="false"
         @click="confirmLogout"
       >
-        Выйти
+        {{ authT.logout }}
       </UButton>
     </div>
 
@@ -54,12 +59,12 @@ const confirmLogout = () => {
       <div class="cabinet__details">
         <p class="cabinet__name">{{ authStore.user.username }}</p>
         <p class="cabinet__email">{{ authStore.user.email }}</p>
-        <NuxtLink :to="`/${currentLocale}/cabinet/edit`" class="cabinet__edit-link">Редактировать профиль</NuxtLink>
+        <NuxtLink :to="`/${currentLocale}/cabinet/edit`" class="cabinet__edit-link">{{ t.editProfile }}</NuxtLink>
       </div>
     </div>
 
     <section class="cabinet__orders">
-      <h2 class="cabinet__section-title">История заказов</h2>
+      <h2 class="cabinet__section-title">{{ t.ordersTitle }}</h2>
       <OrderHistory />
     </section>
 

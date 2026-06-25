@@ -3,7 +3,10 @@ definePageMeta({
   middleware: 'auth',
 })
 
+import { cabinetTranslations } from '~/locales/cabinet'
+
 const { currentLocale } = useLocale()
+const t = computed(() => cabinetTranslations[currentLocale.value])
 const route = useRoute()
 const router = useRouter()
 const orderId = computed(() => route.params.orderId as string)
@@ -40,7 +43,7 @@ const { data: order, status } = useAsyncData(
 )
 
 const statusLabel: Record<string, string> = {
-  new: 'Новый',
+  new: '{{ statusLabel[order.statusOrders] || "Новый"}}',
   processed: 'В обработке',
   confirmed: 'Подтверждён',
   delivered: 'Доставлен',
@@ -60,25 +63,25 @@ const goBack = () => {
       class="order-detail__back"
       @click="goBack"
     >
-      ← Назад к заказам
+      ← {{ t.backToOrders }}
     </UButton>
 
     <h1 class="order-detail__title">Заказ #{{ orderId }}</h1>
 
-    <p v-if="status === 'pending'" class="order-detail__loading">Загрузка...</p>
+    <p v-if="status === 'pending'" class="order-detail__loading">{{ t.loading }}</p>
 
     <p v-else-if="status === 'error'" class="order-detail__loading">
-      Ошибка загрузки заказа
+      {{ t.error }}
     </p>
 
     <p v-else-if="!order" class="order-detail__loading">
-      Заказ не найден
+      {{ t.notFound }}
     </p>
 
     <div v-else class="order-detail__card">
       <div class="order-detail__meta">
         <p>
-          <strong>Статус:</strong>
+          <strong>{{ t.status }}:</strong>
           <span
             class="order-detail__badge"
             :class="`order-detail__badge_${order.statusOrders || 'new'}`"
@@ -95,12 +98,12 @@ const goBack = () => {
             {{ cancelling ? 'Отмена...' : 'Отменить заказ' }}
           </UButton>
         </p>
-        <p><strong>Дата:</strong> {{ new Date(order.createdAt).toLocaleDateString() }}</p>
+        <p><strong>{{ t.date }}:</strong> {{ new Date(order.createdAt).toLocaleDateString() }}</p>
         <p><strong>Email:</strong> {{ order.email }}</p>
         <p><strong>Телефон:</strong> {{ order.phone }}</p>
       </div>
 
-      <h2 class="order-detail__section-title">Товары</h2>
+      <h2 class="order-detail__section-title">{{ t.items }}</h2>
       <ul class="order-detail__items">
         <li
           v-for="(item, idx) in order.items"
@@ -121,7 +124,7 @@ const goBack = () => {
       </ul>
 
       <p class="order-detail__total">
-        <strong>Итого:</strong> {{ order.total }} ₽
+        <strong>{{ t.total }}:</strong> {{ order.total }} ₽
       </p>
     </div>
   </div>

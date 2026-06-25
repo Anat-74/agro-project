@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { cabinetTranslations } from '~/locales/cabinet'
+
 const { currentLocale } = useLocale()
+const cabinetT = computed(() => cabinetTranslations[currentLocale.value])
 const { find, update: strapiUpdate } = useStrapi()
 const authStore = useAuthStore()
 
@@ -21,6 +24,21 @@ const cancelOrder = async (order: any) => {
   } finally {
     cancellingId.value = null
   }
+}
+
+const cartStore = useCartStore()
+const route = useRoute()
+
+const repeatOrder = (order: any) => {
+  if (!order.items?.length) return
+  order.items.forEach((item: any) => {
+    const slug = item.categorySlug || (route.params.categorySlug as string) || ''
+    cartStore.addToCart(
+      { documentId: item.productId, name: item.name, price: item.price, image: item.mainImage } as any,
+      slug,
+      item.subcategorySlug || null
+    )
+  })
 }
 
 const canCancel = (order: any) =>
@@ -117,11 +135,11 @@ const statusLabel: Record<string, string> = {
       <OrderHistorySkeleton v-if="status === 'pending'" />
 
       <p v-else-if="status === 'error'" class="order-history__empty">
-        Ошибка загрузки заказов
+        {{ cabinetT.error }}
       </p>
 
       <p v-else-if="!orders?.length" class="order-history__empty">
-        У вас пока нет заказов
+        {{ cabinetT.noOrders }}
       </p>
 
       <ul v-else class="order-history__list">
@@ -157,11 +175,14 @@ const statusLabel: Record<string, string> = {
             {{ order.total }} ₽
           </div>
           <div class="order-history__item-actions">
+            <UButton variant="secondary" :is-disabled="false" class="order-history__repeat-btn" @click="repeatOrder(order)">
+              Повторить
+            </UButton>
             <NuxtLink
               :to="`/${currentLocale}/cabinet/${order.documentId || order.id}`"
               class="order-history__item-link"
             >
-              Просмотр
+              {{ cabinetT.viewOrder }}
             </NuxtLink>
             <UButton
               v-if="canCancel(order)"
@@ -281,6 +302,11 @@ const statusLabel: Record<string, string> = {
   }
 
   &__cancel-btn {
+    font-size: toRem(12);
+    padding: toRem(2) toRem(8);
+  }
+
+  &__repeat-btn {
     font-size: toRem(12);
     padding: toRem(2) toRem(8);
   }

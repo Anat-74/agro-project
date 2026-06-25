@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { authTranslations } from '~/locales/auth'
+
 const { currentLocale } = useLocale()
+const t = computed(() => authTranslations[currentLocale.value])
 const authStore = useAuthStore()
 const route = useRoute()
 const router = useRouter()
@@ -40,7 +43,7 @@ const handleLogin = async () => {
     </AppNotification>
 
     <section class="auth-page__form-wrapper">
-      <h1 class="auth-page__title">Вход</h1>
+      <h1 class="auth-page__title">{{ t.loginTitle }}</h1>
       <AuthLogin
         :identifier="identifier"
         :password="password"
@@ -52,9 +55,9 @@ const handleLogin = async () => {
         @submit="handleLogin"
       />
       <p class="auth-page__footer-text">
-        Нет аккаунта?
+        {{ t.noAccount }}
         <NuxtLink :to="`/${currentLocale}/register`" class="auth-page__link">
-          Зарегистрироваться
+          {{ t.registerButton }}
         </NuxtLink>
       </p>
     </section>
