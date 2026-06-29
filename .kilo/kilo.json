@@ -24,6 +24,14 @@
         "C:\\agro-project\\frontend\\.data\\spyglass\\logs.ndjson"
       ],
       "enabled": true
+    },
+    "vue-docs": {
+      "type": "local",
+      "command": [
+        "node",
+        "C:\\agro-project\\mcp-servers\\vue-docs\\server.mjs"
+      ],
+      "enabled": true
     }
   },
   "snapshot": false
