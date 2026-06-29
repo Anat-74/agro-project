@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { seoTranslations } from "~/locales/appSeo";
 import { VISIBILITY_KEY } from "#shared/utils/visibility";
-import { useWebVitals } from "~/composables/useWebVitals";
 
 const { currentLocale } = useLocale();
 const route = useRoute();
@@ -18,13 +17,6 @@ const seoData = computed(() => {
 
 useHead({
   link: [
-    { rel: "preload", href: "/fonts/Yellowtail-Regular.woff2", as: "font", type: "font/woff2", crossorigin: "anonymous" },
-    { rel: "preload", href: "/fonts/Roboto-Regular.woff2", as: "font", type: "font/woff2", crossorigin: "anonymous" },
-    { rel: "preload", href: "/fonts/Roboto-Bold.woff2", as: "font", type: "font/woff2", crossorigin: "anonymous" },
-    { rel: "preload", href: "/fonts/Roboto-ExtraBold.woff2", as: "font", type: "font/woff2", crossorigin: "anonymous" },
-    { rel: "preload", href: "/fonts/OpenSans-Regular.woff2", as: "font", type: "font/woff2", crossorigin: "anonymous" },
-    { rel: "preload", href: "/fonts/OpenSans-SemiBold.woff2", as: "font", type: "font/woff2", crossorigin: "anonymous" },
-    { rel: "preload", href: "/fonts/OpenSans-Bold.woff2", as: "font", type: "font/woff2", crossorigin: "anonymous" },
     { rel: "preconnect", href: config.public.strapi.url },
   ],
 });
@@ -92,7 +84,6 @@ provide(VISIBILITY_KEY, {
   hideContacts,
 });
 
-useWebVitals();
 </script>
 
 <template>

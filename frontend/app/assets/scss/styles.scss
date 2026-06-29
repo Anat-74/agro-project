@@ -1,8 +1,6 @@
 @use "./base/_normalize.scss";
-@use "./base/_fonts.scss";
 @use "./base/_globals.scss";
 @use "./base/_utils.scss";
-
 // ===================================================================
 //! GRADIENTS FOR CHAT ASSISTANT
 // ===================================================================
@@ -10,19 +8,16 @@
   --gradient-chat-primary: linear-gradient(135deg, #4caf50, #2e7d32);
   --gradient-chat-toggle: linear-gradient(135deg, var(--success-color), #2e7d32);
 }
-
 // ===================================================================
 //! GLOBAL CSS VARIABLES FOR COLOR THEMES WITH TRANSPARENCY SUPPORT
 // ===================================================================
 // Глобальные переменные
 :root {
   --min-height: 220px; // Минимальная высота
-
       --light-color-transparent: color-mix( in srgb,
     #ffffff 72%,
     transparent
   );
-
     --border-color-transparent: color-mix( in srgb,
     whitesmoke 67%,
     transparent
@@ -38,7 +33,6 @@
   --bg: #ffffff; // Основной цвет фона (почти белый)
   --primary-color: #7eb693; // Основной акцентный цвет (зеленовато-серый)
   --secondary-color: #ffffff; // Вторичный цвет (желтый)
-
   // Цвета для элементов интерфейса
   --light-color: #ffffff; // Белый цвет
   --dark-color: #274c5b; // Темный цвет (тот же что и --color)
@@ -62,7 +56,6 @@
     transparent
   );
 }
-
 // Темная тема (контрастная к светлой)
 .dark-mode {
   filter: brightness(95%);
@@ -71,7 +64,6 @@
   --bg: #274c5b; // Основной цвет фона (темно-синий)
   --primary-color: #7eb693; // Основной акцентный цвет (зеленовато-серый)
   --secondary-color: #274c5b; // Вторичный цвет (желтый)
-
   // Цвета для элементов интерфейса
   --light-color: #f9f8f8; // Светлый цвет (вместо белого)
   --light-color-transparent: color-mix(
@@ -96,7 +88,6 @@
   --whitesmoke-color: whitesmoke;
   --transparent-color: transparent;
 }
-
 // Произвольная тема (альтернативная комбинация цветов из Figma)
 .custom-mode {
   --transition-duration: 0.2s ease;
@@ -105,7 +96,6 @@
   --bg: #f0e8c5; // Основной цвет фона (светлый зеленоватый)
   --primary-color: #274c5b; // Основной акцентный цвет (темно-синий)
   --secondary-color: #808080; // Вторичный цвет (желтый)
-
   // Цвета для элементов интерфейса
   --light-color: #f9f8f8; // Светлый цвет (почти белый)
   --light-color-transparent: color-mix(
@@ -130,29 +120,24 @@
   --whitesmoke-color: whitesmoke;
   --transparent-color: transparent;
 }
-
 // ===================================================================
 //? DIALOG MENU LOGO OVERRIDE (для светлой темы)
 // ===================================================================
 // .light-mode .dialog-menu__logo {
 //   --light-color: #EFF6F1;
 // }
-
 // ===================================================================
 //? DIALOG HAMBURGER MENU OVERRIDES
 // ===================================================================
 // .light-mode .dialog-hamburger[open]::backdrop {
 //   --dark-color: #0000;
 // }
-
 // .dark-mode .dialog-hamburger[open]::backdrop {
 //   --dark-color: #0000;
 // }
-
 // .custom-mode .dialog-hamburger[open]::backdrop {
 //   --dark-color: #00000;
 // }
-
 // ===================================================================
 //? ORDER FORM OVERRIDES
 // ===================================================================
@@ -161,7 +146,6 @@
 // .custom-mode .order-form__title {
 //   --danger-color: #f5f5f5;
 // }
-
 // ===================================================================
 //? BUTTON OVERRIDES
 // ===================================================================
@@ -171,7 +155,6 @@
 //   --warning-color: #a9A9a9;
 //   --warning-hover: #274C5B;
 // }
-
 // ===================================================================
 //? SEARCH INPUT OVERRIDES (только для темной темы)
 // ===================================================================

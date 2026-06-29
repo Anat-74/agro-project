@@ -17,7 +17,28 @@ export default defineNuxtConfig({
     "@vite-pwa/nuxt",
     "@nuxtjs/mcp-toolkit",
     "nuxt-spyglass",
+    "@nuxt/fonts",
+    "@nuxt/eslint",
+    "@nuxt/hints",
+    "@nuxt/a11y",
   ],
+  fonts: {
+    families: [
+      { name: 'Roboto', provider: 'local' },
+      { name: 'Open Sans', provider: 'local' },
+      { name: 'Yellowtail', provider: 'local' },
+    ],
+  },
+  hints: {
+    devtools: true,
+    features: {
+      hydration: true,
+      lazyLoad: true,
+      webVitals: true,
+      thirdPartyScripts: true,
+      htmlValidate: true,
+    },
+  },
   nitro: {
     preset: "netlify",
     storage: {
@@ -54,45 +75,10 @@ export default defineNuxtConfig({
   },
   ssr: true,
   routeRules: {
-    // Редирект с корня
     "/": {
       redirect: "/ru",
-      // cache: {
-      //   maxAge: 86400, // 24 часа
-      //   swr: true
-      // }
     },
-    // Делаем sitemap.xml доступным
     "/sitemap.xml": { static: true },
-
-    // Главная страница - ISR с кэшем 30 мин на CDN
-    //  "/ru": { isr: 1800 },
-
-    // Статические страницы
-    //  "/ru/about": { prerender: true },
-    //  "/ru/services": { prerender: true },
-    //  "/ru/contacts": { prerender: true },
-
-    // Категории - ISR для баланса скорости и свежести
-    //  "/ru/**": { isr: 3600 },
-
-    // Товары - SWR для обновления в фоне при изменениях
-    //  "/ru/*/*": {
-    //    cache: {
-    //      maxAge: 600,
-    //      swr: true,
-    //      staleMaxAge: 3600,
-    //    },
-    //  },
-
-    // Описание товара - как товары
-    //  "/ru/*/*/*": {
-    //    cache: {
-    //      maxAge: 600,
-    //      swr: true,
-    //      staleMaxAge: 3600,
-    //    },
-    //  },
   },
   runtimeConfig: {
     strapi: {
@@ -114,7 +100,6 @@ export default defineNuxtConfig({
     },
   },
   image: {
-    //  domains: ["api.vh324.by3020.ihb.by"],
     domains: ["http://127.0.0.1:1337"],
     screens: {
       xs: 320,
@@ -127,9 +112,7 @@ export default defineNuxtConfig({
     densities: [1, 2],
     format: ["avif", "webp", "png", "jpeg"],
   },
-
   icon: {
-    // Автоматически добавлять иконки из компонентов в клиентский бандл
     clientBundle: {
       scan: true,
       sizeLimitKb: 100,
@@ -141,81 +124,11 @@ export default defineNuxtConfig({
         normalizeIconName: false,
       },
     ],
-    // serverBundle: {
-    //   scan: true,
-    //   sizeLimitKb: 100,
-    //   collections: [
-    //       'carbon',
-    //       'et',
-    //       'mingcute',
-    //       'entypo',
-    //       'mdi',
-    //       'qlementine-icons',
-    //       'pixelarticons'
-    //    ]
-    // }
   },
   colorMode: {
     preference: "system",
     fallback: "light",
   },
-  //   pwa: {
-  //     manifest: {
-  //       name: "Agro Market",
-  //       short_name: "Agro",
-  //       description: "Интернет-магазин сельхозпродукции",
-  //       theme_color: "#4299e1",
-  //       background_color: "#ffffff",
-  //       display: "standalone",
-  //       icons: [
-  //         {
-  //           src: "/icons/icon-192x192.svg",
-  //           sizes: "192x192",
-  //           type: "image/svg+xml",
-  //           purpose: "any maskable",
-  //         },
-  //         {
-  //           src: "/icons/icon-512x512.svg",
-  //           sizes: "512x512",
-  //           type: "image/svg+xml",
-  //           purpose: "any maskable",
-  //         },
-  //       ],
-  //     },
-  //     workbox: {
-  //       // Кэширование основных ресурсов приложения для оффлайн-режима
-  //       globPatterns: [
-  //         "**/*.{js,css,html,ico,png,svg,jpg,jpeg,gif,webp,woff2,woff,ttf,eot,json,xml,txt}",
-  //       ],
-
-  //       runtimeCaching: [
-  //         // Кэширование API-запросов к Strapi
-  //         {
-  //           urlPattern: /^https?:\/\/.*\.strapi\.io\/.*/i,
-  //           handler: "NetworkFirst",
-  //           options: {
-  //             cacheName: "strapi-api-cache",
-  //             expiration: {
-  //               maxEntries: 50,
-  //               maxAgeSeconds: 60 * 60 * 24, // 24 часа
-  //             },
-  //           },
-  //         },
-  //         // Кэширование изображений
-  //         {
-  //           urlPattern: /^https?:\/\/.*\.(?:png|jpg|jpeg|svg|gif|webp|avif)/i,
-  //           handler: "CacheFirst",
-  //           options: {
-  //             cacheName: "image-cache",
-  //             expiration: {
-  //               maxEntries: 100,
-  //               maxAgeSeconds: 60 * 60 * 24 * 7, // 7 дней
-  //             },
-  //           },
-  //         },
-  //       ],
-  //     },
-  //   },
   css: ["@/assets/scss/styles.scss"],
   vite: {
     css: {

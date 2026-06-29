@@ -19,9 +19,8 @@
     "spyglass": {
       "type": "local",
       "command": [
-        "npx.cmd",
-        "-y",
-        "nuxt-spyglass-mcp",
+        "node",
+        "C:\\agro-project\\frontend\\node_modules\\nuxt-spyglass\\dist\\mcp.mjs",
         "C:\\agro-project\\frontend\\.data\\spyglass\\logs.ndjson"
       ],
       "enabled": true
