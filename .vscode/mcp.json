@@ -5,7 +5,7 @@
       "url": "https://nuxt.com/mcp"
     },
     "strapi": {
-      "type": "command",
+      "type": "stdio",
       "command": "npx.cmd",
       "args": ["-y", "strapi-mcp"],
       "env": {
@@ -14,6 +14,14 @@
         "STRAPI_ADMIN_PASSWORD": "RESAM6bUEaKF2s7",
         "STRAPI_DEV_MODE": "true"
       }
+    },
+    "figma": {
+      "type": "http",
+      "url": "https://mcp.figma.com/mcp"
+    },
+    "pixso-mcp": {
+      "type": "http",
+      "url": "http://127.0.0.1:3667/mcp"
     }
   }
 }

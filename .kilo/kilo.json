@@ -32,6 +32,19 @@
         "C:\\agro-project\\mcp-servers\\vue-docs\\server.mjs"
       ],
       "enabled": true
+    },
+    "figma-rest": {
+      "type": "local",
+      "command": [
+        "node",
+        "C:\\agro-project\\mcp-servers\\figma-rest\\server.mjs"
+      ],
+      "enabled": true
+    },
+    "pixso-mcp": {
+      "type": "remote",
+      "url": "http://127.0.0.1:3667/mcp",
+      "enabled": true
     }
   },
   "snapshot": false
