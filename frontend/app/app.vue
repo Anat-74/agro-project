@@ -3,6 +3,8 @@ import { seoTranslations } from "~/locales/appSeo";
 import { VISIBILITY_KEY } from "#shared/utils/visibility";
 
 const { currentLocale } = useLocale();
+const colorMode = useColorMode();
+const { brightness } = useThemeBrightness();
 const route = useRoute();
 const config = useRuntimeConfig();
 
@@ -14,6 +16,12 @@ const fullUrl = computed(() => {
 const seoData = computed(() => {
   return seoTranslations[currentLocale.value] || seoTranslations.ru;
 });
+
+const containerVars = computed(() => ({
+  '--theme': colorMode.preference,
+  '--brightness': brightness.value,
+  '--locale': currentLocale.value,
+}));
 
 useHead({
   link: [
@@ -89,9 +97,11 @@ provide(VISIBILITY_KEY, {
 <template>
   <!-- <VitePwaManifest />
   <PWAUpdateNotice /> -->
-  <NuxtLayout>
-    <NuxtPage />
-  </NuxtLayout>
+  <div :style="containerVars">
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
+  </div>
 </template>
 
 <style lang="scss">

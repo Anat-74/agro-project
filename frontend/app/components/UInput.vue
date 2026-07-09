@@ -1,5 +1,5 @@
 <script setup lang="ts">
-type InputType = 'text' | 'textarea' | 'search' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'checkbox'
+type InputType = 'text' | 'textarea' | 'search' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'checkbox' | 'range'
 
 interface Props {
   type?: InputType
@@ -12,13 +12,16 @@ interface Props {
   error?: string
   icon?: string
   autocomplete?: string
+  min?: number
+  max?: number
+  step?: number
 }
 
 const { type = 'text', label = '', placeholder = '', rows = 3,
   disabled = false, readonly = false, required = false, error = '', icon = '',
-  autocomplete = '' } = defineProps<Props>()
+  autocomplete = '', min = 0, max = 100, step = 1 } = defineProps<Props>()
 
-const model = defineModel<any>()
+const model = defineModel<any>() // eslint-disable-line @typescript-eslint/no-explicit-any
 const inputId = useId()
 const showPassword = ref(false)
 const { currentLocale } = useLocale()
@@ -34,7 +37,7 @@ const inputType = computed(() => {
 
 <template>
   <div class="u-input" :class="{ 'u-input_error': error }">
-    <label v-if="label && type !== 'checkbox'" class="u-input__label">
+    <label v-if="label && type !== 'checkbox' && type !== 'range'" class="u-input__label">
       {{ label }}
       <span v-if="required" class="u-input__required">*</span>
     </label>
@@ -59,13 +62,26 @@ const inputType = computed(() => {
         :disabled="disabled"
         :required="required"
         :autocomplete="autocomplete || undefined"
-        @change="($e) => model = ($e.target as HTMLInputElement).checked"
         class="u-input__checkbox"
-      />
+        @change="($e) => model = ($e.target as HTMLInputElement).checked"
+      >
       <label v-if="label" :for="inputId" class="u-input__checkbox-label">
         {{ label }}
         <span v-if="required" class="u-input__required">*</span>
       </label>
+    </div>
+
+    <div v-else-if="type === 'range'" class="u-input__range-wrapper">
+      <input
+        :id="inputId"
+        v-model="model"
+        type="range"
+        :min="min"
+        :max="max"
+        :step="step"
+        :disabled="disabled"
+        class="u-input__range"
+      >
     </div>
 
     <div v-else class="u-input__wrapper">
@@ -80,7 +96,7 @@ const inputType = computed(() => {
         :autocomplete="autocomplete || undefined"
         class="u-input__field"
         :class="{ 'u-input__field_password': type === 'password' }"
-      />
+      >
       <UButton
         v-if="type === 'password'"
         variant="icon"
@@ -208,6 +224,52 @@ const inputType = computed(() => {
     font-size: toRem(14);
     color: var(--color);
     user-select: none;
+  }
+
+  &__range-wrapper {
+    width: 100%;
+  }
+
+  &__range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: toRem(6);
+    border-radius: toRem(4);
+    background: var(--border-color);
+    outline: none;
+    cursor: pointer;
+    transition: background var(--transition-duration);
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: toRem(18);
+      height: toRem(18);
+      border-radius: 50%;
+      background: var(--primary-color);
+      border: toRem(2) solid var(--light-color);
+      box-shadow: 0 toRem(2) toRem(8) rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      transition: transform var(--transition-duration),
+                  background var(--transition-duration);
+    }
+
+    &::-moz-range-thumb {
+      width: toRem(18);
+      height: toRem(18);
+      border-radius: 50%;
+      background: var(--primary-color);
+      border: toRem(2) solid var(--light-color);
+      box-shadow: 0 toRem(2) toRem(8) rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+    }
+
+    &::-moz-range-track {
+      height: toRem(6);
+      border-radius: toRem(4);
+      background: var(--border-color);
+    }
   }
 
   &__field_password {

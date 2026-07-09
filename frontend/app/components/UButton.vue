@@ -26,6 +26,9 @@ interface Props {
     | "share"
     | "slide-next"
     | "product-details"
+    | "color-theme"
+    | "slide-prev"
+    | "cart-pill"
   size?: "small" | "normal" | "large";
   isLoading?: boolean;
   isDisabled?: boolean;

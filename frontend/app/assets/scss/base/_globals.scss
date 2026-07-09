@@ -23,6 +23,7 @@ body {
   background-color: var(--bg);
   transition: background-color var(--transition-duration);
   @include m.adaptiveValue("font-size", 16, 14);
+
 }
 
 // ===================================================================
@@ -45,6 +46,7 @@ body:has(.dialog-hamburger[open]) {
     box-shadow: 0px 0px 67px -29px rgba(34, 60, 80, 0.23);
     transition: box-shadow 0.1s;
     h3 {
+
       color: var(--green-color);
       transition: color var(--transition-duration);
     }
@@ -71,22 +73,64 @@ section {
 // ===================================================================
 
 h1 {
+
   font-family: $font-family-cursive;
   font-style: italic;
   color: var(--warning-color);
   @include m.adaptiveValue("font-size", 36, 28);
+
+  @container style(--locale: be) {
+    font-family: $font-family-content;
+    letter-spacing: 0.03em;
+  }
+
+  @container style(--locale: ru) {
+    letter-spacing: 0.02em;
+  }
+
 }
 
 h2 {
+
   @include m.adaptiveValue("font-size", 26, 20);
+
+  @container style(--locale: be) {
+    font-family: $font-family-content;
+    letter-spacing: 0.03em;
+  }
+
+  @container style(--locale: ru) {
+    letter-spacing: 0.02em;
+  }
+
 }
 
 h3 {
+
   @include m.adaptiveValue("font-size", 18, 16);
+
+  @container style(--locale: be) {
+    font-family: $font-family-content;
+    letter-spacing: 0.03em;
+  }
+
+  @container style(--locale: ru) {
+    letter-spacing: 0.02em;
+  }
 }
 
 h4 {
+
   @include m.adaptiveValue("font-size", 16, 14);
+
+  @container style(--locale: be) {
+    font-family: $font-family-content;
+    letter-spacing: 0.03em;
+  }
+
+  @container style(--locale: ru) {
+    letter-spacing: 0.02em;
+  }
 }
 
 // ===================================================================
@@ -143,3 +187,4 @@ input {
     transition-duration: 0s !important;
   }
 }
+

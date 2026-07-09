@@ -1,0 +1,69 @@
+// ===================================================================
+//! Глобальные keyframes (для custom-темы и не только)
+// ===================================================================
+
+// Entrance
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(toRem(30)) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes buttonPop {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes badgeSpin {
+  from {
+    transform: rotate(-180deg) scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(0deg) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInScale {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(toRem(8)); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// Brightness slider (custom theme)
+@keyframes brightnessTrackPulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.15); }
+}
+
+@keyframes brightnessThumbGlow {
+  0%, 100% {
+    box-shadow: 0 0 toRem(12) var(--warning-color),
+                0 toRem(2) toRem(8) rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 toRem(20) var(--warning-color),
+                0 toRem(2) toRem(12) rgba(0, 0, 0, 0.3);
+  }
+}

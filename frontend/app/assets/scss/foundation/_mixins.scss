@@ -149,3 +149,17 @@
     }
   }
 }
+
+
+//* colorMix — точечное тонирование через color-mix()
+@mixin colorMix(
+  $property: background-color,
+  $base-color: var(--bg),
+  $darken-color: rgba(0, 0, 0, 0.08)
+) {
+  #{$property}: color-mix(
+    in srgb,
+    $base-color calc(100% - var(--brightness, 50) * 0.5%),
+    $darken-color
+  );
+}

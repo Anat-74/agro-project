@@ -1,6 +1,7 @@
 @use "./base/_normalize.scss";
 @use "./base/_globals.scss";
 @use "./base/_utils.scss";
+@use "./base/_animations.scss";
 // ===================================================================
 //! GRADIENTS FOR CHAT ASSISTANT
 // ===================================================================
@@ -28,6 +29,7 @@
 :root,
 .light-mode {
   --transition-duration: 0.2s ease; // Длительность переходов
+  --bg-brightness: hsl(0, 0%, calc(var(--brightness, 50) * 1%)); // Яркость фона
   // Основные цвета
   --color: #274c5b; // Основной цвет текста (темно-синий)
   --bg: #ffffff; // Основной цвет фона (почти белый)
@@ -59,6 +61,7 @@
 // Темная тема (контрастная к светлой)
 .dark-mode {
   filter: brightness(95%);
+  --bg-brightness: hsl(0, 0%, calc(var(--brightness, 50) * 1%)); // Яркость фона
   // Основные цвета
   --color: gray; // Основной цвет текста (почти белый)
   --bg: #274c5b; // Основной цвет фона (темно-синий)
@@ -91,6 +94,7 @@
 // Произвольная тема (альтернативная комбинация цветов из Figma)
 .custom-mode {
   --transition-duration: 0.2s ease;
+  --bg-brightness: hsl(0, 0%, calc(var(--brightness, 50) * 1%)); // Яркость фона
   // Основные цвета
   --color: #525c60; // Основной цвет текста (серо-синий)
   --bg: #f0e8c5; // Основной цвет фона (светлый зеленоватый)
