@@ -30,6 +30,7 @@
 .light-mode {
   --transition-duration: 0.2s ease; // Длительность переходов
   --bg-brightness: hsl(0, 0%, calc(var(--brightness, 50) * 1%)); // Яркость фона
+  --color-mix-color: rgba(0, 0, 0, 0.35); // Затемнитель для colorMix
   // Основные цвета
   --color: #274c5b; // Основной цвет текста (темно-синий)
   --bg: #ffffff; // Основной цвет фона (почти белый)
@@ -62,6 +63,7 @@
 .dark-mode {
   filter: brightness(95%);
   --bg-brightness: hsl(0, 0%, calc(var(--brightness, 50) * 1%)); // Яркость фона
+  --color-mix-color: rgba(255, 255, 255, 0.35); // Осветлитель для colorMix (темная тема)
   // Основные цвета
   --color: gray; // Основной цвет текста (почти белый)
   --bg: #274c5b; // Основной цвет фона (темно-синий)
@@ -95,6 +97,7 @@
 .custom-mode {
   --transition-duration: 0.2s ease;
   --bg-brightness: hsl(0, 0%, calc(var(--brightness, 50) * 1%)); // Яркость фона
+  --color-mix-color: rgba(0, 0, 0, 0.35); // Затемнитель для colorMix
   // Основные цвета
   --color: #525c60; // Основной цвет текста (серо-синий)
   --bg: #f0e8c5; // Основной цвет фона (светлый зеленоватый)

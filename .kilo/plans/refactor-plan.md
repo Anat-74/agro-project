@@ -5,7 +5,7 @@
 
 ---
 
-## [В РАБОТЕ] Шаг 1. Тема + яркость + анимации
+## [✅ ВЫПОЛНЕНО] Шаг 1. Тема + яркость + анимации
 
 ### 1.1 `useThemeBrightness.ts` — новый композабл
 
@@ -80,7 +80,7 @@
 
 ---
 
-## [ОЧЕРЕДЬ] Шаг 2. Язык + @container style(--locale)
+## [✅ ВЫПОЛНЕНО] Шаг 2. Язык + @container style(--locale)
 
 ### 2.1 CSS-переменная --locale в containerVars
 
@@ -95,7 +95,7 @@
 
 ---
 
-## [ОЧЕРЕДЬ] Шаг 3. @container style() в style guide
+## [✅ ВЫПОЛНЕНО] Шаг 3. @container style() в style guide
 
 ### 3.1 Документация синтаксиса и примеров
 
@@ -107,31 +107,81 @@
 
 ---
 
-## [НИЗКИЙ ПРИОРИТЕТ] Шаг 4. useBrowser + @container style(--browser-*)
 
-### 4.1 Создать useBrowser.ts
+## Формат работы
+
+Каждый подшаг — только после одобрения. После каждого — краткий отчёт.
+
+## [В РАБОТЕ] Шаг 4. Глобальный фон с выбором из Strapi
+
+**Режим:** удалённая работа
+
+### 4.1 Создать компоненты в Strapi
+
+**Действие:** Strapi Admin API
+
+- `background.background-option` — один вариант фона:
+  - `title: string (required)`
+  - `imageAvif: media (required)`
+  - `imageWebp: media (required)`
+  - `thumbnail: media (optional)`
+  - `isDefault: boolean (default: false)`
+
+- `background.background-options` — настройки:
+  - `enableBackground: boolean (default: true)`
+  - `options: component (repeatable) → background.background-option`
+
+### 4.2 Типы shared/types/background.ts
+
+**Файл:** shared/types/background.ts
+
+- BackgroundItem (title, imageAvif, imageWebp, thumbnail, isDefault)
+- BackgroundOptions (enableBackground, options)
+
+### 4.3 BackgroundSwitcher.vue
+
+**Файл:** components/BackgroundSwitcher.vue
+
+- `<dialog>` через `useDialog()` (как в ShowModalDiscountProduct)
+- `useTemplateRef` + `useDialog("background-switcher", dialogRef, { useShowMethod: true })`
+- UButton variant="close" для закрытия
+- Сетка превью (thumbnail) с BEM + toRem
+- Сохранение выбора в localStorage
+- emit("select", background)
+- Закрытие по клику на backdrop + по Escape
+
+### 4.4 Обновить UBackground.vue
+
+**Файл:** components/UBackground.vue
+
+- Добавить проп backgroundOptions?: BackgroundItem[]
+- Динамический режим (при наличии backgroundOptions)
+- Вывод BackgroundSwitcher
+- Реакция на выбор фона (selectedBg)
+- Сохранение в localStorage
+- Статический режим (src/retinaSrc) — без изменений
+
+---
+
+## [НИЗКИЙ ПРИОРИТЕТ] Шаг 5. useBrowser + @container style(--browser-*)
+
+### 5.1 Создать useBrowser.ts
 
 **Файл:** composables/useBrowser.ts
 
 - Определение Chrome/Firefox/Safari/Edge по User-Agent
 - SSR-safe (useRequestHeaders + navigator.userAgent)
 
-### 4.2 CSS-переменные --browser-safari и др.
+### 5.2 CSS-переменные --browser-safari и др.
 
 **Файл:** app.vue
 
 - Добавить в containerVars
 
-### 4.3 Браузерные фиксы через @container style()
+### 5.3 Браузерные фиксы через @container style()
 
 По компонентам — если в тестировании проявятся проблемы:
 - Safari font rendering
 - Firefox scrollbar
 - Chrome autofill
 - и т.д.
-
----
-
-## Формат работы
-
-Каждый подшаг — только после одобрения. После каждого — краткий отчёт.

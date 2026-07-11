@@ -23,8 +23,8 @@ body {
   background-color: var(--bg);
   transition: background-color var(--transition-duration);
   @include m.adaptiveValue("font-size", 16, 14);
-
 }
+
 
 // ===================================================================
 //! DIALOG-RELATED STYLES

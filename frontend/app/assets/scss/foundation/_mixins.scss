@@ -155,11 +155,11 @@
 @mixin colorMix(
   $property: background-color,
   $base-color: var(--bg),
-  $darken-color: rgba(0, 0, 0, 0.08)
+  $mix-color: var(--color-mix-color, rgba(0, 0, 0, 0.35))
 ) {
   #{$property}: color-mix(
     in srgb,
     $base-color calc(100% - var(--brightness, 50) * 0.5%),
-    $darken-color
+    $mix-color
   );
 }

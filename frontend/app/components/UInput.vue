@@ -236,7 +236,7 @@ const inputType = computed(() => {
     width: 100%;
     height: toRem(6);
     border-radius: toRem(4);
-    background: var(--border-color);
+    background: var(--gray-color);
     outline: none;
     cursor: pointer;
     transition: background var(--transition-duration);
@@ -268,7 +268,7 @@ const inputType = computed(() => {
     &::-moz-range-track {
       height: toRem(6);
       border-radius: toRem(4);
-      background: var(--border-color);
+      background: var(--gray-color);
     }
   }
 

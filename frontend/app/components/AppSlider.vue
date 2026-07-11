@@ -110,6 +110,7 @@ onUnmounted(() => cancelAnimationFrame(rafId));
   z-index: 100;
   width: 100%;
   background-color: var(--bg-product);
+  @include colorMix();
 
   &__container {
     overflow-x: auto;
