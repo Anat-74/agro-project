@@ -2,6 +2,19 @@
 const colorMode = useColorMode()
 const { brightness } = useThemeBrightness()
 
+const showPercent = ref(false)
+let hideTimer: ReturnType<typeof setTimeout> | null = null
+
+watch(brightness, () => {
+  showPercent.value = true
+  if (hideTimer) clearTimeout(hideTimer)
+  hideTimer = setTimeout(() => { showPercent.value = false }, 2000)
+})
+
+onUnmounted(() => {
+  if (hideTimer) clearTimeout(hideTimer)
+})
+
 function iconName(theme: string) {
   if (theme === 'light') return 'ph:sun-duotone'
   if (theme === 'dark') return 'ph:moon-light'
@@ -30,6 +43,9 @@ function iconName(theme: string) {
         :max="100"
         :step="1"
       />
+      <Transition name="fade">
+        <span v-if="showPercent" class="color-mode__percent">{{ brightness }}%</span>
+      </Transition>
     </div>
   </div>
 </template>
@@ -55,6 +71,7 @@ function iconName(theme: string) {
   }
 
   &__brightness {
+    position: relative;
     padding-inline: toRem(2);
 
     @container style(--theme: custom) {
@@ -64,7 +81,7 @@ function iconName(theme: string) {
 
     // В custom-теме — нестандартный ползунок
     @container style(--theme: custom) {
-      .u-input__range {
+      :deep(.u-input__range) {
         background: linear-gradient(
           90deg,
           var(--primary-color),
@@ -96,5 +113,25 @@ function iconName(theme: string) {
       }
     }
   }
+
+  &__percent {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    translate: 0 -50%;
+    font-weight: 600;
+    font-size: toEm(18);
+    color: var(--light-color);
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
