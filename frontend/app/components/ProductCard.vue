@@ -483,5 +483,24 @@ const characteristics = computed(() => {
       }
     }
   }
+  // Анимации для custom-темы
+  @container style(--theme: custom) {
+    animation: cardEntrance 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    opacity: 0;
+
+    &__title {
+      animation: typewriter 1.2s steps(30) 0.6s forwards;
+      overflow: hidden;
+      white-space: nowrap;
+      width: 0;
+    }
+
+    &__link {
+      animation: buttonPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 1.0s forwards;
+      opacity: 0;
+      transform: scale(0.8);
+    }
+  }
+
 }
 </style>

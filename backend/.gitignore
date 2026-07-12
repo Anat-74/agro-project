@@ -129,3 +129,6 @@ dist
 build
 .strapi-updater.json
 .strapi-cloud.json
+# Strapi artifacts
+backend@0.1.0
+strapi

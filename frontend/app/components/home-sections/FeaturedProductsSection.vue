@@ -143,5 +143,12 @@ const MAX_PRODUCTS_TO_SHOW = 6;
          width: toEm(216);
       }
    }
+
+  // Анимации для custom-темы
+  @container style(--theme: custom) {
+    animation: cardEntrance 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    opacity: 0;
+  }
+
 }
 </style>

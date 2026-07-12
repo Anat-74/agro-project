@@ -98,7 +98,7 @@ function iconName(theme: string) {
           background: var(--light-color);
           border: toRem(3) solid var(--warning-color);
           box-shadow: 0 0 toRem(12) var(--warning-color),
-                      0 toRem(2) toRem(8) rgba(0, 0, 0, 0.2);
+         0 toRem(2) toRem(8) rgba(0, 0, 0, 0.2);
           animation: brightnessThumbGlow 2s ease-in-out infinite;
         }
 
@@ -116,7 +116,7 @@ function iconName(theme: string) {
 
   &__percent {
     position: absolute;
-    right: 0;
+    right: toRem(-36);
     top: 50%;
     translate: 0 -50%;
     font-weight: 600;

@@ -16,7 +16,7 @@
    align-items: center;
    padding-inline: toRem(4);
    background-color: var(--primary-color);
-   @include adaptiveValue("height", 40, 35);
+   @include adaptiveValue("height", 64, 45);
 
    @media (min-width:$mobile){
    grid-template-columns: 1fr repeat(2,auto);

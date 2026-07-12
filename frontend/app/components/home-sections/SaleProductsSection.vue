@@ -230,5 +230,12 @@ const { saleProd } = defineProps<Props>();
    100% {
       translate: -100%;
    }
+
+  // Анимации для custom-темы
+  @container style(--theme: custom) {
+    animation: cardEntrance 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    opacity: 0;
+  }
+
 }
 </style>

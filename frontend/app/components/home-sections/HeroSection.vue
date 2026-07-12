@@ -108,6 +108,7 @@ const { slides, heroGrids } = defineProps<Props>();
   }
 
   &__text-content {
+    position: relative;
     max-width: toRem(596);
     display: grid;
     row-gap: toEm(12);
@@ -185,5 +186,18 @@ const { slides, heroGrids } = defineProps<Props>();
       font-size: toEm(20);
     }
   }
+
+  // Анимации для custom-темы
+  @container style(--theme: custom) {
+    animation: fadeInScale 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+
+    &__title {
+      animation: typewriter 1.2s steps(30) 0.8s forwards;
+      overflow: hidden;
+      white-space: nowrap;
+      width: 0;
+    }
+  }
+
 }
 </style>
