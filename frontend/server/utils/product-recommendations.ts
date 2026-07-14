@@ -76,7 +76,7 @@ export async function getRecommendations(
   limit: number = 5,
 ): Promise<RecommendationResult> {
   try {
-    const strapiUrl = process.env.STRAPI_URL || "http://127.0.0.1:1337";
+    const strapiUrl = process.env.NUXT_STRAPI_URL || "http://127.0.0.1:1337";
 
     if (basedOn === "category") {
       if (!sourceId) {

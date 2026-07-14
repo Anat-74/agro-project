@@ -421,7 +421,7 @@ ${JSON.stringify(lastSearchResults, null, 2)}
             if (result.success && args.operation === "add" && args.productId) {
               // Получаем информацию о товаре из Strapi для правильного clientInstruction
               try {
-                const strapiUrl = process.env.STRAPI_URL || "http://127.0.0.1:1337";
+                const { strapi: { url: strapiUrl } } = useRuntimeConfig(event);
                 // В Strapi v5 используем фильтр по documentId
                 const productResponse = await $fetch(`${strapiUrl}/api/products`, {
                   params: {

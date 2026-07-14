@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
   try {
     const query = getQuery(event);
     const locale = query.locale || "ru";
-    const strapiUrl = process.env.STRAPI_URL || "http://127.0.0.1:1337";
+    const { strapi: { url: strapiUrl } } = useRuntimeConfig(event);
     const response = await $fetch(`${strapiUrl}/api/ai-assistant`, {
       params: { populate: "*", locale },
     });

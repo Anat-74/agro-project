@@ -33,7 +33,7 @@ export async function searchProducts(
 ) {
   try {
     // Получаем URL Strapi из конфигурации
-    const strapiUrl = process.env.STRAPI_URL || "http://127.0.0.1:1337";
+    const strapiUrl = process.env.NUXT_STRAPI_URL || "http://127.0.0.1:1337";
     
     // Строим параметры запроса для Strapi v5
     const filters: any = {};
