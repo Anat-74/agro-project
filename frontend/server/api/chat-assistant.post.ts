@@ -13,13 +13,14 @@ async function searchProductsTool(
   maxPrice?: number,
   inStock?: boolean,
   isDiscount?: boolean,
+  strapiUrl?: string,
 ) {
   try {
     // Импортируем общую функцию поиска
     const { searchProducts } = await import('../utils/product-search');
     
     // Вызываем функцию поиска
-    const result = await searchProducts(query, category, limit, minPrice, maxPrice, inStock, isDiscount);
+    const result = await searchProducts(query, category, limit, minPrice, maxPrice, inStock, isDiscount, strapiUrl);
     
     // Преобразуем результат в формат, ожидаемый AI ассистентом
     const products = result.products.map((p: any) => ({
@@ -57,13 +58,13 @@ async function searchProductsTool(
 }
 
 // Вспомогательная функция для работы с Strapi API
-async function callStrapiTool(toolName: string, args: any): Promise<any> {
+async function callStrapiTool(toolName: string, args: any, strapiUrl?: string): Promise<any> {
   if (toolName === "strapi_products") {
     const { operation, query, category, limit = 10, minPrice, maxPrice, inStock, isDiscount } = args;
     
     // Для операции search используем нашу улучшенную функцию
     if (operation === "search" && query) {
-      return await searchProductsTool(query, category, limit, minPrice, maxPrice, inStock, isDiscount);
+      return await searchProductsTool(query, category, limit, minPrice, maxPrice, inStock, isDiscount, strapiUrl);
     }
     
     // Для других операций используем простую заглушку
@@ -81,7 +82,7 @@ async function callStrapiTool(toolName: string, args: any): Promise<any> {
     const { basedOn, sourceId, sourceType, limit = 5 } = args;
     try {
       const { getRecommendations } = await import('../utils/product-recommendations');
-      const result = await getRecommendations(basedOn, sourceType, sourceId, limit);
+      const result = await getRecommendations(basedOn, sourceType, sourceId, limit, strapiUrl);
       return result;
     } catch (error) {
       console.error("Error in get_recommendations:", error);
@@ -237,7 +238,7 @@ const AVAILABLE_TOOLS = [
 
 export default defineEventHandler(async (event) => {
   try {
-    const { deepseekApiKey: DEEPSEEK_API_KEY } = useRuntimeConfig(event);
+    const { deepseekApiKey: DEEPSEEK_API_KEY, strapi: { url: strapiUrl } } = useRuntimeConfig(event);
     if (!DEEPSEEK_API_KEY) {
       throw new Error("DEEPSEEK_API_KEY is not configured");
     }
@@ -394,7 +395,7 @@ ${JSON.stringify(lastSearchResults, null, 2)}
           // Вызываем соответствующий инструмент
           let result;
           if (functionName === "strapi_products") {
-            result = await callStrapiTool(functionName, args);
+            result = await callStrapiTool(functionName, args, strapiUrl);
             if (result.success && result.products && result.products.length > 0) {
               searchResultsOutput = result.products.map((p: any) => ({
                 documentId: p.documentId,
@@ -512,7 +513,7 @@ ${JSON.stringify(lastSearchResults, null, 2)}
               }
             }
           } else if (functionName === "get_recommendations") {
-            result = await callStrapiTool(functionName, args);
+            result = await callStrapiTool(functionName, args, strapiUrl);
             if (result.success && result.products && result.products.length > 0) {
               const recProducts = result.products.map((p: any) => ({
                 documentId: p.documentId,

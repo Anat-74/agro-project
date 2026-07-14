@@ -30,10 +30,12 @@ export async function searchProducts(
   maxPrice?: number,
   inStock?: boolean,
   isDiscount?: boolean,
+  strapiUrl?: string,
 ) {
   try {
     // Получаем URL Strapi из конфигурации
-    const strapiUrl = process.env.NUXT_STRAPI_URL || "http://127.0.0.1:1337";
+    const { strapi: { url: configUrl } } = useRuntimeConfig();
+    const baseUrl = strapiUrl || configUrl || "http://127.0.0.1:1337";
     
     // Строим параметры запроса для Strapi v5
     const filters: any = {};
@@ -64,7 +66,7 @@ export async function searchProducts(
     if (category) {
       // Для поиска по категории нужно найти категорию по slug
       // Сначала найдем ID категории
-      const categoryResponse = await $fetch(`${strapiUrl}/api/categories`, {
+      const categoryResponse = await $fetch(`${baseUrl}/api/categories`, {
         params: {
           "filters[slug][$eq]": category,
           "fields[0]": "documentId"
@@ -114,12 +116,12 @@ export async function searchProducts(
     
     // Выполняем запрос к Strapi API
     console.log("Searching products with params:", JSON.stringify(params, null, 2));
-    console.log("Search URL:", `${strapiUrl}/api/products`);
+    console.log("Search URL:", `${baseUrl}/api/products`);
     console.log("Search terms:", searchTerms);
     
     let response;
     try {
-      response = await $fetch(`${strapiUrl}/api/products`, {
+      response = await $fetch(`${baseUrl}/api/products`, {
         params,
         headers: {
           "Content-Type": "application/json"
