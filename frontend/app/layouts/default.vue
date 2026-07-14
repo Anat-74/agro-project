@@ -26,7 +26,7 @@ const {
   }
 
   return response.data as unknown as GlobalData;
-});
+}, { server: false });
 
 watch(currentLocale, () => {
   refresh();
