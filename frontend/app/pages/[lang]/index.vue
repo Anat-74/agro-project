@@ -29,6 +29,7 @@ const {
     }
   },
    {
+    server: false,
     watch: [() => currentLocale.value],
   },
 );
