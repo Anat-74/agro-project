@@ -3,8 +3,6 @@ import { $fetch } from "ofetch";
 
 // DeepSeek API endpoint (OpenAI-compatible)
 const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
-// В production используйте переменные окружения
-const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || "";
 
 // Простая функция для поиска товаров через нашу общую функцию
 async function searchProductsTool(
@@ -239,6 +237,10 @@ const AVAILABLE_TOOLS = [
 
 export default defineEventHandler(async (event) => {
   try {
+    const { deepseekApiKey: DEEPSEEK_API_KEY } = useRuntimeConfig(event);
+    if (!DEEPSEEK_API_KEY) {
+      throw new Error("DEEPSEEK_API_KEY is not configured");
+    }
     const body = await readBody(event);
     const { message, sessionId, useTools = true, lastSearchResults, locale = "ru" } = body;
 
@@ -295,7 +297,7 @@ ${JSON.stringify(lastSearchResults, null, 2)}
       content: `Ты AI-ассистент интернет-магазина "Агро-Маркет". Помогаешь с поиском товаров и корзиной.${contextBlock}
 Отвечай на языке: ${locale}.
 
-ПРАВИЛА РАБОТЫ С ИНСТРУМЕНТАМИ:
+ПРАВИЛА РАБОТЫ С ИНСТРУМЕНТАМИ — ТЫ ОБЯЗАН вызвать инструмент для любого запроса, подходящего под правило. НЕЛЬЗЯ отвечать текстом, если подходит инструмент.
 1. "найди [товар]" → strapi_products с operation: "search", query: "[товар]"
 2. "добавь в корзину" → cart_operations с operation: "add"
    - Если есть КОНТЕКСТ выше: используй documentId первого товара из контекста, НЕ ОТВЕЧАЙ ТЕКСТОМ
@@ -303,21 +305,21 @@ ${JSON.stringify(lastSearchResults, null, 2)}
 3. "покажи корзину" → cart_operations с operation: "get"
 4. "найди [товар] и добавь" → СНАЧАЛА search, ПОТОМ add (два tool_calls в одном ответе)
 5. "дешевые", "до 5 руб", "не дороже X" → strapi_products с maxPrice
-6. "со скидкой", "по акции" → strapi_products с isDiscount: true
+6. "со скидкой", "по акции", "уценка" → strapi_products с isDiscount: true (ОБЯЗАТЕЛЬНО вызови инструмент, не отвечай текстом)
 7. "в наличии" → strapi_products с inStock: true
 8. "что посоветуешь", "похожие", "рекомендуй", "новинки", "популярное" → get_recommendations
    - "похожие на [товар]" → get_recommendations с basedOn: "category", sourceId: "[documentId товара]"
    - "что нового", "новинки" → get_recommendations с basedOn: "latest"
-   - "со скидкой", "по акции" → get_recommendations с basedOn: "discount"
 
 ФОРМАТ ОТВЕТА:
-- Для вызова инструмента: tool_calls массив, content пустой. НИКОГДА не отвечай текстом когда нужно вызвать инструмент
+- Для вызова инструмента: tool_calls массив, content пустой. НИКОГДА не отвечай текстом когда нужно вызвать инструмент. Даже если тебе кажется, что данных нет — вызови инструмент, я проверю.
 - После результата инструмента: ответь пользователю на русском
 - Найденные товары: "Нашел X товаров: 1) [Название] - [цена] руб"
 - Корзина: "✅ Товар добавлен в корзину"
-- Если ничего не найдено: "По вашему запросу ничего не найдено"
+- Если инструмент вернул пустой результат: "По вашему запросу ничего не найдено"
 - Будь дружелюбным, используй эмодзи 🥔 ✅ 🛒
-- Не показывай технические детали и JSON в ответе пользователю`,
+- Не показывай технические детали и JSON в ответе пользователю
+- ЗАПРЕЩЕНО выдумывать данные о товарах. Только то, что вернул инструмент.`,
     };
 
     // Формируем запрос к DeepSeek API

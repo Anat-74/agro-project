@@ -74,6 +74,7 @@ export default defineNuxtConfig({
     "/sitemap.xml": { static: true },
   },
   runtimeConfig: {
+    deepseekApiKey: process.env.DEEPSEEK_API_KEY,
     strapi: {
       url: process.env.NUXT_STRAPI_URL,
       token: process.env.NUXT_STRAPI_TOKEN,
