@@ -1,8 +1,9 @@
 [build]
   base = "frontend/"
+  publish = ".output/public"
   command = "npm run build"
 
 [build.environment]
   NODE_VERSION = "20"
   NUXT_PUBLIC_STRAPI_URL = "https://api.vh324.by3020.ihb.by"
-  SITE_URL = "https://agro-market.netlify.app"
+  SITE_URL = "https://lustrous-medovik-a82e20.netlify.app"
