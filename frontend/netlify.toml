@@ -1,9 +1,10 @@
 [build]
   base = "frontend/"
-  publish = "dist"
   command = "npm run build"
 
 [build.environment]
   NODE_VERSION = "20"
+  NITRO_PRESET = "netlify"
   NUXT_PUBLIC_STRAPI_URL = "https://api.vh324.by3020.ihb.by"
+  NUXT_STRAPI_URL = "https://api.vh324.by3020.ihb.by"
   SITE_URL = "https://lustrous-medovik-a82e20.netlify.app"
