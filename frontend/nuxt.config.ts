@@ -40,7 +40,7 @@ export default defineNuxtConfig({
     },
   },
   nitro: {
-    preset: "netlify",
+    preset: "node-server",
     prerender: {
       ignore: ["/sitemap.xml"],
     },
