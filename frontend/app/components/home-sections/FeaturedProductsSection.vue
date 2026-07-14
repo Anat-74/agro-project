@@ -82,7 +82,6 @@ const MAX_PRODUCTS_TO_SHOW = 6;
           column-gap: toEm(16);
           padding-inline: toRem(5);
           overflow-x: auto;
-          > * { min-width: 0; }
          scrollbar-width: thin;
          scrollbar-color: var(--light-color) var(--light-color);
       }
