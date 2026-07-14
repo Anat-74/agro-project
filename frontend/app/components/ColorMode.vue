@@ -53,15 +53,16 @@ function iconName(theme: string) {
 <style lang="scss" scoped>
 .color-mode {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   row-gap: toRem(8);
+  column-gap: toEm(8);
 
   &__themes {
     display: inline-flex;
     column-gap: toRem(4);
 
     @media (max-width: $mobile) {
-      flex-direction: column;
+      // flex-direction: column;
       row-gap: toRem(6);
     }
 

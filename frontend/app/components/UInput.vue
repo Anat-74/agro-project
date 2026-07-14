@@ -227,7 +227,7 @@ const inputType = computed(() => {
   }
 
   &__range-wrapper {
-    width: 100%;
+    width: 98px;
   }
 
   &__range {
