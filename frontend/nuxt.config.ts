@@ -14,7 +14,7 @@ export default defineNuxtConfig({
     "@nuxtjs/strapi",
     "@nuxtjs/mdc",
     "@nuxtjs/seo",
-    "@vite-pwa/nuxt",
+    // "@vite-pwa/nuxt",
     "@nuxtjs/mcp-toolkit",
     "nuxt-spyglass",
     "@nuxt/fonts",
