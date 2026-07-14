@@ -14,7 +14,7 @@ export default defineNuxtConfig({
     "@nuxtjs/strapi",
     "@nuxtjs/mdc",
     "@nuxtjs/seo",
-    // "@vite-pwa/nuxt",
+    "@vite-pwa/nuxt",
     "@nuxtjs/mcp-toolkit",
     "nuxt-spyglass",
     "@nuxt/fonts",
@@ -41,12 +41,8 @@ export default defineNuxtConfig({
   },
   nitro: {
     preset: "netlify",
-    storage: {
-      // Кэширование оптимизированных изображений
-      // "cache:nuxt-image": {
-      //   driver: "fs",
-      //   base: "./node_modules/.cache/nuxt-image",
-      // },
+    output: {
+      publicDir: "dist",
     },
     prerender: {
       ignore: ["/sitemap.xml"],
