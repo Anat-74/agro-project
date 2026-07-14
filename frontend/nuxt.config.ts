@@ -41,9 +41,6 @@ export default defineNuxtConfig({
   },
   nitro: {
     preset: "netlify",
-    output: {
-      publicDir: "dist",
-    },
     prerender: {
       ignore: ["/sitemap.xml"],
     },
