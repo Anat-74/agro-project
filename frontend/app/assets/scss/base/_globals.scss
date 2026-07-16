@@ -20,7 +20,7 @@ body {
   font-weight: 400;
   line-height: 1.2;
   color: var(--color);
-  background-color: var(--bg);
+  background-color: limegreen;
   transition: background-color var(--transition-duration);
   @include m.adaptiveValue("font-size", 16, 14);
 }
