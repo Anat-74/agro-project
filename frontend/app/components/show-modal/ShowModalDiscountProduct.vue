@@ -9,6 +9,7 @@ const { isInCart } = useIsInCart()
 const { find } = useStrapi()
 
 const dialogElement = useTemplateRef<HTMLDialogElement>("discount-dialog")
+const wrapperRef = useTemplateRef<HTMLDivElement>("wrapper")
 const { open, close } = useDialog(
   "discount-product-" + props.product.documentId,
   dialogElement,
@@ -29,6 +30,27 @@ const { data: details, status, execute } = useAsyncData(
   },
   { immediate: false, server: false }
 )
+
+// Префетч деталей товара при скролле — когда карточка входит в область видимости
+let prefetchObserver: IntersectionObserver | null = null
+
+onMounted(() => {
+  if (!wrapperRef.value) return
+  prefetchObserver = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting) {
+        execute()
+        prefetchObserver?.disconnect()
+      }
+    },
+    { rootMargin: "100px" }
+  )
+  prefetchObserver.observe(wrapperRef.value)
+})
+
+onUnmounted(() => {
+  prefetchObserver?.disconnect()
+})
 
 const openModal = () => {
   open?.()
@@ -58,7 +80,7 @@ const handleAddToCart = () => {
 </script>
 
 <template>
-  <div class="discount-card__show-wrapper">
+  <div ref="wrapper" class="discount-card__show-wrapper">
     <UButton
       class="discount-card__show"
       icon="mdi:show-outline"

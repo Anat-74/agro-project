@@ -66,12 +66,49 @@ export default defineNuxtConfig({
       },
     ],
   },
+  pwa: {
+    registerType: "autoUpdate",
+    manifest: {
+      name: "Organick",
+      short_name: "Organick",
+      description: "Магазин агро-продуктов",
+      theme_color: "#274C5B",
+      background_color: "#ffffff",
+      display: "standalone",
+      scope: "/",
+      start_url: "/ru",
+      icons: [
+        { src: "pwa-192x192.png", sizes: "192x192", type: "image/png" },
+        { src: "pwa-512x512.png", sizes: "512x512", type: "image/png" },
+      ],
+    },
+    workbox: {
+      globPatterns: ["**/*.{js,css,html,png,svg,ico}"],
+      navigateFallback: "/ru",
+    },
+    client: {
+      installPrompt: true,
+      periodicSyncForUpdates: 3600,
+    },
+  },
   ssr: true,
   routeRules: {
-    "/": {
-      redirect: "/ru",
-    },
+    // === SSG (Static prerender) ===
+    "/": { redirect: "/ru" },
     "/sitemap.xml": { static: true },
+    "/**/about": { prerender: true },
+    "/**/contacts": { prerender: true },
+    "/**/services": { prerender: true },
+
+    // === SWR (Stale-while-revalidate) ===
+    "/**/blog": { swr: 3600 },
+    "/**/news": { swr: 3600 },
+    "/**/products/**": { swr: 300 },
+
+    // === CSR (Client-side only — no SEO, user-specific) ===
+    "/**/cartshopping": { ssr: false },
+    "/**/auth/**": { ssr: false },
+    "/**/cabinet/**": { ssr: false },
   },
   runtimeConfig: {
     deepseekApiKey: process.env.DEEPSEEK_API_KEY,

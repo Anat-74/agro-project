@@ -59,7 +59,7 @@ const {
     } as any)
     return response.data || []
   },
-  { watch: [categoryKey], immediate: false, server: false, lazy: true }
+  { watch: [categoryKey], server: false }
 )
 
 const productKey = computed(() => `product-dialog-${currentLocale.value}`)
@@ -91,7 +91,7 @@ const {
     } as any)
     return response.data || []
   },
-  { watch: [productKey], immediate: false, server: false, lazy: true }
+  { watch: [productKey], server: false }
 )
 
 const pending = computed(

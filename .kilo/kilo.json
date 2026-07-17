@@ -56,5 +56,10 @@
       "enabled": true
     }
   },
-  "snapshot": false
+  "snapshot": false,
+  "permission": {
+    "edit": "allow",
+    "write": "allow",
+    "bash": "allow"
+  }
 }

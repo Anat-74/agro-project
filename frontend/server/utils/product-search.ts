@@ -31,6 +31,7 @@ export async function searchProducts(
   inStock?: boolean,
   isDiscount?: boolean,
   strapiUrl?: string,
+  locale?: string,
 ) {
   try {
     // Получаем URL Strapi из конфигурации
@@ -44,22 +45,22 @@ export async function searchProducts(
     
     if (query) {
       const queryLower = query.toLowerCase().trim();
-      
-      // Упрощенная логика для поиска товаров
-      // Для запросов с "яблок" всегда ищем по "Яблоко" (так как товар "Яблоко Каштель")
-      if (queryLower.includes('яблок')) {
-        searchTerms = ['Яблоко'];
-      } else {
-        // Для других запросов используем исходный запрос с заглавной буквы
-        searchTerms = [capitalizeFirst(queryLower)];
+      searchTerms = [capitalizeFirst(queryLower)];
+
+      // Для русских окончаний множественного числа добавляем вариант без "и"/"ы"
+      if (queryLower.endsWith('и') || queryLower.endsWith('ы')) {
+        const singular = queryLower.slice(0, -1);
+        if (singular.length >= 2) {
+          searchTerms.push(capitalizeFirst(singular));
+        }
       }
-      
+
       // Для Strapi v5 используем максимально упрощенный поиск
       // Сложные $or запросы вызывают 500 ошибку в Strapi v5
       if (searchTerms.length > 0) {
         // Используем только первый (самый релевантный) термин
         const mainTerm = searchTerms[0];
-        filters.name = { $startsWith: mainTerm };
+        filters.name = { $contains: mainTerm };
       }
     }
     
@@ -69,7 +70,8 @@ export async function searchProducts(
       const categoryResponse = await $fetch(`${baseUrl}/api/categories`, {
         params: {
           "filters[slug][$eq]": category,
-          "fields[0]": "documentId"
+          "fields[0]": "documentId",
+          "locale": locale || "ru"
         }
       });
       
@@ -83,14 +85,18 @@ export async function searchProducts(
     const params: Record<string, any> = {
       "pagination[pageSize]": limit,
       "pagination[page]": 1,
-      "populate": "*", // В Strapi v5 можно использовать * для всех полей
+      "populate": "*",
       "sort": "name:asc"
     };
+
+    if (locale) {
+      params["locale"] = locale;
+    }
     
     // Добавляем фильтры для Strapi v5 в плоском формате
-    if (filters.name && filters.name.$startsWith) {
-      // Фильтр по имени: filters[name][$startsWith]=значение
-      params["filters[name][$startsWith]"] = filters.name.$startsWith;
+    if (filters.name && filters.name.$contains) {
+      // Фильтр по имени: filters[name][$contains]=значение
+      params["filters[name][$contains]"] = filters.name.$contains;
     }
     
     if (filters.category && filters.category.documentId && filters.category.documentId.$eq) {
@@ -179,7 +185,312 @@ export async function searchProducts(
       return product;
     });
     
-    // Если через Strapi ничего не найдено, возвращаем пустой результат
+    // Если через Strapi ничего не найдено — пробуем другие формы запроса
+    if (products.length === 0 && searchTerms.length > 1) {
+      // Пробуем второй термин (например, "Яблок" вместо "Яблоки")
+      const altMainTerm = searchTerms[1];
+      console.log("Retrying with alternative term:", altMainTerm);
+
+      delete params["filters[name][$contains]"];
+      params["filters[name][$contains]"] = altMainTerm;
+
+      try {
+        const altResponse = await $fetch(`${baseUrl}/api/products`, {
+          params,
+          headers: { "Content-Type": "application/json" }
+        });
+
+        if (altResponse.data && altResponse.data.length > 0) {
+          const altProducts = (altResponse.data || []).map((item: any) => {
+            let image = "/image/cart-empty-img.png";
+            if (item.image) {
+              if (Array.isArray(item.image) && item.image.length > 0) {
+                image = item.image[0].url || item.image[0].formats?.thumbnail?.url || "/image/cart-empty-img.png";
+              } else if (item.image.url) {
+                image = item.image.url;
+              }
+            }
+            let cat = "uncategorized";
+            let catName = "Без категории";
+            if (item.category) {
+              if (Array.isArray(item.category) && item.category.length > 0) {
+                cat = item.category[0].slug || "uncategorized";
+                catName = item.category[0].name || "Без категории";
+              } else if (item.category.slug) {
+                cat = item.category.slug;
+                catName = item.category.name || "Без категории";
+              }
+            }
+            return {
+              documentId: item.documentId || item.id,
+              name: item.name,
+              price: item.price || 0,
+              slug: item.slug || item.name.toLowerCase().replace(/ /g, '-'),
+              description: item.description || "",
+              image,
+              category: cat,
+              categoryName: catName,
+              isDiscount: item.isDiscount || false
+            };
+          });
+
+          return {
+            success: true,
+            products: altProducts,
+            total: altResponse.meta?.pagination?.total || altProducts.length,
+            limit,
+            hasMore: false,
+            query,
+            category
+          };
+        }
+      } catch (altError) {
+        console.error("Alt term search error:", altError);
+      }
+    }
+
+    // Если всё ещё ничего не найдено — пробуем синонимы (картошка → картофель, томат → помидор)
+    if (products.length === 0 && query) {
+      const { getSynonym } = await import('./product-synonyms');
+      const synonym = getSynonym(query);
+      if (synonym) {
+        const synonymSearch = capitalizeFirst(synonym);
+        console.log("Retrying with synonym:", synonymSearch);
+
+        delete params["filters[name][$contains]"];
+        params["filters[name][$contains]"] = synonymSearch;
+
+        try {
+          const synResponse = await $fetch(`${baseUrl}/api/products`, {
+            params,
+            headers: { "Content-Type": "application/json" }
+          });
+
+          if (synResponse.data && synResponse.data.length > 0) {
+            const synProducts = (synResponse.data || []).map((item: any) => {
+              let image = "/image/cart-empty-img.png";
+              if (item.image) {
+                if (Array.isArray(item.image) && item.image.length > 0) {
+                  image = item.image[0].url || item.image[0].formats?.thumbnail?.url || "/image/cart-empty-img.png";
+                } else if (item.image.url) {
+                  image = item.image.url;
+                }
+              }
+              let cat = "uncategorized";
+              let catName = "Без категории";
+              if (item.category) {
+                if (Array.isArray(item.category) && item.category.length > 0) {
+                  cat = item.category[0].slug || "uncategorized";
+                  catName = item.category[0].name || "Без категории";
+                } else if (item.category.slug) {
+                  cat = item.category.slug;
+                  catName = item.category.name || "Без категории";
+                }
+              }
+              return {
+                documentId: item.documentId || item.id,
+                name: item.name,
+                price: item.price || 0,
+                slug: item.slug || item.name.toLowerCase().replace(/ /g, '-'),
+                description: item.description || "",
+                image,
+                category: cat,
+                categoryName: catName,
+                isDiscount: item.isDiscount || false
+              };
+            });
+
+            return {
+              success: true,
+              products: synProducts,
+              total: synResponse.meta?.pagination?.total || synProducts.length,
+              limit,
+              hasMore: false,
+              query,
+              category
+            };
+          }
+        } catch (synError) {
+          console.error("Synonym search error:", synError);
+        }
+      }
+    }
+
+    // Если всё ещё ничего не найдено — пробуем найти по категориям
+    if (products.length === 0 && query && searchTerms.length > 0) {
+      const mainTerm = searchTerms[0];
+      console.log("Fallback: searching categories by name:", mainTerm);
+
+      try {
+        const catResponse = await $fetch(`${baseUrl}/api/categories`, {
+          params: {
+            "filters[name][$contains]": mainTerm,
+            "fields[0]": "documentId",
+            "fields[1]": "name",
+            "locale": locale || "ru",
+            "pagination[pageSize]": 10
+          }
+        });
+
+        if (catResponse.data && catResponse.data.length > 0) {
+          const catIds = catResponse.data.map((c: any) => c.documentId);
+          console.log("Found categories:", catResponse.data.map((c: any) => c.name));
+
+          const fallbackParams: Record<string, any> = {
+            "pagination[pageSize]": limit,
+            "pagination[page]": 1,
+            "populate": "*",
+            "sort": "name:asc",
+            "locale": locale || "ru"
+          };
+
+          catIds.forEach((id: string, i: number) => {
+            fallbackParams[`filters[category][documentId][$in][${i}]`] = id;
+          });
+
+          if (minPrice !== undefined) fallbackParams["filters[price][$gte]"] = minPrice;
+          if (maxPrice !== undefined) fallbackParams["filters[price][$lte]"] = maxPrice;
+          if (inStock === true) fallbackParams["filters[isAvailable][$eq]"] = true;
+          if (isDiscount === true) fallbackParams["filters[isDiscount][$eq]"] = true;
+
+          const fallbackResponse = await $fetch(`${baseUrl}/api/products`, {
+            params: fallbackParams,
+            headers: { "Content-Type": "application/json" }
+          });
+
+          if (fallbackResponse.data && fallbackResponse.data.length > 0) {
+            return {
+              success: true,
+              products: fallbackResponse.data.map((item: any) => {
+                let image = "/image/cart-empty-img.png";
+                if (item.image) {
+                  if (Array.isArray(item.image) && item.image.length > 0) {
+                    image = item.image[0].url || item.image[0].formats?.thumbnail?.url || "/image/cart-empty-img.png";
+                  } else if (item.image.url) {
+                    image = item.image.url;
+                  }
+                }
+                let cat = "uncategorized";
+                let catName = "Без категории";
+                if (item.category) {
+                  if (Array.isArray(item.category) && item.category.length > 0) {
+                    cat = item.category[0].slug || "uncategorized";
+                    catName = item.category[0].name || "Без категории";
+                  } else if (item.category.slug) {
+                    cat = item.category.slug;
+                    catName = item.category.name || "Без категории";
+                  }
+                }
+                return {
+                  documentId: item.documentId || item.id,
+                  name: item.name,
+                  price: item.price || 0,
+                  slug: item.slug || item.name.toLowerCase().replace(/ /g, '-'),
+                  description: item.description || "",
+                  image,
+                  category: cat,
+                  categoryName: catName,
+                  isDiscount: item.isDiscount || false
+                };
+              }),
+              total: fallbackResponse.meta?.pagination?.total || 0,
+              limit,
+              hasMore: false,
+              query,
+              category
+            };
+          }
+        }
+      } catch (fallbackError) {
+        console.error("Category fallback search error:", fallbackError);
+      }
+
+      // Если и по категориям ничего нет — пробуем подкатегории
+      try {
+        const subResponse = await $fetch(`${baseUrl}/api/subcategories`, {
+          params: {
+            "filters[name][$contains]": mainTerm,
+            "fields[0]": "documentId",
+            "fields[1]": "name",
+            "locale": locale || "ru",
+            "pagination[pageSize]": 10
+          }
+        });
+
+        if (subResponse.data && subResponse.data.length > 0) {
+          const subIds = subResponse.data.map((s: any) => s.documentId);
+          console.log("Found subcategories:", subResponse.data.map((s: any) => s.name));
+
+          const fallbackParams: Record<string, any> = {
+            "pagination[pageSize]": limit,
+            "pagination[page]": 1,
+            "populate": "*",
+            "sort": "name:asc",
+            "locale": locale || "ru"
+          };
+
+          subIds.forEach((id: string, i: number) => {
+            fallbackParams[`filters[subcategory][documentId][$in][${i}]`] = id;
+          });
+
+          if (minPrice !== undefined) fallbackParams["filters[price][$gte]"] = minPrice;
+          if (maxPrice !== undefined) fallbackParams["filters[price][$lte]"] = maxPrice;
+          if (inStock === true) fallbackParams["filters[isAvailable][$eq]"] = true;
+          if (isDiscount === true) fallbackParams["filters[isDiscount][$eq]"] = true;
+
+          const subFallbackResponse = await $fetch(`${baseUrl}/api/products`, {
+            params: fallbackParams,
+            headers: { "Content-Type": "application/json" }
+          });
+
+          if (subFallbackResponse.data && subFallbackResponse.data.length > 0) {
+            return {
+              success: true,
+              products: subFallbackResponse.data.map((item: any) => {
+                let image = "/image/cart-empty-img.png";
+                if (item.image) {
+                  if (Array.isArray(item.image) && item.image.length > 0) {
+                    image = item.image[0].url || item.image[0].formats?.thumbnail?.url || "/image/cart-empty-img.png";
+                  } else if (item.image.url) {
+                    image = item.image.url;
+                  }
+                }
+                let cat = "uncategorized";
+                let catName = "Без категории";
+                if (item.category) {
+                  if (Array.isArray(item.category) && item.category.length > 0) {
+                    cat = item.category[0].slug || "uncategorized";
+                    catName = item.category[0].name || "Без категории";
+                  } else if (item.category.slug) {
+                    cat = item.category.slug;
+                    catName = item.category.name || "Без категории";
+                  }
+                }
+                return {
+                  documentId: item.documentId || item.id,
+                  name: item.name,
+                  price: item.price || 0,
+                  slug: item.slug || item.name.toLowerCase().replace(/ /g, '-'),
+                  description: item.description || "",
+                  image,
+                  category: cat,
+                  categoryName: catName,
+                  isDiscount: item.isDiscount || false
+                };
+              }),
+              total: subFallbackResponse.meta?.pagination?.total || 0,
+              limit,
+              hasMore: false,
+              query,
+              category
+            };
+          }
+        }
+      } catch (fallbackError) {
+        console.error("Subcategory fallback search error:", fallbackError);
+      }
+    }
+
     if (products.length === 0) {
       console.log("No products found via Strapi");
       return {

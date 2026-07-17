@@ -95,8 +95,8 @@ provide(VISIBILITY_KEY, {
 </script>
 
 <template>
-  <!-- <VitePwaManifest />
-  <PWAUpdateNotice /> -->
+  <VitePwaManifest />
+  <PWAUpdateNotice />
   <div :style="containerVars">
     <NuxtLayout>
       <NuxtPage />

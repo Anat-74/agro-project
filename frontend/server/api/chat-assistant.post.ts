@@ -14,13 +14,11 @@ async function searchProductsTool(
   inStock?: boolean,
   isDiscount?: boolean,
   strapiUrl?: string,
+  locale?: string,
 ) {
   try {
-    // Импортируем общую функцию поиска
     const { searchProducts } = await import('../utils/product-search');
-    
-    // Вызываем функцию поиска
-    const result = await searchProducts(query, category, limit, minPrice, maxPrice, inStock, isDiscount, strapiUrl);
+    const result = await searchProducts(query, category, limit, minPrice, maxPrice, inStock, isDiscount, strapiUrl, locale);
     
     // Преобразуем результат в формат, ожидаемый AI ассистентом
     const products = result.products.map((p: any) => ({
@@ -58,13 +56,13 @@ async function searchProductsTool(
 }
 
 // Вспомогательная функция для работы с Strapi API
-async function callStrapiTool(toolName: string, args: any, strapiUrl?: string): Promise<any> {
+async function callStrapiTool(toolName: string, args: any, strapiUrl?: string, locale?: string): Promise<any> {
   if (toolName === "strapi_products") {
     const { operation, query, category, limit = 10, minPrice, maxPrice, inStock, isDiscount } = args;
     
     // Для операции search используем нашу улучшенную функцию
-    if (operation === "search" && query) {
-      return await searchProductsTool(query, category, limit, minPrice, maxPrice, inStock, isDiscount, strapiUrl);
+    if (operation === "search") {
+      return await searchProductsTool(query, category, limit, minPrice, maxPrice, inStock, isDiscount, strapiUrl, locale);
     }
     
     // Для других операций используем простую заглушку
@@ -82,7 +80,7 @@ async function callStrapiTool(toolName: string, args: any, strapiUrl?: string): 
     const { basedOn, sourceId, sourceType, limit = 5 } = args;
     try {
       const { getRecommendations } = await import('../utils/product-recommendations');
-      const result = await getRecommendations(basedOn, sourceType, sourceId, limit, strapiUrl);
+      const result = await getRecommendations(basedOn, sourceType, sourceId, limit, strapiUrl, locale);
       return result;
     } catch (error) {
       console.error("Error in get_recommendations:", error);
@@ -357,7 +355,7 @@ ${JSON.stringify(lastSearchResults, null, 2)}
     const assistantMessage = data.choices[0].message;
 
     // Обрабатываем tool calls если они есть
-    let toolResults = [];
+    const toolResults = [];
     let clientInstruction = undefined;
     let searchResultsOutput: any[] = [];
 
@@ -395,7 +393,7 @@ ${JSON.stringify(lastSearchResults, null, 2)}
           // Вызываем соответствующий инструмент
           let result;
           if (functionName === "strapi_products") {
-            result = await callStrapiTool(functionName, args, strapiUrl);
+            result = await callStrapiTool(functionName, args, strapiUrl, locale);
             if (result.success && result.products && result.products.length > 0) {
               searchResultsOutput = result.products.map((p: any) => ({
                 documentId: p.documentId,
@@ -430,7 +428,8 @@ ${JSON.stringify(lastSearchResults, null, 2)}
                   params: {
                     "filters[documentId][$eq]": args.productId,
                     "populate": "*",
-                    "pagination[pageSize]": 1
+                    "pagination[pageSize]": 1,
+                    "locale": locale || "ru"
                   }
                 });
                 
@@ -513,7 +512,7 @@ ${JSON.stringify(lastSearchResults, null, 2)}
               }
             }
           } else if (functionName === "get_recommendations") {
-            result = await callStrapiTool(functionName, args, strapiUrl);
+            result = await callStrapiTool(functionName, args, strapiUrl, locale);
             if (result.success && result.products && result.products.length > 0) {
               const recProducts = result.products.map((p: any) => ({
                 documentId: p.documentId,

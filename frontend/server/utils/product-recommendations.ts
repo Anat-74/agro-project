@@ -75,6 +75,7 @@ export async function getRecommendations(
   sourceId?: string,
   limit: number = 5,
   strapiUrl?: string,
+  locale?: string,
 ): Promise<RecommendationResult> {
   try {
     const { strapi: { url: configUrl } } = useRuntimeConfig();
@@ -96,6 +97,7 @@ export async function getRecommendations(
           "filters[documentId][$eq]": sourceId,
           "populate": "category",
           "pagination[pageSize]": 1,
+          "locale": locale || "ru",
         },
       });
 
@@ -125,6 +127,7 @@ export async function getRecommendations(
         params: {
           "filters[slug][$eq]": cat.slug,
           "fields[0]": "documentId",
+          "locale": locale || "ru",
         },
       });
 
@@ -146,6 +149,7 @@ export async function getRecommendations(
           "sort": "createdAt:desc",
           "pagination[pageSize]": limit,
           "populate": "*",
+          "locale": locale || "ru",
         },
       });
 
@@ -164,6 +168,7 @@ export async function getRecommendations(
           "sort": "createdAt:desc",
           "pagination[pageSize]": limit,
           "populate": "*",
+          "locale": locale || "ru",
         },
       });
 
@@ -183,6 +188,7 @@ export async function getRecommendations(
           "sort": "createdAt:desc",
           "pagination[pageSize]": limit,
           "populate": "*",
+          "locale": locale || "ru",
         },
       });
 
