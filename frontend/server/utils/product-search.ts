@@ -321,85 +321,148 @@ export async function searchProducts(
       const mainTerm = searchTerms[0];
       console.log("Fallback: searching categories by name:", mainTerm);
 
-      try {
-        const catResponse = await $fetch(`${baseUrl}/api/categories`, {
+      const fetchCategoryProducts = async (catId: string): Promise<any[]> => {
+        const results: any[] = [];
+
+        // Запрос 1: товары с прямой связью category
+        const p1 = await $fetch(`${baseUrl}/api/products`, {
           params: {
-            "filters[name][$contains]": mainTerm,
+            "filters[category][documentId][$eq]": catId,
+            "pagination[pageSize]": limit,
+            "populate": "*",
+            "sort": "name:asc",
+            "locale": locale || "ru",
+            ...(minPrice !== undefined ? { "filters[price][$gte]": minPrice } : {}),
+            ...(maxPrice !== undefined ? { "filters[price][$lte]": maxPrice } : {}),
+            ...(inStock === true ? { "filters[isAvailable][$eq]": true } : {}),
+            ...(isDiscount === true ? { "filters[isDiscount][$eq]": true } : {}),
+          },
+          headers: { "Content-Type": "application/json" }
+        });
+        if (p1.data) results.push(...p1.data);
+
+        // Запрос 2: товары, где категория через подкатегорию
+        const p2 = await $fetch(`${baseUrl}/api/products`, {
+          params: {
+            "filters[subcategory][category][documentId][$eq]": catId,
+            "pagination[pageSize]": limit,
+            "populate": "*",
+            "sort": "name:asc",
+            "locale": locale || "ru",
+            ...(minPrice !== undefined ? { "filters[price][$gte]": minPrice } : {}),
+            ...(maxPrice !== undefined ? { "filters[price][$lte]": maxPrice } : {}),
+            ...(inStock === true ? { "filters[isAvailable][$eq]": true } : {}),
+            ...(isDiscount === true ? { "filters[isDiscount][$eq]": true } : {}),
+          },
+          headers: { "Content-Type": "application/json" }
+        });
+        if (p2.data) results.push(...p2.data);
+
+        // Дедупликация по documentId
+        const seen = new Set<string>();
+        return results.filter(item => {
+          const id = item.documentId || item.id;
+          if (seen.has(id)) return false;
+          seen.add(id);
+          return true;
+        });
+      };
+
+      try {
+        // Сначала — точное совпадение по имени категории
+        const exactResponse = await $fetch(`${baseUrl}/api/categories`, {
+          params: {
+            "filters[name][$eq]": mainTerm,
             "fields[0]": "documentId",
             "fields[1]": "name",
             "locale": locale || "ru",
-            "pagination[pageSize]": 10
+            "pagination[pageSize]": 5
           }
         });
 
-        if (catResponse.data && catResponse.data.length > 0) {
-          const catIds = catResponse.data.map((c: any) => c.documentId);
-          console.log("Found categories:", catResponse.data.map((c: any) => c.name));
-
-          const fallbackParams: Record<string, any> = {
-            "pagination[pageSize]": limit,
-            "pagination[page]": 1,
-            "populate": "*",
-            "sort": "name:asc",
-            "locale": locale || "ru"
-          };
-
-          catIds.forEach((id: string, i: number) => {
-            fallbackParams[`filters[category][documentId][$in][${i}]`] = id;
-          });
-
-          if (minPrice !== undefined) fallbackParams["filters[price][$gte]"] = minPrice;
-          if (maxPrice !== undefined) fallbackParams["filters[price][$lte]"] = maxPrice;
-          if (inStock === true) fallbackParams["filters[isAvailable][$eq]"] = true;
-          if (isDiscount === true) fallbackParams["filters[isDiscount][$eq]"] = true;
-
-          const fallbackResponse = await $fetch(`${baseUrl}/api/products`, {
-            params: fallbackParams,
-            headers: { "Content-Type": "application/json" }
-          });
-
-          if (fallbackResponse.data && fallbackResponse.data.length > 0) {
-            return {
-              success: true,
-              products: fallbackResponse.data.map((item: any) => {
-                let image = "/image/cart-empty-img.png";
-                if (item.image) {
-                  if (Array.isArray(item.image) && item.image.length > 0) {
-                    image = item.image[0].url || item.image[0].formats?.thumbnail?.url || "/image/cart-empty-img.png";
-                  } else if (item.image.url) {
-                    image = item.image.url;
-                  }
-                }
-                let cat = "uncategorized";
-                let catName = "Без категории";
-                if (item.category) {
-                  if (Array.isArray(item.category) && item.category.length > 0) {
-                    cat = item.category[0].slug || "uncategorized";
-                    catName = item.category[0].name || "Без категории";
-                  } else if (item.category.slug) {
-                    cat = item.category.slug;
-                    catName = item.category.name || "Без категории";
-                  }
-                }
-                return {
-                  documentId: item.documentId || item.id,
-                  name: item.name,
-                  price: item.price || 0,
-                  slug: item.slug || item.name.toLowerCase().replace(/ /g, '-'),
-                  description: item.description || "",
-                  image,
-                  category: cat,
-                  categoryName: catName,
-                  isDiscount: item.isDiscount || false
-                };
-              }),
-              total: fallbackResponse.meta?.pagination?.total || 0,
-              limit,
-              hasMore: false,
-              query,
-              category
-            };
+        let catResults: any[] = [];
+        if (exactResponse.data && exactResponse.data.length > 0) {
+          console.log("Exact category match:", exactResponse.data.map((c: any) => c.name));
+          for (const cat of exactResponse.data) {
+            const items = await fetchCategoryProducts(cat.documentId);
+            catResults.push(...items);
           }
+        }
+
+        // Если точное совпадение ничего не дало — пробуем $contains
+        if (catResults.length === 0) {
+          const containsResponse = await $fetch(`${baseUrl}/api/categories`, {
+            params: {
+              "filters[name][$contains]": mainTerm,
+              "fields[0]": "documentId",
+              "fields[1]": "name",
+              "locale": locale || "ru",
+              "pagination[pageSize]": 10
+            }
+          });
+
+          if (containsResponse.data && containsResponse.data.length > 0) {
+            console.log("Contains category match:", containsResponse.data.map((c: any) => c.name));
+            for (const cat of containsResponse.data) {
+              const items = await fetchCategoryProducts(cat.documentId);
+              catResults.push(...items);
+            }
+          }
+        }
+
+        // Дедупликация финального списка
+        const seen = new Set<string>();
+        const uniqueProducts = catResults.filter(item => {
+          const id = item.documentId || item.id;
+          if (seen.has(id)) return false;
+          seen.add(id);
+          return true;
+        });
+
+        if (uniqueProducts.length > 0) {
+          return {
+            success: true,
+            products: uniqueProducts.map((item: any) => {
+              let image = "/image/cart-empty-img.png";
+              if (item.image) {
+                if (Array.isArray(item.image) && item.image.length > 0) {
+                  image = item.image[0].url || item.image[0].formats?.thumbnail?.url || "/image/cart-empty-img.png";
+                } else if (item.image.url) {
+                  image = item.image.url;
+                }
+              }
+              let cat = "uncategorized";
+              let catName = "Без категории";
+              if (item.category) {
+                if (Array.isArray(item.category) && item.category.length > 0) {
+                  cat = item.category[0].slug || "uncategorized";
+                  catName = item.category[0].name || "Без категории";
+                } else if (item.category.slug) {
+                  cat = item.category.slug;
+                  catName = item.category.name || "Без категории";
+                }
+              } else if (item.subcategory?.category) {
+                cat = item.subcategory.category.slug || "uncategorized";
+                catName = item.subcategory.category.name || "Без категории";
+              }
+              return {
+                documentId: item.documentId || item.id,
+                name: item.name,
+                price: item.price || 0,
+                slug: item.slug || item.name.toLowerCase().replace(/ /g, '-'),
+                description: item.description || "",
+                image,
+                category: cat,
+                categoryName: catName,
+                isDiscount: item.isDiscount || false
+              };
+            }),
+            total: uniqueProducts.length,
+            limit,
+            hasMore: false,
+            query,
+            category
+          };
         }
       } catch (fallbackError) {
         console.error("Category fallback search error:", fallbackError);
