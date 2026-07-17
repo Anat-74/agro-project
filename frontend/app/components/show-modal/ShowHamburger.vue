@@ -288,9 +288,6 @@ const openHamburger = () => {
         :aria-label="buttonT.ariaLabelDialogClosed"
       />
       <LangSwitcher />
-      <ClientOnly>
-        <ColorMode />
-      </ClientOnly>
       <Socials :is-open="isOpen" :socials="socials" />
     </div>
   </dialog>
