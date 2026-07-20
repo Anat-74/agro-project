@@ -85,8 +85,7 @@ export const useAuthStore = defineStore('auth', () => {
       }
     } catch (e) {
       console.error('Auth init error:', e)
-      token.value = null
-      user.value = null
+      if (!token.value) user.value = null
     } finally {
       loading.value = false
     }

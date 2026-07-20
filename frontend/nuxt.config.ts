@@ -121,6 +121,9 @@ export default defineNuxtConfig({
       admin: "/admin",
       version: "v5",
       cookieName: "strapi_jwt",
+      cookie: {
+        maxAge: 60 * 60 * 24 * 30,
+      },
     },
     strapiAdmin: {
       token: process.env.STRAPI_ADMIN_TOKEN,

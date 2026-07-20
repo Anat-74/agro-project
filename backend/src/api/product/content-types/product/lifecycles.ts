@@ -9,8 +9,8 @@ export default {
     if (!data.seo?.metaTitle) {
       data.seo = {
         ...data.seo,
-        metaTitle: `Купить ${data.name || 'товар'} | ТехноМарс`,
-        metaDescription: `${data.name || 'товар'} в магазине ТехноМарс. ${data.description?.substring(0, 150) || ''} Гарантия качества.`
+        metaTitle: `Купить ${data.name || 'товар'} | АгроМаркет`,
+        metaDescription: `${data.name || 'товар'} в магазине АгроМаркет. ${data.description?.substring(0, 150) || ''} Гарантия качества.`
       };
     }
 

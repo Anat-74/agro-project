@@ -25,7 +25,7 @@ export const useAuth = () => {
   }
 
   return {
-    ...authStore,
+    ...storeToRefs(authStore),
     isAuthenticated,
     redirectToLogin,
     requireAuth,
