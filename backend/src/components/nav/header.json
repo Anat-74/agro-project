@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_nav_headers",
+  "info": {
+    "displayName": "header",
+    "description": "Данные шапки сайта"
+  },
+  "options": {},
+  "attributes": {
+    "bannerText": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "navigation": {
+      "type": "dynamiczone",
+      "components": ["nav.link"]
+    }
+  }
+}

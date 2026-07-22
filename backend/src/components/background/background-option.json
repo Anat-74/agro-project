@@ -1,0 +1,36 @@
+{
+  "collectionName": "components_background_background_options",
+  "info": {
+    "displayName": "Background Option",
+    "description": "Один вариант фона"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "imageAvif": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": ["images"]
+    },
+    "imageWebp": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": ["images"]
+    },
+    "thumbnail": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "isDefault": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

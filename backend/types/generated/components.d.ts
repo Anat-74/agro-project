@@ -85,6 +85,41 @@ export interface LegalBankDetails extends Struct.ComponentSchema {
   };
 }
 
+export interface NavHeader extends Struct.ComponentSchema {
+  collectionName: 'components_nav_headers';
+  info: {
+    description: '\u0414\u0430\u043D\u043D\u044B\u0435 \u0448\u0430\u043F\u043A\u0438 \u0441\u0430\u0439\u0442\u0430';
+    displayName: 'header';
+  };
+  attributes: {
+    bannerText: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    navigation: Schema.Attribute.DynamicZone<['nav.link']>;
+  };
+}
+
+export interface NavLink extends Struct.ComponentSchema {
+  collectionName: 'components_nav_links';
+  info: {
+    description: '\u041F\u0443\u043D\u043A\u0442 \u043D\u0430\u0432\u0438\u0433\u0430\u0446\u0438\u0438';
+    displayName: 'link';
+  };
+  attributes: {
+    label: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    url: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface SectionsFeaturedProducts extends Struct.ComponentSchema {
   collectionName: 'components_sections_featured_products';
   info: {
@@ -161,6 +196,8 @@ declare module '@strapi/strapi' {
       'contacts.social': ContactsSocial;
       'layout.footer': LayoutFooter;
       'legal.bank-details': LegalBankDetails;
+      'nav.header': NavHeader;
+      'nav.link': NavLink;
       'sections.featured-products': SectionsFeaturedProducts;
       'sections.hero-grids': SectionsHeroGrids;
       'seo.seo': SeoSeo;

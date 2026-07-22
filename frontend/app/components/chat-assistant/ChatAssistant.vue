@@ -20,6 +20,8 @@ const { open, close, isOpen } = useDialog("chatAssistant", dialogElement, {
   useShowMethod: true,
 });
 
+provide('openChat', open)
+
 // Использование методов из композаблов
 const {
   messages,

@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_nav_links",
+  "info": {
+    "displayName": "link",
+    "description": "Пункт навигации"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "url": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

@@ -1,50 +1,40 @@
 <script lang="ts" setup>
-import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
-const { currentLocale } = useLocale();
-const t = computed(() => visuallyHiddenTranslations[currentLocale.value])
+const { find } = useStrapi()
+const { currentLocale } = useLocale()
 
-const pageMeta = {
-  ru: {
-    title: "Контакты",
-    description: "Страница с контактами",
-  },
-  be: {
-    title: "Кантакты",
-    description: "Старонка з кантактамі",
-  },
-};
+const { data: page } = useAsyncData(
+  `contacts-page-${currentLocale.value}`,
+  async () => {
+    const response = await find("contacts-page")
+    return response.data?.[0] || response.data
+  }
+)
 
+const seo = computed(() => page.value?.seo)
 useSeoMeta({
-  title: pageMeta[currentLocale.value as LocaleCode].title,
-  ogTitle: pageMeta[currentLocale.value as LocaleCode].title,
-  description: pageMeta[currentLocale.value as LocaleCode].description,
-  ogDescription: pageMeta[currentLocale.value as LocaleCode].description,
-});
-
-// definePageMeta({
-//    layout: 'back-to-main'
-//    })
+  title: seo.value?.metaTitle || page.value?.title || "Контакты",
+  ogTitle: seo.value?.metaTitle || page.value?.title || "Контакты",
+  description: seo.value?.metaDescription || "",
+  ogDescription: seo.value?.metaDescription || "",
+})
 </script>
 
 <template>
-  <section class="contacts" aria-labelledby="contacts-page">
-    <h1 class="visually-hidden" id="contacts-page">
-      {{ t.sectionAboutUsTitle }}
-    </h1>
-    <p>В процессе наполнения контентом...</p>
-    <p>In the process of filling with content...</p>
+  <section class="contacts-page" aria-labelledby="contacts-page-title">
+    <h1 id="contacts-page-title">{{ page?.title }}</h1>
+    <MDC v-if="page?.content" :value="page.content" />
   </section>
 </template>
 
 <style lang="scss" scoped>
-@use "@/assets/scss/foundation/mixins" as m;
-.contacts {
-  height: 50dvh;
+.contacts-page {
   padding-block-start: toEm(32);
+  max-width: toRem(800);
+  margin-inline: auto;
 
-  p {
-    font-size: toEm(22);
-    margin-block-end: toRem(16);
+  h1 {
+    font-size: toEm(32);
+    margin-block-end: toRem(24);
   }
 }
 </style>

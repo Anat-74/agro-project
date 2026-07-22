@@ -29,28 +29,12 @@ const { saleProd } = defineProps<Props>();
             <div class="sale-products__items-text"
                v-if="saleProd?.[1]?.saleText || saleProd?.[1]?.percentDiscount"
             >
-            <p class="sale-products__discount-text">
-               <span>
-                  {{ saleProd?.[1].percentDiscount }}
-               </span>
-               {{ saleProd?.[1].saleText }}
-            </p>
-               <p class="sale-products__discount-text visible-tablet"
-               aria-hidden="true"
-               >
-               <span>
-                  {{ saleProd?.[1].percentDiscount }}
-               </span>
-               {{ saleProd?.[1].saleText }}
-            </p>
-               <p class="sale-products__discount-text visible-tablet"
-               aria-hidden="true"
-               >
-               <span>
-                  {{ saleProd?.[1].percentDiscount }}
-               </span>
-               {{ saleProd?.[1].saleText }}
-            </p>
+             <UMarqueeText
+                v-if="saleProd?.[1]?.saleText || saleProd?.[1]?.percentDiscount"
+                :text="`${saleProd?.[1].percentDiscount || ''} ${saleProd?.[1].saleText || ''}`"
+                :speed="9"
+                class="sale-products__discount-text"
+              />
             </div>
                <div
                   class="sale-products__link"

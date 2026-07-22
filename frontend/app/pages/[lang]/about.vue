@@ -1,49 +1,40 @@
 <script lang="ts" setup>
-import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
+const { find } = useStrapi()
 const { currentLocale } = useLocale()
-const t = computed(() => visuallyHiddenTranslations[currentLocale.value]);
 
-const pageMeta = {
-  ru: {
-    title: "О нас",
-    description: "Страница - о нас",
-  },
-  be: {
-    title: "Пра нас",
-    description: "Старонка - пра нас",
-  },
-};
+const { data: page } = useAsyncData(
+  `about-page-${currentLocale.value}`,
+  async () => {
+    const response = await find("about-page")
+    return response.data?.[0] || response.data
+  }
+)
 
+const seo = computed(() => page.value?.seo)
 useSeoMeta({
-  title: pageMeta[currentLocale.value as LocaleCode].title,
-  ogTitle: pageMeta[currentLocale.value as LocaleCode].title,
-  description: pageMeta[currentLocale.value as LocaleCode].description,
-  ogDescription: pageMeta[currentLocale.value as LocaleCode].description,
-});
-
-// definePageMeta({
-//    layout: 'back-to-main'
-//    })
+  title: seo.value?.metaTitle || page.value?.title || "О нас",
+  ogTitle: seo.value?.metaTitle || page.value?.title || "О нас",
+  description: seo.value?.metaDescription || "",
+  ogDescription: seo.value?.metaDescription || "",
+})
 </script>
 
 <template>
-  <section class="about-us" aria-labelledby="about-us">
-    <h1 class="visually-hidden" id="about-us">
-      {{ t.sectionAboutUsTitle }}
-    </h1>
-    <p>В процессе наполнения контентом...</p>
-    <p>In the process of filling with content...</p>
+  <section class="about-page" aria-labelledby="about-page-title">
+    <h1 id="about-page-title">{{ page?.title }}</h1>
+    <MDC v-if="page?.content" :value="page.content" />
   </section>
 </template>
 
 <style lang="scss" scoped>
-.about-us {
-  height: 50dvh;
+.about-page {
   padding-block-start: toEm(32);
+  max-width: toRem(800);
+  margin-inline: auto;
 
-  p {
-    font-size: toEm(22);
-    margin-block-end: toRem(16);
+  h1 {
+    font-size: toEm(32);
+    margin-block-end: toRem(24);
   }
 }
 </style>

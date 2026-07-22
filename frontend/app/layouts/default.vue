@@ -6,11 +6,44 @@ import ShowHamburger from '~/components/show-modal/ShowHamburger.vue'
 const { find } = useStrapi();
 const searchStore = useSearchStore();
 const { isAuthenticated, user } = useAuth();
-const cabinetT = computed(() => cabinetTranslations[currentLocale.value])
-const authT = computed(() => authTranslations[currentLocale.value])
-const { products, totalPages, currentPage } = storeToRefs(searchStore);
 const { currentLocale } = useLocale();
 console.debug("auth state:", isAuthenticated.value);
+
+const openChat = inject('openChat', () => {})
+
+const navPages = [
+  { label: 'О нас', url: '/about' },
+  { label: 'Услуги', url: '/services' },
+  { label: 'Контакты', url: '/contacts' },
+  { label: 'Новости', url: '/news' },
+]
+
+const isNavHidden = ref(false)
+const lastScrollY = ref(0)
+
+onMounted(() => {
+  window.addEventListener('scroll', onScroll, { passive: true })
+})
+onUnmounted(() => {
+  window.removeEventListener('scroll', onScroll)
+})
+
+let ticking = false
+function onScroll() {
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      const currentY = window.scrollY
+      if (currentY > lastScrollY.value && currentY > 80) {
+        isNavHidden.value = true
+      } else if (currentY < lastScrollY.value) {
+        isNavHidden.value = false
+      }
+      lastScrollY.value = currentY
+      ticking = false
+    })
+    ticking = true
+  }
+}
 
 const {
   data: global,
@@ -41,19 +74,25 @@ console.debug("global data:", global.value);
     <div class="header__container-top">
       <Logo
         v-if="global"
-        class="header__logo hidden-mobile"
+        class="header__logo"
         :global="global"
         width="48"
         height="48"
       />
-      <AnimateTitle class="hidden-mobile" />
       <ProductFilter class="header__search" />
+      <button
+        class="header__chat"
+        @click="openChat()"
+        aria-label="Открыть чат ассистента"
+      >
+        <Icon name="material-symbols:chat" width="24" height="24" />
+      </button>
       <Basket class="header__cart" />
       <ClientOnly>
         <NuxtLink
           :to="isAuthenticated ? `/${currentLocale}/cabinet` : `/${currentLocale}/auth/login`"
           class="header__profile"
-          :aria-label="isAuthenticated ? cabinetT.title : authT.loginButton"
+          :aria-label="isAuthenticated ? 'Личный кабинет' : 'Войти'"
         >
           <UImage v-if="isAuthenticated && user?.avatar" :src="user.avatar" :alt="user.username" type="avatar" class="header__avatar" />
           <span v-else-if="isAuthenticated && user?.username" class="header__initials">{{ user.username.charAt(0).toUpperCase() }}</span>
@@ -61,15 +100,23 @@ console.debug("global data:", global.value);
         </NuxtLink>
       </ClientOnly>
     </div>
-    <div class="header__bottom">
+    <div class="header__bottom" :class="{ 'header__bottom_hidden': isNavHidden }">
       <div class="header__container-bottom">
-        <Logo
-          v-if="global"
-          class="header__logo visible-mobile"
-          :global="global"
-          width="36"
-          height="36"
-        />
+        <UAnimatedText variant="wave" />
+        <details class="header__more">
+          <summary class="header__more-summary">Ещё ▾</summary>
+          <ul class="header__more-list">
+            <li v-for="item in navPages" :key="item.url" class="header__more-item">
+              <NuxtLink :to="`/${currentLocale}${item.url}`" class="header__more-link">
+                {{ item.label }}
+              </NuxtLink>
+            </li>
+          </ul>
+        </details>
+        <NuxtLink
+          :to="`/${currentLocale}/blog`"
+          class="header__blog-link"
+        >Блог</NuxtLink>
         <ShowHamburger
           v-if="global"
           :phones="global.phones"
@@ -77,57 +124,39 @@ console.debug("global data:", global.value);
           :socials="global.socials"
           :global="global"
         />
-        <BaseNavigation
-          class="header__navigation hidden-mobile"
-          v-if="global"
-          :phones="global.phones"
-          :email="global.email"
-        />
-        <div
-          v-if="searchStore.products.length"
-          class="header__product-filter-card"
-        >
-          <ul class="header__product-card-list">
-            <ProductFilterCard
-              v-for="product in products"
-              :key="product.documentId"
-              :product="product"
-            />
-          </ul>
-          <div class="header__pagination-product">
-            <UButton
-              v-for="page in totalPages"
-              :key="page"
-              variant="pagination"
-              :label="page"
-              @click="searchStore.changePage(page)"
-              :class="{ 'pagination-active': currentPage === page }"
-            />
-          </div>
-        </div>
       </div>
     </div>
   </header>
 
-  <main>
-    <slot />
-  </main>
+  <div class="page-body">
+    <SearchOverlay />
+    <UBackground
+      v-if="global?.background?.enableBackground"
+      :background-options="global.background.options"
+      variant="clean"
+      size-mode="cover"
+    />
 
-  <Footer
-    class="footer"
-    v-if="global"
-    :phones="global.phones"
-    :email="global.email"
-    :footer="global.footer"
-    :legal="global.legal"
-    :socials="global.socials"
-    :global="global"
-  />
+    <main>
+      <slot />
+    </main>
 
-  <span v-if="error"> Error: {{ error.message }} </span>
+    <Footer
+      class="footer"
+      v-if="global"
+      :phones="global.phones"
+      :email="global.email"
+      :footer="global.footer"
+      :legal="global.legal"
+      :socials="global.socials"
+      :global="global"
+    />
 
-  <!-- AI Ассистент для всех пользователей -->
-  <ChatAssistant />
+    <span v-if="error"> Error: {{ error.message }} </span>
+
+    <!-- AI Ассистент для всех пользователей -->
+    <ChatAssistant />
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -136,16 +165,21 @@ console.debug("global data:", global.value);
   padding-block-end: toRem(22);
 
   &__container-top {
+    position: sticky;
+    top: 0;
+    z-index: 2;
     display: grid;
-    grid-template-columns: auto auto 1fr auto auto;
+    grid-template-columns: auto 1fr auto auto auto;
     align-items: center;
-    column-gap: toRem(22);
+    column-gap: toRem(16);
     padding-block: toEm(16);
     transition: opacity var(--transition-duration);
+    background-color: var(--bg);
     @include adaptiveValue("height", 65, 55);
 
     @media (max-width: $mobile) {
-      grid-template-columns: auto 1fr;
+      grid-template-columns: auto 1fr auto auto auto;
+      column-gap: toRem(8);
     }
   }
 
@@ -155,12 +189,25 @@ console.debug("global data:", global.value);
 
   &__search {
     justify-self: end;
-    width: 80%;
+    width: toRem(90);
 
     @media (max-width: $mobile) {
-      width: 100%;
-      grid-column: 2/3;
-      grid-row: 1/2;
+      width: toRem(80);
+    }
+  }
+
+  &__chat {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--primary-color);
+    transition: transform var(--transition-duration);
+
+    @include hover {
+      transform: scale(1.15);
     }
   }
 
@@ -191,8 +238,6 @@ console.debug("global data:", global.value);
     }
 
     @media (max-width: $mobile) {
-      grid-column: 2/3;
-      grid-row: 1/2;
       justify-self: end;
     }
   }
@@ -233,73 +278,92 @@ console.debug("global data:", global.value);
   }
 
   &__bottom {
+    position: sticky;
+    top: 0;
+    z-index: 1;
     background-color: var(--bg-navigation);
+    transition: transform 0.3s ease;
+    margin-block-start: toRem(-1);
+
+    &_hidden {
+      transform: translateY(-100%);
+    }
   }
 
   &__container-bottom {
-    //  display: grid;
-    //  grid-template-columns: auto 1fr;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: toRem(12);
     @include adaptiveValue("height", 64, 44);
 
-    @media (min-width: $mobile) {
-      position: relative;
-      display: grid;
-      grid-template-columns: auto 1fr;
+    @media (max-width: $mobile) {
+      padding-block: toRem(6);
+    }
+  }
+
+  &__more {
+    position: relative;
+
+    &-summary {
+      cursor: pointer;
+      list-style: none;
+      padding: toRem(4) toRem(8);
+      font-weight: 500;
+      color: var(--primary-color);
     }
 
-    @media (max-width: $mobile) {
-      // grid-template-columns: auto 1fr;
-      padding-block: toRem(6);
+    &-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      z-index: 10;
+      background: var(--secondary-color);
+      border: toRem(1) solid var(--border-color);
+      border-radius: toRem(4);
+      padding: toRem(4);
+      display: flex;
+      flex-direction: column;
+      gap: toRem(2);
+      white-space: nowrap;
+      box-shadow: 0 toRem(4) toRem(12) rgba(0,0,0,0.1);
+    }
+
+    &-item {
+      list-style: none;
+    }
+
+    &-link {
+      display: block;
+      padding: toRem(6) toRem(12);
+      color: var(--color);
+      text-decoration: none;
+      border-radius: toRem(4);
+
+      @include hover {
+        background: var(--bg);
+      }
+    }
+  }
+
+  &__blog-link {
+    font-weight: 600;
+    color: var(--danger-color);
+    text-decoration: none;
+    white-space: nowrap;
+
+    @include hover {
+      text-decoration: underline;
     }
   }
 
   &__navigation {
     justify-self: end;
   }
+}
 
-  &__product-filter-card {
-    position: absolute;
-    z-index: 9999;
-    right: toEm(8);
-    top: toEm(0);
-    display: grid;
-    grid-template-columns: 1fr;
-    row-gap: toRem(12);
-    padding-inline: toEm(12);
-    padding-block: toEm(18);
-    border-radius: toRem(4);
-    border: toRem(2) solid var(--primary-color);
-    background-color: var(--secondary-color);
-
-    @media (max-width: $mobile) {
-      max-width: 80%;
-      margin-inline: toEm(12);
-      right: 0;
-      top: toEm(171);
-    }
-
-    @media (max-width: $mobileSmall) {
-      top: toEm(164);
-    }
-  }
-
-  &__product-card-list {
-    overflow-y: auto;
-    @include adaptiveValue("height", 620, 390);
-  }
-
-  &__pagination-product {
-    align-self: end;
-    justify-self: end;
-    display: flex;
-    column-gap: toEm(12);
-  }
-
-  .pagination-active {
-    background-color: var(--active-color);
-  }
+.page-body {
+  position: relative;
+  min-height: 100dvh;
 }
 </style>

@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import type { BackgroundItem } from '~/types/background'
+import BackgroundSwitcher from './BackgroundSwitcher.vue'
+
 interface Props {
   src?: string;
   retinaSrc?: string;
@@ -10,6 +13,7 @@ interface Props {
   hoverEffect?: "zoom" | "darken" | "glow" | "lift" | "none";
   sizeMode?: "cover" | "contain" | "original";
   bgPosition?: string;
+  backgroundOptions?: BackgroundItem[];
 }
 
 const config = useRuntimeConfig();
@@ -25,98 +29,67 @@ const props = withDefaults(defineProps<Props>(), {
   bgPosition: "center",
 });
 
-// Только интерактивные состояния
-const isHovered = ref(false);
-const isActive = ref(false);
+const selectedBg = ref<BackgroundItem | null>(null)
 
-// Функция для удаления расширения файла
-const removeExtension = (url: string) => url.replace(/\.(avif|webp)$/i, "");
+const isStatic = computed(() => !!props.src)
+const isDynamic = computed(() => !!(props.backgroundOptions && props.backgroundOptions.length > 0))
 
-// Оптимизированные вычисляемые свойства для изображений
+onMounted(() => {
+  if (isDynamic.value && props.backgroundOptions) {
+    const saved = localStorage.getItem('selectedBackground')
+    if (saved) {
+      const found = props.backgroundOptions.find(bg => bg.id === saved)
+      if (found) { selectedBg.value = found; return }
+    }
+    const defaultBg = props.backgroundOptions.find(bg => bg.isDefault === true)
+    selectedBg.value = defaultBg || props.backgroundOptions[0] || null
+  }
+})
+
+const onSelectBg = (bg: BackgroundItem) => {
+  selectedBg.value = bg
+  localStorage.setItem('selectedBackground', bg.id)
+}
+
 const imageUrls = computed(() => {
   let baseImageUrl: string | null = null;
   let retinaImageUrl: string | null = null;
-
-  // Обработка базового изображения
-  if (props.src) {
-    if (
-      props.src.startsWith("http") ||
-      props.src.startsWith("//") ||
-      props.src.startsWith("/uploads/")
-    ) {
-      baseImageUrl = props.src.startsWith("/uploads/")
-        ? `${config.public.strapi.url}${props.src}`
-        : props.src;
-    } else {
-      baseImageUrl = props.src.startsWith("/")
-        ? props.src
-        : `/image/${props.src}`;
+  if (isDynamic.value && selectedBg.value) {
+    baseImageUrl = selectedBg.value.imageWebp || null
+    retinaImageUrl = selectedBg.value.imageAvif || null
+  } else {
+    if (props.src) {
+      baseImageUrl = props.src.startsWith("http") || props.src.startsWith("//") || props.src.startsWith("/uploads/")
+        ? (props.src.startsWith("/uploads/") ? `${config.public.strapi.url}${props.src}` : props.src)
+        : (props.src.startsWith("/") ? props.src : `/image/${props.src}`);
+    }
+    if (props.retinaSrc) {
+      retinaImageUrl = props.retinaSrc.startsWith("http") || props.retinaSrc.startsWith("//")
+        ? props.retinaSrc
+        : `${config.public.strapi.url}${props.retinaSrc}`;
     }
   }
-
-  // Обработка ретина изображения
-  if (props.retinaSrc) {
-    if (
-      props.retinaSrc.startsWith("http") ||
-      props.retinaSrc.startsWith("//")
-    ) {
-      retinaImageUrl = props.retinaSrc;
-    } else {
-      retinaImageUrl = `${config.public.strapi.url}${props.retinaSrc}`;
-    }
-  }
-
-  // Генерация URL для форматов
-  const baseWebpUrl = baseImageUrl
-    ? `${removeExtension(baseImageUrl)}.webp`
-    : null;
-  const retinaAvifUrl = retinaImageUrl
-    ? `${removeExtension(retinaImageUrl)}.avif`
-    : null;
-
+  const removeExtension = (url: string) => url.replace(/\.(avif|webp)$/i, "");
   return {
-    baseWebpUrl,
-    retinaAvifUrl,
+    baseWebpUrl: baseImageUrl ? `${removeExtension(baseImageUrl)}.webp` : null,
+    retinaAvifUrl: retinaImageUrl ? `${removeExtension(retinaImageUrl)}.avif` : null,
   };
 });
 
 const backgroundStyle = computed(() => {
-  const styles: any = {
-    backgroundPosition: props.bgPosition,
-    backgroundRepeat: "no-repeat",
-  };
-
-  // Установка backgroundSize в зависимости от режима
+  const styles: any = { backgroundPosition: props.bgPosition, backgroundRepeat: "no-repeat" };
   switch (props.sizeMode) {
-    case "cover":
-      styles.backgroundSize = "cover";
-      break;
-    case "contain":
-      styles.backgroundSize = "contain";
-      break;
-    case "original":
-      styles.backgroundSize = "auto";
-      break;
+    case "cover": styles.backgroundSize = "cover"; break;
+    case "contain": styles.backgroundSize = "contain"; break;
+    default: styles.backgroundSize = "auto";
   }
-
-  // Если есть базовое или ретина изображение, добавляем backgroundImage
   const { baseWebpUrl, retinaAvifUrl } = imageUrls.value;
   if (baseWebpUrl || retinaAvifUrl) {
-    const imageParts = [];
-
-    // Добавляем базовое изображение, если оно есть
-    if (baseWebpUrl) {
-      imageParts.push(`url('${baseWebpUrl}') type('image/webp') 1x`);
-    }
-
-    // Если указано ретина изображение, добавляем его как 2x
-    if (retinaAvifUrl) {
-      imageParts.push(`url('${retinaAvifUrl}') type('image/avif') 2x`);
-    }
-
-    styles.backgroundImage = `image-set(${imageParts.join(", ")})`;
+    const parts = [];
+    if (baseWebpUrl) parts.push(`url('${baseWebpUrl}') type('image/webp') 1x`);
+    if (retinaAvifUrl) parts.push(`url('${retinaAvifUrl}') type('image/avif') 2x`);
+    styles.backgroundImage = `image-set(${parts.join(", ")})`;
   }
-
   return styles;
 });
 
@@ -148,14 +121,16 @@ const interactiveClass = computed(() => ({
       loadingClass,
       gradientClass,
       filterClass,
-      interactiveClass,
     ]"
     :style="backgroundStyle"
-    @mouseenter="isHovered = true"
-    @mouseleave="isHovered = false"
-    @click="isActive = !isActive"
   >
     <slot />
+    <BackgroundSwitcher
+      v-if="isDynamic"
+      :backgrounds="backgroundOptions || []"
+      :selected-id="selectedBg?.id"
+      @select="onSelectBg"
+    />
   </div>
 </template>
 

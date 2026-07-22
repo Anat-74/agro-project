@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_background_background_options_wrapper",
+  "info": {
+    "displayName": "Background Options",
+    "description": "Настройки фоновых изображений"
+  },
+  "options": {},
+  "attributes": {
+    "enableBackground": {
+      "type": "boolean",
+      "default": true
+    },
+    "options": {
+      "type": "component",
+      "repeatable": true,
+      "component": "background.background-option"
+    }
+  }
+}

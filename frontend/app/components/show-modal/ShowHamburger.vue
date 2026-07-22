@@ -139,7 +139,7 @@ const openHamburger = () => {
           width="32"
           height="32"
         />
-        <AnimateTitle />
+        <UAnimatedText variant="gradient" />
       </div>
       <ul v-if="category?.length" class="dialog-hamburger__accordion accordion">
          <li v-for="cat in category" :key="cat.documentId" class="accordion__item">
