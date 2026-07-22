@@ -22,6 +22,8 @@ const { open, close, isOpen } = useDialog("chatAssistant", dialogElement, {
 
 provide('openChat', open)
 
+defineExpose({ open })
+
 // Использование методов из композаблов
 const {
   messages,

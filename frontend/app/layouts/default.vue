@@ -11,6 +11,8 @@ console.debug("auth state:", isAuthenticated.value);
 
 const openChat = inject('openChat', () => {})
 
+const chatAssistantRef = useTemplateRef<{ open: () => void }>('chatAssistantRef')
+
 const navPages = [
   { label: 'О нас', url: '/about' },
   { label: 'Услуги', url: '/services' },
@@ -82,7 +84,7 @@ console.debug("global data:", global.value);
       <ProductFilter class="header__search" />
       <button
         class="header__chat"
-        @click="openChat()"
+        @click="chatAssistantRef?.open?.()"
         aria-label="Открыть чат ассистента"
       >
         <Icon name="material-symbols:chat" width="24" height="24" />
@@ -155,13 +157,14 @@ console.debug("global data:", global.value);
     <span v-if="error"> Error: {{ error.message }} </span>
 
     <!-- AI Ассистент для всех пользователей -->
-    <ChatAssistant />
+    <ChatAssistant ref="chatAssistantRef" />
   </div>
 </template>
 
 <style lang="scss" scoped>
 .header {
-  //   background-color: var(--success-color);
+  position: relative;
+  z-index: 3;
   padding-block-end: toRem(22);
 
   &__container-top {
@@ -364,6 +367,7 @@ console.debug("global data:", global.value);
 
 .page-body {
   position: relative;
+  z-index: 0;
   min-height: 100dvh;
 }
 </style>
