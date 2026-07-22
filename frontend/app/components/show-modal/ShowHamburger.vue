@@ -326,14 +326,15 @@ const openHamburger = () => {
 }
 
 .dialog-hamburger {
+  position: fixed;
+  inset: 0;
   display: grid;
   grid-template-columns: 1fr auto;
   z-index: 9999;
-  top: 0;
-  height: 100%;
+  height: 100dvh;
   width: 100dvw;
   translate: -100%;
-  margin-inline-start: 0;
+  margin: 0;
   background-color: transparent;
   backdrop-filter: blur(22px);
   transition: translate var(--transition-duration);
