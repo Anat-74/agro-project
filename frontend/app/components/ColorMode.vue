@@ -69,15 +69,6 @@ function setTheme(theme: string) {
         class="color-mode__slider"
       />
 
-      <div class="color-mode__ticks" aria-hidden="true">
-        <span
-          v-for="i in 4"
-          :key="i"
-          class="color-mode__tick"
-          :style="{ left: `${i * 20}%` }"
-        />
-      </div>
-
       <button
         class="color-mode__thumb"
         @click.stop="togglePopup"
@@ -120,16 +111,11 @@ function setTheme(theme: string) {
     position: relative;
     display: inline-flex;
     align-items: center;
-    width: toRem(120);
+    width: toRem(80);
     height: toRem(28);
   }
 
   &__slider {
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    margin: 0;
-
     :deep(.u-input__range) {
       width: 100%;
       height: toRem(8);
@@ -170,25 +156,6 @@ function setTheme(theme: string) {
     }
   }
 
-  &__ticks {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    display: flex;
-    align-items: center;
-  }
-
-  &__tick {
-    position: absolute;
-    top: 50%;
-    translate: -50% -50%;
-    width: toRem(2);
-    height: toRem(10);
-    border-radius: toRem(1);
-    background-color: var(--light-color);
-    opacity: 0.4;
-  }
-
   &__thumb {
     position: absolute;
     left: calc(var(--slider-value, 50) * 1%);
@@ -210,7 +177,7 @@ function setTheme(theme: string) {
     transition: transform var(--transition-duration);
 
     @include hover {
-      transform: translate(-50%, -50%) scale(1.1);
+      transform: scale(1.1) rotate(45deg);
     }
   }
 

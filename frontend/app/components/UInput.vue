@@ -226,20 +226,7 @@ const inputType = computed(() => {
     user-select: none;
   }
 
-  &__range-wrapper {
-    width: 98px;
-  }
-
   &__range {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 100%;
-    height: toRem(6);
-    border-radius: toRem(4);
-    background: var(--gray-color);
-    outline: none;
-    cursor: pointer;
-    transition: background var(--transition-duration);
 
     &::-webkit-slider-thumb {
       -webkit-appearance: none;
