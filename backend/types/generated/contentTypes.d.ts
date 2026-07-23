@@ -709,6 +709,10 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
     };
   };
   attributes: {
+    background: Schema.Attribute.Component<
+      'background.background-options',
+      false
+    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -719,7 +723,7 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
           localized: true;
         };
       }>;
-    header: Schema.Attribute.Component<'nav.header', false> &
+    header: Schema.Attribute.Component<'layout.header', false> &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;

@@ -59,7 +59,7 @@
     "header": {
       "type": "component",
       "repeatable": false,
-      "component": "nav.header",
+      "component": "layout.header",
       "pluginOptions": {
         "i18n": {
           "localized": true
