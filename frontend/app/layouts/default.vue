@@ -1,24 +1,17 @@
 <script setup lang="ts">
+import ShowHamburger from '~/components/show-modal/ShowHamburger.vue'
 import { cabinetTranslations } from '~/locales/cabinet'
 import { authTranslations } from '~/locales/auth'
-import ShowHamburger from '~/components/show-modal/ShowHamburger.vue'
+import { baseNavigationTranslations } from '~/locales/baseNavigation'
 
 const { find } = useStrapi();
-const searchStore = useSearchStore();
 const { isAuthenticated, user } = useAuth();
 const { currentLocale } = useLocale();
 console.debug("auth state:", isAuthenticated.value);
 
-const openChat = inject('openChat', () => {})
-
-const chatAssistantRef = useTemplateRef<{ open: () => void }>('chatAssistantRef')
-
-const navPages = [
-  { label: 'О нас', url: '/about' },
-  { label: 'Услуги', url: '/services' },
-  { label: 'Контакты', url: '/contacts' },
-  { label: 'Новости', url: '/news' },
-]
+const cabinetT = computed(() => cabinetTranslations[currentLocale.value])
+const authT = computed(() => authTranslations[currentLocale.value])
+const navT = computed(() => baseNavigationTranslations[currentLocale.value])
 
 const isNavHidden = ref(false)
 const lastScrollY = ref(0)
@@ -30,21 +23,17 @@ onUnmounted(() => {
   window.removeEventListener('scroll', onScroll)
 })
 
-let ticking = false
 function onScroll() {
-  if (!ticking) {
-    requestAnimationFrame(() => {
-      const currentY = window.scrollY
-      if (currentY > lastScrollY.value && currentY > 80) {
-        isNavHidden.value = true
-      } else if (currentY < lastScrollY.value) {
-        isNavHidden.value = false
-      }
-      lastScrollY.value = currentY
-      ticking = false
-    })
-    ticking = true
+  const currentY = window.scrollY
+  const delta = currentY - lastScrollY.value
+
+  if (delta > 5 && currentY > 80) {
+    isNavHidden.value = true
+  } else if (delta < -5) {
+    isNavHidden.value = false
   }
+
+  lastScrollY.value = currentY
 }
 
 const {
@@ -72,7 +61,7 @@ console.debug("global data:", global.value);
 
 <template>
   <header class="header">
-    <BannerLayouts class="header__banner" />
+    <BannerLayouts />
     <div class="header__container-top">
       <Logo
         v-if="global"
@@ -82,19 +71,13 @@ console.debug("global data:", global.value);
         height="48"
       />
       <ProductFilter class="header__search" />
-      <button
-        class="header__chat"
-        @click="chatAssistantRef?.open?.()"
-        aria-label="Открыть чат ассистента"
-      >
-        <Icon name="material-symbols:chat" width="24" height="24" />
-      </button>
+      <ChatAssistant />
       <Basket class="header__cart" />
       <ClientOnly>
         <NuxtLink
           :to="isAuthenticated ? `/${currentLocale}/cabinet` : `/${currentLocale}/auth/login`"
           class="header__profile"
-          :aria-label="isAuthenticated ? 'Личный кабинет' : 'Войти'"
+          :aria-label="isAuthenticated ? cabinetT.title : authT.loginButton"
         >
           <UImage v-if="isAuthenticated && user?.avatar" :src="user.avatar" :alt="user.username" type="avatar" class="header__avatar" />
           <span v-else-if="isAuthenticated && user?.username" class="header__initials">{{ user.username.charAt(0).toUpperCase() }}</span>
@@ -106,9 +89,9 @@ console.debug("global data:", global.value);
       <div class="header__container-bottom">
         <UAnimatedText variant="wave" />
         <details class="header__more">
-          <summary class="header__more-summary">Ещё ▾</summary>
+          <summary class="header__more-summary">{{ navT.more }} ▾</summary>
           <ul class="header__more-list">
-            <li v-for="item in navPages" :key="item.url" class="header__more-item">
+            <li v-for="item in global?.header?.navigation || []" :key="item.id" class="header__more-item">
               <NuxtLink :to="`/${currentLocale}${item.url}`" class="header__more-link">
                 {{ item.label }}
               </NuxtLink>
@@ -155,9 +138,6 @@ console.debug("global data:", global.value);
     />
 
     <span v-if="error"> Error: {{ error.message }} </span>
-
-    <!-- AI Ассистент для всех пользователей -->
-    <ChatAssistant ref="chatAssistantRef" />
   </div>
 </template>
 
@@ -169,14 +149,13 @@ console.debug("global data:", global.value);
 
   &__container-top {
     position: sticky;
-    top: 0;
+    top: toRem(60);
     z-index: 2;
     display: grid;
     grid-template-columns: auto 1fr auto auto auto;
     align-items: center;
     column-gap: toRem(16);
     padding-block: toEm(16);
-    transition: opacity var(--transition-duration);
     background-color: var(--bg);
     @include adaptiveValue("height", 65, 55);
 
@@ -192,35 +171,19 @@ console.debug("global data:", global.value);
 
   &__search {
     justify-self: end;
-    width: toRem(90);
+    width: toRem(140);
 
     @media (max-width: $mobile) {
-      width: toRem(80);
+      width: toRem(120);
     }
   }
 
-  &__chat {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--primary-color);
-    transition: transform var(--transition-duration);
-
-    @include hover {
-      transform: scale(1.15);
-    }
+  .chat-assistant {
+    display: contents;
   }
 
   &__cart {
     translate: 0 toRem(3);
-
-    @media (max-width: $mobile) {
-      grid-column: 1/2;
-      grid-row: 1/2;
-    }
   }
 
   &__profile {
@@ -286,7 +249,6 @@ console.debug("global data:", global.value);
     z-index: 1;
     background-color: var(--bg-navigation);
     transition: transform 0.3s ease;
-    margin-block-start: toRem(-1);
 
     &_hidden {
       transform: translateY(-100%);

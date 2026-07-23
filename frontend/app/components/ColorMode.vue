@@ -198,10 +198,10 @@ function setTheme(theme: string) {
   }
 
   &__popup {
-    position: absolute;
-    top: calc(100% + toRem(8));
+    position: fixed;
+    top: 50%;
     left: 50%;
-    translate: -50% 0;
+    translate: -50% -50%;
     display: flex;
     flex-direction: column;
     gap: toRem(4);
@@ -209,7 +209,7 @@ function setTheme(theme: string) {
     border-radius: toRem(8);
     background: var(--secondary-color);
     box-shadow: 0 toRem(4) toRem(12) rgba(0, 0, 0, 0.15);
-    z-index: 1000;
+    z-index: 10000;
     white-space: nowrap;
   }
 

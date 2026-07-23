@@ -20,10 +20,6 @@ const { open, close, isOpen } = useDialog("chatAssistant", dialogElement, {
   useShowMethod: true,
 });
 
-provide('openChat', open)
-
-defineExpose({ open })
-
 // Использование методов из композаблов
 const {
   messages,
@@ -434,7 +430,7 @@ onMounted(() => {
   margin-inline-end: 0;
   bottom: toRem(24);
   right: toRem(24);
-  z-index: 1001;
+  z-index: 10001;
   width: toRem(400);
   max-width: calc(100vw - toRem(48));
   height: toRem(600);

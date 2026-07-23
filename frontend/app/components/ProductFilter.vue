@@ -80,7 +80,6 @@ onUnmounted(() => {
       v-model="searchName"
       type="search"
       :placeholder="t.placeholder"
-      :label="t.labelInput"
     />
       <Icon
    v-if="status === 'pending'"
@@ -108,45 +107,39 @@ onUnmounted(() => {
       align-items: center;
       @include adaptiveValue("height", 46, 42);
 
-         &::after {
-         content: '';
-         position: absolute;
-         right: 0;
-         width: toRem(55);
+      :deep(.u-input__input) {
+         width: 100%;
          height: 100%;
-         border: toEm(2) solid var(--success-color);
-         border-radius: 0 toRem(25) toRem(25) 0;
-         background-color: var(--success-color);
+         padding-inline-start: toRem(42);
+         padding-inline-end: toRem(44);
+         border-radius: toEm(25);
+         border: toEm(2) solid var(--bg-navigation);
+         font-size: toEm(18);
+         color: var(--color);
+         background-color: var(--bg-product);
+         outline: none;
+
+         &::placeholder {
+            color: var(--success-color);
+            transition: color var(--transition-duration);
+         }
+
+         @include hover {
+            &::placeholder {
+               color: var(--dark-color);
+            }
+         }
       }
-   }
 
-   &-input {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      padding-inline-start: toRem(42);
-      border-radius: toEm(25);
-      border: toEm(2) solid var(--bg-navigation);
-      font-size: toEm(18);
-      color: var(--color);
-      background-color: var(--bg-product);
-
-      &::placeholder {
-      color: var(--success-color);
-      transition: color var(--transition-duration);
-    }
-
-      @include hover {
-      &::placeholder {
-        color: var(--dark-color);
+      :deep(.u-input__label) {
+         display: none;
       }
-    }
    }
 
    &-loader {
       position: absolute;
       top: 50%;
-      right: toRem(222);
+      right: toRem(162);
       translate: 0 -50%;
       font-size: toRem(25);
       color: var(--sky-blue);
@@ -154,12 +147,12 @@ onUnmounted(() => {
 
    &-glass {
       position: absolute;
-      z-index: 999;
+      z-index: 1;
       top: 50%;
-      right: toRem(16);
+      right: toRem(12);
       translate: 0 -50%;
-      color: var(--light-color);
-      font-size: toEm(25);
+      color: var(--success-color);
+      font-size: toEm(22);
    }
 
    &-no-results {

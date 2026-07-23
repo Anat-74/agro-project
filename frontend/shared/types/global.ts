@@ -35,7 +35,7 @@ export interface FooterData {
 }
 
 export interface LegalInfo {
-  id: string; // В Strapi v5 это documentId
+  id: string;
   documentId?: string;
   accountNumber: string;
   bankAddress: string;
@@ -43,8 +43,20 @@ export interface LegalInfo {
   swiftCode: string;
 }
 
+export interface NavLink {
+  id: string;
+  __component: string;
+  label: string;
+  url: string;
+}
+
+export interface HeaderData {
+  bannerText: string;
+  navigation: NavLink[];
+}
+
 export type GlobalData = {
-  id: string; // В Strapi v5 это documentId
+  id: string;
   documentId: string;
   createdAt: string;
   updatedAt: string;
@@ -55,4 +67,5 @@ export type GlobalData = {
   socials: SocialLink[];
   footer: FooterData;
   legal: LegalInfo;
+  header?: HeaderData;
 };

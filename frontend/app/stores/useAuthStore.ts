@@ -80,8 +80,18 @@ export const useAuthStore = defineStore('auth', () => {
       token.value = strapiToken.value || null
 
       if (token.value) {
-        const userRef = await strapiFetchUser()
-        user.value = userRef.value || null
+        const savedToken = token.value
+        try {
+          const userRef = await strapiFetchUser()
+          user.value = userRef.value || null
+        } catch (e: any) {
+          if (e?.status === 401 || e?.response?.status === 401) {
+            token.value = null
+            user.value = null
+          } else {
+            token.value = savedToken
+          }
+        }
       }
     } catch (e) {
       console.error('Auth init error:', e)

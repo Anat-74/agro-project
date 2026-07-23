@@ -30,8 +30,9 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const selectedBg = ref<BackgroundItem | null>(null)
+const isHovered = ref(false)
+const isActive = ref(false)
 
-const isStatic = computed(() => !!props.src)
 const isDynamic = computed(() => !!(props.backgroundOptions && props.backgroundOptions.length > 0))
 
 onMounted(() => {
@@ -121,8 +122,12 @@ const interactiveClass = computed(() => ({
       loadingClass,
       gradientClass,
       filterClass,
+      interactiveClass,
     ]"
     :style="backgroundStyle"
+    @mouseenter="isHovered = true"
+    @mouseleave="isHovered = false"
+    @click="isActive = !isActive"
   >
     <slot />
     <BackgroundSwitcher
