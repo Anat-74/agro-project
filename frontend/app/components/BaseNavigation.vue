@@ -1,79 +1,54 @@
 <script lang="ts" setup>
-import { baseNavigationTranslations } from "~/locales/baseNavigation";
 import { VISIBILITY_KEY } from "#shared/utils/visibility";
 
 const { isContacts, visibleIsContacts, hideContacts } =
   inject<VisibilityState>(VISIBILITY_KEY)!;
 const { currentLocale } = useLocale();
-const t = computed(() => baseNavigationTranslations[currentLocale.value])
+
+interface NavItem {
+  id: string;
+  label: string;
+  url: string;
+}
 
 defineProps<{
   email: Email[];
   phones: Phone[];
+  navigation?: NavItem[];
 }>();
 </script>
 
 <template>
   <nav class="nav" aria-label="primary navigation">
     <ul class="nav__list">
-      <li class="nav__item">
-        <NuxtLink :to="`/${currentLocale}`" class="nav__link">
-          {{ t.home }}
-        </NuxtLink>
-      </li>
-      <li class="nav__item">
-        <NuxtLink class="nav__link" :to="`/${currentLocale}/about`">
-          {{ t.about }}
-        </NuxtLink>
-      </li>
-      <li class="nav__item">
-        <NuxtLink class="nav__link" :to="`/${currentLocale}/services`">
-          {{ t.services }}
-        </NuxtLink>
-      </li>
-
-      <li class="nav__item">
-        <NuxtLink class="nav__link" :to="`/${currentLocale}/blog`">
-          {{ t.blog }}
-        </NuxtLink>
-      </li>
-
-      <li
-        :class="['nav__item', { nav__item_contacts: isContacts }]"
-        @mouseenter="visibleIsContacts"
-        @mouseleave="hideContacts"
-      >
-        <NuxtLink
-          :class="['nav__link', { 'nav__link_is-contacts': isContacts }]"
-          :to="`/${currentLocale}/contacts`"
-          >{{ t.contacts }}
-          <Icon name="mingcute:down-line" />
-        </NuxtLink>
-        <div v-if="isContacts" class="nav__contacts contacts">
-           <div
-            class="contacts__phone-link contacts-link"
-            v-for="item in phones"
-            :key="item.documentId || item.id"
-          >
-            <Icon v-if="item.isMobile" name="et:phone" />
-
-            <Icon v-if="!item.isMobile" name="carbon:phone-ip" />
-            <a :href="`tel:${item.phoneNumber.replace(/[^0-9+]/g, '')}`"
-              >{{ formatPhone(item.phoneNumber) }}
-            </a>
-          </div>
-           <div
-            class="contacts__mail-link contacts-link"
-            v-for="item in email"
-            :key="item.documentId || item.id"
-          >
-            <Icon v-if="item.isEmail" name="material-symbols:mail-outline" />
-            <a v-if="item.isEmail" :href="`mailto:${item.email}`">
-              {{ item.email }}
-            </a>
-          </div>
-        </div>
-      </li>
+      <template v-if="navigation?.length">
+        <li v-for="item in navigation" 
+        :key="item.id" 
+        :class="['nav__item', { nav__item_contacts: item.url === '/contacts' && isContacts }]" 
+        @mouseenter="item.url === '/contacts' ? visibleIsContacts() : null" 
+        @mouseleave="item.url === '/contacts' ? hideContacts() : null">
+          <template v-if="item.url === '/contacts'">
+            <NuxtLink
+              :class="['nav__link', { 'nav__link_is-contacts': isContacts }]"
+              :to="`/${currentLocale}${item.url}`"
+              @mouseenter="visibleIsContacts"
+              @mouseleave="hideContacts"
+            >{{ item.label }} <Icon name="mingcute:down-line" /></NuxtLink>
+            <div v-if="isContacts" class="nav__contacts contacts">
+              <div class="contacts__phone-link contacts-link" v-for="item in phones" :key="item.documentId || item.id">
+                <Icon v-if="item.isMobile" name="et:phone" />
+                <Icon v-if="!item.isMobile" name="carbon:phone-ip" />
+                <a :href="`tel:${item.phoneNumber.replace(/[^0-9+]/g, '')}`">{{ formatPhone(item.phoneNumber) }}</a>
+              </div>
+              <div class="contacts__mail-link contacts-link" v-for="item in email" :key="item.documentId || item.id">
+                <Icon v-if="item.isEmail" name="material-symbols:mail-outline" />
+                <a v-if="item.isEmail" :href="`mailto:${item.email}`">{{ item.email }}</a>
+              </div>
+            </div>
+          </template>
+          <NuxtLink v-else class="nav__link" :to="`/${currentLocale}${item.url}`">{{ item.label }}</NuxtLink>
+        </li>
+      </template>
     </ul>
   </nav>
 </template>

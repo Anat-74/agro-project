@@ -23,6 +23,9 @@ export default (config: unknown, { strapi }: { strapi: Core.Strapi }) => {
         legal: true,
         phones: true,
         email: true,
+        header: {
+          populate: ["navigation"],
+        },
       };
     }
 

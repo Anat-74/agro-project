@@ -76,20 +76,28 @@ async function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
     await sleep(3000);
 
     const title = await page.locator('.page-content-header__title').textContent().catch(() => '');
-    if (!title.includes('Node.js')) throw new Error('Not on Node.js page');
+    if (!title.includes('Node.js')) {
+        // Попробовать прямой переход на страницу Node.js, если поиск не сработал
+        await page.goto('https://vh324.by3020.ihb.by:8443/smb/web/manage/nodejs/id/589', { timeout: 15000 }).catch(() => {});
+        await sleep(3000);
+    }
 
     // 4. RESTART
     console.log('[4] Restart...');
+    // Кнопка может появляться с задержкой — ждём до 15с
     const restartBtn = page.locator('button[data-test-id="restart-domain-button"]');
-    if (await restartBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await restartBtn.click();
-      await sleep(1500);
-      const confirmBtn = page.locator('button:has-text("Да")');
-      if (await confirmBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-        await confirmBtn.click();
-      }
-      console.log('   ✅ Restart confirmed, waiting 20s...');
-      await sleep(20000);
+    const btnVisible = await restartBtn.isVisible({ timeout: 15000 }).catch(() => false);
+    if (btnVisible) {
+        await restartBtn.scrollIntoViewIfNeeded();
+        await sleep(500);
+        await restartBtn.click();
+        await sleep(1500);
+        const confirmBtn = page.locator('button:has-text("Да")');
+        if (await confirmBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+            await confirmBtn.click();
+        }
+        console.log('   ✅ Restart confirmed, waiting 20s...');
+        await sleep(20000);
     } else {
       // fallback: maybe it's on the same page as run-script
       console.log('   ⚠️ restart button not visible, checking page...');

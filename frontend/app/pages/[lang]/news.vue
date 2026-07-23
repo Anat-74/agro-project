@@ -5,7 +5,7 @@ const { currentLocale } = useLocale()
 const { data: items } = useAsyncData(
   `news-list-${currentLocale.value}`,
   async () => {
-    const response = await find("news", {
+    const response = await find("news-articles", {
       sort: "date:desc",
       pagination: { pageSize: 50 },
     })
@@ -25,12 +25,12 @@ useSeoMeta({
   <section class="news-page" aria-labelledby="news-page-title">
     <h1 id="news-page-title">Новости</h1>
 
-    <div v-if="!items.length" class="news-page__empty">
+    <div v-if="!items?.length" class="news-page__empty">
       Скоро здесь появятся новости
     </div>
 
     <ul v-else class="news-page__list">
-      <li v-for="item in items" :key="item.documentId || item.id" class="news-page__item">
+      <li v-for="item in items || []" :key="item.documentId || item.id" class="news-page__item">
         <NuxtLink
           :to="`/${currentLocale}/news/${item.slug}`"
           class="news-page__link"

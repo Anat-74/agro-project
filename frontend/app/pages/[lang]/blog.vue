@@ -25,12 +25,12 @@ useSeoMeta({
   <section class="blog-page" aria-labelledby="blog-page-title">
     <h1 id="blog-page-title">Блог</h1>
 
-    <div v-if="!posts.length" class="blog-page__empty">
+    <div v-if="!posts?.length" class="blog-page__empty">
       Скоро здесь появятся статьи
     </div>
 
     <ul v-else class="blog-page__list">
-      <li v-for="post in posts" :key="post.documentId || post.id" class="blog-page__item">
+      <li v-for="post in posts || []" :key="post.documentId || post.id" class="blog-page__item">
         <NuxtLink
           :to="`/${currentLocale}/blog/${post.slug}`"
           class="blog-page__link"

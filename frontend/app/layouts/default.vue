@@ -2,7 +2,6 @@
 import ShowHamburger from '~/components/show-modal/ShowHamburger.vue'
 import { cabinetTranslations } from '~/locales/cabinet'
 import { authTranslations } from '~/locales/auth'
-import { baseNavigationTranslations } from '~/locales/baseNavigation'
 
 const { find } = useStrapi();
 const { isAuthenticated, user } = useAuth();
@@ -11,9 +10,6 @@ console.debug("auth state:", isAuthenticated.value);
 
 const cabinetT = computed(() => cabinetTranslations[currentLocale.value])
 const authT = computed(() => authTranslations[currentLocale.value])
-const navT = computed(() => baseNavigationTranslations[currentLocale.value])
-
-const { isTopFixed, isNavHidden, topHeight } = useStickyHeader()
 
 const {
   data: global,
@@ -40,8 +36,8 @@ console.debug("global data:", global.value);
 
 <template>
   <header class="header">
-    <BannerLayouts />
-    <div class="header__container-top" :class="{ 'header__container-top_fixed': isTopFixed }">
+    <BannerLayouts :banner-text="global?.header?.bannerText" />
+    <div class="header__container-top">
       <Logo
         v-if="global"
         class="header__logo"
@@ -64,23 +60,16 @@ console.debug("global data:", global.value);
         </NuxtLink>
       </ClientOnly>
     </div>
-    <div class="header__bottom" :class="{ 'header__bottom_hidden': isNavHidden }">
+    <div class="header__bottom">
       <div class="header__container-bottom">
         <UAnimatedText variant="wave" />
-        <details class="header__more">
-          <summary class="header__more-summary">{{ navT.more }} ▾</summary>
-          <ul class="header__more-list">
-            <li v-for="item in global?.header?.navigation || []" :key="item.id" class="header__more-item">
-              <NuxtLink :to="`/${currentLocale}${item.url}`" class="header__more-link">
-                {{ item.label }}
-              </NuxtLink>
-            </li>
-          </ul>
-        </details>
-        <NuxtLink
-          :to="`/${currentLocale}/blog`"
-          class="header__blog-link"
-        >Блог</NuxtLink>
+        <BaseNavigation
+          v-if="global"
+          :phones="global.phones"
+          :email="global.email"
+          :navigation="global?.header?.navigation"
+          class="header__navigation hidden-mobile"
+        />
         <ShowHamburger
           v-if="global"
           :phones="global.phones"
@@ -92,7 +81,7 @@ console.debug("global data:", global.value);
     </div>
   </header>
 
-  <div class="page-body" :style="{ paddingTop: isTopFixed ? `${topHeight}px` : '0' }">
+  <div class="page-body">
     <SearchOverlay />
     <UBackground
       v-if="global?.background?.enableBackground"
@@ -127,6 +116,8 @@ console.debug("global data:", global.value);
   padding-block-end: toRem(22);
 
   &__container-top {
+    position: sticky;
+    top: 0;
     display: grid;
     grid-template-columns: auto 1fr auto auto auto;
     align-items: center;
@@ -134,13 +125,6 @@ console.debug("global data:", global.value);
     padding-block: toEm(16);
     background-color: var(--bg);
     @include adaptiveValue("height", 65, 55);
-
-    &_fixed {
-      position: fixed;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 toRem(2) toRem(8) rgba(0, 0, 0, 0.08);
-    }
   }
 
   &__logo {
@@ -222,16 +206,7 @@ console.debug("global data:", global.value);
   }
 
   &__bottom {
-    background-color: limegreen;
-    max-height: toRem(80);
-    overflow: hidden;
-    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
-
-    &_hidden {
-      max-height: 0;
-      opacity: 0;
-      padding-block: 0;
-    }
+    background-color: var(--bg-navigation);
   }
 
   &__container-bottom {
@@ -245,6 +220,7 @@ console.debug("global data:", global.value);
       padding-block: toRem(6);
     }
   }
+
 
   &__more {
     position: relative;

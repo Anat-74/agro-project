@@ -6,7 +6,7 @@ const { currentLocale } = useLocale()
 const { data: item } = useAsyncData(
   `news-${route.params.slug}-${currentLocale.value}`,
   async () => {
-    const response = await find("news", {
+    const response = await find("news-articles", {
       filters: { slug: { $eq: route.params.slug } },
     })
     return response.data?.[0] || null

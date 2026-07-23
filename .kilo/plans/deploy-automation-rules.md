@@ -153,10 +153,14 @@ const PASS = '27cwr7UCn%%8JDU';
 1. Выполнить шаги 2 (логин) и 3 (выбор домена)
 2. Выполнить шаг 5.1-5.4 (поиск node.js, проверка заголовка)
 3. Кнопка "Перезапустить приложение":
+   - Ждать до 15с, пока кнопка станет видимой (иногда загружается с задержкой)
+   - Перед кликом — `scrollIntoViewIfNeeded()`
    ```
-   page.locator('button[data-test-id="restart-domain-button"]').click()
-   Ждать 1.5с
-   page.locator('button:has-text("Да")').click()
+   const restartBtn = page.locator('button[data-test-id="restart-domain-button"]')
+   if (await restartBtn.isVisible({ timeout: 15000 }).catch(() => false)) {
+     await restartBtn.scrollIntoViewIfNeeded()
+     await page.waitForTimeout(500)
+     await restartBtn.click()
    Ждать 20с (Passenger перезапускается)
    ```
 4. Сообщить пользователю
