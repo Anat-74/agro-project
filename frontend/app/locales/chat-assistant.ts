@@ -22,7 +22,7 @@ export const chatAssistantTranslations: Record<LocaleCode, {
   closeChatTitle: string
 }> = {
   ru: {
-    title: "AI Ассистент",
+    title: "AI",
     subtitle: "Agro-Market Помощник",
     placeholder: "Введите ваш вопрос...",
     sendButton: "Отправить",
@@ -45,7 +45,7 @@ export const chatAssistantTranslations: Record<LocaleCode, {
     closeChatTitle: "Закрыть"
   },
   be: {
-    title: "AI Асiстэнт",
+    title: "AI",
     subtitle: "Agro-Market Памочнік",
     placeholder: "Увядзіце ваша пытанне...",
     sendButton: "Адправіць",

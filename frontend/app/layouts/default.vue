@@ -11,7 +11,7 @@ console.debug("auth state:", isAuthenticated.value);
 const cabinetT = computed(() => cabinetTranslations[currentLocale.value])
 const authT = computed(() => authTranslations[currentLocale.value])
 
-const { isTopFixed, isNavHidden, topHeight } = useStickyHeader()
+const { isTopFixed, isNavHidden, isScrollingUp, topHeight } = useStickyHeader()
 
 const {
   data: global,
@@ -37,7 +37,7 @@ console.debug("global data:", global.value);
 </script>
 
 <template>
-  <header class="header">
+  <header class="header" :style="{ minHeight: isTopFixed ? `${topHeight}px` : '' }">
     <BannerLayouts :banner-text="global?.header?.bannerText" />
     <div class="header__container-top" :class="{ 'header__container-top_fixed': isTopFixed }">
       <Logo
@@ -62,7 +62,7 @@ console.debug("global data:", global.value);
         </NuxtLink>
       </ClientOnly>
     </div>
-    <div class="header__bottom" :class="{ 'header__bottom_hidden': isNavHidden }">
+    <div class="header__bottom" :class="{ 'header__bottom_hidden': isNavHidden, 'header__bottom_up': isScrollingUp }">
       <div class="header__container-bottom">
         <UAnimatedText variant="wave" />
         <BaseNavigation
@@ -83,7 +83,7 @@ console.debug("global data:", global.value);
     </div>
   </header>
 
-  <div class="page-body" :style="{ paddingTop: isTopFixed ? `${topHeight}px` : '0' }">
+  <main class="page-main" :style="{ paddingTop: isTopFixed ? `${topHeight}px` : '0' }">
     <SearchOverlay />
     <UBackground
       v-if="global?.background?.enableBackground"
@@ -92,23 +92,21 @@ console.debug("global data:", global.value);
       size-mode="cover"
     />
 
-    <main>
-      <slot />
-    </main>
+    <slot />
+  </main>
 
-    <Footer
-      class="footer"
-      v-if="global"
-      :phones="global.phones"
-      :email="global.email"
-      :footer="global.footer"
-      :legal="global.legal"
-      :socials="global.socials"
-      :global="global"
-    />
+  <Footer
+    class="footer"
+    v-if="global"
+    :phones="global.phones"
+    :email="global.email"
+    :footer="global.footer"
+    :legal="global.legal"
+    :socials="global.socials"
+    :global="global"
+  />
 
-    <span v-if="error"> Error: {{ error.message }} </span>
-  </div>
+  <span v-if="error"> Error: {{ error.message }} </span>
 </template>
 
 <style lang="scss" scoped>
@@ -131,8 +129,7 @@ console.debug("global data:", global.value);
       top: 0;
       left: 0;
       right: 0;
-      z-index: 100;
-      padding-inline: toRem(16);
+      z-index: 9999;
       box-shadow: 0 toRem(2) toRem(8) rgba(0, 0, 0, 0.08);
     }
   }
@@ -140,6 +137,15 @@ console.debug("global data:", global.value);
   &__bottom {
     background-color: var(--bg-navigation);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+
+    &_up {
+      position: fixed;
+      top: toRem(84);
+      left: 0;
+      right: 0;
+      width: 100%;
+      z-index: 99;
+    }
 
     &_hidden {
       transform: translateY(-100%);
@@ -226,10 +232,6 @@ console.debug("global data:", global.value);
     }
   }
 
-  &__bottom {
-    background-color: var(--bg-navigation);
-  }
-
   &__container-bottom {
     display: flex;
     justify-content: space-between;
@@ -303,7 +305,7 @@ console.debug("global data:", global.value);
   }
 }
 
-.page-body {
+.page-main {
   position: relative;
   z-index: 0;
   min-height: 100dvh;
