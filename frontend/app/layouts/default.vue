@@ -149,7 +149,7 @@ console.debug("global data:", global.value);
 
   &__container-top {
     position: sticky;
-    top: toRem(60);
+    top: 0;
     z-index: 2;
     display: grid;
     grid-template-columns: auto 1fr auto auto auto;
