@@ -222,7 +222,7 @@ console.debug("global data:", global.value);
   }
 
   &__bottom {
-    background-color: var(--bg-navigation);
+    background-color: limegreen;
     max-height: toRem(80);
     overflow: hidden;
     transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
