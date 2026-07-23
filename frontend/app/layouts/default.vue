@@ -11,6 +11,8 @@ console.debug("auth state:", isAuthenticated.value);
 const cabinetT = computed(() => cabinetTranslations[currentLocale.value])
 const authT = computed(() => authTranslations[currentLocale.value])
 
+const { isTopFixed, isNavHidden, topHeight } = useStickyHeader()
+
 const {
   data: global,
   error,
@@ -37,7 +39,7 @@ console.debug("global data:", global.value);
 <template>
   <header class="header">
     <BannerLayouts :banner-text="global?.header?.bannerText" />
-    <div class="header__container-top">
+    <div class="header__container-top" :class="{ 'header__container-top_fixed': isTopFixed }">
       <Logo
         v-if="global"
         class="header__logo"
@@ -60,7 +62,7 @@ console.debug("global data:", global.value);
         </NuxtLink>
       </ClientOnly>
     </div>
-    <div class="header__bottom">
+    <div class="header__bottom" :class="{ 'header__bottom_hidden': isNavHidden }">
       <div class="header__container-bottom">
         <UAnimatedText variant="wave" />
         <BaseNavigation
@@ -81,7 +83,7 @@ console.debug("global data:", global.value);
     </div>
   </header>
 
-  <div class="page-body">
+  <div class="page-body" :style="{ paddingTop: isTopFixed ? `${topHeight}px` : '0' }">
     <SearchOverlay />
     <UBackground
       v-if="global?.background?.enableBackground"
@@ -111,13 +113,11 @@ console.debug("global data:", global.value);
 
 <style lang="scss" scoped>
 .header {
-  position: relative;
-  z-index: 3;
+//   position: relative;
+//   z-index: 3;
   padding-block-end: toRem(22);
 
   &__container-top {
-    position: sticky;
-    top: 0;
     display: grid;
     grid-template-columns: auto 1fr auto auto auto;
     align-items: center;
@@ -125,6 +125,27 @@ console.debug("global data:", global.value);
     padding-block: toEm(16);
     background-color: var(--bg);
     @include adaptiveValue("height", 65, 55);
+
+    &_fixed {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding-inline: toRem(16);
+      box-shadow: 0 toRem(2) toRem(8) rgba(0, 0, 0, 0.08);
+    }
+  }
+
+  &__bottom {
+    background-color: var(--bg-navigation);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+
+    &_hidden {
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
+    }
   }
 
   &__logo {
