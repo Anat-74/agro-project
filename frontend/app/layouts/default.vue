@@ -13,28 +13,7 @@ const cabinetT = computed(() => cabinetTranslations[currentLocale.value])
 const authT = computed(() => authTranslations[currentLocale.value])
 const navT = computed(() => baseNavigationTranslations[currentLocale.value])
 
-const isNavHidden = ref(false)
-const lastScrollY = ref(0)
-
-onMounted(() => {
-  window.addEventListener('scroll', onScroll, { passive: true })
-})
-onUnmounted(() => {
-  window.removeEventListener('scroll', onScroll)
-})
-
-function onScroll() {
-  const currentY = window.scrollY
-  const delta = currentY - lastScrollY.value
-
-  if (delta > 5 && currentY > 80) {
-    isNavHidden.value = true
-  } else if (delta < -5) {
-    isNavHidden.value = false
-  }
-
-  lastScrollY.value = currentY
-}
+const { isTopFixed, isNavHidden, topHeight } = useStickyHeader()
 
 const {
   data: global,
@@ -61,8 +40,8 @@ console.debug("global data:", global.value);
 
 <template>
   <header class="header">
-    <BannerLayouts class="header__banner" />
-    <div class="header__container-top">
+    <BannerLayouts />
+    <div class="header__container-top" :class="{ 'header__container-top_fixed': isTopFixed }">
       <Logo
         v-if="global"
         class="header__logo"
@@ -113,7 +92,7 @@ console.debug("global data:", global.value);
     </div>
   </header>
 
-  <div class="page-body">
+  <div class="page-body" :style="{ paddingTop: isTopFixed ? `${topHeight}px` : '0' }">
     <SearchOverlay />
     <UBackground
       v-if="global?.background?.enableBackground"
@@ -147,16 +126,7 @@ console.debug("global data:", global.value);
   z-index: 3;
   padding-block-end: toRem(22);
 
-  &__banner {
-    @media (max-width: $mobile) {
-      display: none;
-    }
-  }
-
   &__container-top {
-    position: sticky;
-    top: 0;
-    z-index: 2;
     display: grid;
     grid-template-columns: auto 1fr auto auto auto;
     align-items: center;
@@ -165,9 +135,14 @@ console.debug("global data:", global.value);
     background-color: var(--bg);
     @include adaptiveValue("height", 65, 55);
 
-    @media (max-width: $mobile) {
-      grid-template-columns: auto 1fr auto auto auto;
-      column-gap: toRem(8);
+    &_fixed {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding-inline: toRem(16);
+      box-shadow: 0 toRem(2) toRem(8) rgba(0, 0, 0, 0.08);
     }
   }
 
@@ -250,14 +225,13 @@ console.debug("global data:", global.value);
   }
 
   &__bottom {
-    position: sticky;
-    top: 0;
-    z-index: 1;
     background-color: var(--bg-navigation);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     &_hidden {
       transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
     }
   }
 
