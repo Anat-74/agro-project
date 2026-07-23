@@ -1,59 +1,65 @@
 <script setup lang="ts">
-const colorMode = useColorMode()
-const { brightness } = useThemeBrightness()
-const showPercent = ref(false)
-const showPopup = ref(false)
-const popupRef = useTemplateRef<HTMLDivElement>('popup')
-let hideTimer: ReturnType<typeof setTimeout> | null = null
+const colorMode = useColorMode();
+const { brightness } = useThemeBrightness();
+const showPercent = ref(false);
+const showPopup = ref(false);
+const popupRef = useTemplateRef<HTMLDivElement>("popup");
+let hideTimer: ReturnType<typeof setTimeout> | null = null;
 
-const sliderValue = computed(() => brightness.value)
+const sliderValue = computed(() => brightness.value);
 
 watch(brightness, () => {
-  showPercent.value = true
-  if (hideTimer) clearTimeout(hideTimer)
-  hideTimer = setTimeout(() => { showPercent.value = false }, 2000)
-})
+  showPercent.value = true;
+  if (hideTimer) clearTimeout(hideTimer);
+  hideTimer = setTimeout(() => {
+    showPercent.value = false;
+  }, 2000);
+});
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-})
+  document.addEventListener("click", handleClickOutside);
+});
 
 onUnmounted(() => {
-  if (hideTimer) clearTimeout(hideTimer)
-  document.removeEventListener('click', handleClickOutside)
-})
+  if (hideTimer) clearTimeout(hideTimer);
+  document.removeEventListener("click", handleClickOutside);
+});
 
 function handleClickOutside(e: MouseEvent) {
   if (popupRef.value && !popupRef.value.contains(e.target as Node)) {
-    showPopup.value = false
+    showPopup.value = false;
   }
 }
 
 function iconName(theme: string) {
-  if (theme === 'light') return 'ph:sun-duotone'
-  if (theme === 'dark') return 'ph:moon-light'
-  return 'ph:coffee'
+  if (theme === "light") return "ph:sun-duotone";
+  if (theme === "dark") return "ph:moon-light";
+  return "ph:coffee";
 }
 
 function themeLabel(theme: string) {
-  if (theme === 'light') return 'Светлая'
-  if (theme === 'dark') return 'Тёмная'
-  return 'Кастом'
+  if (theme === "light") return "Светлая";
+  if (theme === "dark") return "Тёмная";
+  return "Кастом";
 }
 
 function togglePopup() {
-  showPopup.value = !showPopup.value
+  showPopup.value = !showPopup.value;
 }
 
 function setTheme(theme: string) {
-  colorMode.preference = theme
-  showPopup.value = false
+  colorMode.preference = theme;
+  showPopup.value = false;
 }
 </script>
 
 <template>
   <div class="color-mode">
-    <div class="color-mode__slider-wrapper" ref="popupRef" :style="{ '--slider-value': sliderValue }">
+    <div
+      class="color-mode__slider-wrapper"
+      ref="popupRef"
+      :style="{ '--slider-value': sliderValue }"
+    >
       <UInput
         v-model="brightness"
         type="range"
@@ -64,7 +70,12 @@ function setTheme(theme: string) {
       />
 
       <div class="color-mode__ticks" aria-hidden="true">
-        <span v-for="i in 4" :key="i" class="color-mode__tick" :style="{ left: `${i * 20}%` }" />
+        <span
+          v-for="i in 4"
+          :key="i"
+          class="color-mode__tick"
+          :style="{ left: `${i * 20}%` }"
+        />
       </div>
 
       <button
@@ -80,9 +91,12 @@ function setTheme(theme: string) {
           <button
             v-for="theme in ['light', 'dark', 'custom']"
             :key="theme"
-            :class="['color-mode__option', {
-              'color-mode__option_active': colorMode.preference === theme
-            }]"
+            :class="[
+              'color-mode__option',
+              {
+                'color-mode__option_active': colorMode.preference === theme,
+              },
+            ]"
             @click="setTheme(theme)"
           >
             <Icon :name="iconName(theme)" />
@@ -92,7 +106,9 @@ function setTheme(theme: string) {
       </Transition>
 
       <Transition name="fade">
-        <span v-if="showPercent" class="color-mode__percent">{{ brightness }}%</span>
+        <span v-if="showPercent" class="color-mode__percent"
+          >{{ brightness }}%</span
+        >
       </Transition>
     </div>
   </div>
@@ -118,7 +134,8 @@ function setTheme(theme: string) {
       width: 100%;
       height: toRem(8);
       appearance: none;
-      background: linear-gradient(90deg,
+      background: linear-gradient(
+        90deg,
         var(--primary-color),
         var(--warning-color),
         var(--danger-color)
@@ -199,9 +216,9 @@ function setTheme(theme: string) {
 
   &__popup {
     position: fixed;
-    top: 50%;
+    top: 0%;
     left: 50%;
-    translate: -50% -50%;
+    translate: -50% 0%;
     display: flex;
     flex-direction: column;
     gap: toRem(4);
@@ -210,7 +227,6 @@ function setTheme(theme: string) {
     background: var(--secondary-color);
     box-shadow: 0 toRem(4) toRem(12) rgba(0, 0, 0, 0.15);
     z-index: 10000;
-    white-space: nowrap;
   }
 
   &__option {
@@ -238,19 +254,20 @@ function setTheme(theme: string) {
 
   &__percent {
     position: absolute;
-    right: toRem(-36);
+    left: -22px;
     top: 50%;
     translate: 0 -50%;
     font-weight: 600;
     font-size: toEm(14);
-    color: var(--color);
-    white-space: nowrap;
+    color: var(--light-color);
   }
 }
 
 .popup-enter-active,
 .popup-leave-active {
-  transition: opacity 0.2s, transform 0.2s;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
 }
 .popup-enter-from,
 .popup-leave-to {

@@ -326,7 +326,6 @@ const openHamburger = () => {
 }
 
 .dialog-hamburger {
-  position: fixed;
   inset: 0;
   display: grid;
   grid-template-columns: 1fr auto;

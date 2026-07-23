@@ -12,7 +12,7 @@ withDefaults(defineProps<Props>(), {
 
 <template>
   <div
-    :class="['u-animated-text', `u-animated-text--${variant}`]"
+    :class="['u-animated-text', `u-animated-text_${variant}`]"
     :aria-label="text"
   >
     <template v-if="variant === 'typewriter'">
@@ -42,9 +42,9 @@ withDefaults(defineProps<Props>(), {
     </template>
 
     <template v-else>
-      <h2 class="u-animated-text__title u-animated-text__title--outline">{{ text }}</h2>
-      <h2 class="u-animated-text__title u-animated-text__title--wave" aria-hidden="true">{{ text }}</h2>
-      <h2 class="u-animated-text__title u-animated-text__title--shadow" aria-hidden="true">{{ text }}</h2>
+      <h2 class="u-animated-text__title u-animated-text__title_outline">{{ text }}</h2>
+      <h2 class="u-animated-text__title u-animated-text__title_wave" aria-hidden="true">{{ text }}</h2>
+      <h2 class="u-animated-text__title u-animated-text__title_shadow" aria-hidden="true">{{ text }}</h2>
     </template>
   </div>
 </template>
@@ -52,8 +52,8 @@ withDefaults(defineProps<Props>(), {
 <style lang="scss" scoped>
 .u-animated-text {
   position: relative;
+  left: toRem(45);
   padding: toRem(2);
-  display: flex;
 
   &__title {
     position: absolute;
@@ -62,21 +62,20 @@ withDefaults(defineProps<Props>(), {
     translate: -50% -50%;
     letter-spacing: 1.2px;
     font-weight: 600;
-    font-size: toRem(26);
-    font-family: $font-family-cursive;
+    font-size: toEm(22);
     white-space: nowrap;
 
-    &--outline {
+    &_outline {
       color: transparent;
       -webkit-text-stroke: 1px var(--main-color);
       filter: blur(0.3px);
     }
-    &--wave {
+    &_wave {
       z-index: 10;
       color: #03a9f4;
       animation: u-animated-text-wave 5s ease-in-out infinite;
     }
-    &--shadow {
+    &_shadow {
       z-index: 10;
       color: rgba(127, 113, 99, 0.3);
     }
@@ -89,14 +88,14 @@ withDefaults(defineProps<Props>(), {
   }
 
   // ===== TYPEWRITER =====
-  &--typewriter {
+  &_typewriter {
     .u-animated-text__char {
       animation-name: u-animated-text-typewriter;
     }
   }
 
   // ===== FLOATING =====
-  &--floating {
+  &_floating {
     .u-animated-text__char {
       animation-name: u-animated-text-float;
       animation-duration: 1.2s;
@@ -107,7 +106,7 @@ withDefaults(defineProps<Props>(), {
   }
 
   // ===== GRADIENT =====
-  &--gradient {
+  &_gradient {
     .u-animated-text__title {
       background: linear-gradient(90deg, var(--success-color), var(--warning-color), var(--danger-color), var(--success-color));
       background-size: 300% 100%;
@@ -119,7 +118,7 @@ withDefaults(defineProps<Props>(), {
   }
 
   // ===== SLIDE-IN =====
-  &--slide-in {
+  &_slide-in {
     overflow: hidden;
 
     .u-animated-text__title {
