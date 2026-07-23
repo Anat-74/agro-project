@@ -138,10 +138,7 @@ console.debug("global data:", global.value);
     &_fixed {
       position: fixed;
       top: 0;
-      left: 0;
-      right: 0;
       z-index: 100;
-      padding-inline: toRem(16);
       box-shadow: 0 toRem(2) toRem(8) rgba(0, 0, 0, 0.08);
     }
   }
