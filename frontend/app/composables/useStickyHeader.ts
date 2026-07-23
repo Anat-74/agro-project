@@ -18,9 +18,9 @@ export const useStickyHeader = () => {
 
         isTopFixed.value = currentY > 60
 
-        if (delta > 5 && currentY > 80) {
+        if (delta > 3 && currentY > 80) {
           isNavHidden.value = true
-        } else if (delta < -5) {
+        } else if (delta < -3) {
           isNavHidden.value = false
         }
 

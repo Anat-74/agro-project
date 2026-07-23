@@ -223,12 +223,14 @@ console.debug("global data:", global.value);
 
   &__bottom {
     background-color: var(--bg-navigation);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: toRem(80);
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
 
     &_hidden {
-      transform: translateY(-100%);
+      max-height: 0;
       opacity: 0;
-      pointer-events: none;
+      padding-block: 0;
     }
   }
 
