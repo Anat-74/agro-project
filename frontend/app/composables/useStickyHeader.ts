@@ -11,6 +11,7 @@ export const useStickyHeader = () => {
   }
 
   const onScroll = () => {
+    if (window.innerWidth > 1024) return
     if (!ticking.value) {
       window.requestAnimationFrame(() => {
         const currentY = window.scrollY
@@ -38,13 +39,21 @@ export const useStickyHeader = () => {
   onMounted(() => {
     updateTopHeight()
     window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', updateTopHeight, { passive: true })
+    window.addEventListener('resize', onResize, { passive: true })
   })
 
   onUnmounted(() => {
     window.removeEventListener('scroll', onScroll)
-    window.removeEventListener('resize', updateTopHeight)
+    window.removeEventListener('resize', onResize)
   })
+
+  const onResize = () => {
+    if (window.innerWidth > 1024) {
+      isTopFixed.value = false
+      isNavHidden.value = false
+    }
+    updateTopHeight()
+  }
 
   return { isTopFixed, isNavHidden, topHeight }
 }
