@@ -1,7 +1,7 @@
 {
-  "collectionName": "components_nav_links",
+  "collectionName": "components_layout_links",
   "info": {
-    "displayName": "link",
+    "displayName": "Link",
     "description": "Пункт навигации"
   },
   "options": {},

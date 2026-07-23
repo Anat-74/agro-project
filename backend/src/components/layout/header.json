@@ -1,7 +1,7 @@
 {
-  "collectionName": "components_nav_headers",
+  "collectionName": "components_layout_headers",
   "info": {
-    "displayName": "header",
+    "displayName": "Header",
     "description": "Данные шапки сайта"
   },
   "options": {},
@@ -16,7 +16,9 @@
     },
     "navigation": {
       "type": "dynamiczone",
-      "components": ["nav.link"]
+      "components": [
+        "layout.link"
+      ]
     }
   }
 }
