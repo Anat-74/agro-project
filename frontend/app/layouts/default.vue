@@ -61,7 +61,7 @@ console.debug("global data:", global.value);
 
 <template>
   <header class="header">
-    <BannerLayouts />
+    <BannerLayouts class="header__banner" />
     <div class="header__container-top">
       <Logo
         v-if="global"
@@ -146,6 +146,12 @@ console.debug("global data:", global.value);
   position: relative;
   z-index: 3;
   padding-block-end: toRem(22);
+
+  &__banner {
+    @media (max-width: $mobile) {
+      display: none;
+    }
+  }
 
   &__container-top {
     position: sticky;
