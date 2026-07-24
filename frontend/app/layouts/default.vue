@@ -11,7 +11,7 @@ console.debug("auth state:", isAuthenticated.value);
 const cabinetT = computed(() => cabinetTranslations[currentLocale.value])
 const authT = computed(() => authTranslations[currentLocale.value])
 
-const { isTopFixed, isNavHidden, isScrollingUp, topHeight } = useStickyHeader()
+const { isTopFixed, isNavHidden } = useStickyHeader()
 
 const {
   data: global,
@@ -37,9 +37,12 @@ console.debug("global data:", global.value);
 </script>
 
 <template>
-  <header class="header" :style="{ minHeight: isTopFixed ? `${topHeight}px` : '' }">
-    <BannerLayouts :banner-text="global?.header?.bannerText" />
-    <div class="header__container-top" :class="{ 'header__container-top_fixed': isTopFixed }">
+  <header class="header">
+    <BannerLayouts
+      :banner-text="global?.header?.bannerText"
+      :class="['header__banner', { 'header__banner_hidden': isTopFixed }]"
+    />
+    <div class="header__container-top">
       <Logo
         v-if="global"
         class="header__logo"
@@ -62,7 +65,7 @@ console.debug("global data:", global.value);
         </NuxtLink>
       </ClientOnly>
     </div>
-    <div class="header__bottom" :class="{ 'header__bottom_hidden': isNavHidden, 'header__bottom_up': isScrollingUp }">
+    <div class="header__bottom" :class="{ 'header__bottom_hidden': isNavHidden }">
       <div class="header__container-bottom">
         <UAnimatedText variant="wave" />
         <BaseNavigation
@@ -83,7 +86,7 @@ console.debug("global data:", global.value);
     </div>
   </header>
 
-  <main class="page-main" :style="{ paddingTop: isTopFixed ? `${topHeight}px` : '0' }">
+  <main class="page-main">
     <SearchOverlay />
     <UBackground
       v-if="global?.background?.enableBackground"
@@ -111,11 +114,29 @@ console.debug("global data:", global.value);
 
 <style lang="scss" scoped>
 .header {
-//   position: relative;
-//   z-index: 3;
+  position: relative;
   padding-block-end: toRem(22);
+  padding-block-start: toRem(60);
+
+  &__banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+
+    &_hidden {
+      opacity: 0;
+      transform: translateY(-100%);
+      pointer-events: none;
+    }
+  }
 
   &__container-top {
+    position: sticky;
+    top: 0;
+    z-index: 10;
     display: grid;
     grid-template-columns: auto 1fr auto auto auto;
     align-items: center;
@@ -123,29 +144,11 @@ console.debug("global data:", global.value);
     padding-block: toEm(16);
     background-color: var(--bg);
     @include adaptiveValue("height", 65, 55);
-
-    &_fixed {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 9999;
-      box-shadow: 0 toRem(2) toRem(8) rgba(0, 0, 0, 0.08);
-    }
   }
 
   &__bottom {
     background-color: var(--bg-navigation);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
-
-    &_up {
-      position: fixed;
-      top: toRem(84);
-      left: 0;
-      right: 0;
-      width: 100%;
-      z-index: 99;
-    }
 
     &_hidden {
       transform: translateY(-100%);
