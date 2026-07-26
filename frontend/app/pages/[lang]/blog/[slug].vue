@@ -20,6 +20,17 @@ useSeoMeta({
   description: seo.value?.metaDescription || "",
   ogDescription: seo.value?.metaDescription || "",
 })
+
+useHead({
+  script: seo.value?.structuredData
+    ? [
+        {
+          type: "application/ld+json",
+          innerHTML: JSON.stringify(seo.value.structuredData),
+        },
+      ]
+    : [],
+})
 </script>
 
 <template>
