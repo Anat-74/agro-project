@@ -323,7 +323,7 @@ ${JSON.stringify(lastSearchResults, null, 2)}
 
     // Формируем запрос к DeepSeek API
     const requestBody: any = {
-      model: "deepseek-chat",
+      model: "deepseek-v4-flash",
       messages: [systemPrompt, ...recentHistory],
       temperature: 0.7,
       max_tokens: 500,
@@ -578,7 +578,7 @@ ${JSON.stringify(lastSearchResults, null, 2)}
               Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
             },
             body: JSON.stringify({
-              model: "deepseek-chat",
+              model: "deepseek-v4-flash",
               messages: secondRoundMessages,
               temperature: 0.7,
               max_tokens: 500,

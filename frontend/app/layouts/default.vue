@@ -38,11 +38,16 @@ console.debug("global data:", global.value);
 
 <template>
   <header class="header">
-    <BannerLayouts
-      :banner-text="global?.header?.bannerText"
-      :class="['header__banner', { 'header__banner_hidden': isTopFixed }]"
-    />
-    <div class="header__container-top">
+    <div class="header__banner-placeholder">
+      <BannerLayouts
+        :banner-text="global?.header?.bannerText"
+        :class="['header__banner', { 'header__banner_hidden': isTopFixed }]"
+      />
+    </div>
+    <div
+      class="header__container-top"
+      :class="{ 'header__container-top_fixed': isTopFixed }"
+    >
       <Logo
         v-if="global"
         class="header__logo"
@@ -68,6 +73,38 @@ console.debug("global data:", global.value);
     <div class="header__bottom" :class="{ 'header__bottom_hidden': isNavHidden }">
       <div class="header__container-bottom">
         <UAnimatedText variant="wave" />
+        <details class="header__more" name="header-more">
+          <summary class="header__more-summary">
+            Ещё
+            <Icon name="mingcute:down-line" />
+          </summary>
+          <ul class="header__more-list">
+            <li class="header__more-item">
+              <NuxtLink class="header__more-link" :to="`/${currentLocale}/about`">
+                <Icon name="mingcute:information-line" /> О нас
+              </NuxtLink>
+            </li>
+            <li class="header__more-item">
+              <NuxtLink class="header__more-link" :to="`/${currentLocale}/services`">
+                <Icon name="mingcute:settings-4-line" /> Услуги
+              </NuxtLink>
+            </li>
+            <li class="header__more-item">
+              <NuxtLink class="header__more-link" :to="`/${currentLocale}/contacts`">
+                <Icon name="mingcute:mail-line" /> Контакты
+              </NuxtLink>
+            </li>
+            <li class="header__more-item">
+              <NuxtLink class="header__more-link" :to="`/${currentLocale}/news`">
+                <Icon name="mingcute:megaphone-line" /> Новости
+              </NuxtLink>
+            </li>
+          </ul>
+        </details>
+        <NuxtLink
+          class="header__blog-link"
+          :to="`/${currentLocale}/blog`"
+        >Блог</NuxtLink>
         <BaseNavigation
           v-if="global"
           :phones="global.phones"
@@ -115,15 +152,18 @@ console.debug("global data:", global.value);
 <style lang="scss" scoped>
 .header {
   position: relative;
-  padding-block-end: toRem(22);
-  padding-block-start: toRem(60);
+
+  &__banner-placeholder {
+    position: relative;
+    flex-shrink: 0;
+    @include adaptiveValue("height", 60, 72);
+  }
 
   &__banner {
     position: absolute;
     top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1;
+    inset-inline: 0;
+    z-index: 5;
     transition: opacity 0.3s ease, transform 0.3s ease;
 
     &_hidden {
@@ -144,6 +184,11 @@ console.debug("global data:", global.value);
     padding-block: toEm(16);
     background-color: var(--bg);
     @include adaptiveValue("height", 65, 55);
+    transition: box-shadow var(--transition-duration);
+
+    &_fixed {
+      box-shadow: 0 toRem(2) toRem(8) rgba(0, 0, 0, 0.08);
+    }
   }
 
   &__bottom {
@@ -257,13 +302,26 @@ console.debug("global data:", global.value);
       padding: toRem(4) toRem(8);
       font-weight: 500;
       color: var(--primary-color);
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+
+      svg {
+        transition: rotate var(--transition-duration);
+      }
+    }
+
+    &[open] &-summary svg {
+      rotate: -180deg;
     }
 
     &-list {
       position: absolute;
-      top: 100%;
+      top: calc(100% + toRem(4));
       left: 0;
       z-index: 10;
+      min-width: toRem(160);
       background: var(--secondary-color);
       border: toRem(1) solid var(--border-color);
       border-radius: toRem(4);
