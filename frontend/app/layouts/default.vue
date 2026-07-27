@@ -156,6 +156,8 @@ console.debug("global data:", global.value);
   &__banner-placeholder {
     position: relative;
     flex-shrink: 0;
+    overflow: hidden;
+    background-color: var(--primary-color);
     @include adaptiveValue("height", 60, 72);
   }
 
@@ -174,7 +176,7 @@ console.debug("global data:", global.value);
   }
 
   &__container-top {
-    position: sticky;
+    position: fixed;
     top: 0;
     z-index: 10;
     display: grid;
@@ -194,6 +196,13 @@ console.debug("global data:", global.value);
   &__bottom {
     background-color: var(--bg-navigation);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+
+    @media (max-width: $tablet) {
+      position: absolute;
+      top: 100%;
+      inset-inline: 0;
+      z-index: 9;
+    }
 
     &_hidden {
       transform: translateY(-100%);

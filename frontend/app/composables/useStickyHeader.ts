@@ -5,8 +5,6 @@ export const useStickyHeader = () => {
   let ticking = false
   let currentY = 0
 
-  const SCROLL_THRESHOLD = 20
-
   const update = () => {
     ticking = false
 
@@ -18,14 +16,13 @@ export const useStickyHeader = () => {
     }
 
     const y = currentY
-    const delta = y - lastScrollY
 
     if (y > 60) isTopFixed.value = true
     if (y === 0) isTopFixed.value = false
 
-    if (delta > SCROLL_THRESHOLD && y > 80) {
+    if (y > lastScrollY && y > 80) {
       isNavHidden.value = true
-    } else if (delta < -SCROLL_THRESHOLD) {
+    } else if (y < lastScrollY) {
       isNavHidden.value = false
     }
 
