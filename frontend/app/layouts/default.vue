@@ -154,10 +154,10 @@ console.debug("global data:", global.value);
 
   // --- Mobile: all three header sections are position: fixed ---
   @media (max-width: $tablet) {
-    // Spacer pushes <main> below the lowest fixed element
+    // Spacer height = container-top height only (lowest fixed when scrolled)
     &__spacer {
       display: block;
-      @include adaptiveValue("height", 129, 99);
+      @include adaptiveValue("height", 65, 55);
     }
   }
 
@@ -187,12 +187,16 @@ console.debug("global data:", global.value);
     padding-block: toEm(16);
     background-color: var(--bg);
     @include adaptiveValue("height", 65, 55);
-    transition: box-shadow var(--transition-duration);
+    transition: box-shadow var(--transition-duration), top 0.3s ease;
 
     @media (max-width: $tablet) {
       position: fixed;
-      top: 0;
       inset-inline: 0;
+      @include adaptiveValue("top", 60, 72);
+
+      &_fixed {
+        top: 0;
+      }
     }
 
     &_fixed {
@@ -202,19 +206,26 @@ console.debug("global data:", global.value);
 
   &__bottom {
     background-color: var(--bg-navigation);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, top 0.3s ease;
 
     @media (max-width: $tablet) {
       position: fixed;
       inset-inline: 0;
       z-index: 9;
-      @include adaptiveValue("top", 65, 55);
+      @include adaptiveValue("top", 125, 127);
     }
 
     &_hidden {
       transform: translateY(-100%);
       opacity: 0;
       pointer-events: none;
+    }
+  }
+
+  // When container-top is fixed (banner hidden), bottom moves up by banner height
+  @media (max-width: $tablet) {
+    &:has(&__container-top_fixed) &__bottom {
+      @include adaptiveValue("top", 65, 55);
     }
   }
 
