@@ -5,7 +5,7 @@ const USER = 'santexsistem_gmail_com6809';
 const PASS = '27cwr7UCn%%8JDU';
 const DOMAIN = 'vh324.by3020.ihb.by';
 
-async function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 (async () => {
   const browser = await chromium.launch({ headless: false, slowMo: 300 });
@@ -13,102 +13,75 @@ async function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
   const page = await context.newPage();
 
   try {
-    // 1. LOGIN
-    console.log('[1] Login...');
-    for (let i = 0; i < 5; i++) {
-      try {
-        await page.goto(PLESK_URL, { timeout: 30000 });
-        break;
-      } catch {
-        if (i < 4) await sleep(15000);
-        else throw new Error('PLESK недоступен после 5 попыток');
-      }
-    }
+    // Шаг 2: Логин
+    console.log('[1] Логин...');
+    await page.goto(PLESK_URL, { timeout: 30000, waitUntil: 'domcontentloaded' });
     await page.fill('input[name="login_name"]', USER);
     await page.fill('input[name="passwd"]', PASS);
-    await page.click('button:has-text("Войти")');
+    await page.locator('button:has-text("Войти")').click();
     await page.waitForLoadState('domcontentloaded');
     await sleep(4000);
 
-    // 2. DOMAIN
-    console.log('[2] Domain...');
+    // Шаг 3: Выбор домена
+    console.log('[2] Домен...');
     await page.keyboard.press('Escape');
+    await sleep(300);
     await page.locator('#searchTerm').click();
+    await sleep(200);
     await page.keyboard.press('Control+a');
+    await sleep(100);
     await page.keyboard.press('Delete');
+    await sleep(200);
     await page.keyboard.type(DOMAIN, { delay: 50 });
     await sleep(2500);
 
-    let domainFound = false;
     for (const item of await page.locator('[role="option"]').all()) {
-      if ((await item.textContent())?.trim() === DOMAIN) {
-        await item.click();
-        domainFound = true;
-        break;
-      }
-    }
-    if (!domainFound) {
-      await page.keyboard.press('ArrowDown');
-      await page.keyboard.press('Enter');
+      const t = (await item.textContent())?.trim();
+      if (t === DOMAIN) { await item.click(); break; }
     }
     await sleep(3000);
 
-    if (!page.url().includes('/id/589/')) {
-      throw new Error('Wrong domain: ' + page.url());
-    }
-    console.log('   ✅', page.url());
+    const url1 = page.url();
+    if (!url1.includes('/id/589/')) throw new Error(`Wrong domain: ${url1}`);
+    console.log(`   ✅ ${url1}`);
 
-    // 3. SEARCH NODE.JS
-    console.log('[3] Searching Node.js...');
+    // Шаг 5 (restart): Node.js → Перезапустить приложение
+    console.log('[3] Перезапуск...');
     await page.keyboard.press('Escape');
+    await sleep(300);
     await page.locator('#searchTerm').click();
+    await sleep(200);
     await page.keyboard.press('Control+a');
+    await sleep(100);
     await page.keyboard.press('Delete');
+    await sleep(200);
     await page.keyboard.type('node.js', { delay: 50 });
     await sleep(2500);
 
     for (const item of await page.locator('[role="option"]').all()) {
-      if ((await item.textContent())?.trim() === 'Node.js') {
-        await item.click();
-        break;
-      }
+      const t = (await item.textContent())?.trim();
+      if (t === 'Node.js') { await item.click(); break; }
     }
     await sleep(3000);
 
-    const title = await page.locator('.page-content-header__title').textContent().catch(() => '');
-    if (!title.includes('Node.js')) {
-        // Попробовать прямой переход на страницу Node.js, если поиск не сработал
-        await page.goto('https://vh324.by3020.ihb.by:8443/smb/web/manage/nodejs/id/589', { timeout: 15000 }).catch(() => {});
-        await sleep(3000);
-    }
+    const nodeTitle = await page.locator('.page-content-header__title').textContent();
+    if (!nodeTitle.includes('Node.js на')) throw new Error('Not on Node.js page');
 
-    // 4. RESTART
-    console.log('[4] Restart...');
-    // Кнопка может появляться с задержкой — ждём до 15с
     const restartBtn = page.locator('button[data-test-id="restart-domain-button"]');
-    const btnVisible = await restartBtn.isVisible({ timeout: 15000 }).catch(() => false);
-    if (btnVisible) {
-        await restartBtn.scrollIntoViewIfNeeded();
-        await sleep(500);
-        await restartBtn.click();
-        await sleep(1500);
-        const confirmBtn = page.locator('button:has-text("Да")');
-        if (await confirmBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
-            await confirmBtn.click();
-        }
-        console.log('   ✅ Restart confirmed, waiting 20s...');
-        await sleep(20000);
+    if (await restartBtn.isVisible({ timeout: 15000 }).catch(() => false)) {
+      await restartBtn.scrollIntoViewIfNeeded();
+      await sleep(500);
+      await restartBtn.click();
+      console.log('   ✅ Перезапуск приложения');
     } else {
-      // fallback: maybe it's on the same page as run-script
-      console.log('   ⚠️ restart button not visible, checking page...');
-      throw new Error('restart-domain-button not found');
+      throw new Error('Кнопка перезапуска не найдена');
     }
 
-    console.log('\n✅ Приложение перезапущено!');
+    console.log('\n✅ Приложение перезапускается. Жди 20-30 сек.');
+    await page.screenshot({ path: 'restart-ok.png' });
+
   } catch (e) {
     console.error('❌', e.message);
     await page.screenshot({ path: 'restart-err.png' }).catch(() => {});
-  } finally {
-    await browser.close();
   }
 })();

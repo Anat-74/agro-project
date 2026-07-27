@@ -38,12 +38,10 @@ console.debug("global data:", global.value);
 
 <template>
   <header class="header">
-    <div class="header__banner-placeholder">
-      <BannerLayouts
-        :banner-text="global?.header?.bannerText"
-        :class="['header__banner', { 'header__banner_hidden': isTopFixed }]"
-      />
-    </div>
+    <BannerLayouts
+      :banner-text="global?.header?.bannerText"
+      :class="['header__banner', { 'header__banner_hidden': isTopFixed }]"
+    />
     <div
       class="header__container-top"
       :class="{ 'header__container-top_fixed': isTopFixed }"
@@ -121,6 +119,7 @@ console.debug("global data:", global.value);
         />
       </div>
     </div>
+    <div class="header__spacer" aria-hidden="true"></div>
   </header>
 
   <main class="page-main">
@@ -153,20 +152,24 @@ console.debug("global data:", global.value);
 .header {
   position: relative;
 
-  &__banner-placeholder {
-    position: relative;
-    flex-shrink: 0;
-    overflow: hidden;
-    background-color: var(--primary-color);
-    @include adaptiveValue("height", 60, 72);
+  // --- Mobile: all three header sections are position: fixed ---
+  @media (max-width: $tablet) {
+    // Spacer pushes <main> below the lowest fixed element
+    &__spacer {
+      display: block;
+      @include adaptiveValue("height", 129, 99);
+    }
   }
 
   &__banner {
-    position: absolute;
-    top: 0;
-    inset-inline: 0;
-    z-index: 5;
     transition: opacity 0.3s ease, transform 0.3s ease;
+
+    @media (max-width: $tablet) {
+      position: fixed;
+      top: 0;
+      inset-inline: 0;
+      z-index: 15;
+    }
 
     &_hidden {
       opacity: 0;
@@ -176,8 +179,6 @@ console.debug("global data:", global.value);
   }
 
   &__container-top {
-    position: fixed;
-    top: 0;
     z-index: 10;
     display: grid;
     grid-template-columns: auto 1fr auto auto auto;
@@ -187,6 +188,12 @@ console.debug("global data:", global.value);
     background-color: var(--bg);
     @include adaptiveValue("height", 65, 55);
     transition: box-shadow var(--transition-duration);
+
+    @media (max-width: $tablet) {
+      position: fixed;
+      top: 0;
+      inset-inline: 0;
+    }
 
     &_fixed {
       box-shadow: 0 toRem(2) toRem(8) rgba(0, 0, 0, 0.08);
@@ -198,10 +205,10 @@ console.debug("global data:", global.value);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
 
     @media (max-width: $tablet) {
-      position: absolute;
-      top: 100%;
+      position: fixed;
       inset-inline: 0;
       z-index: 9;
+      @include adaptiveValue("top", 65, 55);
     }
 
     &_hidden {
