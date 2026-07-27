@@ -37,11 +37,11 @@ console.debug("global data:", global.value);
 </script>
 
 <template>
-  <BannerLayouts
-    v-if="global"
-    :banner-text="global?.header?.bannerText"
-  />
   <header :class="['header']">
+    <BannerLayouts
+      v-if="global"
+      :banner-text="global?.header?.bannerText"
+    />
     <div class="header__container-top">
       <Logo
         v-if="global"
@@ -149,7 +149,7 @@ console.debug("global data:", global.value);
   // Mobile: sticky header — banner scrolls away, header stays at top
   @media (max-width: $tablet) {
     position: sticky;
-    top: 0;
+    @include adaptiveValue("top", -60, -72);
     z-index: 100;
   }
 
