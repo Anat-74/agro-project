@@ -68,7 +68,7 @@ console.debug("global data:", global.value);
         </NuxtLink>
       </ClientOnly>
     </div>
-    <div class="header__bottom" :class="{ 'header__bottom_hidden': isNavHidden }">
+    <div class="header__bottom" :class="{ 'header__bottom_hidden': isNavHidden, 'header__bottom_con-top-fixed': isTopFixed }">
       <div class="header__container-bottom">
         <UAnimatedText variant="wave" />
         <details class="header__more" name="header-more">
@@ -213,19 +213,16 @@ console.debug("global data:", global.value);
       inset-inline: 0;
       z-index: 9;
       @include adaptiveValue("top", 125, 127);
+
+      &_con-top-fixed {
+        @include adaptiveValue("top", 65, 55);
+      }
     }
 
     &_hidden {
       transform: translateY(-100%);
       opacity: 0;
       pointer-events: none;
-    }
-  }
-
-  // When container-top is fixed (banner hidden), bottom moves up by banner height
-  @media (max-width: $tablet) {
-    &:has(&__container-top_fixed) &__bottom {
-      @include adaptiveValue("top", 65, 55);
     }
   }
 
