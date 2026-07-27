@@ -1,5 +1,4 @@
 export const useStickyHeader = () => {
-  const isTopFixed = ref(false)
   const isNavHidden = ref(false)
   let lastScrollY = 0
   let ticking = false
@@ -9,15 +8,12 @@ export const useStickyHeader = () => {
     ticking = false
 
     if (window.innerWidth > 1024) {
-      isTopFixed.value = false
       isNavHidden.value = false
       lastScrollY = currentY
       return
     }
 
     const y = currentY
-
-    isTopFixed.value = y > 60
 
     if (y > lastScrollY && y > 80) {
       isNavHidden.value = true
@@ -44,5 +40,5 @@ export const useStickyHeader = () => {
     window.removeEventListener('scroll', onScroll)
   })
 
-  return { isTopFixed, isNavHidden }
+  return { isNavHidden }
 }

@@ -11,7 +11,7 @@ console.debug("auth state:", isAuthenticated.value);
 const cabinetT = computed(() => cabinetTranslations[currentLocale.value])
 const authT = computed(() => authTranslations[currentLocale.value])
 
-const { isTopFixed, isNavHidden } = useStickyHeader()
+const { isNavHidden } = useStickyHeader()
 
 const {
   data: global,
@@ -41,7 +41,7 @@ console.debug("global data:", global.value);
     v-if="global"
     :banner-text="global?.header?.bannerText"
   />
-  <header class="header" :class="{ 'header_fixed': isTopFixed }">
+  <header :class="['header']">
     <div class="header__container-top">
       <Logo
         v-if="global"
@@ -151,11 +151,6 @@ console.debug("global data:", global.value);
     position: sticky;
     top: 0;
     z-index: 100;
-
-    // Shadow when sticky is active
-    &_fixed {
-      box-shadow: 0 toRem(2) toRem(8) rgba(0, 0, 0, 0.08);
-    }
   }
 
 
