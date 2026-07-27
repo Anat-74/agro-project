@@ -43,8 +43,7 @@ console.debug("global data:", global.value);
       :class="['header__banner', { 'header__banner_hidden': isTopFixed }]"
     />
     <div
-      class="header__container-top"
-      :class="{ 'header__container-top_fixed': isTopFixed }"
+      :class="['header__container-top', { 'header__container-top_fixed': isTopFixed }]"
     >
       <Logo
         v-if="global"
@@ -68,7 +67,7 @@ console.debug("global data:", global.value);
         </NuxtLink>
       </ClientOnly>
     </div>
-    <div class="header__bottom" :class="{ 'header__bottom_hidden': isNavHidden, 'header__bottom_con-top-fixed': isTopFixed }">
+    <div :class="['header__bottom', { 'header__bottom_hidden': isNavHidden, 'header__bottom_con-top-fixed': isTopFixed }]">
       <div class="header__container-bottom">
         <UAnimatedText variant="wave" />
         <details class="header__more" name="header-more">
@@ -212,10 +211,10 @@ console.debug("global data:", global.value);
       position: fixed;
       inset-inline: 0;
       z-index: 9;
-      @include adaptiveValue("top", 125, 127);
+      @include adaptiveValue("top", 110, 112);
 
       &_con-top-fixed {
-        @include adaptiveValue("top", 65, 55);
+        @include adaptiveValue("top", 50, 45);
       }
     }
 
