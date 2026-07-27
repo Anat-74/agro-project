@@ -37,14 +37,12 @@ console.debug("global data:", global.value);
 </script>
 
 <template>
-  <header class="header">
-    <BannerLayouts
-      :banner-text="global?.header?.bannerText"
-      :class="['header__banner', { 'header__banner_hidden': isTopFixed }]"
-    />
-    <div
-      :class="['header__container-top', { 'header__container-top_fixed': isTopFixed }]"
-    >
+  <BannerLayouts
+    v-if="global"
+    :banner-text="global?.header?.bannerText"
+  />
+  <header class="header" :class="{ 'header_fixed': isTopFixed }">
+    <div class="header__container-top">
       <Logo
         v-if="global"
         class="header__logo"
@@ -67,7 +65,7 @@ console.debug("global data:", global.value);
         </NuxtLink>
       </ClientOnly>
     </div>
-    <div :class="['header__bottom', { 'header__bottom_hidden': isNavHidden, 'header__bottom_con-top-fixed': isTopFixed }]">
+    <div class="header__bottom" :class="{ 'header__bottom_hidden': isNavHidden }">
       <div class="header__container-bottom">
         <UAnimatedText variant="wave" />
         <details class="header__more" name="header-more">
@@ -118,7 +116,6 @@ console.debug("global data:", global.value);
         />
       </div>
     </div>
-    <div class="header__spacer" aria-hidden="true"></div>
   </header>
 
   <main class="page-main">
@@ -149,36 +146,23 @@ console.debug("global data:", global.value);
 
 <style lang="scss" scoped>
 .header {
-  position: relative;
-
-  // --- Mobile: all three header sections are position: fixed ---
+  // Mobile: sticky header — banner scrolls away, header stays at top
   @media (max-width: $tablet) {
-    // Spacer height = container-top height only (lowest fixed when scrolled)
-    &__spacer {
-      display: block;
-      @include adaptiveValue("height", 65, 55);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    // Shadow when sticky is active
+    &_fixed {
+      box-shadow: 0 toRem(2) toRem(8) rgba(0, 0, 0, 0.08);
     }
   }
 
-  &__banner {
-    transition: opacity 0.3s ease, transform 0.3s ease;
 
-    @media (max-width: $tablet) {
-      position: fixed;
-      top: 0;
-      inset-inline: 0;
-      z-index: 15;
-    }
-
-    &_hidden {
-      opacity: 0;
-      transform: translateY(-100%);
-      pointer-events: none;
-    }
-  }
 
   &__container-top {
-    z-index: 10;
+    position: relative;
+    z-index: 2;
     display: grid;
     grid-template-columns: auto 1fr auto auto auto;
     align-items: center;
@@ -186,39 +170,13 @@ console.debug("global data:", global.value);
     padding-block: toEm(16);
     background-color: var(--bg);
     @include adaptiveValue("height", 65, 55);
-    transition: box-shadow var(--transition-duration), top 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-
-    @media (max-width: $tablet) {
-      position: fixed;
-      inset-inline: 0;
-      will-change: top;
-      @include adaptiveValue("top", 60, 72);
-
-      &_fixed {
-        top: 0;
-      }
-    }
-
-    &_fixed {
-      box-shadow: 0 toRem(2) toRem(8) rgba(0, 0, 0, 0.08);
-    }
   }
 
   &__bottom {
+    position: relative;
+    z-index: 1;
     background-color: var(--bg-navigation);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, top 0.3s ease;
-
-    @media (max-width: $tablet) {
-      position: fixed;
-      inset-inline: 0;
-      z-index: 9;
-      will-change: top;
-      @include adaptiveValue("top", 135, 137);
-
-      &_con-top-fixed {
-        @include adaptiveValue("top", 75, 65);
-      }
-    }
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
 
     &_hidden {
       transform: translateY(-100%);

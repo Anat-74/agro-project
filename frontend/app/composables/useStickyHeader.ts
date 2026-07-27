@@ -17,8 +17,7 @@ export const useStickyHeader = () => {
 
     const y = currentY
 
-    if (y > 60) isTopFixed.value = true
-    if (y === 0) isTopFixed.value = false
+    isTopFixed.value = y > 60
 
     if (y > lastScrollY && y > 80) {
       isNavHidden.value = true
@@ -37,21 +36,12 @@ export const useStickyHeader = () => {
     }
   }
 
-  const onResize = () => {
-    if (window.innerWidth > 1024) {
-      isTopFixed.value = false
-      isNavHidden.value = false
-    }
-  }
-
   onMounted(() => {
     window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', onResize, { passive: true })
   })
 
   onUnmounted(() => {
     window.removeEventListener('scroll', onScroll)
-    window.removeEventListener('resize', onResize)
   })
 
   return { isTopFixed, isNavHidden }
