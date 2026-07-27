@@ -186,11 +186,12 @@ console.debug("global data:", global.value);
     padding-block: toEm(16);
     background-color: var(--bg);
     @include adaptiveValue("height", 65, 55);
-    transition: box-shadow var(--transition-duration), top 0.3s ease;
+    transition: box-shadow var(--transition-duration), top 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 
     @media (max-width: $tablet) {
       position: fixed;
       inset-inline: 0;
+      will-change: top;
       @include adaptiveValue("top", 60, 72);
 
       &_fixed {
@@ -211,10 +212,11 @@ console.debug("global data:", global.value);
       position: fixed;
       inset-inline: 0;
       z-index: 9;
-      @include adaptiveValue("top", 110, 112);
+      will-change: top;
+      @include adaptiveValue("top", 135, 137);
 
       &_con-top-fixed {
-        @include adaptiveValue("top", 50, 45);
+        @include adaptiveValue("top", 75, 65);
       }
     }
 
