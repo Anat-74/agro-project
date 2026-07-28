@@ -25,6 +25,9 @@ const { open, close, isOpen } = useDialog("hamburgerDialog", dialogElement, {
   useShowMethod: true,
 });
 
+const { width } = useViewport()
+const isTablet = computed(() => width.value <= 1024)
+
 const { currentLocale } = useLocale();
 const config = useRuntimeConfig();
 const { getProductLink } = useProductLink();
@@ -125,7 +128,7 @@ const openHamburger = () => {
       >{{ showHamburgerT.title }}
     </span>
   </div>
-  <Teleport to="body">
+  <Teleport to="body" :disabled="!isTablet">
     <dialog class="dialog-hamburger" ref="dialog-hamburger" id="dialogHamburger">
     <Loader v-if="pending" />
     <h2 class="visually-hidden">
