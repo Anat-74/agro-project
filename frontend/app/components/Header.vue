@@ -56,6 +56,8 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', onScroll)
 })
+
+const cartDialogRef = useTemplateRef<InstanceType<typeof CartDialog>>('cart-dialog')
 </script>
 
 <template>
@@ -74,7 +76,7 @@ onUnmounted(() => {
       />
       <ProductFilter class="header__search" />
       <ChatAssistant />
-      <Basket class="header__cart" />
+      <Basket class="header__cart" @open="cartDialogRef?.open?.()" />
       <ClientOnly>
         <NuxtLink
           :to="isAuthenticated ? `/${currentLocale}/cabinet` : `/${currentLocale}/auth/login`"
@@ -139,6 +141,7 @@ onUnmounted(() => {
       </div>
     </div>
   </header>
+  <CartDialog ref="cart-dialog" />
 </template>
 
 <style lang="scss" scoped>
