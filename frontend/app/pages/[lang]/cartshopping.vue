@@ -137,7 +137,7 @@ onMounted(() => {
               :alt="prod.name"
               width="200"
               height="150"
-              type="discount-content"
+              type="product"
               class="cart-recommend__image"
             />
             <span class="cart-recommend__name">{{ prod.name }}</span>
@@ -184,7 +184,7 @@ onMounted(() => {
               :alt="prod.name"
               width="200"
               height="150"
-              type="discount-content"
+              type="product"
               class="cart-recommend__image"
             />
             <span class="cart-recommend__name">{{ prod.name }}</span>
