@@ -132,6 +132,7 @@ export default defineNuxtConfig({
       siteUrl: process.env.SITE_URL || process.env.NUXT_PUBLIC_SITE_URL,
       strapi: {
         url: process.env.NUXT_PUBLIC_STRAPI_URL,
+        cookieName: "strapi_jwt",
       },
     },
   },
