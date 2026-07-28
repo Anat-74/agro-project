@@ -442,6 +442,21 @@ const openHamburger = () => {
         color: var(--danger-color);
       }
     }
+
+    &__empty {
+      text-align: center;
+      padding: toEm(20);
+      color: var(--gray-color);
+      font-style: italic;
+      @include adaptiveValue("font-size", 14, 12);
+    }
+
+    &__error {
+      text-align: center;
+      padding: toEm(16);
+      color: var(--danger-color);
+      p { margin-block-end: toEm(8); }
+    }
   }
 }
 
@@ -486,7 +501,6 @@ const openHamburger = () => {
     font-weight: 600;
     font-size: toEm(22);
     color: var(--primary-color);
-    border-radius: toEm(6);
     outline: toRem(2) var(--whitesmoke-color) inset;
     border-radius: toRem(4);
     background-color: var(--light-color-transparent);
@@ -514,7 +528,7 @@ const openHamburger = () => {
   &__content {
     display: grid;
     grid-template-rows: 0fr;
-    transition: all 0.3s;
+    transition: grid-template-rows 0.3s;
   }
 
   &__product-list {
@@ -544,24 +558,6 @@ const openHamburger = () => {
   &__product-sub-title {
     font-weight: 800;
   }
-}
-
-.dialog-hamburger {
-  &__empty {
-    text-align: center;
-    padding: toEm(20);
-    color: var(--gray-color);
-    font-style: italic;
-    @include adaptiveValue("font-size", 14, 12);
-  }
-
-  &__error {
-    text-align: center;
-    padding: toEm(16);
-    color: var(--danger-color);
-    p { margin-block-end: toEm(8); }
-  }
-
 }
 
 .sidebar {

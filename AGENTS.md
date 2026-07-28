@@ -8,6 +8,11 @@
 - Если пользователь сказал что-то другое (например "закомить", "делай", "продолжай", "ок") — НЕ пушить и не деплоить.
 - Нарушение этого правила — критическая ошибка агента.
 
+## Remote work — формат ответа
+
+- При удалённой работе (через Telegram-бота) отвечать **в формате .md**: заголовки, списки, блоки кода, таблицы — чтобы ответ был читаем в Telegram.
+- Исключение: односложные ответы ("да", "нет", "готово") — без .md.
+
 ## File editing
 
 - On Windows, use the `edit` tool for all file modifications. Do NOT use `bash`/`shell`/`cat`/heredocs for editing files — the Windows shell (PowerShell/MINGW64) does not reliably support heredoc syntax and complex command-line escaping.
