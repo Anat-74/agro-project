@@ -238,13 +238,18 @@ const statusLabel = computed(() => ({
 
   &__item {
     display: grid;
-    grid-template-columns: auto 1fr auto auto;
+    grid-template-columns: auto 1fr auto;
     gap: toRem(12);
     align-items: center;
-    padding: toRem(12);
+    padding: toRem(16);
     background: var(--bg-secondary);
     border-radius: toRem(10);
     transition: background var(--transition-duration);
+
+    @media (max-width: $mobile) {
+      grid-template-columns: 1fr;
+      gap: toRem(8);
+    }
 
     @include hover {
       background: var(--bg-hover);
@@ -252,14 +257,25 @@ const statusLabel = computed(() => ({
   }
 
   &__thumb {
-    width: toRem(48);
-    height: toRem(48);
+    width: toRem(52);
+    height: toRem(52);
 
     :deep(.app-image__img) {
-      width: toRem(48);
-      height: toRem(48);
+      width: toRem(52);
+      height: toRem(52);
       object-fit: cover;
-      border-radius: toRem(6);
+      border-radius: toRem(8);
+    }
+
+    @media (max-width: $mobile) {
+      width: 100%;
+      height: auto;
+
+      :deep(.app-image__img) {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1;
+      }
     }
   }
 
@@ -279,15 +295,24 @@ const statusLabel = computed(() => ({
 
   &__item-total {
     font-weight: 700;
-    @include adaptiveValue("font-size", 18, 16);
+    @include adaptiveValue("font-size", 20, 18);
     white-space: nowrap;
+
+    @media (max-width: $mobile) {
+      justify-self: end;
+    }
   }
 
   &__item-actions {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: toRem(6);
+    flex-direction: row;
+    align-items: center;
+    gap: toRem(12);
+
+    @media (max-width: $mobile) {
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
   }
 
   &__item-link {
@@ -303,12 +328,12 @@ const statusLabel = computed(() => ({
 
   &__cancel-btn {
     font-size: toRem(12);
-    padding: toRem(2) toRem(8);
+    padding: toRem(4) toRem(10);
   }
 
   &__repeat-btn {
     font-size: toRem(12);
-    padding: toRem(2) toRem(8);
+    padding: toRem(4) toRem(10);
   }
 
   &__filters {
@@ -333,7 +358,7 @@ const statusLabel = computed(() => ({
     align-items: center;
     justify-content: center;
     gap: toRem(16);
-    margin-block-start: toRem(20);
+    margin-block-start: toRem(24);
   }
 
   &__page-info {
@@ -345,7 +370,7 @@ const statusLabel = computed(() => ({
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: toRem(20);
-    padding: toRem(4) toRem(14);
+    padding: toRem(6) toRem(16);
     font-size: toRem(13);
     cursor: pointer;
     transition: all var(--transition-duration);
@@ -365,7 +390,7 @@ const statusLabel = computed(() => ({
     display: inline-block;
     font-size: toRem(12);
     font-weight: 600;
-    padding: toRem(2) toRem(10);
+    padding: toRem(3) toRem(12);
     border-radius: toRem(20);
     width: fit-content;
 

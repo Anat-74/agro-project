@@ -28,6 +28,7 @@ const cancelOrder = async () => {
     cancelling.value = false
   }
 }
+
 const orderKey = computed(() => `order-${route.params.orderId}`)
 
 const { data: order, status } = useAsyncData(
@@ -49,45 +50,43 @@ const statusLabel = computed(() => ({
   delivered: t.value.statusDelivered,
   cancelled: t.value.statusCancelled,
 }))
-
-const goBack = () => {
-  router.push(`/${currentLocale.value}/cabinet`)
-}
 </script>
 
 <template>
-  <div class="order-detail">
-    <UButton
-      variant="secondary"
-      :is-disabled="false"
-      class="order-detail__back"
-      @click="goBack"
-    >
-      ← {{ t.backToOrders }}
-    </UButton>
+  <CabinetLayout>
+    <div class="order-detail">
+      <h1 class="order-detail__title">{{ t.orderDetail }} #{{ orderId }}</h1>
 
-    <h1 class="order-detail__title">Заказ #{{ orderId }}</h1>
+      <p v-if="status === 'pending'" class="order-detail__status-text">{{ t.loading }}</p>
+      <p v-else-if="status === 'error'" class="order-detail__status-text">{{ t.error }}</p>
+      <p v-else-if="!order" class="order-detail__status-text">{{ t.notFound }}</p>
 
-    <p v-if="status === 'pending'" class="order-detail__loading">{{ t.loading }}</p>
+      <template v-else>
+        <div class="order-detail__card">
+          <div class="order-detail__meta">
+            <div class="order-detail__meta-row">
+              <span class="order-detail__meta-label">{{ t.status }}:</span>
+              <span
+                class="order-detail__badge"
+                :class="`order-detail__badge_${order.statusOrders || 'new'}`"
+              >
+                {{ (statusLabel as any)[order.statusOrders] || t.statusNew }}
+              </span>
+            </div>
+            <div class="order-detail__meta-row">
+              <span class="order-detail__meta-label">{{ t.date }}:</span>
+              <span>{{ new Date(order.createdAt).toLocaleDateString() }}</span>
+            </div>
+            <div class="order-detail__meta-row">
+              <span class="order-detail__meta-label">Email:</span>
+              <span>{{ order.email }}</span>
+            </div>
+            <div class="order-detail__meta-row">
+              <span class="order-detail__meta-label">{{ t.phone }}:</span>
+              <span>{{ order.phone }}</span>
+            </div>
+          </div>
 
-    <p v-else-if="status === 'error'" class="order-detail__loading">
-      {{ t.error }}
-    </p>
-
-    <p v-else-if="!order" class="order-detail__loading">
-      {{ t.notFound }}
-    </p>
-
-    <div v-else class="order-detail__card">
-      <div class="order-detail__meta">
-        <p>
-          <strong>{{ t.status }}:</strong>
-          <span
-            class="order-detail__badge"
-            :class="`order-detail__badge_${order.statusOrders || 'new'}`"
-          >
-            {{ (statusLabel as any)[order.statusOrders] || t.statusNew }}
-          </span>
           <UButton
             v-if="order.statusOrders === 'new' || order.statusOrders === 'processed'"
             variant="secondary"
@@ -97,57 +96,49 @@ const goBack = () => {
           >
             {{ cancelling ? t.cancelling : t.cancelOrder }}
           </UButton>
-        </p>
-        <p><strong>{{ t.date }}:</strong> {{ new Date(order.createdAt).toLocaleDateString() }}</p>
-        <p><strong>Email:</strong> {{ order.email }}</p>
-        <p><strong>Телефон:</strong> {{ order.phone }}</p>
-      </div>
+        </div>
 
-      <h2 class="order-detail__section-title">{{ t.items }}</h2>
-      <ul class="order-detail__items">
-        <li
-          v-for="(item, idx) in order.items"
-          :key="idx"
-          class="order-detail__item"
-        >
-          <UImage
-            v-if="item.mainImage"
-            :src="item.mainImage"
-            :alt="item.name"
-            type="thumbnail"
-            class="order-detail__item-img"
-          />
-          <span class="order-detail__item-name">{{ item.name }}</span>
-          <span class="order-detail__item-qty">{{ item.quantity }} шт.</span>
-          <span class="order-detail__item-price">{{ item.price }} ₽</span>
-        </li>
-      </ul>
+        <h2 class="order-detail__section-title">{{ t.items }}</h2>
 
-      <p class="order-detail__total">
-        <strong>{{ t.total }}:</strong> {{ order.total }} ₽
-      </p>
+        <div class="order-detail__items">
+          <div
+            v-for="(item, idx) in order.items"
+            :key="idx"
+            class="order-detail__item"
+          >
+            <UImage
+              v-if="item.mainImage"
+              :src="item.mainImage"
+              :alt="item.name"
+              type="thumbnail"
+              class="order-detail__item-img"
+            />
+            <div class="order-detail__item-info">
+              <span class="order-detail__item-name">{{ item.name }}</span>
+              <span class="order-detail__item-qty">{{ item.quantity }} шт.</span>
+            </div>
+            <span class="order-detail__item-price">{{ item.price }} ₽</span>
+          </div>
+        </div>
+
+        <div class="order-detail__total">
+          <span class="order-detail__total-label">{{ t.total }}:</span>
+          <span class="order-detail__total-value">{{ order.total }} ₽</span>
+        </div>
+      </template>
     </div>
-  </div>
+  </CabinetLayout>
 </template>
 
 <style lang="scss" scoped>
 .order-detail {
-  max-width: toRem(720);
-  margin-inline: auto;
-  padding-block: toRem(40);
-  padding-inline: toRem(16);
-
-  &__back {
-    margin-block-end: toRem(24);
-  }
-
   &__title {
     @include adaptiveValue("font-size", 26, 20);
     font-weight: 700;
     margin-block-end: toRem(24);
   }
 
-  &__loading {
+  &__status-text {
     text-align: center;
     padding-block: toRem(40);
     color: var(--text-muted);
@@ -157,34 +148,54 @@ const goBack = () => {
     background: var(--bg-secondary);
     border-radius: toRem(12);
     padding: toRem(24);
+    margin-block-end: toRem(24);
+    display: grid;
+    gap: toRem(16);
   }
 
   &__meta {
     display: grid;
+    gap: toRem(10);
+  }
+
+  &__meta-row {
+    display: flex;
+    align-items: center;
     gap: toRem(8);
-    margin-block-end: toRem(24);
+    font-size: toRem(15);
+    flex-wrap: wrap;
+  }
+
+  &__meta-label {
+    font-weight: 600;
+    min-width: toRem(80);
+    color: var(--text-muted);
   }
 
   &__section-title {
     font-weight: 600;
+    @include adaptiveValue("font-size", 20, 16);
     margin-block-end: toRem(12);
   }
 
   &__items {
     display: grid;
     gap: toRem(8);
+    margin-block-end: toRem(20);
   }
 
   &__item {
     display: grid;
-    grid-template-columns: auto 1fr auto auto;
+    grid-template-columns: auto 1fr auto;
     gap: toRem(12);
     align-items: center;
-    padding: toRem(8) 0;
-    border-block-end: 1px solid var(--border-color);
+    padding: toRem(12);
+    background: var(--bg-secondary);
+    border-radius: toRem(10);
 
-    &:last-child {
-      border-block-end: none;
+    @media (max-width: $mobile) {
+      grid-template-columns: 1fr;
+      justify-items: start;
     }
   }
 
@@ -198,6 +209,23 @@ const goBack = () => {
       object-fit: cover;
       border-radius: toRem(6);
     }
+
+    @media (max-width: $mobile) {
+      width: 100%;
+      height: auto;
+
+      :deep(.app-image__img) {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1;
+      }
+    }
+  }
+
+  &__item-info {
+    display: grid;
+    gap: toRem(4);
+    min-width: 0;
   }
 
   &__item-name {
@@ -205,57 +233,51 @@ const goBack = () => {
   }
 
   &__item-qty {
+    font-size: toRem(13);
     color: var(--text-muted);
   }
 
   &__item-price {
     font-weight: 600;
-    min-width: toRem(80);
-    text-align: end;
+    white-space: nowrap;
   }
 
   &__total {
-    margin-block-start: toRem(20);
-    text-align: end;
-    @include adaptiveValue("font-size", 20, 18);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: toRem(16);
+    background: var(--bg-secondary);
+    border-radius: toRem(10);
+  }
+
+  &__total-label {
+    font-weight: 600;
+    @include adaptiveValue("font-size", 18, 16);
+  }
+
+  &__total-value {
+    font-weight: 700;
+    @include adaptiveValue("font-size", 22, 18);
+    color: var(--primary-color);
   }
 
   &__cancel-btn {
-    margin-inline-start: toRem(16);
+    justify-self: start;
   }
 
   &__badge {
     display: inline-block;
     font-size: toRem(12);
     font-weight: 600;
-    padding: toRem(2) toRem(10);
+    padding: toRem(4) toRem(12);
     border-radius: toRem(20);
-    margin-inline-start: toRem(8);
 
-    &_new {
-      color: #2e7d32;
-      background: #e8f5e9;
-    }
-
-    &_processed {
-      color: #f57f17;
-      background: #fff8e1;
-    }
-
-    &_confirmed {
-      color: #1565c0;
-      background: #e3f2fd;
-    }
-
-    &_delivered {
-      color: #2e7d32;
-      background: #e8f5e9;
-    }
-
-    &_cancelled {
-      color: #c62828;
-      background: #ffebee;
-    }
+    &_new { color: #2e7d32; background: #e8f5e9; }
+    &_processed { color: #f57f17; background: #fff8e1; }
+    &_confirmed { color: #1565c0; background: #e3f2fd; }
+    &_delivered { color: #2e7d32; background: #e8f5e9; }
+    &_cancelled { color: #c62828; background: #ffebee; }
   }
 }
 </style>
