@@ -29,15 +29,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <ul class="cart-item">
-    <li
+  <div class="cart-items">
+    <div
       v-for="item in cartStore.items"
       :key="item.product.documentId"
-      class="cart-item__item"
+      class="cart-items__item"
     >
       <div
         v-if="item.product.originalLocale !== currentLocale"
-        class="cart-item__locale-warning"
+        class="cart-items__locale-warning"
       >
         <Icon name="mdi:alert" />
         <span>{{ cartT.warningLocale }}</span>
@@ -48,178 +48,196 @@ onMounted(() => {
         />
       </div>
 
-      <Icon
-        v-if="item.product.isDiscount"
-        class="cart-item__discount-icon"
-        name="mdi:discount"
-      />
-      <h3 class="cart-item__title">{{ item.product.name }}</h3>
-      <NuxtLink
-        v-if="getProductLink(item.product)"
-        :to="getProductLink(item.product)"
-        :class="[
-          'cart-item__link',
-          {
-            'cart-item__link_disabled':
-              item.product.originalLocale !== currentLocale,
-          },
-        ]"
-      >
-        <NuxtImg
-          class="cart-item__image"
-          :src="`${config.public.strapi.url}${item.product.mainImage}`"
-          :alt="item.product.name"
-          format="webp"
-          loading="lazy"
-          decoding="async"
-          width="144"
-          height="108"
-        />
-      </NuxtLink>
-      <NuxtImg
-        v-else
-        class="cart-item__image"
-        :src="`${config.public.strapi.url}${item.product.mainImage}`"
-        :alt="item.product.name"
-        format="webp"
-        loading="lazy"
-        decoding="async"
-        width="144"
-        height="108"
-      />
-      <span class="cart-item__price">
-        <Icon name="my-icon:icon-by-regular" />
-        {{ formatPrice(item.product.price) }}
-      </span>
-      <div class="cart-item__controls">
+      <div class="cart-items__main">
+        <NuxtLink
+          v-if="getProductLink(item.product)"
+          :to="getProductLink(item.product)"
+          :class="['cart-items__link', { 'cart-items__link_disabled': item.product.originalLocale !== currentLocale }]"
+        >
+          <NuxtImg
+            class="cart-items__image"
+            :src="`${config.public.strapi.url}${item.product.mainImage}`"
+            :alt="item.product.name"
+            format="webp"
+            loading="lazy"
+            decoding="async"
+            width="100"
+            height="75"
+          />
+        </NuxtLink>
+
+        <div class="cart-items__info">
+          <span v-if="item.product.isDiscount" class="cart-items__badge">
+            <Icon name="mdi:discount" />
+            {{ item.product.name }}
+          </span>
+          <span v-else class="cart-items__name">{{ item.product.name }}</span>
+
+          <span class="cart-items__price">
+            <Icon name="my-icon:icon-by-regular" />
+            {{ formatPrice(item.product.price) }}
+          </span>
+        </div>
+      </div>
+
+      <div class="cart-items__controls">
         <UButton
           @click="cartStore.updateQuantity(item.product.documentId, item.quantity - 1)"
           :disabled="item.quantity <= 1"
           variant="remove-quantity-prod"
           :aria-label="buttonT.ariaLabelReduceQuantity"
         />
+        <span class="cart-items__qty">{{ item.quantity }}</span>
         <UButton
           @click="cartStore.updateQuantity(item.product.documentId, item.quantity + 1)"
           variant="add-quantity-prod"
           :aria-label="buttonT.ariaLabelIncreaseQuantity"
         />
         <UButton
+          variant="secondary"
           @click="cartStore.removeFromCart(item.product.documentId)"
           icon="material-symbols:delete-outline-rounded"
           :aria-label="buttonT.ariaLabelRemoveItemFromCart"
+          class="cart-items__remove"
         />
       </div>
-    </li>
-  </ul>
+    </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
-.cart-item {
+.cart-items {
+  display: grid;
+  gap: toRem(16);
+
   &__item {
     position: relative;
     display: grid;
-    grid-template-columns: auto repeat(3, 1fr) auto;
-    justify-items: center;
-    align-items: center;
-    grid-template-areas:
-      "link title controls price remove"
-      "link title controls price remove"
-      ;
-    padding: toEm(7);
-    border: toRem(2) solid var(--danger-color);
-    border-radius: toRem(6);
+    gap: toRem(16);
+    padding: toRem(16);
+    background: var(--bg);
+    border-radius: toRem(10);
+    border: 1px solid var(--border-color);
 
-    &:not(:last-child) {
-      margin-block-end: toEm(16);
-    }
-
-    @media (max-width: toEm(639.98)) {
-      grid-template-columns: auto 1fr;
-      justify-items: start;
-      grid-template-areas:
-        "link price"
-        "link title"
-        "remove controls"
-        ;
+    @media (min-width: $mobile) {
+      grid-template-columns: 1fr auto;
+      align-items: center;
     }
   }
 
   &__locale-warning {
     position: absolute;
-    top: toRem(-2);
-    left: 0;
-    padding: toEm(4);
-    border-radius: toEm(4);
+    top: -1px;
+    left: -1px;
+    right: -1px;
     display: flex;
     align-items: center;
-    gap: toEm(8);
+    gap: toRem(8);
+    padding: toRem(6) toRem(12);
+    background: var(--whitesmoke-color);
+    border-radius: toRem(10) toRem(10) 0 0;
+    font-size: toRem(12);
     font-weight: 600;
-    background-color: var(--whitesmoke-color);
     color: var(--danger-color);
+    border: 1px solid var(--danger-color);
+    z-index: 1;
 
     svg {
-      font-size: toEm(18);
+      font-size: toRem(16);
+      flex-shrink: 0;
     }
   }
 
-  &__discount-icon {
-    position: absolute;
-    top: toEm(2);
-    left: toEm(2);
-    color: var(--lime-color);
-    font-size: toEm(20);
-  }
-
-  &__title {
-    grid-area: title;
-    color: var(--color);
-
-    @media (max-width: toEm(639.98)) {
-      align-self: start;
-    }
+  &__main {
+    display: flex;
+    gap: toRem(16);
+    align-items: flex-start;
+    min-width: 0;
   }
 
   &__link {
-    grid-area: link;
+    flex-shrink: 0;
+    transition: opacity var(--transition-duration);
 
     &_disabled {
       pointer-events: none;
-      opacity: 0.6;
+      opacity: 0.5;
     }
   }
 
   &__image {
+    width: toRem(100);
+    height: toRem(75);
+    object-fit: contain;
+    border-radius: toRem(6);
+    background: var(--bg-secondary);
+
     @media (max-width: $mobileSmall) {
-      width: toRem(122);
+      width: toRem(80);
+      height: toRem(60);
+    }
+  }
+
+  &__info {
+    display: grid;
+    gap: toRem(8);
+    align-content: start;
+    min-width: 0;
+  }
+
+  &__name {
+    font-weight: 600;
+    font-size: toRem(15);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: toRem(4);
+    font-weight: 600;
+    font-size: toRem(13);
+    color: var(--lime-color);
+    width: fit-content;
+
+    svg {
+      font-size: toRem(16);
     }
   }
 
   &__price {
-    grid-area: price;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: toRem(16);
     color: var(--primary-color);
+
+    svg {
+      translate: 0 toRem(2);
+    }
   }
 
   &__controls {
-    grid-area: controls;
     display: flex;
     align-items: center;
-    column-gap: toEm(12);
-    color: var(--color);
+    gap: toRem(8);
 
-    @media (max-width: $tablet) {
-      overflow: hidden;
-      border: toEm(2) solid var(--bg);
-      border-radius: toRem(25);
-    }
-
-    @media (max-width: toEm(639.98)) {
-      justify-self: end;
+    @media (max-width: $mobile) {
+      justify-content: flex-end;
     }
   }
 
-  &__remove-from-cart {
-    grid-area: remove;
+  &__qty {
+    font-weight: 600;
+    font-size: toRem(16);
+    min-width: toRem(24);
+    text-align: center;
+  }
+
+  &__remove {
+    margin-inline-start: toRem(4);
+    color: var(--danger-color);
   }
 }
 </style>
