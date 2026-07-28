@@ -125,7 +125,8 @@ const openHamburger = () => {
       >{{ showHamburgerT.title }}
     </span>
   </div>
-  <dialog class="dialog-hamburger" ref="dialog-hamburger" id="dialogHamburger">
+  <Teleport to="body">
+    <dialog class="dialog-hamburger" ref="dialog-hamburger" id="dialogHamburger">
     <Loader v-if="pending" />
     <h2 class="visually-hidden">
       {{ visuallyHiddenT.showModalMenuTitle }}
@@ -291,6 +292,7 @@ const openHamburger = () => {
       <Socials :is-open="isOpen" :socials="socials" />
     </div>
   </dialog>
+  </Teleport>
 </template>
 
 <style lang="scss" scoped>
