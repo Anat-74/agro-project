@@ -138,8 +138,8 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .cart-dialog {
+   margin: 0;
   margin-inline-start: auto;
-  margin: 0;
   height: 100dvh;
   max-height: 100dvh;
   max-width: 100dvw;
@@ -167,7 +167,6 @@ onMounted(() => {
 
   &::backdrop {
     background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(22px);
     opacity: 0;
     transition:
       opacity var(--transition-duration),
@@ -190,7 +189,8 @@ onMounted(() => {
   height: 100dvh;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  background: var(--bg);
+  background: transparent;
+  backdrop-filter: blur(22px);
 }
 
 // ====== Header ======
@@ -199,6 +199,7 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: toRem(16);
+  background: var(--bg);
   border-block-end: 1px solid var(--border-color);
 }
 
@@ -358,11 +359,13 @@ onMounted(() => {
 .cart-dialog__items {
   overflow-y: auto;
   padding: toRem(16);
+  background: var(--bg);
 }
 
 // ====== Order form ======
 .cart-dialog__order {
   padding: toRem(16);
+  background: var(--bg);
   border-block-start: 1px solid var(--border-color);
 }
 </style>
