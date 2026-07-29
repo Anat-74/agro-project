@@ -4,10 +4,19 @@ import { cartTranslations } from '~/locales/cart'
 const { currentLocale } = useLocale()
 const t = computed(() => cartTranslations[currentLocale.value])
 const cartStore = useCartStore()
+const { width } = useViewport()
 
 const emit = defineEmits<{
   open: []
 }>()
+
+function handleClick() {
+  if (width.value <= 1024) {
+    emit('open')
+  } else {
+    navigateTo(`/${currentLocale.value}/cartshopping`)
+  }
+}
 
 onMounted(() => {
   cartStore.loadCart()
@@ -18,7 +27,7 @@ onMounted(() => {
   <button
     class="cart-link"
     :aria-label="t.ariaLabelBasket"
-    @click="emit('open')"
+    @click="handleClick"
   >
     <span class="cart-link__price">{{ cartStore.totalItems }}</span>
     <Icon

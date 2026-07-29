@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ShowHamburger from '~/components/show-modal/ShowHamburger.vue'
-import CartDialog from '~/components/show-modal/CartDialog.vue'
+import ShowCartDialog from '~/components/show-modal/ShowCartDialog.vue'
 import { cabinetTranslations } from '~/locales/cabinet'
 import { authTranslations } from '~/locales/auth'
 
@@ -58,7 +58,7 @@ onUnmounted(() => {
   window.removeEventListener('scroll', onScroll)
 })
 
-const cartDialogRef = useTemplateRef<InstanceType<typeof CartDialog>>('cart-dialog')
+const cartDialogRef = useTemplateRef<InstanceType<typeof ShowCartDialog>>('cart-dialog')
 </script>
 
 <template>
@@ -142,7 +142,7 @@ const cartDialogRef = useTemplateRef<InstanceType<typeof CartDialog>>('cart-dial
       </div>
     </div>
   </header>
-  <CartDialog ref="cart-dialog" />
+  <ShowCartDialog ref="cart-dialog" />
 </template>
 
 <style lang="scss" scoped>
