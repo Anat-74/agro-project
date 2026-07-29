@@ -53,8 +53,8 @@ onMounted(() => {
     padding-inline: toRem(4);
     padding-block: toRem(1);
     position: absolute;
-    top: toRem(-27);
-    right: toRem(-7);
+    top: toRem(-18);
+    right: toRem(-6);
     font-weight: 500;
     border-radius: 50%;
     color: var(--light-color);

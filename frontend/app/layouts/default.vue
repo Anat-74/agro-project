@@ -26,7 +26,9 @@ console.debug("global data:", global.value);
 </script>
 
 <template>
-  <Header :global="global" />
+  <Header 
+   v-if="global"
+  :global="global" />
 
   <main class="page-main">
     <SearchOverlay />

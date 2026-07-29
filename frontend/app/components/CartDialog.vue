@@ -138,15 +138,12 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .cart-dialog {
-  padding: 0;
-  margin: 0;
   margin-inline-start: auto;
+  margin: 0;
   height: 100dvh;
   max-height: 100dvh;
-  @include adaptiveValue("width", 480, 320);
   max-width: 100dvw;
   background: transparent;
-  border: none;
   translate: 100%;
   opacity: 0;
   transition:
@@ -154,6 +151,7 @@ onMounted(() => {
     opacity var(--transition-duration),
     overlay var(--transition-duration) allow-discrete,
     display var(--transition-duration) allow-discrete;
+  @include adaptiveValue("width", 480, 320);
 
   &[open] {
     translate: 0;
@@ -168,7 +166,8 @@ onMounted(() => {
   }
 
   &::backdrop {
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(22px);
     opacity: 0;
     transition:
       opacity var(--transition-duration),
@@ -206,7 +205,6 @@ onMounted(() => {
 .cart-dialog__title {
   font-weight: 700;
   @include adaptiveValue("font-size", 22, 18);
-  margin: 0;
 }
 
 .cart-dialog__header-right {
@@ -236,13 +234,13 @@ onMounted(() => {
   cursor: pointer;
   transition: background var(--transition-duration);
 
+  @include hover {
+    background: var(--bg-secondary);
+  }
+
   svg {
     font-size: toRem(22);
     color: var(--color);
-  }
-
-  @include hover {
-    background: var(--bg-secondary);
   }
 }
 
@@ -273,8 +271,8 @@ onMounted(() => {
 
 .cart-dialog__empty-title {
   font-weight: 700;
-  @include adaptiveValue("font-size", 20, 18);
   margin: 0;
+  @include adaptiveValue("font-size", 20, 18);
 }
 
 .cart-dialog__empty-sub {
