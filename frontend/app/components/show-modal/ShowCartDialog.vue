@@ -194,7 +194,8 @@ onMounted(() => {
   height: 100dvh;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  background: var(--bg);
+  background: transparent;
+  backdrop-filter: blur(22px);
 }
 
 // ====== Header ======
