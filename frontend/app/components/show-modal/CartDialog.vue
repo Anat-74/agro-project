@@ -144,6 +144,10 @@ onMounted(() => {
   max-height: 100dvh;
   max-width: 100dvw;
   background: transparent;
+ border-width: 0 toEm(0) toEm(0) toEm(3);
+ border-radius: toEm(4);
+ border-style: solid;
+ border-color: var(--border-color-transparent);
   translate: 100%;
   opacity: 0;
   transition:
@@ -166,7 +170,7 @@ onMounted(() => {
   }
 
   &::backdrop {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.3);
     opacity: 0;
     transition:
       opacity var(--transition-duration),
@@ -189,7 +193,6 @@ onMounted(() => {
   height: 100dvh;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  background: transparent;
   backdrop-filter: blur(22px);
 }
 

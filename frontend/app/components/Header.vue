@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ShowHamburger from '~/components/show-modal/ShowHamburger.vue'
+import CartDialog from '~/components/show-modal/CartDialog.vue'
 import { cabinetTranslations } from '~/locales/cabinet'
 import { authTranslations } from '~/locales/auth'
 
