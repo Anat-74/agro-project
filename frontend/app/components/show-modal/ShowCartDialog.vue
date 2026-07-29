@@ -170,7 +170,8 @@ onMounted(() => {
   }
 
   &::backdrop {
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.15);
+    backdrop-filter: grayscale(100%);
     opacity: 0;
     transition:
       opacity var(--transition-duration),
@@ -193,7 +194,7 @@ onMounted(() => {
   height: 100dvh;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  backdrop-filter: blur(22px);
+  background: var(--bg);
 }
 
 // ====== Header ======
