@@ -26,7 +26,6 @@ const phoneValid = computed(() => form.phone.length >= phoneTarget.value)
 
 const phoneError = computed(() => {
   if (!form.phone) return t.value.errorRequired
-  if (!phoneValid.value) return `${phoneDigits.value} / ${phoneTarget.value}`
   return ''
 })
 
