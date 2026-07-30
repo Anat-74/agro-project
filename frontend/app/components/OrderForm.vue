@@ -19,8 +19,14 @@ const form = reactive({
 
 const emailError = computed(() => '')
 
+const phoneTarget = computed(() => form.phone.startsWith('+') ? 13 : 11)
+const phoneDigits = computed(() => form.phone.replace(/\D/g, '').length)
+const phoneProgress = computed(() => Math.min(form.phone.length / phoneTarget.value, 1))
+const phoneValid = computed(() => form.phone.length >= phoneTarget.value)
+
 const phoneError = computed(() => {
   if (!form.phone) return t.value.errorRequired
+  if (!phoneValid.value) return `${phoneDigits.value} / ${phoneTarget.value}`
   return ''
 })
 
@@ -30,7 +36,7 @@ const agreeError = computed(() => {
 })
 
 const canSubmit = computed(() =>
-  !emailError.value && !phoneError.value && !agreeError.value
+  !emailError.value && phoneValid.value && !agreeError.value
 )
 
 watch(() => authStore.user?.email, (email) => {
@@ -83,6 +89,22 @@ const submitOrder = async () => {
       class="order-form__input"
       @input="form.phone = form.phone.replace(/[^\d+]/g, '')"
     />
+    <div v-if="form.phone" class="order-form__phone-progress">
+      <div class="order-form__phone-bar">
+        <div
+          class="order-form__phone-fill"
+          :style="{ width: phoneProgress * 100 + '%' }"
+          :class="{ 'order-form__phone-fill_done': phoneValid }"
+        />
+      </div>
+      <span
+        class="order-form__phone-count"
+        :class="{ 'order-form__phone-count_done': phoneValid }"
+      >
+        {{ phoneDigits.value }} / {{ phoneTarget.value }}
+        <template v-if="phoneValid"> ✓</template>
+      </span>
+    </div>
     <UInput
       v-model="form.agree"
       :label="t.checkbox"
@@ -134,6 +156,45 @@ const submitOrder = async () => {
 
   &__checkbox {
     @include adaptiveValue("margin-block-end", 18, 14);
+  }
+
+  &__phone-progress {
+    display: flex;
+    align-items: center;
+    gap: toRem(8);
+    margin-block-end: toRem(10);
+  }
+
+  &__phone-bar {
+    flex: 1;
+    height: toRem(4);
+    border-radius: toRem(2);
+    background: var(--border-color);
+    overflow: hidden;
+  }
+
+  &__phone-fill {
+    height: 100%;
+    border-radius: toRem(2);
+    background: var(--warning-color);
+    transition: width 0.3s;
+  }
+
+  &__phone-fill_done {
+    background: var(--success-color);
+  }
+
+  &__phone-count {
+    font-size: toRem(11);
+    white-space: nowrap;
+    color: var(--text-muted);
+    min-width: toRem(48);
+    text-align: right;
+  }
+
+  &__phone-count_done {
+    color: var(--success-color);
+    font-weight: 600;
   }
 
   &__submit-error {
