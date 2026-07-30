@@ -207,6 +207,7 @@ onMounted(() => {
   align-items: center;
   padding: toRem(16);
   background: var(--bg);
+  opacity: 0.95;
   border-radius: toRem(10);
   border: 1px solid var(--border-color);
 }
@@ -366,15 +367,17 @@ onMounted(() => {
 // ====== Items area ======
 .cart-dialog__items {
   overflow-y: auto;
-  padding: toRem(16);
-  background: var(--bg);
-  border-radius: toRem(10);
+  padding: toRem(12);
+  display: flex;
+  flex-direction: column;
+  gap: toRem(8);
 }
 
 // ====== Order form ======
 .cart-dialog__order {
   padding: toRem(16);
   background: var(--bg);
+  opacity: 0.95;
   border-radius: toRem(10);
   border: 1px solid var(--border-color);
 }
