@@ -33,42 +33,23 @@ defineExpose({ open, close, isOpen })
   width: 90dvw;
   box-shadow: 0 toRem(8) toRem(32) rgba(0, 0, 0, 0.15);
   scale: 0;
-  opacity: 0;
   transition:
     scale var(--transition-duration),
-    opacity var(--transition-duration),
     overlay var(--transition-duration) allow-discrete,
     display var(--transition-duration) allow-discrete;
 
   &[open] {
     scale: 1;
-    opacity: 1;
   }
 
   @starting-style {
     &[open] {
       scale: 0;
-      opacity: 0;
     }
   }
 
   &::backdrop {
     background: rgba(0, 0, 0, 0.2);
-    opacity: 0;
-    transition:
-      opacity var(--transition-duration),
-      overlay var(--transition-duration) allow-discrete,
-      display var(--transition-duration) allow-discrete;
-  }
-
-  &[open]::backdrop {
-    opacity: 1;
-  }
-
-  @starting-style {
-    &[open]::backdrop {
-      opacity: 0;
-    }
   }
 }
 

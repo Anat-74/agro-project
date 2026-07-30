@@ -103,17 +103,21 @@ defineEmits<Emits>();
     justify-content: center;
   }
 
-  //   &_primary {
-  //     background-color: var(--color);
-  //     color: var(--light-color);
-  //     border: 1px solid var(--color);
-  //     transition: background-color var(--transition-duration), color var(--transition-duration);
+  &_primary {
+    background-color: var(--color);
+    color: var(--light-color);
+    border: 1px solid var(--color);
+    transition: background-color var(--transition-duration), color var(--transition-duration), transform var(--transition-duration);
 
-  //     @include hover {
-  //       background-color: var(--secondary-color);
-  //       color: var(--color);
-  //     }
-  //   }
+    &:active {
+      transform: scale(0.97);
+    }
+
+    @include hover {
+      background-color: var(--secondary-color);
+      color: var(--color);
+    }
+  }
 
   //   &_secondary {
   //     background-color: var(--secondary-color);

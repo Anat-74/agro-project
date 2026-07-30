@@ -84,6 +84,7 @@ const submitOrder = async () => {
 
     <div class="order-form__submit-wrapper">
       <UButton
+        variant="primary"
         class="order-form__submit"
         :is-disabled="isSubmitting || !canSubmit"
         @click="submitOrder"

@@ -390,13 +390,18 @@ onMounted(() => {
 
 // ====== Checkout button ======
 .cart-dialog__checkout-btn {
-  width: 100%;
-  max-width: toRem(340);
+  max-width: toRem(320);
   margin-inline: auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: toRem(8);
+  padding-block: toRem(6);
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  :deep(.button-content) {
+    flex: 1;
+    justify-content: space-between;
+  }
 }
 
 .cart-dialog__checkout-label {
