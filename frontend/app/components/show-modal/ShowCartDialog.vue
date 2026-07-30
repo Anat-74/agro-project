@@ -16,6 +16,7 @@ const { open, close, isOpen } = useDialog('cartDialog', dialogRef, { useShowMeth
 defineExpose({ open, close, isOpen })
 
 const checkoutDialogRef = useTemplateRef<HTMLDialogElement>('checkout-dialog')
+const { open: openCheckout, close: closeCheckout } = useDialog('cartCheckout', checkoutDialogRef, { useShowMethod: false })
 
 // Discount products for recommendations
 const { data: discountProducts } = useAsyncData(
@@ -134,10 +135,13 @@ onMounted(() => {
           <UButton
             variant="primary"
             class="cart-dialog__checkout-btn"
-            @click="checkoutDialogRef?.showModal?.()"
+            @click="openCheckout"
           >
-            <Icon name="my-icon:icon-by-regular" />
-            {{ formatPrice(cartStore.totalPrice) }}
+            <span class="cart-dialog__checkout-label">Оформить</span>
+            <span class="cart-dialog__checkout-price">
+              <Icon name="my-icon:icon-by-regular" />
+              {{ formatPrice(cartStore.totalPrice) }}
+            </span>
           </UButton>
         </div>
       </template>
@@ -152,12 +156,12 @@ onMounted(() => {
         <button
           class="checkout-dialog__close"
           aria-label="Закрыть"
-          @click="checkoutDialogRef?.close?.()"
+          @click="closeCheckout"
         >
           <Icon name="mingcute:close-line" />
         </button>
       </header>
-      <OrderForm @order-success="() => checkoutDialogRef?.close?.()" />
+      <OrderForm @order-success="closeCheckout" />
     </div>
   </dialog>
 </template>
@@ -402,6 +406,25 @@ onMounted(() => {
 // ====== Checkout button ======
 .cart-dialog__checkout-btn {
   width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: toRem(8);
+}
+
+.cart-dialog__checkout-label {
+  font-weight: 600;
+}
+
+.cart-dialog__checkout-price {
+  display: flex;
+  align-items: center;
+  gap: toRem(4);
+  font-weight: 700;
+
+  svg {
+    font-size: toRem(14);
+  }
 }
 
 // ====== Order form ======
