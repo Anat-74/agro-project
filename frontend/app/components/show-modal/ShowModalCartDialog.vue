@@ -131,19 +131,17 @@ onMounted(() => {
         <div class="cart-dialog__items">
           <CartShopping />
         </div>
-        <div class="cart-dialog__order">
-          <UButton
-            variant="primary"
-            class="cart-dialog__checkout-btn"
-            @click="checkoutDialogRef?.open?.()"
-          >
-            <span class="cart-dialog__checkout-label">Оформить</span>
-            <span class="cart-dialog__checkout-price">
-              <Icon name="my-icon:icon-by-regular" />
-              {{ formatPrice(cartStore.totalPrice) }}
-            </span>
-          </UButton>
-        </div>
+        <UButton
+          variant="primary"
+          class="cart-dialog__checkout-btn"
+          @click="checkoutDialogRef?.open?.()"
+        >
+          <span class="cart-dialog__checkout-label">Оформить</span>
+          <span class="cart-dialog__checkout-price">
+            <Icon name="my-icon:icon-by-regular" />
+            {{ formatPrice(cartStore.totalPrice) }}
+          </span>
+        </UButton>
       </template>
     </div>
   </dialog>
@@ -390,12 +388,13 @@ onMounted(() => {
 
 // ====== Checkout button ======
 .cart-dialog__checkout-btn {
-  max-width: toRem(320);
-  margin-inline: auto;
-  padding-block: toRem(6);
+  width: 100%;
+  padding-block: toRem(12);
+  border-radius: toRem(10);
 
   &:active {
     transform: scale(0.97);
+    box-shadow: inset 0 toRem(2) toRem(4) rgba(0, 0, 0, 0.2);
   }
 
   :deep(.button-content) {
@@ -417,15 +416,6 @@ onMounted(() => {
   svg {
     font-size: toRem(14);
   }
-}
-
-// ====== Order form ======
-.cart-dialog__order {
-  padding: toRem(16);
-  background: var(--bg);
-  opacity: 0.95;
-  border-radius: toRem(10);
-  border: 1px solid var(--border-color);
 }
 
 </style>

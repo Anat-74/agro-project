@@ -8,16 +8,13 @@ defineExpose({ open, close, isOpen })
 <template>
   <dialog ref="checkout-dialog" class="checkout-dialog">
     <div class="checkout-dialog__panel">
-      <header class="checkout-dialog__header">
-        <h2 class="checkout-dialog__title">Оформление</h2>
-        <button
-          class="checkout-dialog__close"
-          aria-label="Закрыть"
-          @click="close"
-        >
-          <Icon name="mingcute:close-line" />
-        </button>
-      </header>
+      <button
+        class="checkout-dialog__close"
+        aria-label="Закрыть"
+        @click="close"
+      >
+        <Icon name="mingcute:close-line" />
+      </button>
       <OrderForm @order-success="close" />
     </div>
   </dialog>
@@ -31,7 +28,7 @@ defineExpose({ open, close, isOpen })
   background: var(--bg);
   max-width: toRem(420);
   width: 90dvw;
-  box-shadow: 0 toRem(8) toRem(32) rgba(0, 0, 0, 0.15);
+  box-shadow: 0 toRem(8) toRem(32) rgba(0, 0, 0, 0.45);
   scale: 0;
   transition:
     scale var(--transition-duration),
@@ -49,7 +46,22 @@ defineExpose({ open, close, isOpen })
   }
 
   &::backdrop {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    transition:
+      opacity var(--transition-duration),
+      overlay var(--transition-duration) allow-discrete,
+      display var(--transition-duration) allow-discrete;
+  }
+
+  &[open]::backdrop {
+    opacity: 1;
+  }
+
+  @starting-style {
+    &[open]::backdrop {
+      opacity: 0;
+    }
   }
 }
 
