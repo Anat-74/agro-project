@@ -10,18 +10,20 @@ const authStore = useAuthStore()
 const emit = defineEmits(['order-success'])
 
 const isSubmitting = ref(false)
+const submitError = ref('')
 const form = reactive({
   email: '',
   phone: '',
   agree: false,
 })
 
-const phoneDigits = computed(() => form.phone.replace(/\D/g, ''))
-const phoneValid = computed(() => phoneDigits.value.length >= 6)
+const emailError = computed(() => {
+  if (!authStore.isAuthenticated && !form.email) return t.value.errorRequired
+  return ''
+})
 
 const phoneError = computed(() => {
   if (!form.phone) return t.value.errorRequired
-  if (!phoneValid.value) return t.value.errorPhoneFormat
   return ''
 })
 
@@ -31,7 +33,7 @@ const agreeError = computed(() => {
 })
 
 const canSubmit = computed(() =>
-  form.agree && form.phone && phoneValid.value
+  !emailError.value && !phoneError.value && !agreeError.value
 )
 
 watch(() => authStore.user?.email, (email) => {
@@ -39,6 +41,7 @@ watch(() => authStore.user?.email, (email) => {
 })
 
 const submitOrder = async () => {
+  submitError.value = ''
   if (!canSubmit.value) return
 
   isSubmitting.value = true
@@ -50,8 +53,9 @@ const submitOrder = async () => {
     form.email = ''
     form.phone = ''
     form.agree = false
-  } catch (error) {
-    alert('Ошибка: ' + error)
+  } catch (error: any) {
+    const msg = error?.error?.message || error?.message || 'Ошибка оформления заказа'
+    submitError.value = msg
   } finally {
     isSubmitting.value = false
   }
@@ -69,6 +73,7 @@ const submitOrder = async () => {
       v-model="form.email"
       :label="t.email"
       type="email"
+      :error="emailError"
       class="order-form__input"
     />
     <UInput
@@ -88,6 +93,8 @@ const submitOrder = async () => {
       :error="agreeError"
       class="order-form__checkbox"
     />
+
+    <p v-if="submitError" class="order-form__submit-error">{{ submitError }}</p>
 
     <div class="order-form__submit-wrapper">
       <UButton
@@ -130,6 +137,13 @@ const submitOrder = async () => {
 
   &__checkbox {
     @include adaptiveValue("margin-block-end", 18, 14);
+  }
+
+  &__submit-error {
+    color: var(--danger-color);
+    font-size: toRem(13);
+    text-align: center;
+    margin: 0;
   }
 
   &__submit-wrapper {
