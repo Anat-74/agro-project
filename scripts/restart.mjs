@@ -45,36 +45,25 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
     if (!url1.includes('/id/589/')) throw new Error(`Wrong domain: ${url1}`);
     console.log(`   ✅ ${url1}`);
 
-    // Шаг 5 (restart): Node.js → Перезапустить приложение
-    console.log('[3] Перезапуск...');
-    await page.keyboard.press('Escape');
-    await sleep(300);
-    await page.locator('#searchTerm').click();
-    await sleep(200);
-    await page.keyboard.press('Control+a');
-    await sleep(100);
-    await page.keyboard.press('Delete');
-    await sleep(200);
-    await page.keyboard.type('node.js', { delay: 50 });
-    await sleep(2500);
-
-    for (const item of await page.locator('[role="option"]').all()) {
-      const t = (await item.textContent())?.trim();
-      if (t === 'Node.js') { await item.click(); break; }
-    }
+    // Шаг 4: Node.js → Перезапустить приложение
+    console.log('[3] Node.js...');
+    await page.goto(`${PLESK_URL}/modules/nodejs/index.php/domain/index?dom_id=589&site_id=589`, { timeout: 30000, waitUntil: 'domcontentloaded' });
     await sleep(3000);
 
-    const nodeTitle = await page.locator('.page-content-header__title').textContent();
-    if (!nodeTitle.includes('Node.js на')) throw new Error('Not on Node.js page');
-
-    const restartBtn = page.getByRole('button', { name: 'Перезапустить приложение' });
+    const restartBtn = page.getByRole('button', { name: /Перезапустить|Restart/i });
     if (await restartBtn.isVisible({ timeout: 15000 }).catch(() => false)) {
       await restartBtn.scrollIntoViewIfNeeded();
       await sleep(500);
       await restartBtn.click();
       console.log('   ✅ Перезапуск приложения');
     } else {
-      throw new Error('Кнопка перезапуска не найдена');
+      const fallbackBtn = page.locator('button:has-text("Перезапустить")');
+      if (await fallbackBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+        await fallbackBtn.click();
+        console.log('   ✅ Перезапуск приложения (fallback)');
+      } else {
+        throw new Error('Кнопка перезапуска не найдена');
+      }
     }
 
     console.log('\n✅ Приложение перезапускается. Жди 20-30 сек.');

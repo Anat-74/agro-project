@@ -136,15 +136,8 @@ try {
 
   // ====== 4. NODE.JS BUILD ======
   console.log('[4] Node.js...');
-  await searchNav(page, 'node.js', 'Node.js');
-  await sleep(1000);
-
-  const nodeTitle = await checkTitle(page, 'Node.js на');
-  if (!nodeTitle) {
-    console.log('   ❌ Не Node.js страница, abort');
-    throw new Error('Not on Node.js page');
-  }
-  console.log('   ✅ Node.js страница');
+  await page.goto(`${PLESK_URL}/modules/nodejs/index.php/domain/index?dom_id=589&site_id=589`, { timeout: 30000, waitUntil: 'domcontentloaded' });
+  await sleep(3000);
 
   // Запустить скрипт
   const scriptBtn = page.locator('button[data-test-id="run-script-button"]');
