@@ -102,6 +102,10 @@ const submitOrder = async () => {
           :class="{ 'order-form__phone-fill_done': phoneValid }"
         />
       </div>
+      <span
+        v-if="phoneValid"
+        class="order-form__phone-check"
+      >✓</span>
     </div>
     <UInput
       v-model="form.agree"
@@ -180,6 +184,13 @@ const submitOrder = async () => {
 
   &__phone-fill_done {
     background: var(--success-color);
+  }
+
+  &__phone-check {
+    font-size: toRem(14);
+    font-weight: 700;
+    color: var(--success-color);
+    flex-shrink: 0;
   }
 
   &__submit-error {

@@ -293,7 +293,6 @@ onMounted(() => {
   padding: toRem(32) toRem(16);
   text-align: center;
   overflow-y: auto;
-  overflow-x: hidden;
 }
 
 .cart-dialog__empty-icon {
