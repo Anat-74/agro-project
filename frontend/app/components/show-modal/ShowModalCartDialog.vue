@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ShowModalCheckoutForm from '~/components/show-modal/ShowModalCheckoutForm.vue'
 import { cartTranslations } from '~/locales/cart'
 import { discountProductTranslations } from '~/locales/discountProduct'
 import { buttonTranslations } from '~/locales/button'
@@ -15,8 +16,7 @@ const { open, close, isOpen } = useDialog('cartDialog', dialogRef, { useShowMeth
 
 defineExpose({ open, close, isOpen })
 
-const checkoutDialogRef = useTemplateRef<HTMLDialogElement>('checkout-dialog')
-const { open: openCheckout, close: closeCheckout } = useDialog('cartCheckout', checkoutDialogRef, { useShowMethod: false })
+const checkoutDialogRef = useTemplateRef<InstanceType<typeof ShowModalCheckoutForm>>('checkoutDialogRef')
 
 // Discount products for recommendations
 const { data: discountProducts } = useAsyncData(
@@ -135,7 +135,7 @@ onMounted(() => {
           <UButton
             variant="primary"
             class="cart-dialog__checkout-btn"
-            @click="openCheckout"
+            @click="checkoutDialogRef?.open?.()"
           >
             <span class="cart-dialog__checkout-label">Оформить</span>
             <span class="cart-dialog__checkout-price">
@@ -148,22 +148,7 @@ onMounted(() => {
     </div>
   </dialog>
 
-  <!-- Checkout dialog -->
-  <dialog ref="checkout-dialog" class="checkout-dialog">
-    <div class="checkout-dialog__panel">
-      <header class="checkout-dialog__header">
-        <h2 class="checkout-dialog__title">{{ cartT.title }}</h2>
-        <button
-          class="checkout-dialog__close"
-          aria-label="Закрыть"
-          @click="closeCheckout"
-        >
-          <Icon name="mingcute:close-line" />
-        </button>
-      </header>
-      <OrderForm @order-success="closeCheckout" />
-    </div>
-  </dialog>
+  <ShowModalCheckoutForm ref="checkoutDialogRef" />
 </template>
 
 <style lang="scss" scoped>
@@ -406,6 +391,8 @@ onMounted(() => {
 // ====== Checkout button ======
 .cart-dialog__checkout-btn {
   width: 100%;
+  max-width: toRem(340);
+  margin-inline: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -436,88 +423,4 @@ onMounted(() => {
   border: 1px solid var(--border-color);
 }
 
-// ====== Checkout dialog (centered, scale animation) ======
-.checkout-dialog {
-  padding: 0;
-  border: none;
-  border-radius: toRem(12);
-  background: var(--bg);
-  max-width: toRem(420);
-  width: 90dvw;
-  scale: 0;
-  opacity: 0;
-  transition:
-    scale var(--transition-duration),
-    opacity var(--transition-duration),
-    overlay var(--transition-duration) allow-discrete,
-    display var(--transition-duration) allow-discrete;
-
-  &[open] {
-    scale: 1;
-    opacity: 1;
-  }
-
-  @starting-style {
-    &[open] {
-      scale: 0;
-      opacity: 0;
-    }
-  }
-
-  &::backdrop {
-    background: rgba(0, 0, 0, 0.2);
-    opacity: 0;
-    transition:
-      opacity var(--transition-duration),
-      overlay var(--transition-duration) allow-discrete,
-      display var(--transition-duration) allow-discrete;
-  }
-
-  &[open]::backdrop {
-    opacity: 1;
-  }
-
-  @starting-style {
-    &[open]::backdrop {
-      opacity: 0;
-    }
-  }
-}
-
-.checkout-dialog__panel {
-  display: grid;
-  gap: toRem(16);
-  padding: toRem(24);
-}
-
-.checkout-dialog__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.checkout-dialog__title {
-  font-weight: 700;
-  @include adaptiveValue("font-size", 20, 18);
-  margin: 0;
-}
-
-.checkout-dialog__close {
-  display: grid;
-  place-items: center;
-  width: toRem(32);
-  height: toRem(32);
-  border-radius: 50%;
-  cursor: pointer;
-  transition: background var(--transition-duration);
-
-  @include hover {
-    background: var(--bg-secondary);
-  }
-
-  svg {
-    font-size: toRem(20);
-    color: var(--color);
-  }
-}
 </style>
