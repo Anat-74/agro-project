@@ -194,6 +194,8 @@ onMounted(() => {
   height: 100dvh;
   display: grid;
   grid-template-rows: auto 1fr auto;
+  gap: toRem(4);
+  padding: toRem(4);
   background: transparent;
   backdrop-filter: blur(22px);
 }
@@ -205,7 +207,8 @@ onMounted(() => {
   align-items: center;
   padding: toRem(16);
   background: var(--bg);
-  border-block-end: 1px solid var(--border-color);
+  border-radius: toRem(10);
+  border: 1px solid var(--border-color);
 }
 
 .cart-dialog__title {
@@ -365,12 +368,14 @@ onMounted(() => {
   overflow-y: auto;
   padding: toRem(16);
   background: var(--bg);
+  border-radius: toRem(10);
 }
 
 // ====== Order form ======
 .cart-dialog__order {
   padding: toRem(16);
   background: var(--bg);
-  border-block-start: 1px solid var(--border-color);
+  border-radius: toRem(10);
+  border: 1px solid var(--border-color);
 }
 </style>
