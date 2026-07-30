@@ -17,10 +17,7 @@ const form = reactive({
   agree: false,
 })
 
-const emailError = computed(() => {
-  if (!authStore.isAuthenticated && !form.email) return t.value.errorRequired
-  return ''
-})
+const emailError = computed(() => '')
 
 const phoneError = computed(() => {
   if (!form.phone) return t.value.errorRequired
