@@ -67,7 +67,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
     const nodeTitle = await page.locator('.page-content-header__title').textContent();
     if (!nodeTitle.includes('Node.js на')) throw new Error('Not on Node.js page');
 
-    const restartBtn = page.locator('button[data-test-id="restart-domain-button"]');
+    const restartBtn = page.getByRole('button', { name: 'Перезапустить приложение' });
     if (await restartBtn.isVisible({ timeout: 15000 }).catch(() => false)) {
       await restartBtn.scrollIntoViewIfNeeded();
       await sleep(500);

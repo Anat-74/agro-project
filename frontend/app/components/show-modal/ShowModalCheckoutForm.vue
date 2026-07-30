@@ -1,10 +1,8 @@
 <script setup lang="ts">
-defineExpose({ open, close, isOpen })
-
 const dialogRef = useTemplateRef<HTMLDialogElement>('checkout-dialog')
 const { open, close, isOpen } = useDialog('cartCheckout', dialogRef, { useShowMethod: false })
 
-const cartStore = useCartStore()
+defineExpose({ open, close, isOpen })
 </script>
 
 <template>
