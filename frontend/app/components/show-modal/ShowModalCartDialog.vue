@@ -99,10 +99,10 @@ onMounted(() => {
 
         <div v-if="discountProducts?.length" class="cart-dialog__recommend">
           <div class="cart-dialog__recommend-header">
-            <Icon name="mdi:fire" />
-            <h3>{{ discountT.discount }}</h3>
+            <Icon name="mdi:fire" class="cart-dialog__recommend-fire" />
+            <span class="cart-dialog__recommend-title">{{ discountT.discount }}</span>
           </div>
-          <div class="cart-dialog__recommend-grid">
+          <div class="cart-dialog__recommend-track">
             <NuxtLink
               v-for="prod in discountProducts"
               :key="prod.documentId"
@@ -113,8 +113,8 @@ onMounted(() => {
                 v-if="prod.mainImage?.url || prod.image?.length"
                 :src="prod.mainImage?.url || prod.image?.[0]?.url"
                 :alt="prod.name"
-                width="120"
-                height="90"
+                width="100"
+                height="75"
                 type="thumbnail"
               />
               <div class="cart-dialog__recommend-info">
@@ -122,6 +122,23 @@ onMounted(() => {
                 <span class="cart-dialog__recommend-price">{{ formatPrice(prod.price) }}</span>
               </div>
             </NuxtLink>
+          </div>
+        </div>
+
+        <div class="cart-dialog__delivery">
+          <div class="cart-dialog__delivery-header">
+            <Icon name="mingcute:truck-line" class="cart-dialog__delivery-icon" />
+            <span class="cart-dialog__delivery-title">{{ cartT.deliveryTitle }}</span>
+          </div>
+          <div class="cart-dialog__delivery-items">
+            <div class="cart-dialog__delivery-item">
+              <Icon name="mingcute:check-line" />
+              <span>{{ cartT.deliveryFree }}</span>
+            </div>
+            <div class="cart-dialog__delivery-item">
+              <Icon name="mingcute:check-line" />
+              <span>{{ cartT.deliveryPay }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -321,29 +338,48 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: toRem(6);
-  margin-block-end: toRem(12);
+  margin-block-end: toRem(8);
 
   svg {
     font-size: toRem(20);
     color: var(--warning-color);
   }
+}
 
-  h3 {
-    font-weight: 600;
-    font-size: toRem(16);
-    margin: 0;
+.cart-dialog__recommend-fire {
+  flex-shrink: 0;
+}
+
+.cart-dialog__recommend-title {
+  font-weight: 700;
+  font-size: toRem(15);
+  color: var(--color);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.cart-dialog__recommend-track {
+  display: flex;
+  gap: toRem(8);
+  overflow-x: auto;
+  scrollbar-width: thin;
+  padding-block-end: toRem(4);
+
+  &::-webkit-scrollbar {
+    height: toRem(4);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: toRem(2);
   }
 }
 
-.cart-dialog__recommend-grid {
-  display: grid;
-  gap: toRem(8);
-}
-
 .cart-dialog__recommend-card {
-  display: flex;
-  gap: toRem(12);
-  align-items: center;
+  flex-shrink: 0;
+  width: toRem(160);
+  display: grid;
+  gap: toRem(6);
   padding: toRem(8);
   border-radius: toRem(8);
   background: var(--bg-secondary);
@@ -358,15 +394,14 @@ onMounted(() => {
 
 .cart-dialog__recommend-info {
   display: grid;
-  gap: toRem(4);
-  min-width: 0;
+  gap: toRem(2);
 }
 
 .cart-dialog__recommend-name {
   font-weight: 500;
-  font-size: toRem(14);
+  font-size: toRem(13);
   display: -webkit-box;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -374,7 +409,52 @@ onMounted(() => {
 .cart-dialog__recommend-price {
   font-weight: 700;
   color: var(--primary-color);
-  font-size: toRem(15);
+  font-size: toRem(14);
+}
+
+// ====== Delivery info ======
+.cart-dialog__delivery {
+  width: 100%;
+  margin-block-start: toRem(20);
+  padding: toRem(12);
+  background: var(--bg-secondary);
+  border-radius: toRem(8);
+}
+
+.cart-dialog__delivery-header {
+  display: flex;
+  align-items: center;
+  gap: toRem(6);
+  margin-block-end: toRem(8);
+}
+
+.cart-dialog__delivery-icon {
+  font-size: toRem(18);
+  color: var(--primary-color);
+}
+
+.cart-dialog__delivery-title {
+  font-weight: 600;
+  font-size: toRem(14);
+}
+
+.cart-dialog__delivery-items {
+  display: grid;
+  gap: toRem(4);
+}
+
+.cart-dialog__delivery-item {
+  display: flex;
+  align-items: center;
+  gap: toRem(6);
+  font-size: toRem(13);
+  color: var(--text-muted);
+
+  svg {
+    font-size: toRem(14);
+    color: var(--success-color);
+    flex-shrink: 0;
+  }
 }
 
 // ====== Items area ======

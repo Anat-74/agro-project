@@ -103,13 +103,6 @@ const submitOrder = async () => {
           :class="{ 'order-form__phone-fill_done': phoneValid }"
         />
       </div>
-      <span
-        class="order-form__phone-count"
-        :class="{ 'order-form__phone-count_done': phoneValid }"
-      >
-        {{ phoneDigits.value }} / {{ phoneTarget.value }}
-        <template v-if="phoneValid"> ✓</template>
-      </span>
     </div>
     <UInput
       v-model="form.agree"
@@ -188,19 +181,6 @@ const submitOrder = async () => {
 
   &__phone-fill_done {
     background: var(--success-color);
-  }
-
-  &__phone-count {
-    font-size: toRem(11);
-    white-space: nowrap;
-    color: var(--text-muted);
-    min-width: toRem(48);
-    text-align: right;
-  }
-
-  &__phone-count_done {
-    color: var(--success-color);
-    font-weight: 600;
   }
 
   &__submit-error {

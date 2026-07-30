@@ -9,6 +9,9 @@ export const cartTranslations: Record<LocaleCode, {
    total: string
    warningLocale: string
    recommendTitle: string
+   deliveryTitle: string
+   deliveryFree: string
+   deliveryPay: string
  }> = {
    ru: {
      title: 'Корзина',
@@ -20,7 +23,10 @@ export const cartTranslations: Record<LocaleCode, {
      cartEmptyCta: 'Перейти в каталог',
      total: 'Всего товаров:',
      warningLocale: 'Для просмотра описания товара, переключите язык на:',
-     recommendTitle: 'С этим заказывают'
+     recommendTitle: 'С этим заказывают',
+     deliveryTitle: 'Доставка и оплата',
+     deliveryFree: 'Бесплатно от 100 р',
+     deliveryPay: 'Оплата при получении или картой',
    },
    be: {
      title: 'Кошык',
@@ -32,6 +38,9 @@ export const cartTranslations: Record<LocaleCode, {
      cartEmptyCta: 'Перайсці ў каталог',
      total: 'Усяго тавараў:',
      warningLocale: 'Для прагляду апісання тавару, пераключыце мову на:',
-     recommendTitle: 'З гэтым замаўляюць'
+     recommendTitle: 'З гэтым замаўляюць',
+     deliveryTitle: 'Дастаўка і аплата',
+     deliveryFree: 'Бясплатна ад 100 р',
+     deliveryPay: 'Аплата пры атрыманні або карткай',
    }
  }
