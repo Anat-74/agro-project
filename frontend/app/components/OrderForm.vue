@@ -43,6 +43,12 @@ watch(() => authStore.user?.email, (email) => {
   if (email) form.email = email
 })
 
+function onPhoneInput(e: Event) {
+  const target = e.target as HTMLInputElement
+  const digits = target.value.replace(/[^\d]/g, '')
+  form.phone = target.value.startsWith('+') ? '+' + digits : digits
+}
+
 const submitOrder = async () => {
   submitError.value = ''
   if (!canSubmit.value) return
@@ -87,7 +93,7 @@ const submitOrder = async () => {
       :error="phoneError"
       placeholder="+375 (29) XXX-XX-XX"
       class="order-form__input"
-      @input="form.phone = form.phone.replace(/[^\d+]/g, '')"
+      @input="onPhoneInput"
     />
     <div v-if="form.phone" class="order-form__phone-progress">
       <div class="order-form__phone-bar">
