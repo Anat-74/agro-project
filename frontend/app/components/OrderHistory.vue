@@ -257,26 +257,7 @@ const statusLabel = computed(() => ({
   }
 
   &__thumb {
-    width: toRem(52);
-    height: toRem(52);
-
-    :deep(.app-image__img) {
-      width: toRem(52);
-      height: toRem(52);
-      object-fit: cover;
-      border-radius: toRem(8);
-    }
-
-    @media (max-width: $mobile) {
-      width: 100%;
-      height: auto;
-
-      :deep(.app-image__img) {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 1;
-      }
-    }
+    flex-shrink: 0;
   }
 
   &__item-info {
@@ -367,6 +348,7 @@ const statusLabel = computed(() => ({
   }
 
   &__filter-btn {
+    color: var(--color);
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
     border-radius: toRem(20);

@@ -200,26 +200,7 @@ const statusLabel = computed(() => ({
   }
 
   &__item-img {
-    width: toRem(48);
-    height: toRem(48);
-
-    :deep(.app-image__img) {
-      width: toRem(48);
-      height: toRem(48);
-      object-fit: cover;
-      border-radius: toRem(6);
-    }
-
-    @media (max-width: $mobile) {
-      width: 100%;
-      height: auto;
-
-      :deep(.app-image__img) {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 1;
-      }
-    }
+    flex-shrink: 0;
   }
 
   &__item-info {

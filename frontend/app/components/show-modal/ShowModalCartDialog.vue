@@ -293,6 +293,11 @@ onMounted(() => {
   padding: toRem(32) toRem(16);
   text-align: center;
   overflow-y: auto;
+  overflow-x: hidden;
+
+  > * {
+    min-width: 0;   // разрешить grid-элементам сужаться под контейнер
+  }
 }
 
 .cart-dialog__empty-icon {
@@ -330,6 +335,7 @@ onMounted(() => {
 // ====== Recommendations ======
 .cart-dialog__recommend {
   width: 100%;
+  min-width: 0;
   margin-block-start: toRem(24);
   text-align: start;
 }

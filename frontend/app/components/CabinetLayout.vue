@@ -27,7 +27,7 @@ const navItems = computed(() => [
   },
   {
     label: authT.value.logout,
-    icon: 'cil:exit',
+    icon: 'mdi:logout',
     to: null,
     action: handleLogout,
   },

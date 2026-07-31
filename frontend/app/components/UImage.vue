@@ -70,6 +70,8 @@ type ImageTypeConfig = {
   quality?: number;
   sizes?: string;
   priority?: boolean;
+  width?: number;
+  height?: number;
 };
 
 // Конфигурация по типам
@@ -94,7 +96,8 @@ const typeConfigs: Record<string, ImageTypeConfig> = {
   // Миниатюры для галерей, превью
   thumbnail: {
     quality: 85,
-    sizes: "200px",
+    width: 52,
+    height: 52,
   },
   // Основные изображения в текстовом контенте
   content: {
@@ -114,6 +117,11 @@ const typeConfigs: Record<string, ImageTypeConfig> = {
 };
 
 const configForType = computed(() => typeConfigs[props.type]);
+const resolvedWidth = computed(() => props.width ?? configForType.value?.width);
+const resolvedHeight = computed(() => props.height ?? configForType.value?.height);
+const resolvedSizes = computed(() =>
+  props.sizes || configForType.value?.sizes || (resolvedWidth.value ? `${resolvedWidth.value}px` : undefined)
+);
 
 // Определяем, является ли изображение SVG
 const isSvg = computed(() => {
@@ -153,9 +161,9 @@ const finalSrc = computed(() => {
       v-if="!isSvg"
       :src="finalSrc"
       :alt="alt"
-      :width="width"
-      :height="height"
-      :sizes="props.sizes || configForType?.sizes"
+      :width="resolvedWidth"
+      :height="resolvedHeight"
+      :sizes="resolvedSizes"
       :format="props.format"
       :quality="props.quality"
       :loading="props.loading"
@@ -168,8 +176,8 @@ const finalSrc = computed(() => {
       v-else
       :src="finalSrc"
       :alt="alt"
-      :width="width"
-      :height="height"
+      :width="resolvedWidth"
+      :height="resolvedHeight"
       :loading="'eager'"
       :class="['app-image__img', `app-image__img_${type}`]"
       decoding="async"
@@ -242,6 +250,17 @@ const finalSrc = computed(() => {
       img {
       border-radius: toEm(12);
    }
+  }
+
+  &_thumbnail {
+    width: toEm(52);
+    aspect-ratio: 1;
+
+    .app-image__img {
+      width: 100%;
+      height: 100%;
+      border-radius: toRem(8);
+    }
   }
 }
 </style>
