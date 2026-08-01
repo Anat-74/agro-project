@@ -55,7 +55,7 @@ const visibleImagesCount = computed(() => {
         :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
         width="100"
         height="100"
-        type="discount-product"
+        type="product"
       />
     </NuxtLink>
     <h3 class="discount-card__title" itemprop="name">{{ product.name }}</h3>

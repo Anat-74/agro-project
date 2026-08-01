@@ -62,13 +62,13 @@ const { saleProd } = defineProps<Props>();
                   <Icon name="mingcute:arrow-right-line" />
                </div>
          </div>
-       <UImage
+        <UImage
           v-if="saleProd?.[1]?.image?.url"
           :src="saleProd?.[1].image.url"
           :alt="saleProd?.[1]?.heading"
           width="302"
           height="417"
-          type="discount-content"
+          type="product"
         />
         </div>
       </div>

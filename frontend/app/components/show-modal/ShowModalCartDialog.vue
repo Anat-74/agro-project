@@ -113,9 +113,9 @@ onMounted(() => {
                 v-if="prod.mainImage?.url || prod.image?.length"
                 :src="prod.mainImage?.url || prod.image?.[0]?.url"
                 :alt="prod.name"
-                width="100"
-                height="75"
-                type="thumbnail"
+                type="product"
+                width="160"
+                height="120"
               />
               <div class="cart-dialog__recommend-info">
                 <span class="cart-dialog__recommend-name">{{ prod.name }}</span>

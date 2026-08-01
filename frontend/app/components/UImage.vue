@@ -7,7 +7,7 @@ const props = withDefaults(
     src?: string;
     alt?: string;
 
-    // Размеры
+    // Размеры (контекстные — задаются на местах использования)
     width?: string | number;
     height?: string | number;
 
@@ -28,14 +28,11 @@ const props = withDefaults(
     // Плавный переход при загрузке изображения
     smoothLoad?: boolean;
 
-    // Тип изображения
+    // Тип изображения (стили берутся из компонента)
     type?:
-      | "discount-content"
       | "product"
-      | "discount-product"
       | "hero"
       | "avatar"
-      | "thumbnail"
       | "logo"
       | "icon"
   }>(),
@@ -49,12 +46,10 @@ const props = withDefaults(
   }
 );
 
-// Обработчик загрузки изображения
 const emit = defineEmits<{
   load: [Event];
 }>();
 
-// Обработчик загрузки изображения
 const loaded = ref(false);
 
 const onImageLoad = (event: Event) => {
@@ -64,63 +59,17 @@ const onImageLoad = (event: Event) => {
   emit("load", event);
 };
 
-// Типы для конфигурации
-type ImageTypeConfig = {
-  loading?: "lazy" | "eager";
-  quality?: number;
-  sizes?: string;
-  priority?: boolean;
-  width?: number;
-  height?: number;
+// sizes — подсказка для выбора бандла в srcset.
+// Приоритет: явный проп > подсказка типа > производная от ширины (ширину задают на местах).
+const typeSizes: Record<string, string> = {
+  hero: "100vw sm:100vw md:90vw lg:80vw xl:1200px",
+  avatar: "200px",
+  logo: "100px",
+  icon: "64px",
 };
 
-// Конфигурация по типам
-const typeConfigs: Record<string, ImageTypeConfig> = {
-  // Главное изображение на странице
-  hero: {
-    sizes: "100vw sm:100vw md:90vw lg:80vw xl:1200px",
-  },
-  // Изображение-обложка для элементов (подкатегории, продукты и т.д.)
-  product: {
-     quality: 80,
-   //  sizes: "100vw xs:100vw sm:33.33vw md:25vw lg:20vw xl:20vw"
-   },
-   discountProduct: {
-      sizes: "50vw md:50vw xl:33.33vw"
-  },
-  // Изображения пользователей/аватарки
-  avatar: {
-    quality: 90,
-    sizes: "200px",
-  },
-  // Миниатюры для галерей, превью
-  thumbnail: {
-    quality: 85,
-    width: 52,
-    height: 52,
-  },
-  // Основные изображения в текстовом контенте
-  content: {
-    quality: 85,
-   //  sizes: "200px",
-  },
-  // Логотипы брендов и компаний
-  logo: {
-    quality: 100,
-    sizes: "100px",
-  },
-  // Иконки интерфейса
-  icon: {
-    quality: 100,
-    sizes: "64px",
-  },
-};
-
-const configForType = computed(() => typeConfigs[props.type]);
-const resolvedWidth = computed(() => props.width ?? configForType.value?.width);
-const resolvedHeight = computed(() => props.height ?? configForType.value?.height);
 const resolvedSizes = computed(() =>
-  props.sizes || configForType.value?.sizes || (resolvedWidth.value ? `${resolvedWidth.value}px` : undefined)
+  props.sizes || typeSizes[props.type] || (props.width ? `${props.width}px` : undefined)
 );
 
 // Определяем, является ли изображение SVG
@@ -131,17 +80,14 @@ const isSvg = computed(() => {
 
 // Обработка пути
 const finalSrc = computed(() => {
-  // Если уже полный URL
   if (props.src?.startsWith("http") || props.src?.startsWith("//")) {
     return props.src;
   }
 
-  // Если из Strapi
   if (props.fromStrapi || props.src?.includes("uploads")) {
     return `${config.public.strapi.url}${props.src}`;
   }
 
-  // Локальные изображения
   return props.src?.startsWith("/") ? props.src : `/image/${props.src}`;
 });
 </script>
@@ -161,8 +107,8 @@ const finalSrc = computed(() => {
       v-if="!isSvg"
       :src="finalSrc"
       :alt="alt"
-      :width="resolvedWidth"
-      :height="resolvedHeight"
+      :width="width"
+      :height="height"
       :sizes="resolvedSizes"
       :format="props.format"
       :quality="props.quality"
@@ -176,8 +122,8 @@ const finalSrc = computed(() => {
       v-else
       :src="finalSrc"
       :alt="alt"
-      :width="resolvedWidth"
-      :height="resolvedHeight"
+      :width="width"
+      :height="height"
       :loading="'eager'"
       :class="['app-image__img', `app-image__img_${type}`]"
       decoding="async"
@@ -229,38 +175,46 @@ const finalSrc = computed(() => {
   }
 
   &_product {
-   flex: 1 1 auto;
-   max-width: toEm(200); 
-  }
-
-    &_discount-content {
-   @media (max-width:$tablet){
-      display: none;
-   }
-
-   img {
-      height: toEm(417);
-      border-radius: toRem(6);
-      @include adaptiveValue("width", 302, 194, 0, $containerWidth, 1023.98);
-   }
-  }
-
-  &_discount-product {
-   max-width: toEm(100);
-      img {
-      border-radius: toEm(12);
-   }
-  }
-
-  &_thumbnail {
-    width: toEm(52);
-    aspect-ratio: 1;
+    width: 100%;
+    max-width: toEm(200);
+    aspect-ratio: 4 / 3;
 
     .app-image__img {
       width: 100%;
       height: 100%;
+      object-fit: contain;
       border-radius: toRem(8);
     }
+
+    // Все container queries — здесь, в компоненте.
+    // Контейнер `product` задаётся на обёртке места использования (containerParent).
+    @container product (min-width: 20rem) {
+      max-width: toEm(220);
+    }
+
+    @container product (min-width: 28rem) {
+      max-width: toEm(260);
+    }
+
+    @container product (min-width: 40rem) {
+      max-width: toEm(290);
+    }
+
+    // Миниатюры — свой узкий контейнер product-thumb (обёртка галереи)
+    @container product-thumb (min-width: 5rem) {
+      max-width: toEm(80);
+    }
   }
+
+  // Тип discount-content удалён — всё что было, переведено на product.
+  // При необходимости вернуть старые размеры:
+  // &_discount-content {
+  //   @media (max-width: $tablet) { display: none; }
+  //   img {
+  //     height: toEm(417);
+  //     border-radius: toRem(6);
+  //     @include adaptiveValue("width", 302, 194, 0, $containerWidth, 1023.98);
+  //   }
+  // }
 }
 </style>

@@ -50,9 +50,9 @@ const handleAddToCart = () => {
         <UImage
           :src="product.image"
           :alt="product.name"
+          type="product"
           width="80"
-          height="80"
-          type="thumbnail"
+          height="60"
           class="chat-product-card__image"
         />
         <Icon

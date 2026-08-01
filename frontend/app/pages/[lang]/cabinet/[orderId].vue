@@ -110,7 +110,9 @@ const statusLabel = computed(() => ({
               v-if="item.mainImage"
               :src="item.mainImage"
               :alt="item.name"
-              type="thumbnail"
+              type="product"
+              width="150"
+              height="112"
               class="order-detail__item-img"
             />
             <div class="order-detail__item-info">

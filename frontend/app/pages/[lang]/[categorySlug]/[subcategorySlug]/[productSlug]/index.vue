@@ -175,14 +175,13 @@ const handleAddToCart = (product: Product) => {
         <ProductStatus :product="product" class="wrapper-left__in-stock" />
         <ShareButton class="wrapper-left__share" />
       </div>
-      <NuxtImg
+      <UImage
         v-if="currentImage"
         :src="currentImage"
         :alt="product.name"
-        format="webp"
-        decoding="async"
-        width="580"
-        height="436"
+        type="product"
+        width="290"
+        height="218"
         class="wrapper-left__image"
       />
       <ul v-if="product.image?.length" class="wrapper-left__thumbnails">
@@ -196,13 +195,12 @@ const handleAddToCart = (product: Product) => {
           @mouseover="setCurrentImage(img.url)"
           @click="setCurrentImage(img.url)"
         >
-          <NuxtImg
+          <UImage
             :src="`${config.public.strapi.url}${img.url}`"
             :alt="`${product.name} - Image ${index + 1}`"
-            format="webp"
-            decoding="async"
-            width="133"
-            height="100"
+            type="product"
+            width="80"
+            height="60"
             class="wrapper-left__thumbnail-image"
           />
         </li>
@@ -261,6 +259,7 @@ const handleAddToCart = (product: Product) => {
   display: flex;
   flex-direction: column;
   row-gap: toEm(16);
+  @include containerParent(product, inline-size);
 
   &__row-top {
     display: grid;
@@ -310,6 +309,7 @@ const handleAddToCart = (product: Product) => {
     align-items: center;
     justify-content: center;
     gap: toEm(10);
+    @include containerParent(product-thumb, inline-size);
 
     @media (max-width: $tablet) {
       margin-block-end: toEm(22);

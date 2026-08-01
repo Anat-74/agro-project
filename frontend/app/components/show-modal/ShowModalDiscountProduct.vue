@@ -110,9 +110,9 @@ const handleAddToCart = () => {
           :key="img.documentId || img.id"
           :src="img.url"
           :alt="product.name"
+          type="product"
           width="200"
-          height="200"
-          type="thumbnail"
+          height="150"
         />
         <MDC :value="details.description" />
         <ProductCharacteristics
