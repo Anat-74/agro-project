@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { nextTick } from 'vue'
 import ShowModalCheckoutForm from '~/components/show-modal/ShowModalCheckoutForm.vue'
+import ShowModalProduct from '~/components/show-modal/ShowModalProduct.vue'
 import { cartTranslations } from '~/locales/cart'
 import { discountProductTranslations } from '~/locales/discountProduct'
 import { buttonTranslations } from '~/locales/button'
@@ -44,18 +46,18 @@ const { data: discountProducts } = useAsyncData(
   { server: false, lazy: true },
 )
 
-function getProductLink(prod: Product): string {
-  const cat = (prod as any)?.subcategory?.category?.slug
-  const sub = (prod as any)?.subcategory?.slug
-  if (cat && sub) return `/${currentLocale.value}/${cat}/${sub}/${prod.slug}`
-  const cat2 = (prod as any)?.category?.slug
-  if (cat2) return `/${currentLocale.value}/${cat2}/products/${prod.slug}`
-  return `/${currentLocale.value}`
+function closeAndGoToCatalog() {
+  close?.()
+  navigateTo(`/${currentLocale.value}`)
 }
 
-function closeAndGoToCatalog() {
-  close()
-  navigateTo(`/${currentLocale.value}`)
+// Превью товара из рекомендаций (переиспользуемая модалка, как в профиле)
+const previewProduct = ref<Product | null>(null)
+const previewModalRef = useTemplateRef<InstanceType<typeof ShowModalProduct>>('preview-product-modal')
+
+function openPreview(prod: Product) {
+  previewProduct.value = prod
+  nextTick(() => previewModalRef.value?.openModal?.())
 }
 
 onMounted(() => {
@@ -103,11 +105,12 @@ onMounted(() => {
             <span class="cart-dialog__recommend-title">{{ discountT.discount }}</span>
           </div>
           <div class="cart-dialog__recommend-track">
-            <NuxtLink
+            <button
               v-for="prod in discountProducts"
               :key="prod.documentId"
-              :to="getProductLink(prod)"
+              type="button"
               class="cart-dialog__recommend-card"
+              @click="openPreview(prod)"
             >
               <UImage
                 v-if="prod.mainImage?.url || prod.image?.length"
@@ -121,7 +124,7 @@ onMounted(() => {
                 <span class="cart-dialog__recommend-name">{{ prod.name }}</span>
                 <span class="cart-dialog__recommend-price">{{ formatPrice(prod.price) }}</span>
               </div>
-            </NuxtLink>
+            </button>
           </div>
         </div>
 
@@ -164,6 +167,12 @@ onMounted(() => {
   </dialog>
 
   <ShowModalCheckoutForm ref="checkoutDialogRef" />
+  <ShowModalProduct
+    v-if="previewProduct"
+    ref="preview-product-modal"
+    :product="previewProduct"
+    hide-trigger
+  />
 </template>
 
 <style lang="scss" scoped>
@@ -387,10 +396,13 @@ onMounted(() => {
   display: grid;
   gap: toRem(6);
   padding: toRem(8);
+  border: none;
   border-radius: toRem(8);
   background: var(--bg-secondary);
-  text-decoration: none;
   color: var(--color);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
   transition: background var(--transition-duration);
 
   @include hover {

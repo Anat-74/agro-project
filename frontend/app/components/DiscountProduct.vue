@@ -83,7 +83,7 @@ const visibleImagesCount = computed(() => {
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock'"
     />
-    <ShowModalDiscountProduct :product="product" />
+    <ShowModalProduct :product="product" />
     <UButton
       class="discount-card__add"
       @click="handleAddToCart(product)"

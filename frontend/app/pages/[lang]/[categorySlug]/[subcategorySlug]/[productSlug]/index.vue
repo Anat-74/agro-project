@@ -153,7 +153,7 @@ const handleAddToCart = (product: Product) => {
   <section
     v-if="product"
     aria-labelledby="product-description"
-    class="product-review"
+    class="product-review product-review__container"
   >
     <h1 class="visually-hidden" id="product-description">
       {{ visuallyHiddenT.sectionProductSlugTitle }}

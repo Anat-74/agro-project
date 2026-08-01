@@ -17,8 +17,9 @@ const { isOpen } = useDialog("hamburgerDialog");
         :src="link.icon[0]?.url"
         :alt="link.label"
         :smooth-load="false"
-        width="26"
-        height="26"
+        type="icon"
+        width="24"
+        height="24"
       />
     </a>
   </div>

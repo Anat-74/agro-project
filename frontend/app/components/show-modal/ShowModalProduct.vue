@@ -1,17 +1,22 @@
 <script setup lang="ts">
-const props = defineProps<{
-  product: Product
-}>()
+const props = withDefaults(
+  defineProps<{
+    product: Product
+    // Скрыть собственный триггер-кнопку (когда модалка открывается через ref, напр. в корзине)
+    hideTrigger?: boolean
+  }>(),
+  { hideTrigger: false }
+)
 
 const cartStore = useCartStore()
 const route = useRoute()
 const { isInCart } = useIsInCart()
 const { find } = useStrapi()
 
-const dialogElement = useTemplateRef<HTMLDialogElement>("discount-dialog")
+const dialogElement = useTemplateRef<HTMLDialogElement>("product-dialog")
 const wrapperRef = useTemplateRef<HTMLDivElement>("wrapper")
 const { open, close } = useDialog(
-  "discount-product-" + props.product.documentId,
+  "product-" + props.product.documentId,
   dialogElement,
   { useShowMethod: false }
 )
@@ -54,7 +59,9 @@ onUnmounted(() => {
 
 const openModal = () => {
   open?.()
-  if (!details.value) execute()
+  // Всегда перезапрашиваем: при переиспользовании модалки продукт может смениться
+  // (корзина/профиль), ключ useAsyncData зависит от documentId → execute() возьмёт из кэша или загрузит.
+  execute()
 }
 
 const parseCharacteristics = (char: string) => {
@@ -80,31 +87,31 @@ const handleAddToCart = () => {
 </script>
 
 <template>
-  <div ref="wrapper" class="discount-card__show-wrapper">
+  <div v-if="!hideTrigger" ref="wrapper" class="product-modal__trigger">
     <UButton
-      class="discount-card__show"
+      class="product-modal__trigger-btn"
       icon="mdi:show-outline"
       @click="openModal"
     />
 
-  <dialog ref="discount-dialog" class="discount-modal">
-    <div class="discount-modal__items">
-      <header class="discount-modal__header">
+  <dialog ref="product-dialog" class="product-modal">
+    <div class="product-modal__items">
+      <header class="product-modal__header">
         <h2>{{ product.name }}</h2>
         <UButton variant="close" @click="close" />
       </header>
 
-      <div v-if="status === 'pending'" class="discount-modal__skeleton">
+      <div v-if="status === 'pending'" class="product-modal__skeleton">
         <div class="skeleton-gallery" />
         <div class="skeleton-text" />
       </div>
 
-      <div v-else-if="status === 'error'" class="discount-modal__error">
+      <div v-else-if="status === 'error'" class="product-modal__error">
         <p>{{ status }}</p>
         <UButton variant="close" @click="() => execute()">Повторить</UButton>
       </div>
 
-      <div v-else-if="status === 'success' && details" class="discount-modal__details">
+      <div v-else-if="status === 'success' && details" class="product-modal__details">
         <UImage
           v-for="img in details.image"
           :key="img.documentId || img.id"
@@ -121,8 +128,8 @@ const handleAddToCart = () => {
         />
       </div>
 
-      <footer class="discount-modal__footer">
-        <span class="discount-modal__price">{{ formatPrice(product.price) }}</span>
+      <footer class="product-modal__footer">
+        <span class="product-modal__price">{{ formatPrice(product.price) }}</span>
         <UButton
           @click="handleAddToCart"
           variant="add"
@@ -135,18 +142,18 @@ const handleAddToCart = () => {
 </template>
 
 <style lang="scss" scoped>
-.discount-card__show-wrapper {
+.product-modal__trigger {
   grid-area: show;
 }
 
-.discount-card__show {
+.product-modal__trigger-btn {
   border-radius: 50%;
   color: var(--gray-color);
   background-color: var(--whitesmoke-color);
   cursor: pointer;
 }
 
-.discount-modal {
+.product-modal {
   position: fixed;
   z-index: 10000;
   inset: 0;

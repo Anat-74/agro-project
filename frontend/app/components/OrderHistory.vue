@@ -85,10 +85,10 @@ const { data: orders, status } = useAsyncData(
   },
 )
 
-import ShowModalDiscountProduct from '~/components/show-modal/ShowModalDiscountProduct.vue'
+import ShowModalProduct from '~/components/show-modal/ShowModalProduct.vue'
 import { nextTick } from 'vue'
 
-const productModalRef = useTemplateRef<InstanceType<typeof ShowModalDiscountProduct>>('product-modal')
+const productModalRef = useTemplateRef<InstanceType<typeof ShowModalProduct>>('product-modal')
 const previewProduct = ref<any>(null)
 
 const openProductModal = (item: any) => {
@@ -217,7 +217,7 @@ const statusLabel = computed(() => ({
       </div>
     </div>
 
-    <ShowModalDiscountProduct
+    <ShowModalProduct
       v-if="previewProduct"
       ref="product-modal"
       :product="previewProduct"
