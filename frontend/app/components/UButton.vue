@@ -104,7 +104,7 @@ defineEmits<Emits>();
   }
 
   &_primary {
-    background-color: var(--color);
+    background-color: var(--primary-color);
     color: var(--light-color);
     border: 1px solid var(--color);
     transition: background-color var(--transition-duration), color var(--transition-duration), transform var(--transition-duration);
