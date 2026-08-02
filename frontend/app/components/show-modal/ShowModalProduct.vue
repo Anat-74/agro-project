@@ -1,11 +1,12 @@
 <script setup lang="ts">
 const props = withDefaults(
   defineProps<{
-    product: Product
+    // Может быть null (общий инстанс в Header, пока не выбран товар)
+    product: Product | null
     // Скрыть собственный триггер-кнопку (когда модалка открывается через ref, напр. в корзине)
     hideTrigger?: boolean
   }>(),
-  { hideTrigger: false }
+  { product: null, hideTrigger: false }
 )
 
 const cartStore = useCartStore()
@@ -13,17 +14,27 @@ const route = useRoute()
 const { isInCart } = useIsInCart()
 const { find } = useStrapi()
 
+// Стабильный id диалога для инстанса (главное — уникальность между инстансами).
+// useDialog захватывает его при setup, поэтому смена продукта не ломает open/close.
+const dialogId = "product-" + (props.product?.documentId ?? "preview")
+
 const dialogElement = useTemplateRef<HTMLDialogElement>("product-dialog")
 const wrapperRef = useTemplateRef<HTMLDivElement>("wrapper")
 const { open, close } = useDialog(
-  "product-" + props.product.documentId,
+  dialogId,
   dialogElement,
   { useShowMethod: false }
 )
 
+// Реактивный ключ: при смене продукта (общий инстанс) детали перезапрашиваются.
+const detailsKey = computed(() =>
+  "product-details-" + (props.product?.documentId ?? "preview")
+)
+
 const { data: details, status, execute } = useAsyncData(
-  "product-details-" + props.product.documentId,
+  detailsKey,
   async () => {
+    if (!props.product?.slug) return null
     const response = await find("products", {
       filters: { slug: { $eq: props.product.slug } },
       populate: {
@@ -58,9 +69,9 @@ onUnmounted(() => {
 })
 
 const openModal = () => {
+  if (!props.product) return   // ничего не выбрано — не открываем
   open?.()
   // Всегда перезапрашиваем: при переиспользовании модалки продукт может смениться
-  // (корзина/профиль), ключ useAsyncData зависит от documentId → execute() возьмёт из кэша или загрузит.
   execute()
 }
 
@@ -75,6 +86,7 @@ const parseCharacteristics = (char: string) => {
 defineExpose({ openModal })
 
 const handleAddToCart = () => {
+  if (!props.product) return
   const categorySlug = (route.params.categorySlug as string)
     || props.product.subcategory?.category?.slug
     || ''
@@ -97,7 +109,7 @@ const handleAddToCart = () => {
   <dialog ref="product-dialog" class="product-modal">
     <div class="product-modal__items">
       <header class="product-modal__header">
-        <h2>{{ product.name }}</h2>
+        <h2>{{ product?.name }}</h2>
         <UButton variant="close" @click="close" />
       </header>
 
@@ -116,7 +128,7 @@ const handleAddToCart = () => {
           v-for="img in details.image"
           :key="img.documentId || img.id"
           :src="img.url"
-          :alt="product.name"
+          :alt="product?.name"
           type="product"
           width="200"
           height="150"
@@ -129,11 +141,11 @@ const handleAddToCart = () => {
       </div>
 
       <footer class="product-modal__footer">
-        <span class="product-modal__price">{{ formatPrice(product.price) }}</span>
+        <span class="product-modal__price">{{ formatPrice(product?.price ?? 0) }}</span>
         <UButton
           @click="handleAddToCart"
           variant="add"
-          :is-in-cart="isInCart(product.documentId)"
+          :is-in-cart="isInCart(product?.documentId ?? '')"
         />
       </footer>
     </div>

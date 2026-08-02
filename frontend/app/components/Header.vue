@@ -154,8 +154,8 @@ function openPreview(product: Product) {
     </div>
   </header>
   <ShowModalCartDialog ref="cart-dialog" @preview="openPreview" />
+  <!-- Без v-if: инстанс всегда смонтирован → ref доступен, openModal() срабатывает надёжно -->
   <ShowModalProduct
-    v-if="previewProduct"
     ref="preview-modal"
     :product="previewProduct"
     hide-trigger
