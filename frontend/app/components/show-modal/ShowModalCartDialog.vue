@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { nextTick } from 'vue'
 import ShowModalCheckoutForm from '~/components/show-modal/ShowModalCheckoutForm.vue'
-import ShowModalProduct from '~/components/show-modal/ShowModalProduct.vue'
 import { cartTranslations } from '~/locales/cart'
 import { discountProductTranslations } from '~/locales/discountProduct'
 import { buttonTranslations } from '~/locales/button'
@@ -19,6 +17,12 @@ const { open, close, isOpen } = useDialog('cartDialog', dialogRef, { useShowMeth
 defineExpose({ open, close, isOpen })
 
 const checkoutDialogRef = useTemplateRef<InstanceType<typeof ShowModalCheckoutForm>>('checkoutDialogRef')
+
+// Превью товара обрабатывает родитель (Header) — модалка живёт на его уровне,
+// как и в личном кабинете (OrderHistory). Корзина только сообщает о клике.
+const emit = defineEmits<{
+  preview: [product: Product]
+}>()
 
 // Discount products for recommendations
 const { data: discountProducts } = useAsyncData(
@@ -49,15 +53,6 @@ const { data: discountProducts } = useAsyncData(
 function closeAndGoToCatalog() {
   close?.()
   navigateTo(`/${currentLocale.value}`)
-}
-
-// Превью товара из рекомендаций (переиспользуемая модалка, как в профиле)
-const previewProduct = ref<Product | null>(null)
-const previewModalRef = useTemplateRef<InstanceType<typeof ShowModalProduct>>('preview-product-modal')
-
-function openPreview(prod: Product) {
-  previewProduct.value = prod
-  nextTick(() => previewModalRef.value?.openModal?.())
 }
 
 onMounted(() => {
@@ -110,7 +105,7 @@ onMounted(() => {
               :key="prod.documentId"
               type="button"
               class="cart-dialog__recommend-card"
-              @click="openPreview(prod)"
+              @click="emit('preview', prod)"
             >
               <UImage
                 v-if="prod.mainImage?.url || prod.image?.length"
@@ -167,12 +162,6 @@ onMounted(() => {
   </dialog>
 
   <ShowModalCheckoutForm ref="checkoutDialogRef" />
-  <ShowModalProduct
-    v-if="previewProduct"
-    ref="preview-product-modal"
-    :product="previewProduct"
-    hide-trigger
-  />
 </template>
 
 <style lang="scss" scoped>

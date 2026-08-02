@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { nextTick } from 'vue'
 import ShowHamburger from '~/components/show-modal/ShowHamburger.vue'
 import ShowModalCartDialog from '~/components/show-modal/ShowModalCartDialog.vue'
+import ShowModalProduct from '~/components/show-modal/ShowModalProduct.vue'
 import { cabinetTranslations } from '~/locales/cabinet'
 import { authTranslations } from '~/locales/auth'
 
@@ -59,6 +61,15 @@ onUnmounted(() => {
 })
 
 const cartDialogRef = useTemplateRef<InstanceType<typeof ShowModalCartDialog>>('cart-dialog')
+
+// Превью товара из корзины — модалка живёт на уровне Header, как в личном кабинете
+const previewProduct = ref<Product | null>(null)
+const previewModalRef = useTemplateRef<InstanceType<typeof ShowModalProduct>>('preview-modal')
+
+function openPreview(product: Product) {
+  previewProduct.value = product
+  nextTick(() => previewModalRef.value?.openModal?.())
+}
 </script>
 
 <template>
@@ -142,15 +153,21 @@ const cartDialogRef = useTemplateRef<InstanceType<typeof ShowModalCartDialog>>('
       </div>
     </div>
   </header>
-  <ShowModalCartDialog ref="cart-dialog" />
+  <ShowModalCartDialog ref="cart-dialog" @preview="openPreview" />
+  <ShowModalProduct
+    v-if="previewProduct"
+    ref="preview-modal"
+    :product="previewProduct"
+    hide-trigger
+  />
 </template>
 
 <style lang="scss" scoped>
 .header {
   @media (max-width: $tablet) {
     position: sticky;
-    @include adaptiveValue("top", -60, -72);
     z-index: 100;
+   @include adaptiveValue("top", -60, -72);
   }
 
   &__container-top {

@@ -13,7 +13,7 @@ const { showNotification } = useNotification()
 
 const showToast = ref(false)
 
-import OrderHistory from '~/components/OrderHistory.vue'
+import OrderHistory from '~/components/auth/OrderHistory.vue'
 
 const handleLogout = async () => {
   authStore.logout()
