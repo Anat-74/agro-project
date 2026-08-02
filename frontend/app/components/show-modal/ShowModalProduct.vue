@@ -105,7 +105,9 @@ const handleAddToCart = () => {
       icon="mdi:show-outline"
       @click="openModal"
     />
+  </div>
 
+  <!-- Диалог всегда смонтирован: при hide-trigger кнопки нет, но модалка открывается через ref (корзина) -->
   <dialog ref="product-dialog" class="product-modal">
     <div class="product-modal__items">
       <header class="product-modal__header">
@@ -150,7 +152,6 @@ const handleAddToCart = () => {
       </footer>
     </div>
   </dialog>
-  </div>
 </template>
 
 <style lang="scss" scoped>
