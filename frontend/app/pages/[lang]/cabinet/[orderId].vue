@@ -203,6 +203,8 @@ const statusLabel = computed(() => ({
 
   &__item-img {
     flex-shrink: 0;
+    width: toRem(150);
+    @include containerParent(product, inline-size);
   }
 
   &__item-info {

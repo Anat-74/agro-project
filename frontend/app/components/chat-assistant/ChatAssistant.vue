@@ -615,6 +615,7 @@ onMounted(() => {
   flex-direction: column;
   gap: toRem(4);
   max-width: 70%;
+  min-width: 0;   // позволить 1fr-колонке сжиматься под карточку товара (без этого карточка вылезает из пузыря)
 }
 
 .message__text {

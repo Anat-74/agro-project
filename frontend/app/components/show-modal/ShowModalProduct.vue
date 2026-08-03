@@ -14,9 +14,12 @@ const route = useRoute()
 const { isInCart } = useIsInCart()
 const { find } = useStrapi()
 
-// Стабильный id диалога для инстанса (главное — уникальность между инстансами).
-// useDialog захватывает его при setup, поэтому смена продукта не ломает open/close.
-const dialogId = "product-" + (props.product?.documentId ?? "preview")
+// Уникальный id диалога для инстанса (useId стабилен между SSR/CSR и уникален
+// между инстансами). useDialog захватывает его при setup, поэтому смена продукта
+// не ломает open/close. Уникальность обязательна: глобальный dialogElementMap
+// ключуется по id, а один и тот же товар может жить в нескольких инстансах
+// (карточки чата, Header + OrderHistory на одной странице).
+const dialogId = "product-" + useId()
 
 const dialogElement = useTemplateRef<HTMLDialogElement>("product-dialog")
 const wrapperRef = useTemplateRef<HTMLDivElement>("wrapper")
@@ -235,6 +238,7 @@ const handleAddToCart = () => {
     flex-direction: column;
     gap: toRem(16);
     align-items: center;
+    @include containerParent(product, inline-size);
   }
 
   &__footer {

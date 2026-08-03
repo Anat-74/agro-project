@@ -327,6 +327,7 @@ onMounted(() => {
     text-decoration: none;
     color: var(--color);
     transition: background var(--transition-duration), transform var(--transition-duration);
+    @include containerParent(product, inline-size);
 
     @include hover {
       background: var(--bg-hover);

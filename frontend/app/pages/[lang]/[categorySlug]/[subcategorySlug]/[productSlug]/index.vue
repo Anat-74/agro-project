@@ -17,8 +17,6 @@ const visuallyHiddenT = computed(() => visuallyHiddenTranslations[currentLocale.
 const buttonT = computed(() => buttonTranslations[currentLocale.value]);
 const { goBack } = useGoToForwardOrBack();
 
-const currentImage = ref("");
-
 const {
   data: product,
   error,
@@ -46,17 +44,8 @@ const {
     });
   }
 
-  const productData = response.data[0];
-  const firstImage = productData?.image?.[0]?.url;
-
-  if (firstImage) {
-    currentImage.value = `${config.public.strapi.url}${firstImage}`;
-  }
-  return productData;
+  return response.data[0];
 });
-
-const isActive = (imgUrl: string) =>
-  currentImage.value === `${config.public.strapi.url}${imgUrl}`;
 
 const characteristics = computed(() => {
   try {
@@ -107,8 +96,6 @@ watch(
   () => product.value,
   (newProduct) => {
     if (newProduct?.image?.[0]?.url) {
-      currentImage.value = `${config.public.strapi.url}${newProduct.image[0].url}`;
-
       // Обновляем SEO метаданные
       useSeoMeta({
         title:
@@ -138,10 +125,6 @@ watch(
   },
   { immediate: true },
 );
-
-const setCurrentImage = (imgUrl: string) => {
-  currentImage.value = `${config.public.strapi.url}${imgUrl}`;
-};
 
 const handleAddToCart = (product: Product) => {
   cartStore.addToCart(product, categorySlug, subcategorySlug);
@@ -175,36 +158,7 @@ const handleAddToCart = (product: Product) => {
         <ProductStatus :product="product" class="wrapper-left__in-stock" />
         <ShareButton class="wrapper-left__share" />
       </div>
-      <UImage
-        v-if="currentImage"
-        :src="currentImage"
-        :alt="product.name"
-        type="product"
-        width="290"
-        height="218"
-        class="wrapper-left__image"
-      />
-      <ul v-if="product.image?.length" class="wrapper-left__thumbnails">
-        <li
-          v-for="(img, index) in product.image"
-           :key="img.documentId || img.id"
-          :class="[
-            'wrapper-left__thumbnail',
-            { 'wrapper-left__thumbnail_active': isActive(img.url) },
-          ]"
-          @mouseover="setCurrentImage(img.url)"
-          @click="setCurrentImage(img.url)"
-        >
-          <UImage
-            :src="`${config.public.strapi.url}${img.url}`"
-            :alt="`${product.name} - Image ${index + 1}`"
-            type="product"
-            width="80"
-            height="60"
-            class="wrapper-left__thumbnail-image"
-          />
-        </li>
-      </ul>
+      <UProductGallery :product="product" />
     </div>
     <div class="product-review__wrapper-right wrapper-right">
       <h2 class="wrapper-right__title">{{ product.name }}</h2>
@@ -259,7 +213,6 @@ const handleAddToCart = (product: Product) => {
   display: flex;
   flex-direction: column;
   row-gap: toEm(16);
-  @include containerParent(product, inline-size);
 
   &__row-top {
     display: grid;
@@ -285,57 +238,6 @@ const handleAddToCart = (product: Product) => {
     border-radius: toRem(4);
     background-color: var(--bg);
     box-shadow: 0px 1px toRem(5) var(--shadow);
-  }
-
-  &__image {
-    align-self: center;
-    border-radius: toEm(8);
-    box-shadow: 0 0 toRem(4) var(--shadow);
-    margin-block-end: toEm(18);
-    background-color: var(--bg-product);
-    //    transition: opacity .2s ease-in-out;
-
-    //   &:not([src]) {
-    //     opacity: 0;
-    //   }
-
-    @media (max-width: $tablet) {
-      margin-block-end: 0;
-    }
-  }
-
-  &__thumbnails {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: toEm(10);
-    @include containerParent(product-thumb, inline-size);
-
-    @media (max-width: $tablet) {
-      margin-block-end: toEm(22);
-    }
-  }
-
-  &__thumbnail {
-    cursor: pointer;
-    border: toRem(2) solid transparent;
-    border-radius: toRem(4);
-    box-shadow: 0px 1px toRem(5) var(--shadow);
-    transition: all var(--transition-duration);
-
-    &_active {
-      border-color: var(--blue-color);
-    }
-
-    @include hover {
-      scale: 0.9;
-    }
-  }
-
-  &__thumbnail-image {
-    border-radius: toRem(4);
-    background-color: var(--bg-product);
-    transition: opacity var(--transition-duration);
   }
 }
 

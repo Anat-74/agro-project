@@ -382,6 +382,7 @@ onMounted(() => {
 .cart-dialog__recommend-card {
   flex-shrink: 0;
   width: toRem(160);
+  @include containerParent(product, inline-size);
   display: grid;
   gap: toRem(6);
   padding: toRem(8);

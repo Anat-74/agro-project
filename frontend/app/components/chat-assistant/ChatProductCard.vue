@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ShowModalProduct from '~/components/show-modal/ShowModalProduct.vue'
 import { chatAssistantTranslations } from '../../locales/chat-assistant'
 
 const { currentLocale } = useLocale()
@@ -22,10 +23,25 @@ const props = defineProps<{
 
 const formattedPrice = computed(() => formatPrice(props.product.price))
 
-const productLink = computed(() => {
-  const catSlug = props.product.category || props.product.categoryName || 'products'
-  return `/${currentLocale.value}/${catSlug}/products/${props.product.slug}`
-})
+const modalRef = useTemplateRef<InstanceType<typeof ShowModalProduct>>('product-modal')
+
+// Минимальный Product для модалки: детали (описание, характеристики, галерея)
+// ShowModalProduct догружает сам по slug, здесь достаточно данных для header/footer.
+const modalProduct = computed<Product>(() => ({
+  id: props.product.documentId,
+  documentId: props.product.documentId,
+  slug: props.product.slug,
+  name: props.product.name,
+  price: props.product.price,
+  description: '',
+  characteristics: '',
+  image: props.product.image ? [{ url: props.product.image }] : [],
+  isDiscount: props.product.isDiscount,
+}))
+
+const openPreview = () => {
+  nextTick(() => modalRef.value?.openModal?.())
+}
 
 const handleAddToCart = () => {
   cartStore.addToCart(
@@ -51,8 +67,8 @@ const handleAddToCart = () => {
           :src="product.image"
           :alt="product.name"
           type="product"
-          width="80"
-          height="60"
+          width="200"
+          height="150"
           class="chat-product-card__image"
         />
         <Icon
@@ -69,12 +85,13 @@ const handleAddToCart = () => {
       </div>
       <p class="chat-product-card__price">{{ formattedPrice }} руб</p>
       <div class="chat-product-card__actions">
-        <NuxtLink
-          :to="productLink"
+        <button
+          type="button"
           class="chat-product-card__link"
+          @click="openPreview"
         >
           {{ t.viewProduct }}
-        </NuxtLink>
+        </button>
         <UButton
           variant="cart-pill"
           @click="handleAddToCart"
@@ -83,6 +100,11 @@ const handleAddToCart = () => {
         </UButton>
       </div>
     </div>
+    <ShowModalProduct
+      ref="product-modal"
+      :product="modalProduct"
+      hide-trigger
+    />
   </div>
 </template>
 
@@ -97,11 +119,22 @@ const handleAddToCart = () => {
   border-radius: toRem(12);
   margin-block: toRem(8);
   align-items: center;
+  // Позволяет карточке сжиматься в grid/flex-родителях чата (иначе 1fr-колонка
+  // не может стать уже min-content и карточка ломает вёрстку по горизонтали)
+  min-width: 0;
   @include containerParent(card, inline-size);
 
   &__image-wrap {
     position: relative;
     flex-shrink: 0;
+    min-width: 0;
+    // Компактная миниатюра рядом с инфо (side-by-side). Ширина задана явно,
+    // т.к. container-type: inline-size отключает влияние контента на размер.
+    width: toRem(88);
+    // Контейнер `product` — тот же, на который опираются container queries
+    // в UImage.vue (@container product), чтобы изображение адаптировалось
+    // от ширины контейнера, как на странице товара.
+    @include containerParent(product, inline-size);
   }
 
   &__image {
@@ -129,6 +162,7 @@ const handleAddToCart = () => {
     display: flex;
     align-items: center;
     gap: toRem(4);
+    min-width: 0;
   }
 
   &__placeholder {
@@ -142,6 +176,7 @@ const handleAddToCart = () => {
   &__info {
     flex: 1;
     min-width: 0;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     gap: toRem(4);
@@ -152,6 +187,12 @@ const handleAddToCart = () => {
     font-weight: 600;
     color: var(--color);
     line-height: 1.3;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
     @include adaptiveValue("font-size", 14, 13);
   }
 
@@ -159,33 +200,49 @@ const handleAddToCart = () => {
     margin: 0;
     font-weight: 700;
     color: var(--success-color);
+    white-space: nowrap;
     @include adaptiveValue("font-size", 16, 14);
   }
 
   &__actions {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     gap: toRem(8);
     margin-top: toRem(4);
-    flex-wrap: wrap;
+    min-width: 0;
   }
 
   &__link {
     color: var(--success-color);
-    text-decoration: none;
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
     white-space: nowrap;
     @include adaptiveValue("font-size", 12, 11);
 
-    &:hover {
+    @include hover {
       text-decoration: underline;
     }
   }
-
-
 }
 
-@container card (max-width: toRem(260)) {
+// Узкая карточка (в чате карточка почти всегда ≤300px):
+// переходим в одну колонку, изображение по центру и на всю ширину.
+@container card (max-width: toRem(300)) {
   .chat-product-card {
     grid-template-columns: 1fr;
+  }
+
+  .chat-product-card__image-wrap,
+  .chat-product-card__placeholder {
+    justify-self: center;
+  }
+
+  .chat-product-card__image-wrap {
+    width: 100%;
   }
 }
 </style>

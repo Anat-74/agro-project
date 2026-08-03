@@ -217,9 +217,9 @@ const statusLabel = computed(() => ({
     </div>
 
     <ShowModalProduct
-      v-if="previewProduct"
       ref="product-modal"
       :product="previewProduct"
+      hide-trigger
     />
   </ClientOnly>
 </template>
@@ -259,6 +259,8 @@ const statusLabel = computed(() => ({
 
   &__thumb {
     flex-shrink: 0;
+    width: toRem(150);
+    @include containerParent(product, inline-size);
   }
 
   &__item-info {

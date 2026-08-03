@@ -18,8 +18,6 @@ const buttonT = computed(() => buttonTranslations[currentLocale.value])
 const tooltipT = computed(() => tooltipTranslations[currentLocale.value])
 const { goBack } = useGoToForwardOrBack()
 
-const currentImage = ref('')
-
 const { data: product, error, pending } = useAsyncData
    (`product-${currentLocale.value}-${productSlug}`,
    async () => {
@@ -48,18 +46,9 @@ const { data: product, error, pending } = useAsyncData
        })
  }
 
-     const productData = response.data[0]
-     const firstImage = productData?.image?.[0]?.url
-
-     if (firstImage) {
-      currentImage.value = `${config.public.strapi.url}${firstImage}`
-    }
-      return productData
+      return response.data[0]
    })
 
-
-const isActive = (imgUrl: string) => 
-  currentImage.value === `${config.public.strapi.url}${imgUrl}`
 
  const characteristics = computed(() => {
   try {
@@ -93,10 +82,8 @@ const isActive = (imgUrl: string) =>
 
 watch(() => product.value, (newProduct) => {
    if (newProduct?.image?.[0]?.url) {
-     currentImage.value = `${config.public.strapi.url}${newProduct.image[0].url}`
-     
-     // Обновляем SEO метаданные
-     useSeoMeta({
+      // Обновляем SEO метаданные
+      useSeoMeta({
        title: newProduct?.seoTitle || newProduct?.seo?.metaTitle || newProduct?.name,
        description: newProduct?.seoDescription || newProduct?.seo?.metaDescription || newProduct?.description,
        ogTitle: newProduct?.seoTitle || newProduct?.seo?.metaTitle || newProduct?.name,
@@ -110,10 +97,6 @@ watch(() => product.value, (newProduct) => {
      })
    }
  }, { immediate: true })
-
-const setCurrentImage = (imgUrl: string) => {
-  currentImage.value = `${config.public.strapi.url}${imgUrl}`
-}
 
 const handleAddToCart = (product: Product) => {
   cartStore.addToCart(
@@ -156,36 +139,7 @@ const handleAddToCart = (product: Product) => {
      />
      <ShareButton />
    </div>
-        <UImage
-          v-if="currentImage"
-          :src="currentImage"
-          :alt="product.name"
-          type="product"
-          width="290"
-          height="218"
-          class="wrapper-left__image"
-        />
-     <ul
-      v-if="product.image?.length"
-     class="wrapper-left__thumbnails"
-     >
-     <li
-        v-for="(img, index) in product.image" 
-         :key="img.documentId || img.id"
-        :class="['wrapper-left__thumbnail', {'wrapper-left__thumbnail_active': isActive(img.url)}]"
-      @mouseover="setCurrentImage(img.url)"
-      @click="setCurrentImage(img.url)"
-      >
-        <UImage
-          :src="`${config.public.strapi.url}${img.url}`"
-          :alt="`${product.name} - Image ${index + 1}`"
-          type="product"
-          width="80"
-          height="60"
-          class="wrapper-left__thumbnail-image"
-        />
-      </li>
-     </ul>
+        <UProductGallery :product="product" />
    </div>
    <div class="product-review__wrapper-right wrapper-right">
       <h2 
@@ -241,7 +195,6 @@ const handleAddToCart = (product: Product) => {
     display: flex;
     flex-direction: column;
     row-gap: toEm(16);
-    @include containerParent(product, inline-size);
 
     &__row-top {
     display: grid;
@@ -266,56 +219,6 @@ const handleAddToCart = (product: Product) => {
     padding-block: toEm(4);
     border-radius: toRem(4);
     background-color: var(--whitesmoke-color);
- }
-
-    &__image {
-    align-self: center;
-    border-radius: toEm(8);
-    margin-block-end: toEm(18);
-    border: toRem(2) solid var(--whitesmoke-color);
-    max-width: 100%;
-    object-fit: contain;
- //    transition: opacity .2s ease-in-out;
-   
- //   &:not([src]) {
- //     opacity: 0;
- //   }
-
-    @media (max-width:$tablet){
-       margin-block-end: 0;
-    }
- }
-
- &__thumbnails {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: toEm(10);
-    @include containerParent(product-thumb, inline-size);
-
-    @media (max-width:$tablet){
-       margin-block-end: toEm(22);;
-    }
- }
-
- &__thumbnail {
-   cursor: pointer;
-   border: toRem(2) solid transparent;
-   border-radius: toRem(4);
-   transition: all var(--transition-duration);
-
-    &_active {
-       border-color: var(--sky-blue);
-    }
-
-    @include hover {
-       scale: .9;
-    }
- }
-
- &__thumbnail-image {
-    border-radius: toRem(4);
-    transition: opacity var(--transition-duration);
  }
  }
 
