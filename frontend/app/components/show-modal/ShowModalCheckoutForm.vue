@@ -22,8 +22,7 @@ defineExpose({ open, close, isOpen })
 
 <style lang="scss" scoped>
 .checkout-dialog {
-  padding: 0;
-  border: none;
+  // padding/border обнулены глобально в _normalize.scss (:where(dialog[class]))
   border-radius: toRem(12);
   background: var(--bg);
   max-width: toRem(420);

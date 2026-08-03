@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import AppSlider from '~/components/AppSlider.vue'
+
 const props = withDefaults(
   defineProps<{
     // Может быть null (общий инстанс в Header, пока не выбран товар)
@@ -48,6 +50,11 @@ const { data: details, status, execute } = useAsyncData(
     return response.data?.[0] as Product
   },
   { immediate: false, server: false }
+)
+
+// Слайды изображений: детали (полные) → fallback на product.image
+const galleryImages = computed(() =>
+  details.value?.image || props.product?.image || []
 )
 
 // Префетч деталей товара при скролле — когда карточка входит в область видимости
@@ -112,47 +119,88 @@ const handleAddToCart = () => {
 
   <!-- Диалог всегда смонтирован: при hide-trigger кнопки нет, но модалка открывается через ref (корзина) -->
   <dialog ref="product-dialog" class="product-modal">
-    <div class="product-modal__items">
-      <header class="product-modal__header">
-        <h2>{{ product?.name }}</h2>
-        <UButton variant="close" @click="close" />
-      </header>
+    <!-- Крестик: плавающий, сверху справа, всегда доступен -->
+    <button
+      type="button"
+      class="product-modal__close"
+      aria-label="Закрыть"
+      @click="close"
+    >
+      <Icon name="mingcute:close-line" />
+    </button>
 
-      <div v-if="status === 'pending'" class="product-modal__skeleton">
-        <div class="skeleton-gallery" />
-        <div class="skeleton-text" />
+    <div v-if="status === 'pending'" class="product-modal__skeleton">
+      <div class="product-modal__skeleton-gallery" />
+      <div class="product-modal__skeleton-text" />
+    </div>
+
+    <div v-else-if="status === 'error'" class="product-modal__error">
+      <p>{{ status }}</p>
+      <UButton variant="close" @click="() => execute()">Повторить</UButton>
+    </div>
+
+    <div v-else-if="status === 'success' && details" class="product-modal__body">
+      <div class="product-modal__gallery">
+        <AppSlider
+          v-if="galleryImages.length"
+          :slides="galleryImages"
+          slide-key="url"
+          variant="product"
+          :height="'auto'"
+          :show-pagination="galleryImages.length > 1"
+          :show-navigation="galleryImages.length > 1"
+        >
+          <template #default="{ slide, index }">
+            <UImage
+              :src="slide.url"
+              :alt="product?.name"
+              type="product"
+              width="290"
+              height="218"
+              :loading="index === 0 ? 'eager' : 'lazy'"
+            />
+          </template>
+
+          <template #pagination="{ go, active, slides: thumbs }">
+            <button
+              v-for="(img, i) in thumbs"
+              :key="img.url"
+              type="button"
+              class="product-modal__thumb"
+              :class="{ 'product-modal__thumb_active': active === i + 1 }"
+              @click="go(i + 1)"
+              :aria-label="`Изображение ${i + 1}`"
+            >
+              <UImage
+                :src="img.url"
+                :alt="`${product?.name} - ${i + 1}`"
+                type="product"
+                width="80"
+                height="60"
+                class="product-modal__thumb-img"
+              />
+            </button>
+          </template>
+        </AppSlider>
       </div>
 
-      <div v-else-if="status === 'error'" class="product-modal__error">
-        <p>{{ status }}</p>
-        <UButton variant="close" @click="() => execute()">Повторить</UButton>
-      </div>
-
-      <div v-else-if="status === 'success' && details" class="product-modal__details">
-        <UImage
-          v-for="img in details.image"
-          :key="img.documentId || img.id"
-          :src="img.url"
-          :alt="product?.name"
-          type="product"
-          width="200"
-          height="150"
-        />
-        <MDC :value="details.description" />
+      <div class="product-modal__info">
+        <h2 class="product-modal__title">{{ product?.name }}</h2>
+        <p class="product-modal__price">{{ formatPrice(product?.price ?? 0) }}</p>
+        <div class="product-modal__desc">
+          <MDC :value="details.description" />
+        </div>
         <ProductCharacteristics
           v-if="details.characteristics"
           :specs="parseCharacteristics(details.characteristics)"
         />
-      </div>
-
-      <footer class="product-modal__footer">
-        <span class="product-modal__price">{{ formatPrice(product?.price ?? 0) }}</span>
         <UButton
+          class="product-modal__add"
           @click="handleAddToCart"
           variant="add"
           :is-in-cart="isInCart(product?.documentId ?? '')"
         />
-      </footer>
+      </div>
     </div>
   </dialog>
 </template>
@@ -169,58 +217,112 @@ const handleAddToCart = () => {
   cursor: pointer;
 }
 
+// Модалка товара — по паттерну проекта (как Order/Checkout):
+// нативный <dialog> центрирует сам (top-layer + margin: auto), никаких
+// position:fixed / z-index / display — только размеры и анимация входа.
 .product-modal {
-  position: fixed;
-  z-index: 10000;
-  inset: 0;
-  width: min(90vw, toRem(600));
-  height: min(90vh, toRem(700));
-  padding: 0;
-  border: none;
-  border-radius: toRem(16);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  display: none;
+  width: min(92vw, toRem(920));
+  height: min(90vh, toRem(760));
+  border-radius: toRem(20);
+  background: var(--light-color);
+  box-shadow: 0 toRem(24) toRem(80) rgba(0, 0, 0, 0.3);
   overflow: hidden;
 
+  scale: 0.96;
+  opacity: 0;
+  transition:
+    scale var(--transition-duration),
+    opacity var(--transition-duration),
+    overlay var(--transition-duration) allow-discrete,
+    display var(--transition-duration) allow-discrete;
+
   &[open] {
-    display: block;
+    scale: 1;
+    opacity: 1;
+  }
+
+  @starting-style {
+    &[open] {
+      scale: 0.96;
+      opacity: 0;
+    }
   }
 
   &::backdrop {
     background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition:
+      opacity var(--transition-duration),
+      overlay var(--transition-duration) allow-discrete,
+      display var(--transition-duration) allow-discrete;
   }
 
-  &__items {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+  &[open]::backdrop {
+    opacity: 1;
   }
 
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: toRem(16) toRem(20);
-    border-bottom: toRem(1) solid var(--border-color);
-    flex-shrink: 0;
+  @starting-style {
+    &[open]::backdrop {
+      opacity: 0;
+    }
+  }
 
-    h2 {
-      margin: 0;
+  &__close {
+    position: absolute;
+    top: toRem(14);
+    right: toRem(14);
+    z-index: 30;
+    display: grid;
+    place-items: center;
+    width: toRem(40);
+    height: toRem(40);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 toRem(2) toRem(10) rgba(0, 0, 0, 0.15);
+    color: var(--color);
+    cursor: pointer;
+    transition: background var(--transition-duration), scale var(--transition-duration);
+
+    svg {
+      font-size: toRem(22);
+    }
+
+    @include hover {
+      background: var(--bg-secondary);
+      scale: 1.06;
     }
   }
 
   &__skeleton {
-    flex: 1;
-    padding: toRem(20);
+    height: 100%;
     display: flex;
     flex-direction: column;
-    gap: toRem(16);
     align-items: center;
     justify-content: center;
+    gap: toRem(16);
+    padding: toRem(20);
+  }
+
+  &__skeleton-gallery {
+    width: toRem(260);
+    height: toRem(200);
+    border-radius: toRem(12);
+    background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-hover) 50%, var(--bg-secondary) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s ease infinite;
+  }
+
+  &__skeleton-text {
+    width: toRem(180);
+    height: toRem(16);
+    border-radius: toRem(8);
+    background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-hover) 50%, var(--bg-secondary) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.4s ease infinite;
   }
 
   &__error {
-    flex: 1;
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -230,30 +332,82 @@ const handleAddToCart = () => {
     color: var(--danger-color);
   }
 
-  &__details {
-    flex: 1;
+  &__body {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: toRem(24);
+    height: 100%;
+    padding: toRem(28);
     overflow-y: auto;
-    padding: toRem(20);
-    display: flex;
-    flex-direction: column;
-    gap: toRem(16);
-    align-items: center;
+    align-content: start;
+
+    @media (min-width: toEm(640)) {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
+
+  &__gallery {
+    min-width: 0;
     @include containerParent(product, inline-size);
   }
 
-  &__footer {
+  &__thumb {
+    border: toRem(2) solid transparent;
+    border-radius: toRem(6);
+    padding: 0;
+    background: none;
+    cursor: pointer;
+    opacity: 0.65;
+    transition: opacity var(--transition-duration), border-color var(--transition-duration);
+
+    &_active {
+      opacity: 1;
+      border-color: var(--blue-color);
+    }
+
+    @include hover {
+      opacity: 1;
+    }
+  }
+
+  &__thumb-img {
+    border-radius: toRem(4);
+    background-color: var(--bg-product);
+  }
+
+  &__info {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: toRem(16) toRem(20);
-    border-top: toRem(1) solid var(--border-color);
-    flex-shrink: 0;
+    flex-direction: column;
+    gap: toRem(14);
+    min-width: 0;
+  }
+
+  &__title {
+    margin: 0;
+    padding-inline-end: toRem(48);   // не залезает под крестик
+    @include adaptiveValue("font-size", 26, 20);
   }
 
   &__price {
+    margin: 0;
     font-weight: 700;
-    font-size: toRem(20);
     color: var(--success-color);
+    @include adaptiveValue("font-size", 24, 20);
   }
+
+  &__desc {
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  &__add {
+    width: 100%;
+  }
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 </style>
