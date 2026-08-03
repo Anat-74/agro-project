@@ -23,6 +23,7 @@ const { slides, heroGrids } = defineProps<Props>();
         { 'hero-slider__slider_is-visible': isContacts },
       ]"
       :slides="slides"
+      variant="hero"
     >
       <template #default="{ slide, index }">
         <UBackground

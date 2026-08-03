@@ -62,7 +62,12 @@ const handleAddToCart = () => {
 <template>
   <div class="chat-product-card">
     <template v-if="product.image">
-      <div class="chat-product-card__image-wrap">
+      <button
+        type="button"
+        class="chat-product-card__image-wrap"
+        @click="openPreview"
+        :aria-label="t.viewProduct"
+      >
         <UImage
           :src="product.image"
           :alt="product.name"
@@ -76,22 +81,21 @@ const handleAddToCart = () => {
           class="chat-product-card__discount"
           name="mdi:discount"
         />
-      </div>
+      </button>
     </template>
-    <div v-else class="chat-product-card__placeholder" />
+    <button
+      v-else
+      type="button"
+      class="chat-product-card__placeholder"
+      @click="openPreview"
+      :aria-label="t.viewProduct"
+    />
     <div class="chat-product-card__info">
       <div class="chat-product-card__name-row">
         <h4 class="chat-product-card__name">{{ product.name }}</h4>
       </div>
       <p class="chat-product-card__price">{{ formattedPrice }} руб</p>
       <div class="chat-product-card__actions">
-        <button
-          type="button"
-          class="chat-product-card__link"
-          @click="openPreview"
-        >
-          {{ t.viewProduct }}
-        </button>
         <UButton
           variant="cart-pill"
           @click="handleAddToCart"
@@ -131,10 +135,22 @@ const handleAddToCart = () => {
     // Компактная миниатюра рядом с инфо (side-by-side). Ширина задана явно,
     // т.к. container-type: inline-size отключает влияние контента на размер.
     width: toRem(88);
+    // Кнопка-превью: сброс дефолтных стилей button
+    border: none;
+    padding: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    border-radius: toRem(8);
     // Контейнер `product` — тот же, на который опираются container queries
     // в UImage.vue (@container product), чтобы изображение адаптировалось
     // от ширины контейнера, как на странице товара.
     @include containerParent(product, inline-size);
+
+    @include hover {
+      scale: 1.02;
+    }
   }
 
   &__image {
@@ -171,6 +187,16 @@ const handleAddToCart = () => {
     border-radius: toRem(8);
     background: var(--bg);
     flex-shrink: 0;
+    // Кнопка-превью (нет изображения)
+    border: none;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+
+    @include hover {
+      scale: 1.02;
+    }
   }
 
   &__info {
@@ -212,26 +238,14 @@ const handleAddToCart = () => {
     margin-top: toRem(4);
     min-width: 0;
   }
-
-  &__link {
-    color: var(--success-color);
-    background: none;
-    border: none;
-    padding: 0;
-    font: inherit;
-    cursor: pointer;
-    white-space: nowrap;
-    @include adaptiveValue("font-size", 12, 11);
-
-    @include hover {
-      text-decoration: underline;
-    }
-  }
 }
 
 // Узкая карточка (в чате карточка почти всегда ≤300px):
 // переходим в одну колонку, изображение по центру и на всю ширину.
-@container card (max-width: toRem(300)) {
+// ВАЖНО: в условии @container НЕЛЬЗЯ использовать sass-функции (toRem/toEm) —
+// sass не вычисляет их в prelude @container, CSS остаётся невалидным и правило
+// молча отбрасывается браузером. Значение задано литерально: 300px / 16 = 18.75rem.
+@container card (max-width: 18.75rem) {
   .chat-product-card {
     grid-template-columns: 1fr;
   }

@@ -3,15 +3,17 @@ interface Props<T = any> {
   slides: T[];
   slideKey?: keyof T | string;
   height?: string;
+  variant?: "hero" | "product";
   showPagination?: boolean;
   showNavigation?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   slideKey: "id" as keyof T | string,
+  height: "var(--min-height)",
+  variant: "hero",
   showPagination: true,
   showNavigation: true,
-  height: "var(--min-height)"
 });
 
 const container = useTemplateRef("container");
@@ -48,14 +50,14 @@ onUnmounted(() => cancelAnimationFrame(rafId));
 </script>
 
 <template>
-  <div 
-  class="slider" 
-  :style="{ minHeight: props.height }"
+  <div
+    :class="['slider', `slider_${props.variant}`]"
+    :style="{ minHeight: props.height }"
   >
-    <div 
-    ref="container" 
-    class="slider__container" 
-    @scroll="handleScroll"
+    <div
+      ref="container"
+      class="slider__container"
+      @scroll="handleScroll"
     >
       <div
         class="slider__slide"
@@ -65,7 +67,7 @@ onUnmounted(() => cancelAnimationFrame(rafId));
         <slot :slide="slide" :index="index">
           <div class="slider__slide-content">
             {{ slide }}
-         </div>
+          </div>
         </slot>
       </div>
     </div>
@@ -89,22 +91,28 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     />
 
     <div class="slider__pagination" v-if="props.showPagination">
-      <button
-        v-for="(slide, index) in props.slides"
-        :key="slide[props.slideKey] || index"
-        :class="[
-          'slider__pagination-dot',
-          { 'slider__pagination-dot_active': active === index + 1 },
-        ]"
-        @click="go(index + 1)"
-        :aria-label="`Перейти к слайду ${index + 1}`"
-        :aria-current="active === index + 1 ? 'true' : undefined"
-      />
+      <!-- Кастомная пагинация (например, миниатюры товара) через слот.
+           По умолчанию — точки (hero). -->
+      <slot name="pagination" :go="go" :active="active" :slides="props.slides">
+        <button
+          v-for="(slide, index) in props.slides"
+          :key="slide[props.slideKey] || index"
+          :class="[
+            'slider__pagination-dot',
+            { 'slider__pagination-dot_active': active === index + 1 },
+          ]"
+          @click="go(index + 1)"
+          :aria-label="`Перейти к слайду ${index + 1}`"
+          :aria-current="active === index + 1 ? 'true' : undefined"
+        />
+      </slot>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+// Общая механика слайдера (scroll-snap). Контекстная стилизация — в вариантах:
+// slider_hero (главная) и slider_product (страница товара).
 .slider {
   position: relative;
   z-index: 100;
@@ -117,9 +125,6 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     display: flex;
-    column-gap: toRem(14);
-    padding-block-start: toRem(4);
-    padding-block-end: toEm(98);
 
     &::-webkit-scrollbar {
       display: none;
@@ -128,40 +133,18 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     scrollbar-width: none;
   }
 
-   @media (min-width:$tablet){
-      padding-block-start: toEm(18);
-    }
-
   &__slide {
     flex: 0 0 100%;
     scroll-snap-align: center;
     display: grid;
-    grid-template-columns: auto 1fr;
     place-items: center;
-    column-gap: toEm(32);
     color: var(--color);
-
-    @media (max-width:$tablet){
-      grid-template-columns: 1fr;
-    }
   }
 
   &__pagination {
     display: flex;
     justify-content: center;
     column-gap: toRem(12);
-    position: absolute;
-    left: 50%;
-    translate: -50% 0;
-    bottom: toRem(44);
-
-    @media (min-width:$tablet){
-        bottom: toRem(108);
-    }
-
-    @media (max-width:$mobileSmall){
-       column-gap: toRem(38); 
-    }
   }
 
   &__pagination-dot {
@@ -172,7 +155,7 @@ onUnmounted(() => cancelAnimationFrame(rafId));
     background-color: var(--light-color);
     transition: background-color var(--transition-duration);
 
-    @media (max-width:$mobileSmall){
+    @media (max-width: $mobileSmall) {
       width: toEm(16);
       height: toEm(16);
       border-color: var(--warning-color);
@@ -191,6 +174,65 @@ onUnmounted(() => cancelAnimationFrame(rafId));
       &:not(.slider__pagination-dot_active) {
         background-color: var(--warning-color);
       }
+    }
+  }
+
+  // ===== Вариант: hero (главная) =====
+  &_hero {
+    .slider__container {
+      column-gap: toRem(14);
+      padding-block-start: toRem(4);
+      padding-block-end: toEm(98);
+
+      @media (min-width: $tablet) {
+        padding-block-start: toEm(18);
+      }
+    }
+
+    .slider__slide {
+      grid-template-columns: auto 1fr;
+      column-gap: toEm(32);
+
+      @media (max-width: $tablet) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .slider__pagination {
+      position: absolute;
+      left: 50%;
+      translate: -50% 0;
+      bottom: toRem(44);
+
+      @media (min-width: $tablet) {
+        bottom: toRem(108);
+      }
+
+      @media (max-width: $mobileSmall) {
+        column-gap: toRem(38);
+      }
+    }
+  }
+
+  // ===== Вариант: product (страница товара) =====
+  &_product {
+    .slider__container {
+      column-gap: 0;
+      padding-block-start: toRem(4);
+      padding-block-end: toRem(4);
+    }
+
+    .slider__slide {
+      grid-template-columns: 1fr;
+    }
+
+    .slider__pagination {
+      position: static;
+      translate: none;
+      left: auto;
+      bottom: auto;
+      margin-block-start: toRem(12);
+      flex-wrap: wrap;
     }
   }
 }
