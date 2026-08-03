@@ -24,6 +24,11 @@ const emit = defineEmits<{
   preview: [product: Product]
 }>()
 
+// Клик по товару в списке корзины — тоже превью (пробрасываем наверх)
+const onItemPreview = (product: Product) => {
+  emit('preview', product)
+}
+
 // Discount products for recommendations
 const { data: discountProducts } = useAsyncData(
   `cart-discount-${currentLocale.value}`,
@@ -144,7 +149,11 @@ onMounted(() => {
       <!-- With items -->
       <template v-else>
         <div class="cart-dialog__items">
-          <CartShopping />
+          <!-- Мобильная корзина (<1024px): товары открывают модалку товара -->
+          <CartShopping
+            variant="preview"
+            @preview="onItemPreview"
+          />
         </div>
         <UButton
           variant="primary"

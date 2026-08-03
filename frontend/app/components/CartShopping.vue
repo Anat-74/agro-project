@@ -8,6 +8,15 @@ const cartT = computed(() => cartTranslations[currentLocale.value])
 const buttonT = computed(() => buttonTranslations[currentLocale.value])
 const config = useRuntimeConfig();
 
+// Контекст использования:
+// - "link" (по умолчанию) — страница корзины (ПК >1024px): товар — ссылка на страницу;
+// - "preview" — модальное окно корзины (мобильные <1024px): клик по товару открывает модалку товара.
+const props = withDefaults(defineProps<{
+  variant?: "link" | "preview"
+}>(), {
+  variant: "link",
+})
+
 const getProductLink = (product: CartItem["product"]) => {
   const catSlug = product.categorySlug || (product as any).subcategory?.category?.slug || ''
   if (!catSlug) return ''
@@ -16,6 +25,30 @@ const getProductLink = (product: CartItem["product"]) => {
   } else {
     return `/${currentLocale.value}/${catSlug}/products/${product.slug}`;
   }
+};
+
+// Превью товара (только в режиме "preview") — модалку открывает родитель.
+const emit = defineEmits<{
+  preview: [product: Product]
+}>()
+
+// Минимальный Product для ShowModalProduct: детали (описание, галерея)
+// модалка догружает сама по slug, здесь достаточно данных для открытия.
+const buildModalProduct = (item: CartItem): Product => ({
+  id: item.product.documentId,
+  documentId: item.product.documentId,
+  slug: item.product.slug,
+  name: item.product.name,
+  price: item.product.price,
+  description: '',
+  characteristics: '',
+  image: item.product.mainImage ? [{ url: item.product.mainImage }] : [],
+  isDiscount: item.product.isDiscount,
+})
+
+const openPreview = (item: CartItem) => {
+  if (item.product.originalLocale !== currentLocale.value) return
+  emit('preview', buildModalProduct(item))
 };
 
 const switchToLocale = (locale: string) => {
@@ -49,8 +82,9 @@ onMounted(() => {
       </div>
 
       <div class="cart-items__main">
+        <!-- Страница корзины (ПК): товар — ссылка на страницу продукта -->
         <NuxtLink
-          v-if="getProductLink(item.product)"
+          v-if="props.variant === 'link' && getProductLink(item.product)"
           :to="getProductLink(item.product)"
           :class="['cart-items__link', { 'cart-items__link_disabled': item.product.originalLocale !== currentLocale }]"
         >
@@ -65,6 +99,28 @@ onMounted(() => {
             height="75"
           />
         </NuxtLink>
+
+        <!-- Модалка корзины (мобильные): кнопка — открывает модалку товара -->
+        <button
+          v-else-if="props.variant === 'preview'"
+          type="button"
+          class="cart-items__link"
+          :class="{ 'cart-items__link_disabled': item.product.originalLocale !== currentLocale }"
+          :disabled="item.product.originalLocale !== currentLocale"
+          @click="openPreview(item)"
+          :aria-label="item.product.name"
+        >
+          <NuxtImg
+            class="cart-items__image"
+            :src="`${config.public.strapi.url}${item.product.mainImage}`"
+            :alt="item.product.name"
+            format="webp"
+            loading="lazy"
+            decoding="async"
+            width="100"
+            height="75"
+          />
+        </button>
 
         <div class="cart-items__info">
           <span v-if="item.product.isDiscount" class="cart-items__badge">
@@ -157,11 +213,24 @@ onMounted(() => {
 
   &__link {
     flex-shrink: 0;
+    // Кнопка-превью: сброс дефолтных стилей button
+    border: none;
+    padding: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
     transition: opacity var(--transition-duration);
 
     &_disabled {
       pointer-events: none;
       opacity: 0.5;
+    }
+
+    @include hover {
+      &:not(.cart-items__link_disabled) {
+        opacity: 0.85;
+      }
     }
   }
 

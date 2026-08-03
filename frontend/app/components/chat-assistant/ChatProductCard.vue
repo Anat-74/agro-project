@@ -113,9 +113,13 @@ const handleAddToCart = () => {
 </template>
 
 <style scoped lang="scss">
+// Карточка товара в чате: всегда одна колонка (ширина сообщения ≤~215px).
+// ВАЖНО: нельзя стилизовать сам контейнер через @container (спека: контейнерная
+// query не матчится на сам контейнер — только на потомков), поэтому адаптив
+// делаем базовой раскладкой, без container-query на карточку.
 .chat-product-card {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 1fr;
   gap: toRem(12);
   padding: toRem(12);
   background: var(--light-color);
@@ -126,15 +130,14 @@ const handleAddToCart = () => {
   // Позволяет карточке сжиматься в grid/flex-родителях чата (иначе 1fr-колонка
   // не может стать уже min-content и карточка ломает вёрстку по горизонтали)
   min-width: 0;
-  @include containerParent(card, inline-size);
 
   &__image-wrap {
     position: relative;
     flex-shrink: 0;
     min-width: 0;
-    // Компактная миниатюра рядом с инфо (side-by-side). Ширина задана явно,
-    // т.к. container-type: inline-size отключает влияние контента на размер.
-    width: toRem(88);
+    // Изображение на всю ширину карточки (одна колонка)
+    width: 100%;
+    justify-self: center;
     // Кнопка-превью: сброс дефолтных стилей button
     border: none;
     padding: 0;
@@ -145,7 +148,7 @@ const handleAddToCart = () => {
     border-radius: toRem(8);
     // Контейнер `product` — тот же, на который опираются container queries
     // в UImage.vue (@container product), чтобы изображение адаптировалось
-    // от ширины контейнера, как на странице товара.
+    // от ширины контейнера (max-width 200px).
     @include containerParent(product, inline-size);
 
     @include hover {
@@ -187,6 +190,7 @@ const handleAddToCart = () => {
     border-radius: toRem(8);
     background: var(--bg);
     flex-shrink: 0;
+    justify-self: center;
     // Кнопка-превью (нет изображения)
     border: none;
     padding: 0;
@@ -237,26 +241,6 @@ const handleAddToCart = () => {
     gap: toRem(8);
     margin-top: toRem(4);
     min-width: 0;
-  }
-}
-
-// Узкая карточка (в чате карточка почти всегда ≤300px):
-// переходим в одну колонку, изображение по центру и на всю ширину.
-// ВАЖНО: в условии @container НЕЛЬЗЯ использовать sass-функции (toRem/toEm) —
-// sass не вычисляет их в prelude @container, CSS остаётся невалидным и правило
-// молча отбрасывается браузером. Значение задано литерально: 300px / 16 = 18.75rem.
-@container card (max-width: 18.75rem) {
-  .chat-product-card {
-    grid-template-columns: 1fr;
-  }
-
-  .chat-product-card__image-wrap,
-  .chat-product-card__placeholder {
-    justify-self: center;
-  }
-
-  .chat-product-card__image-wrap {
-    width: 100%;
   }
 }
 </style>
