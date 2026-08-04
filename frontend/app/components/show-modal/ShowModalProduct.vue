@@ -57,6 +57,14 @@ const galleryImages = computed(() =>
   details.value?.image || props.product?.image || []
 )
 
+// Управление слайдером извне (пагинация-миниатюры вынесены отдельным блоком)
+const sliderRef = useTemplateRef<InstanceType<typeof AppSlider>>("slider")
+
+const sliderActive = computed<number>(() => {
+  const active = (sliderRef.value as any)?.active
+  return typeof active === "number" ? active : (active?.value ?? 1)
+})
+
 // Префетч деталей товара при скролле — когда карточка входит в область видимости
 let prefetchObserver: IntersectionObserver | null = null
 
@@ -143,11 +151,12 @@ const handleAddToCart = () => {
       <div class="product-modal__gallery">
         <AppSlider
           v-if="galleryImages.length"
+          ref="slider"
           :slides="galleryImages"
           slide-key="url"
           variant="product"
           :height="'auto'"
-          :show-pagination="galleryImages.length > 1"
+          :show-pagination="false"
           :show-navigation="galleryImages.length > 1"
         >
           <template #default="{ slide, index }">
@@ -160,28 +169,29 @@ const handleAddToCart = () => {
               :loading="index === 0 ? 'eager' : 'lazy'"
             />
           </template>
-
-          <template #pagination="{ go, active, slides: thumbs }">
-            <button
-              v-for="(img, i) in thumbs"
-              :key="img.url"
-              type="button"
-              class="product-modal__thumb"
-              :class="{ 'product-modal__thumb_active': active === i + 1 }"
-              @click="go(i + 1)"
-              :aria-label="`Изображение ${i + 1}`"
-            >
-              <UImage
-                :src="img.url"
-                :alt="`${product?.name} - ${i + 1}`"
-                type="product"
-                width="80"
-                height="60"
-                class="product-modal__thumb-img"
-              />
-            </button>
-          </template>
         </AppSlider>
+
+        <!-- Пагинация — отдельный блок, вне слайдера -->
+        <div v-if="galleryImages.length > 1" class="product-modal__thumbs">
+          <button
+            v-for="(img, i) in galleryImages"
+            :key="img.url"
+            type="button"
+            class="product-modal__thumb"
+            :class="{ 'product-modal__thumb_active': sliderActive === i + 1 }"
+            @click="sliderRef?.go(i + 1)"
+            :aria-label="`Изображение ${i + 1}`"
+          >
+            <UImage
+              :src="img.url"
+              :alt="`${product?.name} - ${i + 1}`"
+              type="product"
+              width="80"
+              height="60"
+              class="product-modal__thumb-img"
+            />
+          </button>
+        </div>
       </div>
 
       <div class="product-modal__info">
@@ -352,17 +362,20 @@ const handleAddToCart = () => {
   &__gallery {
     min-width: 0;
     @include containerParent(product, inline-size);
+  }
 
-    // Пагинация-миниатюры — отдельный блок: свой фон, рамка и отступы,
-    // чтобы визуально не сливалась с главным изображением.
-    :deep(.slider__pagination) {
-      background: var(--whitesmoke-color);
-      border: toRem(1) solid var(--border-color);
-      border-radius: toRem(10);
-      padding: toRem(10);
-      gap: toRem(8);
-      margin-block-start: toRem(14);
-    }
+  // Пагинация — отдельный блок вне слайдера: свой фон, рамка, отступы,
+  // не сливается с главным изображением (зелёная область .slider).
+  &__thumbs {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: toRem(8);
+    margin-block-start: toRem(14);
+    padding: toRem(10);
+    background: var(--whitesmoke-color);
+    border: toRem(1) solid var(--border-color);
+    border-radius: toRem(10);
   }
 
   &__thumb {

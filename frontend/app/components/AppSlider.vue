@@ -49,6 +49,9 @@ const next = () => active.value < props.slides.length && go(active.value + 1);
 const prev = () => active.value > 1 && go(active.value - 1);
 
 onUnmounted(() => cancelAnimationFrame(rafId));
+
+// Для внешнего управления слайдером (напр. пагинация-миниатюры вне слайдера в модалке)
+defineExpose({ go, active });
 </script>
 
 <template>
