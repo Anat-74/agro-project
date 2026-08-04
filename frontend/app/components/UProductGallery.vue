@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppSlider from '~/components/AppSlider.vue'
+import USlider from '~/components/USlider.vue'
 
 const props = defineProps<{
   product: Product
@@ -15,7 +15,7 @@ const slides = computed(() => props.product?.image || [])
 
 <template>
   <div class="product-gallery">
-    <AppSlider
+    <USlider
       v-if="slides.length"
       :slides="slides"
       slide-key="url"
@@ -57,7 +57,7 @@ const slides = computed(() => props.product?.image || [])
           />
         </button>
       </template>
-    </AppSlider>
+    </USlider>
   </div>
 </template>
 

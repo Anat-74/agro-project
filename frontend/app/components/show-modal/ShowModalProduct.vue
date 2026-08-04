@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppSlider from '~/components/AppSlider.vue'
+import USlider from '~/components/USlider.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -32,11 +32,14 @@ const { open, close } = useDialog(
 )
 
 // Реактивный ключ: при смене продукта (общий инстанс) детали перезапрашиваются.
+// Единый формат со страницами товара (product-${locale}-${slug}) — общий кэш:
+// данные страницы переиспользует модалка и наоборот (TTL 5 мин).
+const { currentLocale } = useLocale()
 const detailsKey = computed(() =>
-  "product-details-" + (props.product?.documentId ?? "preview")
+  "product-" + (currentLocale.value ?? "ru") + "-" + (props.product?.slug ?? "preview")
 )
 
-const { data: details, status, execute } = useAsyncData(
+const { data: details, status, execute } = useCachedAsyncData(
   detailsKey,
   async () => {
     if (!props.product?.slug) return null
@@ -49,7 +52,7 @@ const { data: details, status, execute } = useAsyncData(
     } as any)
     return response.data?.[0] as Product
   },
-  { immediate: false, server: false }
+  { immediate: false, server: false, ttl: 300_000 }
 )
 
 // Слайды изображений: детали (полные) → fallback на product.image
@@ -58,7 +61,7 @@ const galleryImages = computed(() =>
 )
 
 // Управление слайдером извне (пагинация-миниатюры вынесены отдельным блоком)
-const sliderRef = useTemplateRef<InstanceType<typeof AppSlider>>("slider")
+const sliderRef = useTemplateRef<InstanceType<typeof USlider>>("slider")
 
 const sliderActive = computed<number>(() => {
   const active = (sliderRef.value as any)?.active
@@ -149,7 +152,7 @@ const handleAddToCart = () => {
 
     <div v-else-if="status === 'success' && details" class="product-modal__body">
       <div class="product-modal__gallery">
-        <AppSlider
+        <USlider
           v-if="galleryImages.length"
           ref="slider"
           :slides="galleryImages"
@@ -169,7 +172,7 @@ const handleAddToCart = () => {
               :loading="index === 0 ? 'eager' : 'lazy'"
             />
           </template>
-        </AppSlider>
+        </USlider>
 
         <!-- Пагинация — отдельный блок, вне слайдера -->
         <div v-if="galleryImages.length > 1" class="product-modal__thumbs">
@@ -281,7 +284,7 @@ const handleAddToCart = () => {
     position: absolute;
     top: toRem(14);
     right: toRem(14);
-    // Выше контента: у .slider из AppSlider z-index: 100 — без этого на мобильной
+    // Выше контента: у .slider из USlider z-index: 100 — без этого на мобильной
     // раскладке (галерея сверху) слайдер перекрывал крестик и клик не попадал.
     z-index: 1000;
     display: grid;
@@ -434,7 +437,9 @@ const handleAddToCart = () => {
   }
 
   &__add {
-    width: 100%;
+    // Ширина по контенту: в flex-колонке .product-modal__info дефолтный
+    // align-items: stretch растянул бы кнопку на всю ширину.
+    align-self: flex-start;
   }
 }
 

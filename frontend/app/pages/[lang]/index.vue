@@ -11,7 +11,7 @@ const {
   data: homePage,
   status,
   error,
-} = useAsyncData(
+} = useCachedAsyncData(
   homePageKey,
   async () => {
     try {
@@ -30,6 +30,7 @@ const {
   },
    {
     watch: [() => currentLocale.value],
+    ttl: 600_000,
   },
 );
 

@@ -18,8 +18,8 @@ const buttonT = computed(() => buttonTranslations[currentLocale.value])
 const tooltipT = computed(() => tooltipTranslations[currentLocale.value])
 const { goBack } = useGoToForwardOrBack()
 
-const { data: product, error, pending } = useAsyncData
-   (`product-${currentLocale.value}-${productSlug}`,
+const { data: product, error, pending } = useCachedAsyncData(
+   `product-${currentLocale.value}-${productSlug}`,
    async () => {
     const response = await find<Product>('products', {
        locale: currentLocale.value,
@@ -47,7 +47,8 @@ const { data: product, error, pending } = useAsyncData
  }
 
       return response.data[0]
-   })
+   },
+   { ttl: 300_000 })
 
 
  const characteristics = computed(() => {

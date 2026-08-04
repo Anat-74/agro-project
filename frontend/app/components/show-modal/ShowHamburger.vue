@@ -38,7 +38,7 @@ const {
   data: category,
   pending: pendingCategories,
   execute: executeCategory,
-} = useAsyncData(
+} = useCachedAsyncData(
   categoryKey,
   async () => {
     const { find } = useStrapi()
@@ -62,10 +62,12 @@ const {
     } as any)
     return response.data || []
   },
-  { watch: [categoryKey], server: false }
+  { watch: [categoryKey], server: false, ttl: 600_000 }
 )
 
-const productKey = computed(() => `product-dialog-${currentLocale.value}`)
+// Акционные товары — общий кэш с корзиной (ShowModalCartDialog): один ключ,
+// одинаковая форма данных (без fields-ограничения).
+const productKey = computed(() => `cart-discount-${currentLocale.value}`)
 
 const {
   data: product,
@@ -73,7 +75,7 @@ const {
   execute: executeProduct,
   refresh: refreshProduct,
   error: productError,
-} = useAsyncData(
+} = useCachedAsyncData(
   productKey,
   async () => {
     const { find } = useStrapi()
@@ -82,7 +84,6 @@ const {
         isDiscount: true,
         locale: { $eq: currentLocale.value },
       },
-      fields: ["name", "isDiscount", "slug"],
       pagination: { pageSize: 100 } as PaginationMeta,
       populate: {
         image: { fields: ["alternativeText", "url"] },
@@ -94,7 +95,7 @@ const {
     } as any)
     return response.data || []
   },
-  { watch: [productKey], server: false }
+  { watch: [productKey], server: false, ttl: 300_000 }
 )
 
 const pending = computed(

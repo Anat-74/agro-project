@@ -16,7 +16,7 @@ const { slides, heroGrids } = defineProps<Props>();
   :class="['hero-slider', { 'hero-slider_is-visible': isContacts }, { 'hero-slider_is-margin': heroGrids?.[3]?.isVisible===false}]" 
   aria-labelledby="hero"
   >
-    <AppSlider
+    <USlider
       v-if="slides && slides.length > 0"
       :class="[
         'hero-slider__slider',
@@ -74,7 +74,7 @@ const { slides, heroGrids } = defineProps<Props>();
           </NuxtLink>
         </div>
       </template>
-    </AppSlider>
+    </USlider>
 
     <HeroGrids
     v-if="heroGrids && heroGrids.length > 0" 

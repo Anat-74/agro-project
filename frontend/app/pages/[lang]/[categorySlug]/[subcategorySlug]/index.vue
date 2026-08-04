@@ -25,7 +25,7 @@ const { categorySlug, subcategorySlug } = route.params as {
 };
 
 // Параллельная загрузка подкатегории и продуктов
-const { data, pending, error, refresh } = useAsyncData(
+const { data, pending, error, refresh } = useCachedAsyncData(
   `subcategory-products-${currentLocale.value}-${categorySlug}-${subcategorySlug}-${page.value}-${sortOption.value}`,
   async () => {
     // Параллельная загрузка данных
@@ -80,6 +80,7 @@ const { data, pending, error, refresh } = useAsyncData(
       products: productsRes as ProductsResponse,
     };
   },
+  { ttl: 600_000 },
 );
 
 const visibleImagesCount = computed<number>(() => {

@@ -29,8 +29,8 @@ const onItemPreview = (product: Product) => {
   emit('preview', product)
 }
 
-// Discount products for recommendations
-const { data: discountProducts } = useAsyncData(
+// Discount products for recommendations (общий кэш с бургер-меню: ключ cart-discount-${locale})
+const { data: discountProducts } = useCachedAsyncData(
   `cart-discount-${currentLocale.value}`,
   async () => {
     const { find } = useStrapi()
@@ -52,7 +52,7 @@ const { data: discountProducts } = useAsyncData(
     } as any)
     return response.data || []
   },
-  { server: false, lazy: true },
+  { server: false, lazy: true, ttl: 300_000 },
 )
 
 function closeAndGoToCatalog() {

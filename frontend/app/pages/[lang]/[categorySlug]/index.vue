@@ -15,7 +15,7 @@ const { goBack, goForward } = useGoToForwardOrBack();
 const page = ref(route.query.page ? +route.query.page : 1);
 const pageSize = 12;
 
-const { data, pending, error, refresh } = useAsyncData(
+const { data, pending, error, refresh } = useCachedAsyncData(
   `category-data-${currentLocale.value}-${categorySlug}-${page.value}`,
   async () => {
     // Параллельная загрузка категории, подкатегорий и продуктов
@@ -83,6 +83,7 @@ const { data, pending, error, refresh } = useAsyncData(
       products: productsRes as ProductsResponse,
     };
   },
+  { ttl: 600_000 },
 );
 
 const visibleImagesCount = computed<number>(() => {

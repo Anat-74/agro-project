@@ -21,7 +21,7 @@ const {
   data: product,
   error,
   pending,
-} = useAsyncData(`product-${currentLocale.value}-${productSlug}`, async () => {
+} = useCachedAsyncData(`product-${currentLocale.value}-${productSlug}`, async () => {
   const response = await find<Product>("products", {
     locale: currentLocale.value,
     filters: {
@@ -53,7 +53,7 @@ const characteristics = computed(() => {
   } catch {
     return [];
   }
-});
+}, { ttl: 300_000 });
 
 useSeoMeta({
   title:

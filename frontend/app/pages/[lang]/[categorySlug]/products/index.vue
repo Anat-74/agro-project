@@ -17,7 +17,7 @@ const page = ref(route.query.page ? +route.query.page : 1); // Текущая с
 const pageSize = 12; // Количество товаров на странице
 
 // Загрузка категории и продуктов напрямую
-const { data, pending, error, refresh } = useAsyncData(
+const { data, pending, error, refresh } = useCachedAsyncData(
   `category-products-${currentLocale.value}-${categorySlug}-${page.value}-${sortOption.value}`,
   async () => {
     // Параллельная загрузка данных
@@ -81,6 +81,7 @@ const { data, pending, error, refresh } = useAsyncData(
       products: productsRes as ProductsResponse,
     };
   },
+  { ttl: 600_000 },
  );
 
 // Разделение данных
