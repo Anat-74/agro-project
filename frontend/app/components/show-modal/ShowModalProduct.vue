@@ -146,7 +146,6 @@ const handleAddToCart = () => {
           :slides="galleryImages"
           slide-key="url"
           variant="product"
-          pagination-position="left"
           :height="'auto'"
           :show-pagination="galleryImages.length > 1"
           :show-navigation="galleryImages.length > 1"
@@ -353,6 +352,17 @@ const handleAddToCart = () => {
   &__gallery {
     min-width: 0;
     @include containerParent(product, inline-size);
+
+    // Пагинация-миниатюры — отдельный блок: свой фон, рамка и отступы,
+    // чтобы визуально не сливалась с главным изображением.
+    :deep(.slider__pagination) {
+      background: var(--whitesmoke-color);
+      border: toRem(1) solid var(--border-color);
+      border-radius: toRem(10);
+      padding: toRem(10);
+      gap: toRem(8);
+      margin-block-start: toRem(14);
+    }
   }
 
   &__thumb {

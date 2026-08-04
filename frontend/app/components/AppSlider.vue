@@ -226,6 +226,13 @@ onUnmounted(() => cancelAnimationFrame(rafId));
       column-gap: 0;
       padding-block-start: toRem(4);
       padding-block-end: toRem(4);
+      // Глобальное правило [class*="__container"] (_settings.scss) добавляет
+      // padding-inline (12px) и margin-inline: auto — из-за этого слайды уже
+      // контейнера и в модалке виден край следующего слайда. Для product-слайдера
+      // отступы не нужны: изображение заполняет всю ширину.
+      padding-inline: 0;
+      margin-inline: 0;
+      max-width: none;
     }
 
     .slider__slide {
