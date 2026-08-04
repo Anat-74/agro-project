@@ -22,6 +22,11 @@ const container = useTemplateRef("container");
 const active = ref(1);
 
 let rafId: number;
+// Пока идёт программный плавный скролл (клик по пагинации), не пересчитываем
+// активный слайд: scroll-события во время анимации возвращали бы active обратно
+// (2 → 1 → 2) и миниатюра «мигала» бордером.
+let suppressScrollActive = false;
+let scrollEndTimer: ReturnType<typeof setTimeout> | undefined;
 
 const go = (n: number) => {
   const width = container.value?.clientWidth || 0;
@@ -30,11 +35,17 @@ const go = (n: number) => {
     behavior: "smooth",
   });
   active.value = n;
+  suppressScrollActive = true;
+  clearTimeout(scrollEndTimer);
+  scrollEndTimer = setTimeout(() => {
+    suppressScrollActive = false;
+  }, 500);
 };
 
 const handleScroll = () => {
   cancelAnimationFrame(rafId);
   rafId = requestAnimationFrame(() => {
+    if (suppressScrollActive) return;
     const width = container.value?.clientWidth || 1;
     const newActive =
       Math.round((container.value?.scrollLeft || 0) / width) + 1;
@@ -48,7 +59,10 @@ const handleScroll = () => {
 const next = () => active.value < props.slides.length && go(active.value + 1);
 const prev = () => active.value > 1 && go(active.value - 1);
 
-onUnmounted(() => cancelAnimationFrame(rafId));
+onUnmounted(() => {
+  cancelAnimationFrame(rafId);
+  clearTimeout(scrollEndTimer);
+});
 
 // Для внешнего управления слайдером (напр. пагинация-миниатюры вне слайдера в модалке)
 defineExpose({ go, active });

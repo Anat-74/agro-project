@@ -186,8 +186,8 @@ const handleAddToCart = () => {
               :src="img.url"
               :alt="`${product?.name} - ${i + 1}`"
               type="product"
-              width="80"
-              height="60"
+              width="54"
+              height="40"
               class="product-modal__thumb-img"
             />
           </button>
@@ -362,26 +362,31 @@ const handleAddToCart = () => {
   &__gallery {
     min-width: 0;
     @include containerParent(product, inline-size);
+
+    // Блок главного изображения: фон убран, вместо него — рамка со скруглением.
+    // Само изображение уже закруглено UImage (type="product").
+    :deep(.slider) {
+      background: transparent;
+      border: toRem(1) solid var(--border-color);
+      border-radius: toRem(6);
+      overflow: hidden;
+    }
   }
 
-  // Пагинация — отдельный блок вне слайдера: свой фон, рамка, отступы,
-  // не сливается с главным изображением (зелёная область .slider).
+  // Пагинация — отдельный блок вне слайдера, без фона: просто миниатюры
+  // с тонкой рамкой и скруглением.
   &__thumbs {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
     gap: toRem(8);
     margin-block-start: toRem(14);
-    padding: toRem(10);
-    background: var(--whitesmoke-color);
-    border: toRem(1) solid var(--border-color);
-    border-radius: toRem(10);
   }
 
   &__thumb {
-    border: toRem(2) solid transparent;
+    border: toRem(1) solid var(--border-color);
     border-radius: toRem(6);
-    padding: 0;
+    padding: toRem(2);
     background: none;
     cursor: pointer;
     opacity: 0.65;
@@ -389,7 +394,7 @@ const handleAddToCart = () => {
 
     &_active {
       opacity: 1;
-      border-color: var(--blue-color);
+      border-color: var(--primary-color);
     }
 
     @include hover {
@@ -400,6 +405,7 @@ const handleAddToCart = () => {
   &__thumb-img {
     border-radius: toRem(4);
     background-color: var(--bg-product);
+    display: block;
   }
 
   &__info {
