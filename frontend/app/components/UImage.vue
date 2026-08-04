@@ -155,7 +155,7 @@ const finalSrc = computed(() => {
 
   &_smooth-load {
     filter: blur(4px);
-    transition: filter .2s ease;
+    transition: filter .4s ease;
   }
 
   &_loaded {
