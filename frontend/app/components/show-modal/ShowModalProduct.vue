@@ -146,6 +146,7 @@ const handleAddToCart = () => {
           :slides="galleryImages"
           slide-key="url"
           variant="product"
+          pagination-position="left"
           :height="'auto'"
           :show-pagination="galleryImages.length > 1"
           :show-navigation="galleryImages.length > 1"
@@ -271,7 +272,9 @@ const handleAddToCart = () => {
     position: absolute;
     top: toRem(14);
     right: toRem(14);
-    z-index: 30;
+    // Выше контента: у .slider из AppSlider z-index: 100 — без этого на мобильной
+    // раскладке (галерея сверху) слайдер перекрывал крестик и клик не попадал.
+    z-index: 1000;
     display: grid;
     place-items: center;
     width: toRem(40);

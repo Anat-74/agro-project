@@ -4,6 +4,7 @@ interface Props<T = any> {
   slideKey?: keyof T | string;
   height?: string;
   variant?: "hero" | "product";
+  paginationPosition?: "bottom" | "left";
   showPagination?: boolean;
   showNavigation?: boolean;
 }
@@ -12,6 +13,7 @@ const props = withDefaults(defineProps<Props>(), {
   slideKey: "id" as keyof T | string,
   height: "var(--min-height)",
   variant: "hero",
+  paginationPosition: "bottom",
   showPagination: true,
   showNavigation: true,
 });
@@ -51,7 +53,11 @@ onUnmounted(() => cancelAnimationFrame(rafId));
 
 <template>
   <div
-    :class="['slider', `slider_${props.variant}`]"
+    :class="[
+      'slider',
+      `slider_${props.variant}`,
+      { 'slider_pagination-left': props.paginationPosition === 'left' },
+    ]"
     :style="{ minHeight: props.height }"
   >
     <div
@@ -233,6 +239,27 @@ onUnmounted(() => cancelAnimationFrame(rafId));
       bottom: auto;
       margin-block-start: toRem(12);
       flex-wrap: wrap;
+    }
+  }
+
+  // ===== Пагинация слева, вертикально (напр. модалка товара) =====
+  &_pagination-left {
+    display: flex;
+    align-items: flex-start;
+    gap: toRem(16);
+
+    .slider__container {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .slider__pagination {
+      order: -1;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      gap: toRem(8);
+      margin: 0;
+      align-self: flex-start;
     }
   }
 }
