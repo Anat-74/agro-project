@@ -52,6 +52,20 @@ const emit = defineEmits<{
 
 const loaded = ref(false);
 
+const root = useTemplateRef("root")
+
+// Снимаем блюр: если изображение уже загружено (SSR/кэш) — сразу;
+// иначе слушаем нативный load на самом <img> (надёжнее Vue-fallthrough).
+onMounted(() => {
+  const img = root.value?.querySelector("img")
+  if (!img) return
+  if (img.complete) {
+    loaded.value = true
+  } else {
+    img.addEventListener("load", () => { loaded.value = true }, { once: true })
+  }
+})
+
 const onImageLoad = (event: Event) => {
   if (props.smoothLoad) {
     loaded.value = true;
@@ -94,6 +108,7 @@ const finalSrc = computed(() => {
 
 <template>
   <div
+    ref="root"
     :class="[
       'app-image',
       `app-image_${type}`,
@@ -140,7 +155,7 @@ const finalSrc = computed(() => {
 
   &_smooth-load {
     filter: blur(4px);
-    transition: filter .4s ease;
+    transition: filter .2s ease;
   }
 
   &_loaded {

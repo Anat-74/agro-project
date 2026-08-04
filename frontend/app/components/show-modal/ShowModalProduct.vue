@@ -437,9 +437,8 @@ const handleAddToCart = () => {
   }
 
   &__add {
-    // Ширина по контенту: в flex-колонке .product-modal__info дефолтный
-    // align-items: stretch растянул бы кнопку на всю ширину.
-    align-self: flex-start;
+    // Ширина по контенту, выравнивание по концу flex-колонки (правый край)
+    align-self: flex-end;
   }
 }
 
