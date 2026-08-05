@@ -191,8 +191,9 @@ function setTheme(theme: string) {
   }
 
   &__popup {
-    // Правый верхний угол (относительно ползунка), поверх controls и container-top
-    position: absolute;
+    // Правый верхний угол вьюпорта, поверх всего (fixed выходит из клиппинга
+    // overflow баннера и корневого stacking context → z-index реально работает)
+    position: fixed;
     top: 0;
     right: 0;
     display: flex;

@@ -26,7 +26,6 @@ withDefaults(defineProps<Props>(), {
   display: grid;
   grid-template-columns: 1fr auto;   // текст слева, блок управления справа
   align-items: center;
-  column-gap: toRem(12);
   padding-inline: toRem(4);
   background-color: var(--primary-color);
   @include adaptiveValue("height", 60, 72);
@@ -42,7 +41,6 @@ withDefaults(defineProps<Props>(), {
     flex-direction: column;
     align-items: center;      // горизонтальное центрирование (cross axis)
     justify-content: center;  // вертикальное (main axis)
-    row-gap: toRem(4);
     // Светлый полупрозрачный фон (rgba, а не opacity — дочерние элементы
     // не теряют контраст)
     background-color: rgba(255, 255, 255, 0.15);
@@ -50,9 +48,27 @@ withDefaults(defineProps<Props>(), {
     padding: toRem(6) toRem(8);
   }
 
+  &__lang-switcher {
+    position: relative;
+    padding-block-end: toRem(10);
+
+    // Заглублённая (recessed) разделительная линия между langSwitcher и colorMode
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 1px;
+      background: rgba(0, 0, 0, 0.25);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+  }
+
   &__color-mode {
     opacity: 0;
     animation: fadeIn 0.3s ease-in-out 0.1s forwards;
+    padding-block-start: toRem(10);
   }
 }
 

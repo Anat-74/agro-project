@@ -27,8 +27,7 @@ const getButtonTranslation = (locale) => {
 .lang-switcher {
   height: auto;
   display: flex;
-  justify-content: space-between;   // кнопки по углам блока controls
-  width: 100%;
+  column-gap: toRem(12);   // между кнопками флагов
   padding-inline: toRem(3);
   padding-block: toRem(2);
   border-radius: toRem(4);
