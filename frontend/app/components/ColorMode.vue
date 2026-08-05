@@ -91,6 +91,7 @@ function setTheme(theme: string) {
               :key="theme"
             :class="[
               'color-mode__option',
+              `color-mode__option_${theme}`,
               {
                 'color-mode__option_active': colorMode.preference === theme,
               },
@@ -121,7 +122,7 @@ function setTheme(theme: string) {
     position: relative;
     display: inline-flex;
     align-items: center;
-    width: toRem(80);
+    width: toRem(72);       // на ~10% меньше (было 80)
     height: toRem(28);
   }
 
@@ -219,6 +220,25 @@ function setTheme(theme: string) {
     color: var(--color);
     font-size: toEm(14);
     transition: background var(--transition-duration);
+
+    // Заглублённая (recessed) линия между опциями (как у controls)
+    &:not(:last-child) {
+      border-block-end: 1px solid rgba(0, 0, 0, 0.25);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+
+    // Цветные иконки по теме
+    &_light {
+      color: var(--warning-color);   // солнце
+    }
+
+    &_custom {
+      color: #8d6e63;                // кофе (коричневый)
+    }
+
+    &_dark {
+      color: #5b6ee1;                // луна (индиго)
+    }
 
     @include hover {
       background: var(--bg);

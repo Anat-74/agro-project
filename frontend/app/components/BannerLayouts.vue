@@ -15,6 +15,11 @@ withDefaults(defineProps<Props>(), {
       <LangSwitcher class="banner__lang-switcher" />
       <ClientOnly>
         <ColorMode class="banner__color-mode" />
+        <!-- Резервируем место под colorMode при SSR/гидратации (иначе langSwitcher
+             виден один, потом colorMode «прыгает» и сдвигает вёрстку) -->
+        <template #fallback>
+          <div class="banner__color-mode-placeholder" aria-hidden="true"></div>
+        </template>
       </ClientOnly>
     </div>
   </div>
@@ -43,12 +48,12 @@ withDefaults(defineProps<Props>(), {
     flex-direction: column;
     align-items: center;      // горизонтальное центрирование (cross axis)
     justify-content: center;  // вертикальное (main axis)
-    row-gap: toRem(4);
+    row-gap: toRem(6);
     // Светлый полупрозрачный фон (rgba, а не opacity — дочерние элементы
     // не теряют контраст)
     background-color: rgba(255, 255, 255, 0.15);
-    border-radius: toRem(8);
-    padding: toRem(6) toRem(8);
+    border-radius: toRem(2);
+    padding: toRem(4);
 
     // Заглублённая (recessed) линия на весь блок, по центру между langSwitcher и colorMode
     &::after {
@@ -67,6 +72,12 @@ withDefaults(defineProps<Props>(), {
   &__color-mode {
     opacity: 0;
     animation: fadeIn 0.3s ease-in-out 0.1s forwards;
+  }
+
+  // Заглушка под colorMode (размеры совпадают с ползунком 72×28)
+  &__color-mode-placeholder {
+    width: toRem(72);
+    height: toRem(28);
   }
 }
 
