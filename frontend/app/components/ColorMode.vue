@@ -43,6 +43,15 @@ function themeLabel(theme: string) {
   return "Кастом";
 }
 
+// Порядок тем: светлая → кастомная → тёмная, но активная всегда в конце.
+// Если preference вне списка (напр. 'system') — просто три темы, без дубля.
+const orderedThemes = computed(() => {
+  const baseOrder = ["light", "custom", "dark"]
+  const active = colorMode.preference
+  if (!baseOrder.includes(active)) return baseOrder
+  return [...baseOrder.filter((t) => t !== active), active]
+})
+
 function togglePopup() {
   showPopup.value = !showPopup.value;
 }
@@ -80,7 +89,7 @@ function setTheme(theme: string) {
       <Transition name="popup">
         <div v-if="showPopup" class="color-mode__popup">
           <button
-            v-for="theme in ['light', 'dark', 'custom']"
+            v-for="theme in orderedThemes"
             :key="theme"
             :class="[
               'color-mode__option',
@@ -182,10 +191,10 @@ function setTheme(theme: string) {
   }
 
   &__popup {
-    position: fixed;
-    top: 0%;
-    left: 50%;
-    translate: -50% 0%;
+    // Правый верхний угол (относительно ползунка), поверх controls и container-top
+    position: absolute;
+    top: 0;
+    right: 0;
     display: flex;
     flex-direction: column;
     gap: toRem(4);
@@ -193,7 +202,7 @@ function setTheme(theme: string) {
     border-radius: toRem(8);
     background: var(--secondary-color);
     box-shadow: 0 toRem(4) toRem(12) rgba(0, 0, 0, 0.15);
-    z-index: 10000;
+    z-index: 9999;
   }
 
   &__option {
@@ -239,7 +248,7 @@ function setTheme(theme: string) {
 .popup-enter-from,
 .popup-leave-to {
   opacity: 0;
-  transform: translate(-50%, toRem(-8));
+  transform: translateY(toRem(-8));   // появление сверху / исчезание вверх
 }
 
 .fade-enter-active,

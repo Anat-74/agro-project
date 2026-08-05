@@ -27,11 +27,11 @@ const getButtonTranslation = (locale) => {
 .lang-switcher {
   height: auto;
   display: flex;
-  gap: toRem(8);
+  justify-content: space-between;   // кнопки по углам блока controls
+  width: 100%;
   padding-inline: toRem(3);
   padding-block: toRem(2);
   border-radius: toRem(4);
-  background-color: var(--secondary-color);
 }
 .active {
    outline: 1px solid var(--active-color);

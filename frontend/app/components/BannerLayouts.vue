@@ -12,10 +12,10 @@ withDefaults(defineProps<Props>(), {
   <div class="banner">
     <UMarqueeText class="banner__marquee" :text="bannerText" />
     <div class="banner__controls">
+      <LangSwitcher class="banner__lang-switcher" />
       <ClientOnly>
         <ColorMode class="banner__color-mode" />
       </ClientOnly>
-      <LangSwitcher class="banner__lang-switcher" />
     </div>
   </div>
 </template>
@@ -37,21 +37,17 @@ withDefaults(defineProps<Props>(), {
   }
 
   &__controls {
-    // Мобильный: колонка (colorMode выше LangSwitcher)
-    .banner__lang-switcher {
-      margin-block-start: toRem(4);
-    }
-
-    @media (min-width: $mobile) {
-      // ПК: всё в ряд
-      display: flex;
-      align-items: center;
-      gap: toRem(12);
-
-      .banner__lang-switcher {
-        margin-block-start: 0;
-      }
-    }
+    // Колонка: LangSwitcher сверху, colorMode снизу, по центру
+    display: flex;
+    flex-direction: column;
+    align-items: center;      // горизонтальное центрирование (cross axis)
+    justify-content: center;  // вертикальное (main axis)
+    row-gap: toRem(4);
+    // Светлый полупрозрачный фон (rgba, а не opacity — дочерние элементы
+    // не теряют контраст)
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: toRem(8);
+    padding: toRem(6) toRem(8);
   }
 
   &__color-mode {
