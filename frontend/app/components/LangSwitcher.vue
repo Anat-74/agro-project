@@ -32,11 +32,6 @@ const getButtonTranslation = (locale) => {
   padding-block: toRem(2);
   border-radius: toRem(4);
   background-color: var(--secondary-color);
-
-  @media (max-width:$mobile){
-   flex-direction: column;
-   background-color: var(--transparent-color);
-  }
 }
 .active {
    outline: 1px solid var(--active-color);

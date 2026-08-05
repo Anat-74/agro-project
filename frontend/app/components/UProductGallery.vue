@@ -61,7 +61,7 @@ const sliderActive = computed<number>(() => {
           :src="strapiUrl(img.url)"
           :alt="`${product.name} - ${i + 1}`"
           type="product"
-          width="54"
+          width="40"
           height="40"
           class="product-gallery__thumb-img"
         />
@@ -123,6 +123,12 @@ const sliderActive = computed<number>(() => {
   }
 
   &__thumb-img {
+    // Квадратные миниатюры (40×40): переопределяем aspect-ratio 4/3 у product-типа
+    &.app-image_product {
+      width: toRem(40);
+      height: toRem(40);
+      aspect-ratio: 1 / 1;
+    }
     border-radius: toRem(4);
     background-color: var(--bg-product);
     display: block;

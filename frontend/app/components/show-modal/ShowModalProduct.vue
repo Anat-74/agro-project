@@ -185,14 +185,14 @@ const handleAddToCart = () => {
             @click="sliderRef?.go(i + 1)"
             :aria-label="`Изображение ${i + 1}`"
           >
-            <UImage
-              :src="img.url"
-              :alt="`${product?.name} - ${i + 1}`"
-              type="product"
-              width="54"
-              height="40"
-              class="product-modal__thumb-img"
-            />
+              <UImage
+                :src="img.url"
+                :alt="`${product?.name} - ${i + 1}`"
+                type="product"
+                width="40"
+                height="40"
+                class="product-modal__thumb-img"
+              />
           </button>
         </div>
       </div>
@@ -406,6 +406,12 @@ const handleAddToCart = () => {
   }
 
   &__thumb-img {
+    // Квадратные миниатюры (40×40): переопределяем aspect-ratio 4/3 у product-типа
+    &.app-image_product {
+      width: toRem(40);
+      height: toRem(40);
+      aspect-ratio: 1 / 1;
+    }
     border-radius: toRem(4);
     background-color: var(--bg-product);
     display: block;

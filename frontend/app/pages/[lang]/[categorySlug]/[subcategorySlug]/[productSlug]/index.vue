@@ -204,9 +204,6 @@ const handleAddToCart = (product: Product) => {
   grid-template-columns: auto minmax(toRem(190), toRem(1220));
   column-gap: toEm(24);
   padding-block: toEm(18);
-  // Растягиваемся на доступную высоту main, чтобы кнопка была внизу
-  // и отступ под ней не зависел от длины описания.
-  flex: 1;
 
   @media (max-width: $tablet) {
     grid-template-columns: 1fr;
@@ -271,6 +268,10 @@ const handleAddToCart = (product: Product) => {
     padding-block-start: toEm(16);
     padding-block-end: toEm(2);
     border-radius: toRem(4);
+    // Минимальная высота описания: короткие описания не оставляют большой пустой
+    // отступ под кнопкой (длинные не затрагиваются)
+    min-height: toEm(130);
+    line-height: 1.5;
   }
 
   &:deep(.wrapper-right__characteristics) {
@@ -289,8 +290,6 @@ const handleAddToCart = (product: Product) => {
     padding-block: toEm(4);
     border-radius: toRem(4);
     color: var(--dark-golden-color);
-    // Прижимаем строку «цена + кнопка» к низу колонки
-    margin-block-start: auto;
 
     &_discount {
       color: var(--green-color);
@@ -299,7 +298,6 @@ const handleAddToCart = (product: Product) => {
 
   &__btn {
     grid-area: btn;
-    margin-block-start: auto;
   }
 
   &__btn {
