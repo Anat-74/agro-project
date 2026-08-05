@@ -121,8 +121,11 @@ const handleAddToCart = (product: Product) => {
       class="visually-hidden"
       id="product-description"
       >{{ visuallyHiddenT.sectionProductSlugTitle }}</h1>
-   <div class="product-review__wrapper-left wrapper-left">
-      <div class="wrapper-left__row-top">
+    <div class="product-review__wrapper-left wrapper-left">
+      <header
+       class="wrapper-left__row-top"
+       :aria-label="visuallyHiddenT.productPageHeader"
+      >
       <UButton
       class="wrapper-left__go-back"
       @click="goBack"
@@ -139,7 +142,7 @@ const handleAddToCart = (product: Product) => {
       class="wrapper-left__in-stock"
      />
      <ShareButton />
-   </div>
+   </header>
         <UProductGallery :product="product" />
    </div>
    <div class="product-review__wrapper-right wrapper-right">
@@ -183,6 +186,9 @@ const handleAddToCart = (product: Product) => {
     grid-template-columns: auto minmax(toRem(190), toRem(1220));
     column-gap: toEm(24);
     padding-block: toEm(18);
+    // Растягиваемся на доступную высоту main, чтобы кнопка была внизу
+    // и отступ под ней не зависел от длины описания.
+    flex: 1;
 
     @media (max-width:$tablet){
        grid-template-columns: 1fr;
@@ -218,8 +224,6 @@ const handleAddToCart = (product: Product) => {
     &__in-stock {
     padding-inline: toEm(8);
     padding-block: toEm(4);
-    border-radius: toRem(4);
-    background-color: var(--whitesmoke-color);
  }
  }
 
@@ -242,7 +246,6 @@ const handleAddToCart = (product: Product) => {
     padding-block: toEm(4, 22);
     border-radius: toEm(4, 22);
     color: var(--dark-golden-color);
-    background-color: var(--whitesmoke-color);
  }
 
  &:deep(.wrapper-right__description) {
@@ -251,7 +254,6 @@ const handleAddToCart = (product: Product) => {
     padding-block-start: toEm(16);
     padding-block-end: toEm(2);
     border-radius: toRem(4);
-    background-color: var(--whitesmoke-color);
  }
 
  &:deep(.wrapper-right__characteristics) {
@@ -270,7 +272,8 @@ const handleAddToCart = (product: Product) => {
     padding-block: toEm(4);
     border-radius: toRem(4);
     color: var(--green-color);
-    background-color: var(--whitesmoke-color);
+    // Прижимаем строку «цена + кнопка» к низу колонки
+    margin-block-start: auto;
 
     &_discount {
        color: var(--green-color);
@@ -279,6 +282,7 @@ const handleAddToCart = (product: Product) => {
 
  &__btn {
     grid-area: btn;
+    margin-block-start: auto;
  }
  }
  </style>

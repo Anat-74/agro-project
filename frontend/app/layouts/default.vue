@@ -61,5 +61,9 @@ console.debug("global data:", global.value);
   position: relative;
   z-index: 0;
   min-height: 100dvh;
+  // Контент страницы может растягиваться (flex: 1), чтобы не было
+  // пустого места внизу при коротком контенте (кнопка прижимается к низу).
+  display: flex;
+  flex-direction: column;
 }
 </style>

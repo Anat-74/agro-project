@@ -142,7 +142,10 @@ const handleAddToCart = (product: Product) => {
       {{ visuallyHiddenT.sectionProductSlugTitle }}
     </h1>
     <div class="product-review__wrapper-left wrapper-left">
-      <div class="wrapper-left__row-top">
+      <header
+        class="wrapper-left__row-top"
+        :aria-label="visuallyHiddenT.productPageHeader"
+      >
         <UButton
           class="wrapper-left__go-back"
           @click="goBack"
@@ -157,7 +160,7 @@ const handleAddToCart = (product: Product) => {
         />
         <ProductStatus :product="product" class="wrapper-left__in-stock" />
         <ShareButton class="wrapper-left__share" />
-      </div>
+      </header>
       <UProductGallery :product="product" />
     </div>
     <div class="product-review__wrapper-right wrapper-right">
@@ -180,12 +183,13 @@ const handleAddToCart = (product: Product) => {
         {{ formatPrice(product.price) }}
       </span>
       <UButton
+        class="wrapper-right__btn"
         @click="handleAddToCart(product)"
         :disabled="isInCart(product.documentId)"
       >
         {{
           isInCart(product.documentId)
-            ? "Товар в корзине"
+            ? buttonT.addedIsCart
             : buttonT.label
         }}
       </UButton>
@@ -200,6 +204,9 @@ const handleAddToCart = (product: Product) => {
   grid-template-columns: auto minmax(toRem(190), toRem(1220));
   column-gap: toEm(24);
   padding-block: toEm(18);
+  // Растягиваемся на доступную высоту main, чтобы кнопка была внизу
+  // и отступ под ней не зависел от длины описания.
+  flex: 1;
 
   @media (max-width: $tablet) {
     grid-template-columns: 1fr;
@@ -228,16 +235,13 @@ const handleAddToCart = (product: Product) => {
   }
 
   &__discount-icon {
-    color: var(--lime-color);
+    color: var(--success-color);   // как на странице через категорию
     font-size: toEm(32);
   }
 
   &__in-stock {
     padding-inline: toEm(8);
     padding-block: toEm(4);
-    border-radius: toRem(4);
-    background-color: var(--bg);
-    box-shadow: 0px 1px toRem(5) var(--shadow);
   }
 }
 
@@ -259,8 +263,6 @@ const handleAddToCart = (product: Product) => {
     padding-block: toEm(4, 22);
     border-radius: toEm(4, 22);
     color: var(--dark-golden-color);
-    background-color: var(--bg-product);
-    box-shadow: 0px 1px toRem(5) var(--shadow);
   }
 
   &:deep(.wrapper-right__description) {
@@ -269,8 +271,6 @@ const handleAddToCart = (product: Product) => {
     padding-block-start: toEm(16);
     padding-block-end: toEm(2);
     border-radius: toRem(4);
-    background-color: var(--bg-product);
-    box-shadow: 0px 1px toRem(5) var(--shadow);
   }
 
   &:deep(.wrapper-right__characteristics) {
@@ -289,12 +289,17 @@ const handleAddToCart = (product: Product) => {
     padding-block: toEm(4);
     border-radius: toRem(4);
     color: var(--dark-golden-color);
-    background-color: var(--bg-product);
-    box-shadow: 0px 1px toRem(5) var(--shadow);
+    // Прижимаем строку «цена + кнопка» к низу колонки
+    margin-block-start: auto;
 
     &_discount {
       color: var(--green-color);
     }
+  }
+
+  &__btn {
+    grid-area: btn;
+    margin-block-start: auto;
   }
 
   &__btn {

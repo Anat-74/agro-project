@@ -8,6 +8,7 @@ export const visuallyHiddenTranslations: Record<LocaleCode, {
    sectionContactsTitle: string
    showModalMenuTitle: string
    heroGridsTitle: string
+   productPageHeader: string
 
 }> = {
    ru: {
@@ -19,7 +20,8 @@ export const visuallyHiddenTranslations: Record<LocaleCode, {
       sectionBlogTitle: "Секция блога",
       showModalMenuTitle: "Список товаров категории и подкатегории",
       sectionContactsTitle: "Секция с контактами компании",
-      heroGridsTitle: "Раздел с нашими преимуществами"
+      heroGridsTitle: "Раздел с нашими преимуществами",
+      productPageHeader: "Шапка страницы товара"
    },
    be: {
       sectionProductSlugTitle: "Секцыя з апісаннем тавару",
@@ -30,6 +32,7 @@ export const visuallyHiddenTranslations: Record<LocaleCode, {
       sectionBlogTitle: "Секцыя блога",
       showModalMenuTitle: "Спіс тавараў катэгорыі, а так-жа падкатэгорыі",
       sectionContactsTitle: "Секцыя з кантактамі кампаніі",
-      heroGridsTitle: "Раздзел з нашымі перавагамі"
+      heroGridsTitle: "Раздзел з нашымі перавагамі",
+      productPageHeader: "Шапка старонкі тавару"
    }
  }

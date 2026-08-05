@@ -76,7 +76,7 @@ const sliderActive = computed<number>(() => {
 .product-gallery {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: center;   // миниатюры по центру по вертикали (не прижаты к верху)
   gap: toRem(16);
   // Контейнер `product`: на него опираются @container product в UImage.vue,
   // чтобы изображения слайдов адаптировались от ширины галереи.
