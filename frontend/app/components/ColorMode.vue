@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import { colorModeTranslations } from "~/locales/colorMode"
+
 const colorMode = useColorMode();
+const { currentLocale } = useLocale();
+const t = computed(() => colorModeTranslations[currentLocale.value]);
 const { brightness } = useThemeBrightness();
 const showPercent = ref(false);
 const showPopup = ref(false);
@@ -7,6 +11,13 @@ const popupRef = useTemplateRef<HTMLDivElement>("popup");
 let hideTimer: ReturnType<typeof setTimeout> | null = null;
 
 const sliderValue = computed(() => brightness.value);
+
+// Класс темы: светлая/тёмная → ползунок под фон; кастом/system → анимированный градиент
+const themeClass = computed(() => {
+  if (colorMode.preference === "light") return "color-mode_light";
+  if (colorMode.preference === "dark") return "color-mode_dark";
+  return "color-mode_custom";
+});
 
 watch(brightness, () => {
   showPercent.value = true;
@@ -32,9 +43,9 @@ function handleClickOutside(e: MouseEvent) {
 }
 
 function themeLabel(theme: string) {
-  if (theme === "light") return "Светлая";
-  if (theme === "dark") return "Тёмная";
-  return "Кастом";
+  if (theme === "light") return t.value.themeLight;
+  if (theme === "dark") return t.value.themeDark;
+  return t.value.themeCustom;   // «Анимация»
 }
 
 // Порядок тем: светлая → кастомная → тёмная, но активная всегда в конце.
@@ -57,7 +68,7 @@ function setTheme(theme: string) {
 </script>
 
 <template>
-  <div class="color-mode">
+  <div :class="['color-mode', themeClass]">
     <div
       class="color-mode__slider-wrapper"
       ref="popupRef"
@@ -75,12 +86,12 @@ function setTheme(theme: string) {
       <button
         class="color-mode__thumb"
         @click.stop="togglePopup"
-        :aria-label="`Тема: ${themeLabel(colorMode.preference)}. Нажмите для смены`"
+        :aria-label="`${t.ariaLabelTheme}: ${themeLabel(colorMode.preference)}. ${t.ariaLabelSwitch}`"
       >
         <!-- Статические имена → бандится в build (без runtime-фетча Iconify) -->
         <Icon v-if="colorMode.preference === 'light'" name="ph:sun-duotone" />
         <Icon v-else-if="colorMode.preference === 'dark'" name="ph:moon-light" />
-        <Icon v-else name="ph:coffee" />
+        <Icon v-else name="ph:star-four" />
       </button>
 
       <Transition name="popup">
@@ -100,7 +111,7 @@ function setTheme(theme: string) {
           >
             <Icon v-if="theme === 'light'" name="ph:sun-duotone" />
             <Icon v-else-if="theme === 'dark'" name="ph:moon-light" />
-            <Icon v-else name="ph:coffee" />
+            <Icon v-else name="ph:star-four" />
             <span>{{ themeLabel(theme) }}</span>
           </button>
         </div>
@@ -131,12 +142,6 @@ function setTheme(theme: string) {
       width: 100%;
       height: toRem(8);
       appearance: none;
-      background: linear-gradient(
-        90deg,
-        var(--primary-color),
-        var(--warning-color),
-        var(--danger-color)
-      );
       border-radius: toRem(4);
       outline: none;
       cursor: pointer;
@@ -233,7 +238,11 @@ function setTheme(theme: string) {
     }
 
     &_custom {
-      color: #8d6e63;                // кофе (коричневый)
+      color: #ff5e7e;   // яркий «анимированный» цвет
+
+      svg {
+        animation: custom-sway 3s ease-in-out infinite;
+      }
     }
 
     &_dark {
@@ -258,6 +267,49 @@ function setTheme(theme: string) {
     font-weight: 600;
     font-size: toEm(14);
     color: var(--light-color);
+  }
+
+  // Ползунок под текущую тему:
+  // светлая/тёмная — цвет фона темы (var(--bg) = фон блока ниже);
+  // «Анимация» — переливающийся градиент.
+  &.color-mode_light,
+  &.color-mode_dark {
+    .color-mode__slider :deep(.u-input__range) {
+      background: var(--bg);
+    }
+  }
+
+  &.color-mode_custom {
+    .color-mode__slider :deep(.u-input__range) {
+      background: linear-gradient(
+        90deg,
+        var(--primary-color),
+        var(--warning-color),
+        var(--danger-color),
+        var(--primary-color)
+      );
+      background-size: 200% 100%;
+      animation: slider-shimmer 3s linear infinite;
+    }
+  }
+}
+
+@keyframes slider-shimmer {
+  0% {
+    background-position: 0% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes custom-sway {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(8deg);
   }
 }
 

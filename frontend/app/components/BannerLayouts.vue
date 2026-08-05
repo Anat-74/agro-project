@@ -52,7 +52,7 @@ withDefaults(defineProps<Props>(), {
     // Светлый полупрозрачный фон (rgba, а не opacity — дочерние элементы
     // не теряют контраст)
     background-color: rgba(255, 255, 255, 0.15);
-    border-radius: toRem(2);
+    border-radius: toRem(6);
     padding: toRem(4);
 
     // Заглублённая (recessed) линия на весь блок, по центру между langSwitcher и colorMode
