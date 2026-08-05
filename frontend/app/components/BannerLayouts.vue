@@ -26,7 +26,7 @@ withDefaults(defineProps<Props>(), {
   display: grid;
   grid-template-columns: 1fr auto;   // текст слева, блок управления справа
   align-items: center;
-  column-gap: toRem(2);
+  column-gap: toRem(4);
   padding-inline: toRem(4);
   background-color: var(--primary-color);
   @include adaptiveValue("height", 60, 72);
@@ -43,6 +43,7 @@ withDefaults(defineProps<Props>(), {
     flex-direction: column;
     align-items: center;      // горизонтальное центрирование (cross axis)
     justify-content: center;  // вертикальное (main axis)
+    row-gap: toRem(4);
     // Светлый полупрозрачный фон (rgba, а не opacity — дочерние элементы
     // не теряют контраст)
     background-color: rgba(255, 255, 255, 0.15);

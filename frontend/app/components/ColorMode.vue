@@ -31,12 +31,6 @@ function handleClickOutside(e: MouseEvent) {
   }
 }
 
-function iconName(theme: string) {
-  if (theme === "light") return "ph:sun-duotone";
-  if (theme === "dark") return "ph:moon-light";
-  return "ph:coffee";
-}
-
 function themeLabel(theme: string) {
   if (theme === "light") return "Светлая";
   if (theme === "dark") return "Тёмная";
@@ -83,7 +77,10 @@ function setTheme(theme: string) {
         @click.stop="togglePopup"
         :aria-label="`Тема: ${themeLabel(colorMode.preference)}. Нажмите для смены`"
       >
-        <Icon :name="iconName(colorMode.preference)" />
+        <!-- Статические имена → бандится в build (без runtime-фетча Iconify) -->
+        <Icon v-if="colorMode.preference === 'light'" name="ph:sun-duotone" />
+        <Icon v-else-if="colorMode.preference === 'dark'" name="ph:moon-light" />
+        <Icon v-else name="ph:coffee" />
       </button>
 
       <Transition name="popup">
@@ -100,7 +97,9 @@ function setTheme(theme: string) {
             ]"
             @click="setTheme(theme)"
           >
-            <Icon :name="iconName(theme)" />
+            <Icon v-if="theme === 'light'" name="ph:sun-duotone" />
+            <Icon v-else-if="theme === 'dark'" name="ph:moon-light" />
+            <Icon v-else name="ph:coffee" />
             <span>{{ themeLabel(theme) }}</span>
           </button>
         </div>
