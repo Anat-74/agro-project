@@ -26,6 +26,7 @@ withDefaults(defineProps<Props>(), {
   display: grid;
   grid-template-columns: 1fr auto;   // текст слева, блок управления справа
   align-items: center;
+  column-gap: toRem(2);
   padding-inline: toRem(4);
   background-color: var(--primary-color);
   @include adaptiveValue("height", 60, 72);
@@ -36,6 +37,7 @@ withDefaults(defineProps<Props>(), {
   }
 
   &__controls {
+    position: relative;
     // Колонка: LangSwitcher сверху, colorMode снизу, по центру
     display: flex;
     flex-direction: column;
@@ -46,19 +48,15 @@ withDefaults(defineProps<Props>(), {
     background-color: rgba(255, 255, 255, 0.15);
     border-radius: toRem(8);
     padding: toRem(6) toRem(8);
-  }
 
-  &__lang-switcher {
-    position: relative;
-    padding-block-end: toRem(10);
-
-    // Заглублённая (recessed) разделительная линия между langSwitcher и colorMode
+    // Заглублённая (recessed) линия на весь блок, по центру между langSwitcher и colorMode
     &::after {
       content: "";
       position: absolute;
+      top: 50%;
       left: 0;
       right: 0;
-      bottom: 0;
+      transform: translate(0, -50%);
       height: 1px;
       background: rgba(0, 0, 0, 0.25);
       box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
@@ -68,7 +66,6 @@ withDefaults(defineProps<Props>(), {
   &__color-mode {
     opacity: 0;
     animation: fadeIn 0.3s ease-in-out 0.1s forwards;
-    padding-block-start: toRem(10);
   }
 }
 

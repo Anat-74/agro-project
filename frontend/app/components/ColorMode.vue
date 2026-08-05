@@ -87,10 +87,11 @@ function setTheme(theme: string) {
       </button>
 
       <Transition name="popup">
-        <div v-if="showPopup" class="color-mode__popup">
-          <button
-            v-for="theme in orderedThemes"
-            :key="theme"
+        <Teleport to="body">
+          <div v-if="showPopup" class="color-mode__popup">
+            <button
+              v-for="theme in orderedThemes"
+              :key="theme"
             :class="[
               'color-mode__option',
               {
@@ -103,6 +104,7 @@ function setTheme(theme: string) {
             <span>{{ themeLabel(theme) }}</span>
           </button>
         </div>
+        </Teleport>
       </Transition>
 
       <Transition name="fade">
