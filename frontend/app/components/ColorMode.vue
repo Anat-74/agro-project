@@ -140,7 +140,7 @@ function setTheme(theme: string) {
   &__slider {
     :deep(.u-input__range) {
       width: 100%;
-      height: toRem(8);
+      height: toRem(7);   // на 1px ниже (было 8)
       appearance: none;
       border-radius: toRem(4);
       outline: none;
@@ -177,8 +177,8 @@ function setTheme(theme: string) {
     left: calc(var(--slider-value, 50) * 1%);
     top: 50%;
     translate: -50% -50%;
-    width: toRem(26);
-    height: toRem(26);
+    width: toRem(24);   // на 2px меньше (было 26)
+    height: toRem(24);
     display: flex;
     align-items: center;
     justify-content: center;

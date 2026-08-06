@@ -52,6 +52,9 @@ withDefaults(defineProps<Props>(), {
     // Светлый полупрозрачный фон (rgba, а не opacity — дочерние элементы
     // не теряют контраст)
     background-color: rgba(255, 255, 255, 0.15);
+    // Бордер в стиле recessed-разделителя (тёмная линия + белый блик снизу)
+    border: toRem(1) solid rgba(0, 0, 0, 0.25);
+    box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
     border-radius: toRem(6);
     padding: toRem(4);
 

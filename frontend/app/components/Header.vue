@@ -99,6 +99,11 @@ function openPreview(product: Product) {
           <span v-else-if="isAuthenticated && user?.username" class="header__initials">{{ user.username.charAt(0).toUpperCase() }}</span>
           <Icon v-else name="cil:user" width="28" height="28" />
         </NuxtLink>
+        <!-- Заглушка резервирует место при SSR (сам NuxtLink внутри ClientOnly не рендерится на сервере) —
+             без неё колонка 0px и ряд сдвигается после гидратации -->
+        <template #fallback>
+          <span class="header__profile-placeholder" aria-hidden="true"></span>
+        </template>
       </ClientOnly>
     </div>
     <div :class="['header__bottom', { 'header__bottom_hidden': isNavHidden }]">
@@ -179,7 +184,7 @@ function openPreview(product: Product) {
     column-gap: toRem(16);
     padding-block: toEm(16);
     background-color: var(--bg);
-    @include adaptiveValue("height", 65, 55);
+    @include adaptiveValue("height", 61, 51);   // на 4px ниже (было 65/55)
   }
 
   &__bottom {
@@ -215,7 +220,7 @@ function openPreview(product: Product) {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: toRem(32);   // резервируем место (аватар/инициалы 32px) — контент в ClientOnly, иначе колонка 0px и ряд сдвигается
+    min-width: toRem(32);   // держит колонку после гидратации (контент 28 или 32px)
     transition: opacity var(--transition-duration);
     translate: 0 toRem(3);
 
@@ -268,6 +273,12 @@ function openPreview(product: Product) {
         transform: scale(1.15);
       }
     }
+  }
+
+  // SSR-заглушка профиля: размер совпадает с контентом (32px), чтобы колонка была занята с загрузки
+  &__profile-placeholder {
+    width: toRem(32);
+    height: toRem(32);
   }
 
   &__container-bottom {

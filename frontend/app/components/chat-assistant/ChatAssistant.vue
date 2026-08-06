@@ -435,7 +435,7 @@ onMounted(() => {
   position: absolute;
   top: 50%;
   left: 50%;
-  translate: -50% -55%;
+  translate: -50% calc(-55% - toRem(1));   // на 1px выше
   font-weight: 700;
   letter-spacing: toEm(1, 10);
   color: var(--primary-color);
