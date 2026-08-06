@@ -105,13 +105,13 @@ onUnmounted(() => {
       position: relative;
       display: flex;
       align-items: center;
-      width: toRem(40);
-      height: toRem(40);
+      width: toRem(36);
+      height: toRem(36);
       transition: width var(--transition-duration);
 
       // Круг расширяется в пилюлю при фокусе/вводе
       &:focus-within {
-         width: toRem(126);
+         width: toRem(108);
       }
 
       :deep(.u-input) {
@@ -126,10 +126,13 @@ onUnmounted(() => {
       :deep(.u-input__field) {
          width: 100%;
          height: 100%;
+         min-width: 0;
+         appearance: none;   // убирает браузерный searchfield-стайлинг (доп. ширина/кнопка очистки)
+         -webkit-appearance: none;
          padding: 0;
-         padding-inline-start: toRem(34);
+         padding-inline-start: toRem(30);   // бордер(2+2)+padding ≤ 36, иначе Chrome расширяет бокс → овал; 30 очищает лупу (заканчивается ~27.5px)
          border-radius: 50%;
-         border: toEm(2) solid var(--primary-color);
+         border: toRem(2) solid var(--primary-color);   // толще на 1px (было toEm(2)≈1px)
          font-size: toEm(14);
          color: var(--color);
          background-color: var(--light-color);
@@ -171,7 +174,7 @@ onUnmounted(() => {
       position: absolute;
       z-index: 1;
       top: 50%;
-      left: toRem(20);   // центр круга (40/2); при расширении остаётся слева
+      left: toRem(18);   // центр круга 36px (36/2); при расширении остаётся слева
       translate: -50% -50%;
       color: var(--primary-color);
       font-size: toEm(20);

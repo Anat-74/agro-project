@@ -83,8 +83,8 @@ function openPreview(product: Product) {
         v-if="global"
         class="header__logo"
         :global="global"
-        width="42"
-        height="42"
+        width="40"
+        height="40"
       />
       <ProductFilter class="header__search" />
       <ChatAssistant />
@@ -214,6 +214,8 @@ function openPreview(product: Product) {
   &__profile {
     display: flex;
     align-items: center;
+    justify-content: center;
+    min-width: toRem(32);   // резервируем место (аватар/инициалы 32px) — контент в ClientOnly, иначе колонка 0px и ряд сдвигается
     transition: opacity var(--transition-duration);
     translate: 0 toRem(3);
 
