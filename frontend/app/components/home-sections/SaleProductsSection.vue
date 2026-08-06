@@ -112,7 +112,8 @@ class="sale-products__discount-text visible-tablet"
       top: toRem(1);
       font-style: italic;
       font-family: $font-family-cursive;
-      color: var(--danger-hover);
+      // #f08080 (--danger-hover) на светлом фоне не проходит AA
+      color: var(--danger-color);
    }
 
    &__card-list {
@@ -194,10 +195,11 @@ class="sale-products__discount-text visible-tablet"
       span {
          white-space: nowrap;
          font-weight: 600;
-         color: var(--danger-hover);
+         // #f08080 на светлом не проходит AA — тёмно-красный
+         color: var(--danger-color);
 
          @media (max-width:$tablet){
-            color: var(--warning-color);
+            color: var(--danger-color);
          }
       }
    }

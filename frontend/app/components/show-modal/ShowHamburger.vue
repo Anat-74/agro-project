@@ -129,9 +129,10 @@ const openHamburger = () => {
       >{{ showHamburgerT.title }}
     </span>
   </div>
-  <Teleport to="body" :disabled="!isTablet">
-    <dialog id="dialogHamburger" ref="dialog-hamburger" class="dialog-hamburger">
-    <ULoader v-if="pending" />
+  <ClientOnly>
+    <Teleport to="body" :disabled="!isTablet">
+      <dialog id="dialogHamburger" ref="dialog-hamburger" class="dialog-hamburger">
+    <ULoader v-show="pending" />
     <h2 class="visually-hidden">
       {{ visuallyHiddenT.showModalMenuTitle }}
     </h2>
@@ -153,7 +154,7 @@ const openHamburger = () => {
               <UImage
                 v-if="cat.image?.url"
                 :src="cat.image?.url"
-                :alt="cat.name"
+                alt=""
                 class="accordion__product-image"
                 width="44"
                 height="32"
@@ -193,7 +194,7 @@ const openHamburger = () => {
                   <UImage
                     v-if="prod.mainImage?.url || prod.image?.length"
                     :src="prod.mainImage?.url || prod.image?.[0]?.url"
-                    :alt="prod.name"
+                    alt=""
                     class="accordion__product-image-link"
                     width="32"
                     height="32"
@@ -249,7 +250,7 @@ const openHamburger = () => {
                 <UImage
                   v-if="prod.mainImage?.url || prod.image?.length"
                   :src="prod.mainImage?.url || prod.image?.[0]?.url"
-                  :alt="prod.name"
+                  alt=""
                   class="accordion__product-image-link"
                   width="32"
                   height="32"
@@ -295,8 +296,9 @@ const openHamburger = () => {
       <LangSwitcher />
       <USocials :is-open="isOpen" :socials="socials" />
     </div>
-  </dialog>
-  </Teleport>
+    </dialog>
+    </Teleport>
+  </ClientOnly>
 </template>
 
 <style lang="scss" scoped>
@@ -322,11 +324,12 @@ const openHamburger = () => {
 
   &__categories {
     font-size: toEm(24);
+    // #9acd32 (--success-color) на светлом не проходит AA — тёмный текст
     color: var(--success-color);
     transition: color var(--transition-duration);
 
     &_is-open {
-      color: var(--danger-hover);
+      color: var(--danger-color);
     }
   }
 }

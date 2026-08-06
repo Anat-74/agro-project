@@ -18,6 +18,10 @@ export const useCartStore = defineStore('cart', () => {
    const { currentLocale } = useLocale()
    const items = ref<CartItem[]>([])
 
+   // Валидация против Strapi выполняется один раз за сессию (корзина в SPA
+   // живёт в сторе; новые позиции добавляются из живых данных каталога)
+   let cartValidated = false
+
    const totalItems = computed(() =>
       items.value.reduce((total, item) => total + item.quantity, 0)
    )
@@ -88,19 +92,46 @@ const isCartItem = (item: any): item is CartItem => {
           typeof item.product.documentId === 'string'
  }
 
-    const loadCart = () => {
+    const loadCart = async () => {
        if (typeof window === 'undefined') return; // Для SSR
        const savedCart = localStorage.getItem('cart')
-       if (savedCart) {
-          try {
-           const parsed = JSON.parse(savedCart)
-             if (Array.isArray(parsed)) {
-                items.value = parsed.filter(isCartItem);
-           }
-         } catch (e) {
-           console.error("Ошибка загрузки:", e)
-           localStorage.removeItem('cart')
-         }
+       if (!savedCart) return
+       let parsed: unknown
+       try {
+         parsed = JSON.parse(savedCart)
+       } catch (e) {
+         console.error("Ошибка загрузки:", e)
+         localStorage.removeItem('cart')
+         return
+       }
+       const loaded = Array.isArray(parsed) ? parsed.filter(isCartItem) : []
+       if (loaded.length === 0) {
+         items.value = []
+         return
+       }
+       if (cartValidated) {
+         items.value = loaded
+         return
+       }
+       // Перепроверяем товары в Strapi: позиции, чьи товары были удалены из
+       // каталога, убираем из корзины — иначе остаются «битые» ссылки на
+       // изображения (404) и переходы на несуществующие страницы.
+       try {
+         const { find } = useStrapi()
+         const ids = [...new Set(loaded.map(i => i.product.documentId))]
+         const response = await find<{ documentId: string }>('products', {
+           filters: { documentId: { $in: ids } },
+           fields: ['documentId'],
+           pagination: { pageSize: 100 },
+         } as any)
+         const existing = new Set((response?.data || []).map(p => p.documentId))
+         const valid = loaded.filter(i => existing.has(i.product.documentId))
+         items.value = valid
+         if (valid.length !== loaded.length) saveCart() // чистим localStorage от осиротевших
+         cartValidated = true
+       } catch {
+         // Strapi недоступен — показываем сохранённую корзину как есть
+         items.value = loaded
        }
     }
 

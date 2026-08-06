@@ -34,7 +34,7 @@ console.debug("Home page data:", homePage.value);
 </script>
 
 <template>
-  <ULoader v-if="status === 'pending'" />
+  <ULoader v-show="status === 'pending'" />
 
   <HeroSection
     v-if="homePage?.heroSlider || homePage?.heroGrids"

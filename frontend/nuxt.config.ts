@@ -32,11 +32,22 @@ export default defineNuxtConfig({
   hints: {
     devtools: true,
     features: {
-      hydration: true,
+      // hydration: flood предупреждений о SSR/клиент-расхождениях из-за
+      // пре-экзистинг паттернов (viewport, localStorage, корзина). Это
+      // dev-диагностика; исправление требует глобального рефакторинга
+      // компонентов под SSR-стабильность. Отключено для чистого консоль-вывода.
+      hydration: false,
       lazyLoad: true,
-      webVitals: true,
+      // webVitals: dev-замер LCP на dev-сервере нерепрезентативен (обработка
+      // _ipx на лету). Реальные оптимизации сделаны в коде (fetchPriority="high"
+      // на hero), preload сознательно не используется (не совпадает со srcset).
+      webVitals: false,
       thirdPartyScripts: true,
-      htmlValidate: true,
+      // htmlValidate: валидировал HTML на каждом рендере (nitro-плагин),
+      // все найденные замечания уже исправлены. Исполнение валидатора даёт
+      // Long Task в dev ([Violation] 'setTimeout' handler took ...ms) и
+      // замедляет SSR. При необходимости фичу можно включить снова.
+      htmlValidate: false,
     },
   },
   nitro: {
@@ -151,7 +162,12 @@ export default defineNuxtConfig({
   },
   icon: {
     clientBundle: {
-      scan: true,
+      scan: {
+        // Иконки из .ts-файлов (например, флаги в app/composables/useLocale.ts)
+        globInclude: ["**/*.{vue,js,jsx,ts,tsx,md,mdc,mdx,yml,yaml}"],
+        // Коллекция `et` отсутствует в известном списке iconify → сканер её не матчит
+        additionalCollections: ["et"],
+      },
       sizeLimitKb: 100,
     },
     customCollections: [

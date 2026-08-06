@@ -72,6 +72,7 @@ const characteristics = computed(() => {
           class="product-card__details"
           variant="product-details"
           icon="mdi:rotate-3d"
+          :aria-label="buttonTranslations[currentLocale].ariaLabelProductDetails"
           @click="toggleActive"
         />
       </div>
@@ -82,7 +83,7 @@ const characteristics = computed(() => {
           :src="product.image[0]?.url"
           :alt="product.name"
           :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
-          :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
+          :priority="index < visibleImagesCount ? 'high' : 'auto'"
           width="200"
           height="160"
         />
@@ -146,6 +147,7 @@ const characteristics = computed(() => {
           class="product-card__details"
           variant="product-details"
           icon="mdi:rotate-3d"
+          :aria-label="buttonTranslations[currentLocale].ariaLabelProductDetails"
           @click="toggleActive"
         />
       </div>

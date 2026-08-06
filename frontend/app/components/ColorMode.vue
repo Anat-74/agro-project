@@ -80,6 +80,7 @@ function setTheme(theme: string) {
         :min="0"
         :max="100"
         :step="1"
+        :aria-label="t.ariaLabelBrightness"
         class="color-mode__slider"
       />
 

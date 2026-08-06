@@ -15,7 +15,7 @@ const { products, totalPages, currentPage, hasSearched } = storeToRefs(searchSto
         <div v-if="products.length" class="search-overlay__results">
           <ul class="search-overlay__list">
             <li v-for="product in products" :key="product.documentId">
-              <ProductFilterCard :product="product" />
+              <LazyProductFilterCard :product="product" />
             </li>
           </ul>
 

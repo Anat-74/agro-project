@@ -33,7 +33,8 @@ withDefaults(defineProps<Props>(), {
   align-items: center;
   column-gap: toRem(4);
   padding-inline: toRem(4);
-  background-color: var(--primary-color);
+  // #7eb693 (--primary-color) с белым текстом не проходил AA — тёмный зелёный (4.95:1)
+  background-color: #4a7a5f;
   @include adaptiveValue("height", 60, 72);
 
   &__marquee {

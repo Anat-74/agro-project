@@ -1,5 +1,14 @@
 <script setup lang="ts">
-import USlider from '~/components/USlider.vue'
+import { defineAsyncComponent } from 'vue'
+import { buttonTranslations } from '~/locales/button'
+
+// USlider загружается лениво: используется только внутри открытой модалки
+const USlider = defineAsyncComponent(() => import('~/components/USlider.vue'))
+
+interface SliderApi {
+  go: (n: number) => void
+  active: Ref<number>
+}
 
 const props = withDefaults(
   defineProps<{
@@ -61,12 +70,9 @@ const galleryImages = computed(() =>
 )
 
 // Управление слайдером извне (пагинация-миниатюры вынесены отдельным блоком)
-const sliderRef = useTemplateRef<InstanceType<typeof USlider>>("slider")
+const sliderRef = useTemplateRef<SliderApi>("slider")
 
-const sliderActive = computed<number>(() => {
-  const active = (sliderRef.value as any)?.active
-  return typeof active === "number" ? active : (active?.value ?? 1)
-})
+const sliderActive = computed<number>(() => sliderRef.value?.active?.value ?? 1)
 
 // Префетч деталей товара при скролле — когда карточка входит в область видимости
 let prefetchObserver: IntersectionObserver | null = null
@@ -124,6 +130,7 @@ const handleAddToCart = () => {
     <UButton
       class="product-modal__trigger-btn"
       icon="mdi:show-outline"
+      :aria-label="buttonTranslations[currentLocale].ariaLabelViewProduct"
       @click="openModal"
     />
   </div>
@@ -183,7 +190,7 @@ const handleAddToCart = () => {
             class="product-modal__thumb"
             :class="{ 'product-modal__thumb_active': sliderActive === i + 1 }"
             :aria-label="`Изображение ${i + 1}`"
-            @click="sliderRef?.go(i + 1)"
+            @click="sliderRef?.value?.go(i + 1)"
           >
               <UImage
                 :src="img.url"
@@ -201,9 +208,9 @@ const handleAddToCart = () => {
         <h2 class="product-modal__title">{{ product?.name }}</h2>
         <p class="product-modal__price">{{ formatPrice(product?.price ?? 0) }}</p>
         <div class="product-modal__desc">
-          <MDC :value="details.description" />
+          <LazyMDC :value="details.description" />
         </div>
-        <ProductCharacteristics
+        <LazyProductCharacteristics
           v-if="details.characteristics"
           :specs="parseCharacteristics(details.characteristics)"
         />

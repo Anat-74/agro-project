@@ -98,6 +98,7 @@ defineProps<Props>();
 <style lang="scss" scoped>
 .base-footer {
   background-color: var(--bg-footer);
+  color: var(--light-color); // Светлый текст на тёмном фоне футера (AA)
   @include adaptiveValue("padding-block", 22, 12);
 
   &__container {
@@ -183,7 +184,7 @@ defineProps<Props>();
   display: flex;
   flex-direction: column;
   row-gap: toEm(8);
-  color: var(--color);
+  color: var(--light-color);
   padding-inline-end: toEm(22);
 
   &__title {
@@ -223,7 +224,7 @@ defineProps<Props>();
     .iconify--et {
       translate: toRem(2) 0;
       margin-inline-end: toRem(7);
-      color: var(--color);
+      color: var(--light-color);
     }
 
     svg {
@@ -261,7 +262,7 @@ defineProps<Props>();
   display: flex;
   flex-direction: column;
   row-gap: toEm(8);
-  color: var(--color);
+  color: var(--light-color);
   padding-inline-start: toEm(22);
 
   @media (max-width: $mobile) {

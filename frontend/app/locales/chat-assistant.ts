@@ -2,6 +2,7 @@ export const chatAssistantTranslations: Record<LocaleCode, {
   title: string
   subtitle: string
   placeholder: string
+  inputLabel: string
   sendButton: string
   loading: string
   retry: string
@@ -25,6 +26,7 @@ export const chatAssistantTranslations: Record<LocaleCode, {
     title: "AI",
     subtitle: "Agro-Market Помощник",
     placeholder: "Введите ваш вопрос...",
+    inputLabel: "Ваше сообщение",
     sendButton: "Отправить",
     loading: "AI думает...",
     retry: "Попробовать снова",
@@ -48,6 +50,7 @@ export const chatAssistantTranslations: Record<LocaleCode, {
     title: "AI",
     subtitle: "Agro-Market Памочнік",
     placeholder: "Увядзіце ваша пытанне...",
+    inputLabel: "Ваша паведамленне",
     sendButton: "Адправіць",
     loading: "AI думае...",
     retry: "Паспрабаваць зноў",

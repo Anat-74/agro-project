@@ -224,7 +224,7 @@ const handleAddToCart = (product: Product) => {
             :src="product.image[0]?.url"
             :alt="product.name"
             :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
-            :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
+            :priority="index < visibleImagesCount ? 'high' : 'auto'"
             class="subcategory-products__image"
             width="222"
             height="194"

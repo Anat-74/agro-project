@@ -45,7 +45,7 @@ const { slides, heroGrids } = props;
           :src="slide.image.url"
           :alt="slide.heading"
           :loading="index === 0 ? 'eager' : 'lazy'"
-          :fetchpriority="index === 0"
+          :priority="index === 0 ? 'high' : 'auto'"
           width="742"
           height="498"
         />
@@ -53,9 +53,12 @@ const { slides, heroGrids } = props;
           <span v-if="slide.textTop" class="hero-slider__text-top">
             {{ slide.textTop }}
           </span>
-          <h1 v-if="slide.heading" id="hero" class="hero-slider__title">
+          <h1 v-if="slide.heading && index === 0" id="hero" class="hero-slider__title">
             {{ slide.heading }}
           </h1>
+          <h2 v-else-if="slide.heading" class="hero-slider__title">
+            {{ slide.heading }}
+          </h2>
           <strong
             v-if="slide.saleText && slide.isDiscount"
             class="hero-slider__sale"
@@ -155,7 +158,9 @@ const { slides, heroGrids } = props;
     font-size: toEm(24);
     font-family: $font-family-content;
     font-weight: 400;
-    color: var(--success-color);
+    // Тёмный жёлто-зелёный: #9acd32 на белом даёт 1.9:1 (не проходит AA),
+    // #54701a — 5.7:1
+    color: #54701a;
 
     span {
       color: var(--danger-color);
@@ -178,7 +183,8 @@ const { slides, heroGrids } = props;
     column-gap: toEm(8);
     padding-inline: toEm(25);
     border-radius: toEm(25);
-    color: var(--light-color);
+    // Тёмный текст на #9acd32: белый даёт 1.9:1, #274c5b — 4.9:1 (AA)
+    color: var(--dark-color);
     background-color: var(--success-color);
     @include adaptiveValue("margin-block-start", 48, 16);
 

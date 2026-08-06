@@ -90,7 +90,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="cart-page" aria-labelledby="cart-title">
+  <div class="cart-page" role="region" aria-labelledby="cart-title">
     <h1 id="cart-title" class="visually-hidden">
       {{ cartT.visuallyHidden }}
     </h1>

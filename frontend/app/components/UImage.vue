@@ -20,7 +20,7 @@ const props = withDefaults(
 
     // Загрузка
     loading?: "lazy" | "eager";
-    priority?: boolean;
+    priority?: "high" | "low" | "auto";
 
     // Strapi
     fromStrapi?: boolean;
@@ -45,6 +45,7 @@ const props = withDefaults(
     format: "avif",
     quality: 85,
     loading: "lazy",
+    priority: "auto",
     type: "product",
     fromStrapi: true,
     smoothLoad: true,

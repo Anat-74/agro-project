@@ -52,7 +52,7 @@ const visibleImagesCount = computed(() => {
         :src="product.mainImage?.url || product.image[0]?.url"
         :alt="product.name"
         :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
-        :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
+        :priority="index < visibleImagesCount ? 'high' : 'auto'"
         width="100"
         height="100"
         type="product"

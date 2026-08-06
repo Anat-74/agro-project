@@ -12,6 +12,7 @@ withDefaults(defineProps<Props>(), {
 
 <template>
   <div
+    role="img"
     :class="['u-animated-text', `u-animated-text_${variant}`]"
     :aria-label="text"
   >
@@ -72,7 +73,7 @@ withDefaults(defineProps<Props>(), {
     }
     &_wave {
       z-index: 10;
-      color: #03a9f4;
+      color: #0369a1;
       animation: u-animated-text-wave 5s ease-in-out infinite;
     }
     &_shadow {
@@ -108,7 +109,9 @@ withDefaults(defineProps<Props>(), {
   // ===== GRADIENT =====
   &_gradient {
     .u-animated-text__title {
-      background: linear-gradient(90deg, var(--success-color), var(--warning-color), var(--danger-color), var(--success-color));
+      // Яркие стопы (#9acd32, #ff8c00) на светлом не проходили AA —
+      // заменены на тёмные аналоги (все стопы ≥ 4.5:1)
+      background: linear-gradient(90deg, #54701a, #b45309, #b91c1c, #54701a);
       background-size: 300% 100%;
       -webkit-background-clip: text;
       background-clip: text;

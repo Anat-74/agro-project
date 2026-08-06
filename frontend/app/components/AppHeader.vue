@@ -108,7 +108,7 @@ function openPreview(product: Product) {
     </div>
     <div :class="['header__bottom', { 'header__bottom_hidden': isNavHidden }]">
       <div class="header__container-bottom">
-        <UAnimatedText variant="wave" />
+        <UAnimatedText variant="gradient" />
         <details class="header__more" name="header-more">
           <summary class="header__more-summary">
             Ещё
@@ -132,7 +132,7 @@ function openPreview(product: Product) {
             </li>
             <li class="header__more-item">
               <NuxtLink class="header__more-link" :to="`/${currentLocale}/news`">
-                <Icon name="mingcute:megaphone-line" /> Новости
+                <Icon name="ph:megaphone-light" /> Новости
               </NuxtLink>
             </li>
           </ul>
@@ -171,7 +171,7 @@ function openPreview(product: Product) {
 .header {
   @media (max-width: $tablet) {
     position: sticky;
-    z-index: 100;
+    z-index: 998;
    @include adaptiveValue("top", -60, -72);
   }
 
@@ -184,7 +184,7 @@ function openPreview(product: Product) {
     column-gap: toRem(16);
     padding-block: toEm(16);
     background-color: var(--bg);
-    @include adaptiveValue("height", 61, 51);   // на 4px ниже (было 65/55)
+    @include adaptiveValue("height", 60, 46);
   }
 
   &__bottom {
@@ -302,7 +302,8 @@ function openPreview(product: Product) {
       list-style: none;
       padding: toRem(4) toRem(8);
       font-weight: 500;
-      color: var(--primary-color);
+      // #7eb693 (--primary-color) на светлом фоне не проходит AA — тёмный текст
+      color: var(--dark-color);
 
       &::-webkit-details-marker {
         display: none;

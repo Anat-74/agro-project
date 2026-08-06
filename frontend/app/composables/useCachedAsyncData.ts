@@ -65,7 +65,17 @@ export const useCachedAsyncData = <T>(
       watch: opts.watch,
       getCachedData: (k: string) => {
         const entry = cache.get(k)
-        return entry && Date.now() < entry.expiresAt ? entry.data as T : undefined
+        if (entry && Date.now() < entry.expiresAt) {
+          return entry.data as T
+        }
+        // На клиенте при первом рендере (fresh load) модульный кэш пуст,
+        // но данные SSR лежат в payload — возвращаем их, чтобы сервер и
+        // клиент отрендерили страницу одинаково (иначе hydration mismatch).
+        const nuxt = useNuxtApp()
+        if (import.meta.client && nuxt.payload?.data?.[k] != null) {
+          return nuxt.payload.data[k] as T
+        }
+        return undefined
       },
     }
   )

@@ -52,7 +52,8 @@ const t = computed(() => baseNavigationTranslations[currentLocale.value])
    padding-inline: toEm(9);
    padding-block: toEm(18);
    outline: toRem(5) inset var(--bg);
-   background-color: var(--bg);
+   // Фон навигации совпадает с тёмным футером — светлые ссылки проходят AA
+   background-color: var(--bg-footer);
 
    @media (max-width:$mobile){
       outline-width: toRem(3);
@@ -62,7 +63,8 @@ const t = computed(() => baseNavigationTranslations[currentLocale.value])
 &__link {
    font-weight: 600;
    letter-spacing: 1.2px;
-   color: var(--border-color);
+   // Светлый текст на тёмном фоне (ранее --border-color — не проходил контраст)
+   color: var(--light-color);
    transition: color var(--transition-duration);
    @include adaptiveValue("font-size", 18, 15);
 

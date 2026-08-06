@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { defineAsyncComponent } from 'vue'
 import { useChatMessages } from "../../composables/chat-assistant/useChatMessages";
 import { useChatCart } from "../../composables/chat-assistant/useChatCart";
 import { parseAIResponse } from "../../composables/chat-assistant/useChatAssistant";
 import { chatAssistantTranslations } from "../../locales/chat-assistant";
-import ChatProductCard from "./ChatProductCard.vue";
 import VoiceInput from "./VoiceInput.vue";
+
+// Карточка товара в сообщениях чата — загружается лениво (только при открытом чате)
+const ChatProductCard = defineAsyncComponent(() => import("./ChatProductCard.vue"));
 const { currentLocale } = useLocale();
 const chatMessages = useChatMessages();
 const chatCart = useChatCart();
@@ -286,7 +289,7 @@ onMounted(() => {
 
     <dialog ref="chat-dialog" class="chat-assistant__modal">
       <div class="chat-assistant__items">
-      <header class="chat-assistant__header" aria-label="chat assistant header">
+      <div class="chat-assistant__header">
         <div class="chat-assistant__header-content">
           <div class="chat-assistant__info">
             <div class="chat-assistant__avatar">
@@ -315,7 +318,7 @@ onMounted(() => {
             </ChatAssistantButton>
           </div>
         </div>
-      </header>
+      </div>
 
       <div ref="chatBody" class="chat-assistant__body">
         <div v-if="messages.length === 0" class="chat-assistant__empty">
@@ -388,7 +391,7 @@ onMounted(() => {
         </div>
       </div>
 
-      <footer class="chat-assistant__footer" aria-label="chat assistant footer">
+      <div class="chat-assistant__footer">
         <form class="chat-assistant__form" @submit.prevent="sendMessage">
           <ClientOnly>
             <VoiceInput
@@ -400,6 +403,7 @@ onMounted(() => {
           <UInput
             v-model="inputMessage"
             :placeholder="t.placeholder"
+            :aria-label="t.inputLabel"
             :disabled="isLoading"
           />
           <ChatAssistantButton
@@ -414,7 +418,7 @@ onMounted(() => {
             {{ t.footerText }}
           </p>
         </div>
-      </footer>
+      </div>
       </div>
     </dialog>
   </div>
@@ -474,7 +478,8 @@ onMounted(() => {
 .chat-assistant__header {
   flex-shrink: 0;
   padding: toRem(16) toRem(20);
-  background: linear-gradient(135deg, #4caf50, #2e7d32);
+  // #4caf50 с белым текстом не проходил AA — затемнённый градиент
+  background: linear-gradient(135deg, #33803a, #2e7d32);
   color: var(--light-color);
 }
 

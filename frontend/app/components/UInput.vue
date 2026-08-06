@@ -15,11 +15,12 @@ interface Props {
   min?: number
   max?: number
   step?: number
+  ariaLabel?: string
 }
 
 const { type = 'text', label = '', placeholder = '', rows = 3,
   disabled = false, readonly = false, required = false, error = '', icon = '',
-  autocomplete = '', min = 0, max = 100, step = 1 } = defineProps<Props>()
+  autocomplete = '', min = 0, max = 100, step = 1, ariaLabel = '' } = defineProps<Props>()
 
 const model = defineModel<any>()
 const inputId = useId()
@@ -37,13 +38,14 @@ const inputType = computed(() => {
 
 <template>
   <div class="u-input" :class="{ 'u-input_error': error }">
-    <label v-if="label && type !== 'checkbox' && type !== 'range'" class="u-input__label">
+    <label v-if="label && type !== 'checkbox'" :for="inputId" class="u-input__label">
       {{ label }}
       <span v-if="required" class="u-input__required">*</span>
     </label>
 
     <textarea
       v-if="type === 'textarea'"
+      :id="inputId"
       v-model="model"
       :placeholder="placeholder"
       :rows="rows"
@@ -51,6 +53,7 @@ const inputType = computed(() => {
       :readonly="readonly"
       :required="required"
       :autocomplete="autocomplete || undefined"
+      :aria-label="ariaLabel || undefined"
       class="u-input__field u-input__field_textarea"
     />
 
@@ -62,6 +65,7 @@ const inputType = computed(() => {
         :disabled="disabled"
         :required="required"
         :autocomplete="autocomplete || undefined"
+        :aria-label="ariaLabel || undefined"
         class="u-input__checkbox"
         @change="($e) => model = ($e.target as HTMLInputElement).checked"
       >
@@ -80,6 +84,7 @@ const inputType = computed(() => {
         :max="max"
         :step="step"
         :disabled="disabled"
+        :aria-label="ariaLabel || undefined"
         class="u-input__range"
       >
     </div>
@@ -87,6 +92,7 @@ const inputType = computed(() => {
     <div v-else class="u-input__wrapper">
       <Icon v-if="icon" :name="icon" class="u-input__icon" />
       <input
+        :id="inputId"
         v-model="model"
         :type="inputType"
         :placeholder="placeholder"
@@ -94,6 +100,7 @@ const inputType = computed(() => {
         :readonly="readonly"
         :required="required"
         :autocomplete="autocomplete || undefined"
+        :aria-label="ariaLabel || undefined"
         class="u-input__field"
         :class="{ 'u-input__field_password': type === 'password' }"
       >

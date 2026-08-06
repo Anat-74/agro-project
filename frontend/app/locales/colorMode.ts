@@ -4,6 +4,7 @@ export const colorModeTranslations: Record<LocaleCode, {
   themeCustom: string
   ariaLabelTheme: string
   ariaLabelSwitch: string
+  ariaLabelBrightness: string
 }> = {
   ru: {
     themeLight: "Светлая",
@@ -11,6 +12,7 @@ export const colorModeTranslations: Record<LocaleCode, {
     themeCustom: "Анимация",
     ariaLabelTheme: "Тема",
     ariaLabelSwitch: "Нажмите для смены",
+    ariaLabelBrightness: "Яркость темы",
   },
   be: {
     themeLight: "Светлая",
@@ -18,5 +20,6 @@ export const colorModeTranslations: Record<LocaleCode, {
     themeCustom: "Анімацыя",
     ariaLabelTheme: "Тэма",
     ariaLabelSwitch: "Націсніце для змены",
+    ariaLabelBrightness: "Яркасць тэмы",
   },
 }

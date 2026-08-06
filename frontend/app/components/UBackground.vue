@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { defineAsyncComponent } from 'vue'
 import type { BackgroundItem } from '~/types/background'
-import BackgroundSwitcher from './BackgroundSwitcher.vue'
+
+// Переключатель фонов — лениво (настройки, открываются по требованию)
+const BackgroundSwitcher = defineAsyncComponent(() => import('./BackgroundSwitcher.vue'))
 
 interface Props {
   src?: string;
