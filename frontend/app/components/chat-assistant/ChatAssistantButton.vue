@@ -172,14 +172,13 @@ const emit = defineEmits<{
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: toRem(40);
-    height: toRem(40);
-    border-radius: 50%;
-    border: toEm(2) solid var(--primary-color);
-    background: var(--light-color);
+    padding: toRem(2);
+    background: transparent;
+    border: none;
     color: var(--primary-color);
     cursor: pointer;
-    transition: transform var(--transition-duration), border-color var(--transition-duration);
+    translate: 0 toRem(2);   // иконка опущена на 2px
+    transition: transform var(--transition-duration), color var(--transition-duration);
 
     @include hover {
       &:not(:disabled) {

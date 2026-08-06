@@ -105,33 +105,39 @@ onUnmounted(() => {
       position: relative;
       display: flex;
       align-items: center;
-      @include adaptiveValue("height", 46, 42);
+      width: toRem(40);
+      height: toRem(40);
+      transition: width var(--transition-duration);
+
+      // При фокусе круг расширяется в пилюлю — комфортный ввод
+      &:focus-within {
+         width: toRem(180);
+      }
+
+      :deep(.u-input) {
+         width: 100%;
+         height: 100%;
+      }
 
       :deep(.u-input__field) {
          width: 100%;
          height: 100%;
-         padding-inline-start: toRem(12);
-         padding-inline-end: toRem(30);
-         border-radius: toRem(25);
+         padding: 0;
+         padding-inline-start: toRem(34);
+         border-radius: 50%;
          border: toEm(2) solid var(--primary-color);
-         font-size: toEm(18);
+         font-size: toEm(14);
          color: var(--color);
          background-color: var(--light-color);
          outline: none;
-         transition: box-shadow var(--transition-duration), border-color var(--transition-duration);
+         transition: border-radius var(--transition-duration), box-shadow var(--transition-duration);
 
          &::placeholder {
-            color: var(--success-color);
-            transition: color var(--transition-duration);
-         }
-
-         @include hover {
-            &::placeholder {
-               color: var(--dark-color);
-            }
+            color: transparent;   // текст в поле не нужен — набранное видно в оверлее
          }
 
          &:focus {
+            border-radius: toRem(20);
             box-shadow: 0 0 0 toRem(4) rgba(39, 76, 91, 0.2);
          }
       }
@@ -144,20 +150,28 @@ onUnmounted(() => {
    &-loader {
       position: absolute;
       top: 50%;
-      right: toRem(30);   // слева от лупы
+      right: toRem(14);
       translate: 0 -50%;
-      font-size: toRem(25);
+      font-size: toRem(20);
       color: var(--sky-blue);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-duration);
+   }
+
+   .search-body:focus-within &-loader {
+      opacity: 1;
    }
 
    &-glass {
       position: absolute;
       z-index: 1;
       top: 50%;
-      right: toRem(8);
-      translate: 0 -50%;
+      left: toRem(20);   // центр круга (40/2); при расширении остаётся слева
+      translate: -50% -50%;
       color: var(--primary-color);
-      font-size: toEm(15);
+      font-size: toEm(20);
+      pointer-events: none;
    }
 
    &-no-results {
