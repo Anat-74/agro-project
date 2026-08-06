@@ -277,7 +277,7 @@ onMounted(() => {
       @click="openChat"
     >
       <span class="chat-toggle__icon">
-        <svg viewBox="0 0 24 24" fill="currentColor" width="30" height="30" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="34" height="34" aria-hidden="true">
           <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
         </svg>
         <span class="chat-toggle__text">{{ t.title }}</span>
@@ -437,9 +437,9 @@ onMounted(() => {
   left: 50%;
   translate: -50% -55%;
   font-weight: 700;
-  @include adaptiveValue("font-size", 9, 8);
-  letter-spacing: toEm(1, 9);
-  color: var(--light-color);
+  @include adaptiveValue("font-size", 10, 9);
+  letter-spacing: toEm(1, 10);
+  color: var(--primary-color);
   pointer-events: none;
 }
 

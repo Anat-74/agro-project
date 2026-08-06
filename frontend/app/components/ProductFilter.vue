@@ -107,13 +107,13 @@ onUnmounted(() => {
       align-items: center;
       @include adaptiveValue("height", 46, 42);
 
-      :deep(.u-input__input) {
+      :deep(.u-input__field) {
          width: 100%;
          height: 100%;
-         padding-inline-start: toRem(18);
-         padding-inline-end: toRem(48);
-         border-radius: toEm(25);
-         border: toEm(2) solid var(--success-color);
+         padding-inline-start: toRem(12);
+         padding-inline-end: toRem(30);
+         border-radius: toRem(25);
+         border: toEm(2) solid var(--primary-color);
          font-size: toEm(18);
          color: var(--color);
          background-color: var(--light-color);
@@ -132,7 +132,7 @@ onUnmounted(() => {
          }
 
          &:focus {
-            box-shadow: 0 0 0 toRem(4) rgba(126, 182, 147, 0.2);
+            box-shadow: 0 0 0 toRem(4) rgba(39, 76, 91, 0.2);
          }
       }
 
@@ -144,7 +144,7 @@ onUnmounted(() => {
    &-loader {
       position: absolute;
       top: 50%;
-      right: toRem(48);   // слева от круглой кнопки-лупы
+      right: toRem(30);   // слева от лупы
       translate: 0 -50%;
       font-size: toRem(25);
       color: var(--sky-blue);
@@ -154,17 +154,10 @@ onUnmounted(() => {
       position: absolute;
       z-index: 1;
       top: 50%;
-      right: toRem(6);
+      right: toRem(8);
       translate: 0 -50%;
-      width: toRem(34);
-      height: toRem(34);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      background: var(--success-color);
-      color: var(--light-color);
-      font-size: toEm(20);
+      color: var(--primary-color);
+      font-size: toEm(15);
    }
 
    &-no-results {

@@ -83,8 +83,8 @@ function openPreview(product: Product) {
         v-if="global"
         class="header__logo"
         :global="global"
-        width="53"
-        height="53"
+        width="46"
+        height="46"
       />
       <ProductFilter class="header__search" />
       <ChatAssistant />
@@ -201,10 +201,10 @@ function openPreview(product: Product) {
 
   &__search {
     justify-self: end;
-    width: toRem(112);   // на ~20% уже (было 140)
+    width: toRem(90);   // ещё на ~20% уже (было 112)
 
     @media (max-width: $mobile) {
-      width: toRem(120);
+      width: toRem(96);
     }
   }
 

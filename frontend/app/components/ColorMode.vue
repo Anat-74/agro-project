@@ -91,7 +91,7 @@ function setTheme(theme: string) {
         <!-- Статические имена → бандится в build (без runtime-фетча Iconify) -->
         <Icon v-if="colorMode.preference === 'light'" name="ph:sun-duotone" />
         <Icon v-else-if="colorMode.preference === 'dark'" name="ph:moon-light" />
-        <Icon v-else name="ph:star-four" />
+        <Icon v-else name="material-symbols:auto-awesome" />
       </button>
 
       <Transition name="popup">
@@ -111,7 +111,7 @@ function setTheme(theme: string) {
           >
             <Icon v-if="theme === 'light'" name="ph:sun-duotone" />
             <Icon v-else-if="theme === 'dark'" name="ph:moon-light" />
-            <Icon v-else name="ph:star-four" />
+            <Icon v-else name="material-symbols:auto-awesome" />
             <span>{{ themeLabel(theme) }}</span>
           </button>
         </div>
@@ -281,6 +281,15 @@ function setTheme(theme: string) {
     // Бордер кнопки-кружка — того же цвета, что и ползунок
     .color-mode__thumb {
       border-color: var(--bg);
+    }
+  }
+
+  // Тёмная тема: фон кнопки совпадает с цветом ползунка (тёмный),
+  // иконка-луна — светлая для контраста
+  &.color-mode_dark {
+    .color-mode__thumb {
+      background: var(--bg);
+      color: var(--light-color);
     }
   }
 

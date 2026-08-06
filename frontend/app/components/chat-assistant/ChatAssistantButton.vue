@@ -172,12 +172,14 @@ const emit = defineEmits<{
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: toRem(5);
-    background: transparent;
-    color: var(--success-color);
-    border: none;
+    width: toRem(40);
+    height: toRem(40);
+    border-radius: 50%;
+    border: toEm(2) solid var(--primary-color);
+    background: var(--light-color);
+    color: var(--primary-color);
     cursor: pointer;
-    transition: transform var(--transition-duration), color var(--transition-duration);
+    transition: transform var(--transition-duration), border-color var(--transition-duration);
 
     @include hover {
       &:not(:disabled) {
