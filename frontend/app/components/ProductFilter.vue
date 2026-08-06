@@ -80,6 +80,7 @@ onUnmounted(() => {
       v-model="searchName"
       type="search"
       :placeholder="t.placeholder"
+      :aria-label="t.labelInput"
     />
       <Icon
    v-if="status === 'pending'"
@@ -105,8 +106,8 @@ onUnmounted(() => {
       position: relative;
       display: flex;
       align-items: center;
-      width: toRem(36);
-      height: toRem(36);
+      width: toRem(34);
+      height: toRem(34);   // на 2px ниже (было 36)
       transition: width var(--transition-duration);
 
       // Круг расширяется в пилюлю при фокусе/вводе
@@ -174,7 +175,7 @@ onUnmounted(() => {
       position: absolute;
       z-index: 1;
       top: 50%;
-      left: toRem(18);   // центр круга 36px (36/2); при расширении остаётся слева
+      left: toRem(17);   // центр круга 34px (34/2); при расширении остаётся слева
       translate: -50% -50%;
       color: var(--primary-color);
       font-size: toEm(20);
