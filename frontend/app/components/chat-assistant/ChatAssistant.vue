@@ -272,12 +272,16 @@ onMounted(() => {
     <ChatAssistantButton
       v-if="!isOpen"
       variant="chat-toggle"
+      :aria-label="t.title"
+      :title="t.subtitle"
       @click="openChat"
     >
-      <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-      </svg>
-      <span>{{ t.title }}</span>
+      <span class="chat-toggle__icon">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="30" height="30" aria-hidden="true">
+          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+        </svg>
+        <span class="chat-toggle__text">{{ t.title }}</span>
+      </span>
     </ChatAssistantButton>
 
     <dialog ref="chat-dialog" class="chat-assistant__modal">
@@ -421,6 +425,24 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
+.chat-toggle__icon {
+  position: relative;
+  display: inline-flex;
+  line-height: 1;
+}
+
+.chat-toggle__text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -55%;
+  font-weight: 700;
+  @include adaptiveValue("font-size", 9, 8);
+  letter-spacing: toEm(1, 9);
+  color: var(--light-color);
+  pointer-events: none;
+}
+
 .chat-assistant__modal {
   display: none;
 

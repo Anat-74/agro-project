@@ -171,19 +171,18 @@ const emit = defineEmits<{
   &_chat-toggle {
     display: inline-flex;
     align-items: center;
-    gap: toRem(8);
-    padding: toRem(8) toRem(12);
-    background: linear-gradient(135deg, #4caf50, #2e7d32);
-    color: var(--light-color);
+    justify-content: center;
+    padding: toRem(5);
+    background: transparent;
+    color: var(--success-color);
     border: none;
-    border-radius: toRem(50);
     cursor: pointer;
-    font-weight: 500;
-    @include adaptiveValue("font-size", 14, 12);
-    transition: transform var(--transition-duration);
+    transition: transform var(--transition-duration), color var(--transition-duration);
 
     @include hover {
-      transform: scale(1.05);
+      &:not(:disabled) {
+        transform: scale(1.1);
+      }
     }
   }
 }

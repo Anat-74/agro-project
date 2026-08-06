@@ -110,14 +110,15 @@ onUnmounted(() => {
       :deep(.u-input__input) {
          width: 100%;
          height: 100%;
-         padding-inline-start: toRem(42);
-         padding-inline-end: toRem(44);
+         padding-inline-start: toRem(18);
+         padding-inline-end: toRem(48);
          border-radius: toEm(25);
-         border: toEm(2) solid var(--bg-navigation);
+         border: toEm(2) solid var(--success-color);
          font-size: toEm(18);
          color: var(--color);
-         background-color: var(--bg-product);
+         background-color: var(--light-color);
          outline: none;
+         transition: box-shadow var(--transition-duration), border-color var(--transition-duration);
 
          &::placeholder {
             color: var(--success-color);
@@ -129,6 +130,10 @@ onUnmounted(() => {
                color: var(--dark-color);
             }
          }
+
+         &:focus {
+            box-shadow: 0 0 0 toRem(4) rgba(126, 182, 147, 0.2);
+         }
       }
 
       :deep(.u-input__label) {
@@ -139,7 +144,7 @@ onUnmounted(() => {
    &-loader {
       position: absolute;
       top: 50%;
-      right: toRem(162);
+      right: toRem(48);   // слева от круглой кнопки-лупы
       translate: 0 -50%;
       font-size: toRem(25);
       color: var(--sky-blue);
@@ -149,10 +154,17 @@ onUnmounted(() => {
       position: absolute;
       z-index: 1;
       top: 50%;
-      right: toRem(12);
+      right: toRem(6);
       translate: 0 -50%;
-      color: var(--success-color);
-      font-size: toEm(22);
+      width: toRem(34);
+      height: toRem(34);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--success-color);
+      color: var(--light-color);
+      font-size: toEm(20);
    }
 
    &-no-results {

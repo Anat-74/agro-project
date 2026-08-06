@@ -261,7 +261,7 @@ function setTheme(theme: string) {
 
   &__percent {
     position: absolute;
-    left: -22px;
+    left: -32px;   // на 10px левее
     top: 50%;
     translate: 0 -50%;
     font-weight: 600;
@@ -277,6 +277,11 @@ function setTheme(theme: string) {
     .color-mode__slider :deep(.u-input__range) {
       background: var(--bg);
     }
+
+    // Бордер кнопки-кружка — того же цвета, что и ползунок
+    .color-mode__thumb {
+      border-color: var(--bg);
+    }
   }
 
   &.color-mode_custom {
@@ -289,7 +294,7 @@ function setTheme(theme: string) {
         var(--primary-color)
       );
       background-size: 200% 100%;
-      animation: slider-shimmer 3s linear infinite;
+      animation: slider-shimmer 4.5s linear infinite;   // ~в 1.5 раза медленнее
     }
   }
 }

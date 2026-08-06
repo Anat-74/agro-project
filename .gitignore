@@ -133,3 +133,14 @@ build
 .idea
 .fleet
 nbproject
+
+############################
+# Dev/deploy artifacts
+############################
+
+# Playwright MCP (snapshots/консольные логи из браузерных сессий агента)
+.playwright-mcp/
+# Скриншоты диагностики скриптов деплоя/перезапуска
+deploy-err.png
+restart-ok.png
+restart-err.png
