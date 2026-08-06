@@ -109,14 +109,18 @@ onUnmounted(() => {
       height: toRem(40);
       transition: width var(--transition-duration);
 
-      // При фокусе круг расширяется в пилюлю — комфортный ввод
+      // Круг расширяется в пилюлю при фокусе/вводе
       &:focus-within {
-         width: toRem(180);
+         width: toRem(126);
       }
 
       :deep(.u-input) {
          width: 100%;
          height: 100%;
+      }
+
+      :deep(.u-input__wrapper) {
+         height: 100%;   // без этого инпут схлопывается по высоте → овал и смещённая лупа
       }
 
       :deep(.u-input__field) {
@@ -138,7 +142,7 @@ onUnmounted(() => {
 
          &:focus {
             border-radius: toRem(20);
-            box-shadow: 0 0 0 toRem(4) rgba(39, 76, 91, 0.2);
+            box-shadow: 0 0 0 toRem(4) color-mix(in srgb, var(--primary-color) 20%, transparent);
          }
       }
 

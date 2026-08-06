@@ -437,10 +437,10 @@ onMounted(() => {
   left: 50%;
   translate: -50% -55%;
   font-weight: 700;
-  @include adaptiveValue("font-size", 10, 9);
   letter-spacing: toEm(1, 10);
   color: var(--primary-color);
   pointer-events: none;
+  @include adaptiveValue("font-size", 10, 9);
 }
 
 .chat-assistant__modal {

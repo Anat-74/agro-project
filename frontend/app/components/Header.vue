@@ -83,8 +83,8 @@ function openPreview(product: Product) {
         v-if="global"
         class="header__logo"
         :global="global"
-        width="45"
-        height="45"
+        width="42"
+        height="42"
       />
       <ProductFilter class="header__search" />
       <ChatAssistant />
