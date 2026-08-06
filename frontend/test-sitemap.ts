@@ -17,7 +17,7 @@ async function loadEnv() {
     } else {
       console.warn('.env file not found, using default values');
     }
-  } catch (error) {
+  } catch {
     console.warn('dotenv not found, using default values');
   }
 }

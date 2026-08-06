@@ -109,19 +109,16 @@ export default defineMcpTool({
   description: "Create shopping cart based on a recipe or meal plan",
   inputSchema: inputSchema.shape,
   handler: async ({ recipe, customIngredients, clearCart }: Input) => {
-    let ingredients = [];
-    
-    if (recipe && RECIPES[recipe]) {
-      ingredients = RECIPES[recipe].ingredients;
-    } else if (customIngredients && customIngredients.length > 0) {
-      ingredients = customIngredients;
-    } else {
+    const recipeData = recipe ? RECIPES[recipe] : undefined;
+
+    if (!recipeData && !(customIngredients && customIngredients.length > 0)) {
       return { 
         success: false, 
         error: "No recipe or ingredients specified" 
       };
     }
-    
+
+    const ingredients = recipeData ? recipeData.ingredients : (customIngredients ?? []);
     const recipeName = recipe ? RECIPES[recipe].name : "Custom recipe";
     
     return {

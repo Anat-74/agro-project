@@ -1,5 +1,3 @@
-import type { Ref } from "vue";
-
 export interface ChatAssistantResponse {
   success: boolean;
   message: string;

@@ -20,8 +20,8 @@ const { width = 45, height = 45, ...props } = defineProps<Props>()
     :aria-label="t.label"
   >
     <UImage
-      class="logo-link__image"
       v-if="props.global?.footer?.logo?.url"
+      class="logo-link__image"
       :src="props.global?.footer?.logo?.url"
       :smooth-load="false"
       :width="width"

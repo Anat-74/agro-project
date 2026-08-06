@@ -11,7 +11,7 @@ async function loadEnv() {
     } else {
       console.warn('.env file not found, using default values')
     }
-  } catch (error) {
+  } catch {
     console.warn('dotenv not found, using default values')
   }
 }
@@ -37,7 +37,7 @@ export async function generateSitemap() {
     siteUrl = config.public.siteUrl || process.env.SITE_URL;
     strapiUrl = config.public.strapi.url || process.env.NUXT_PUBLIC_STRAPI_URL;
     strapiToken = config.strapi.token || process.env.NUXT_STRAPI_TOKEN;
-  } catch (error) {
+  } catch {
     // Если useRuntimeConfig недоступен (например, в CLI-контексте), используем process.env
     siteUrl = process.env.SITE_URL;
     strapiUrl = process.env.NUXT_PUBLIC_STRAPI_URL;
@@ -51,7 +51,6 @@ export async function generateSitemap() {
   try {
     // Преобразуем данные Strapi в формат sitemap
     const langs = ['ru', 'be']
-    const mainLocale = 'ru'; // Основная локаль, где есть все данные
     
     // Получаем данные напрямую из API Strapi (более надёжно, чем Nuxt API)
     

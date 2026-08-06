@@ -19,6 +19,8 @@ interface Props {
 const config = useRuntimeConfig();
 
 const props = withDefaults(defineProps<Props>(), {
+  src: '',
+  retinaSrc: '',
   variant: "clean",
   effect: "none",
   loading: "none",
@@ -27,6 +29,7 @@ const props = withDefaults(defineProps<Props>(), {
   hoverEffect: "none",
   sizeMode: "original",
   bgPosition: "center",
+  backgroundOptions: () => [],
 });
 
 const selectedBg = ref<BackgroundItem | null>(null)

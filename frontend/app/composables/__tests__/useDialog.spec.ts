@@ -1,5 +1,4 @@
 import { describe, it, expect } from "vitest"
-import { ref } from "vue"
 // Re-register composable with explicit Vue imports for test env
 const { useDialog } = await import("../useDialogState")
 

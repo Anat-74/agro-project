@@ -6,7 +6,7 @@ interface Props {
   selectedId?: string | null
 }
 
-const props = defineProps<Props>()
+defineProps<Props>()
 const emit = defineEmits<{
   select: [bg: BackgroundItem]
 }>()
@@ -26,8 +26,8 @@ const selectBackground = (bg: BackgroundItem) => {
   <div class="background-switcher">
     <button
       class="background-switcher__trigger"
-      @click="openDialog"
       aria-label="Выбрать фон"
+      @click="openDialog"
     >
       🎨
     </button>
@@ -38,8 +38,8 @@ const selectBackground = (bg: BackgroundItem) => {
           <h3>Выберите фон</h3>
           <button
             class="background-switcher__close"
-            @click="closeDialog"
             aria-label="Закрыть"
+            @click="closeDialog"
           >
             ✕
           </button>
@@ -59,7 +59,7 @@ const selectBackground = (bg: BackgroundItem) => {
               :src="bg.thumbnail || bg.imageWebp"
               :alt="bg.title"
               class="background-switcher__preview"
-            />
+            >
             <span class="background-switcher__label">{{ bg.title }}</span>
           </button>
         </div>

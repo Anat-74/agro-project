@@ -8,7 +8,10 @@ interface Props {
   heroGrids?: HeroGrid[];
 }
 
-const { slides, heroGrids } = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  heroGrids: () => [],
+});
+const { slides, heroGrids } = props;
 </script>
 
 <template>
@@ -32,8 +35,8 @@ const { slides, heroGrids } = defineProps<Props>();
             slide.backgroundImage?.baseBgImageWebp?.url
           "
           :src="slide.backgroundImage?.baseBgImageWebp?.url"
-          :retinaSrc="slide.backgroundImage?.retinaBgImageAvif?.url"
-          sizeMode="contain"
+          :retina-src="slide.backgroundImage?.retinaBgImageAvif?.url"
+          size-mode="contain"
           bg-position="top center"
         />
         <UImage
@@ -50,7 +53,7 @@ const { slides, heroGrids } = defineProps<Props>();
           <span v-if="slide.textTop" class="hero-slider__text-top">
             {{ slide.textTop }}
           </span>
-          <h1 v-if="slide.heading" class="hero-slider__title" id="hero">
+          <h1 v-if="slide.heading" id="hero" class="hero-slider__title">
             {{ slide.heading }}
           </h1>
           <strong

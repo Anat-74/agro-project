@@ -6,7 +6,6 @@ const t = computed(() => authTranslations[currentLocale.value])
 const authStore = useAuthStore()
 const route = useRoute()
 const router = useRouter()
-const { showNotification } = useNotification()
 
 const identifier = ref('')
 const password = ref('')

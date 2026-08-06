@@ -26,7 +26,7 @@ console.debug("global data:", global.value);
 </script>
 
 <template>
-  <Header 
+  <AppHeader 
    v-if="global"
   :global="global" />
 
@@ -42,9 +42,9 @@ console.debug("global data:", global.value);
     <slot />
   </main>
 
-  <Footer
-    class="footer"
+  <AppFooter
     v-if="global"
+    class="footer"
     :phones="global.phones"
     :email="global.email"
     :footer="global.footer"

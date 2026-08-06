@@ -27,10 +27,10 @@ onUnmounted(() => {
 
 <template>
       <UButton
-      @click="scrollToTop"
       v-show="isVisible"
       variant="go-to-top"
       icon="pixelarticons:chevron-up"
       :aria-label="buttonT.ariaLabelScrollToTop"
+      @click="scrollToTop"
       />
 </template>

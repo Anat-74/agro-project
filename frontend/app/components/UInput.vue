@@ -21,7 +21,7 @@ const { type = 'text', label = '', placeholder = '', rows = 3,
   disabled = false, readonly = false, required = false, error = '', icon = '',
   autocomplete = '', min = 0, max = 100, step = 1 } = defineProps<Props>()
 
-const model = defineModel<any>() // eslint-disable-line @typescript-eslint/no-explicit-any
+const model = defineModel<any>()
 const inputId = useId()
 const showPassword = ref(false)
 const { currentLocale } = useLocale()

@@ -25,6 +25,7 @@ const handleSubmit = async () => {
     const redirect = `/${currentLocale.value}/cabinet`
     await router.push(redirect)
   } catch {
+    // ошибка уже в authStore.error
   } finally {
     isSubmitting.value = false
   }

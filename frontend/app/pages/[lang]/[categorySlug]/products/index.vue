@@ -124,7 +124,7 @@ watchEffect(() => {
 </script>
 
 <template>
-  <Loader v-show="isLoading" class="loader" />
+  <ULoader v-show="isLoading" class="loader" />
   <section
     v-show="!isLoading"
     class="products-section"
@@ -133,14 +133,14 @@ watchEffect(() => {
     <div class="products-section__container">
       <div class="products-section__row-top">
         <UButton
-          @click="goBack"
           icon="material-symbols:arrow-back"
           :aria-label="buttonT.ariaLabelGoBack"
+          @click="goBack"
         />
         <UButton
-          @click="goForward"
           icon="material-symbols:arrow-forward"
           :aria-label="buttonT.ariaLabelGoForward"
+          @click="goForward"
         />
         <div class="products-section__select-wrapper select-wrapper">
           <label class="visually-hidden" for="sort-product">
@@ -148,8 +148,8 @@ watchEffect(() => {
           </label>
           <select
             id="sort-product"
-            class="products-section__select select"
             v-model="sortOption"
+            class="products-section__select select"
           >
             <option value="name:asc">
               {{ productFilterT.optionName }}
@@ -168,12 +168,12 @@ watchEffect(() => {
       </h2>
         {{ productFilterT.noResults }}
       </div>
-      <Pagination
+      <UPagination
         v-if="pageCount > 1"
         class="products-section__pagination"
         :page="page"
-        :pageCount="pageCount"
-        :routeName="route.name?.toString() || ''"
+        :page-count="pageCount"
+        :route-name="route.name?.toString() || ''"
       />
   </section>
 

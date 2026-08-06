@@ -70,8 +70,8 @@ function setTheme(theme: string) {
 <template>
   <div :class="['color-mode', themeClass]">
     <div
-      class="color-mode__slider-wrapper"
       ref="popupRef"
+      class="color-mode__slider-wrapper"
       :style="{ '--slider-value': sliderValue }"
     >
       <UInput
@@ -85,8 +85,8 @@ function setTheme(theme: string) {
 
       <button
         class="color-mode__thumb"
-        @click.stop="togglePopup"
         :aria-label="`${t.ariaLabelTheme}: ${themeLabel(colorMode.preference)}. ${t.ariaLabelSwitch}`"
+        @click.stop="togglePopup"
       >
         <!-- Статические имена → бандится в build (без runtime-фетча Iconify) -->
         <Icon v-if="colorMode.preference === 'light'" name="ph:sun-duotone" />

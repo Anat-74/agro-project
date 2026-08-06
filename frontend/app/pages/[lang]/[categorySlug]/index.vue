@@ -179,7 +179,7 @@ watchEffect(() => {
 </script>
 
 <template>
-  <Loader v-show="isLoading" class="loader" />
+  <ULoader v-show="isLoading" class="loader" />
   <section
     v-show="!isLoading"
     class="category-content"
@@ -189,21 +189,21 @@ watchEffect(() => {
   >
     <div class="category-content__buttons">
       <UButton
-        @click="goBack"
         icon="material-symbols:arrow-back"
         :aria-label="buttonT.ariaLabelGoBack"
         variant="go-forward-back"
+        @click="goBack"
       />
       <UButton
-        @click="goForward"
         icon="material-symbols:arrow-forward"
         :aria-label="buttonT.ariaLabelGoForward"
         variant="go-forward-back"
+        @click="goForward"
       />
     </div>
     <h1
-      class="category-content__category-title"
       :id="displayMode === 'subcategories' ? 'subcategories' : 'products'"
+      class="category-content__category-title"
     >
       {{ category?.name }}
     </h1>
@@ -226,15 +226,15 @@ watchEffect(() => {
             {{ subcategory.name }}
           </h2>
           <UImage
-            class="category-content__image"
             v-if="subcategory.image?.url"
+            class="category-content__image"
             :src="subcategory.image.url"
             :alt="subcategory.name"
             :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
             :fetchpriority="index < visibleImagesCount ? 'high' : 'auto'"
             width="222"
             height="194"
-            :smoothLoad="true"
+            :smooth-load="true"
           />
         </NuxtLink>
       </li>
@@ -266,7 +266,7 @@ watchEffect(() => {
             class="product-content__image"
             width="322"
             height="194"
-            :smoothLoad="true"
+            :smooth-load="true"
           />
         </NuxtLink>
       </li>
@@ -277,12 +277,12 @@ watchEffect(() => {
       {{ productFilterT.noResults }}
     </div>
 
-    <Pagination
+    <UPagination
       v-if="displayMode !== 'empty'"
       class="category-content__pagination"
       :page="page"
-      :pageCount="pageCount"
-      :routeName="route.name?.toString() || ''"
+      :page-count="pageCount"
+      :route-name="route.name?.toString() || ''"
     />
   </section>
 

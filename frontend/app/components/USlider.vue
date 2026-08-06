@@ -83,9 +83,9 @@ defineExpose({ go, active });
       @scroll="handleScroll"
     >
       <div
-        class="slider__slide"
         v-for="(slide, index) in props.slides"
         :key="slide[props.slideKey] || index"
+        class="slider__slide"
       >
         <slot :slide="slide" :index="index">
           <div class="slider__slide-content">
@@ -97,23 +97,23 @@ defineExpose({ go, active });
 
     <UButton
       v-if="props.showNavigation"
-      @click="prev"
       :disabled="active <= 1"
       icon="mdi:chevron-left"
       variant="slide-prev"
       aria-label="Предыдущий слайд"
+      @click="prev"
     />
 
     <UButton
       v-if="props.showNavigation"
-      @click="next"
       :disabled="active === props.slides.length"
       icon="mdi:chevron-left"
       variant="slide-next"
       aria-label="Следующий слайд"
+      @click="next"
     />
 
-    <div class="slider__pagination" v-if="props.showPagination">
+    <div v-if="props.showPagination" class="slider__pagination">
       <!-- Кастомная пагинация (например, миниатюры товара) через слот.
            По умолчанию — точки (hero). -->
       <slot name="pagination" :go="go" :active="active" :slides="props.slides">
@@ -124,9 +124,9 @@ defineExpose({ go, active });
             'slider__pagination-dot',
             { 'slider__pagination-dot_active': active === index + 1 },
           ]"
-          @click="go(index + 1)"
           :aria-label="`Перейти к слайду ${index + 1}`"
           :aria-current="active === index + 1 ? 'true' : undefined"
+          @click="go(index + 1)"
         />
       </slot>
     </div>

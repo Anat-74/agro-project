@@ -37,6 +37,11 @@ const props = withDefaults(
       | "icon"
   }>(),
   {
+    src: "",
+    alt: "",
+    width: undefined,
+    height: undefined,
+    sizes: "",
     format: "avif",
     quality: 85,
     loading: "lazy",
@@ -143,7 +148,7 @@ const finalSrc = computed(() => {
       :class="['app-image__img', `app-image__img_${type}`]"
       decoding="async"
       @load="onImageLoad"
-    />
+    >
   </div>
 </template>
 

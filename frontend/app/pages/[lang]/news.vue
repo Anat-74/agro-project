@@ -41,7 +41,7 @@ useSeoMeta({
               :src="item.image.url"
               :alt="item.title"
               class="news-card__image"
-            />
+            >
             <div class="news-card__body">
               <time class="news-card__date">{{ item.date }}</time>
               <h2 class="news-card__title">{{ item.title }}</h2>

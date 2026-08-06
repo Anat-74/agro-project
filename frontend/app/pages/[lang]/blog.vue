@@ -41,11 +41,11 @@ useSeoMeta({
               :src="post.image.url"
               :alt="post.title"
               class="blog-card__image"
-            />
+            >
             <div class="blog-card__body">
               <time class="blog-card__date">{{ post.date }}</time>
               <h2 class="blog-card__title">{{ post.title }}</h2>
-              <span class="blog-card__author" v-if="post.author">{{ post.author }}</span>
+              <span v-if="post.author" class="blog-card__author">{{ post.author }}</span>
             </div>
           </article>
         </NuxtLink>

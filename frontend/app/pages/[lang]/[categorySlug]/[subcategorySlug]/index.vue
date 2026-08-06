@@ -165,7 +165,7 @@ const handleAddToCart = (product: Product) => {
 </script>
 
 <template>
-  <Loader v-if="pending" class="loader" />
+  <ULoader v-if="pending" class="loader" />
   <section
     v-else
     class="subcategory-products"
@@ -173,16 +173,16 @@ const handleAddToCart = (product: Product) => {
   >
     <div class="subcategory-products__row-top">
       <UButton
-        @click="goBack"
         icon="material-symbols:arrow-back"
         :aria-label="buttonT.ariaLabelGoBack"
         variant="go-forward-back"
+        @click="goBack"
       />
       <UButton
-        @click="goForward"
         icon="material-symbols:arrow-forward"
         :aria-label="buttonT.ariaLabelGoForward"
         variant="go-forward-back"
+        @click="goForward"
       />
       <div class="subcategory-products__select-wrapper select-wrapper">
         <label class="visually-hidden" for="sort-subcategory-product">
@@ -190,8 +190,8 @@ const handleAddToCart = (product: Product) => {
         </label>
         <select
           id="sort-subcategory-product"
-          class="subcategory-products__select select"
           v-model="sortOption"
+          class="subcategory-products__select select"
         >
           <option value="name:asc">
             {{ productFilterT.optionName }}
@@ -242,9 +242,9 @@ const handleAddToCart = (product: Product) => {
           </span>
           <UButton
             class="subcategory-products__add-to-cart"
-            @click="handleAddToCart(product)"
             variant="add"
             :is-in-cart="isInCart(product.documentId)"
+            @click="handleAddToCart(product)"
           />
         </div>
       </li>
@@ -254,12 +254,12 @@ const handleAddToCart = (product: Product) => {
       {{ productFilterT.noResults }}
     </div>
 
-    <Pagination
+    <UPagination
       v-if="pageCount > 1"
       class="subcategory-products__pagination"
       :page="page"
-      :pageCount="pageCount"
-      :routeName="route.name?.toString() || ''"
+      :page-count="pageCount"
+      :route-name="route.name?.toString() || ''"
     />
   </section>
 

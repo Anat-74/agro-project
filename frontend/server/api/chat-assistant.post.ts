@@ -381,10 +381,10 @@ ${JSON.stringify(lastSearchResults, null, 2)}
               try {
                 args = JSON.parse(jsonMatch[0]);
               } catch (e) {
-                throw new Error(`Невалидный JSON: ${jsonError instanceof Error ? jsonError.message : String(jsonError)}`);
+                throw new Error(`Невалидный JSON: ${e instanceof Error ? e.message : String(e)}`, { cause: e });
               }
             } else {
-              throw new Error(`Невалидный формат аргументов: ${jsonError instanceof Error ? jsonError.message : String(jsonError)}`);
+              throw new Error(`Невалидный формат аргументов: ${jsonError instanceof Error ? jsonError.message : String(jsonError)}`, { cause: jsonError });
             }
           }
 

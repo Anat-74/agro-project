@@ -79,9 +79,9 @@ onUnmounted(() => {
   <ChatAssistantButton
     v-if="micVisible"
     variant="voice"
-    :isListening="isListening"
+    :is-listening="isListening"
     :icon="isListening ? 'material-symbols:mic-off' : 'material-symbols:mic'"
-    :isDisabled="disabled"
+    :is-disabled="disabled"
     :aria-label="isListening ? 'Остановить запись' : 'Голосовой ввод'"
     @click="toggleListening"
   />

@@ -7,8 +7,7 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'confirm'): void
-  (e: 'cancel'): void
+  (e: 'confirm' | 'cancel'): void
 }
 
 const props = withDefaults(defineProps<Props>(), {

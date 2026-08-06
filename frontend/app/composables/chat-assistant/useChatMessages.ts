@@ -23,9 +23,19 @@ export function useChatMessages(options: UseChatMessagesOptions = {}) {
   const messages = ref<ChatMessage[]>([])
   const sessionId = ref<string | null>(null)
 
+  // Экранируем HTML в тексте сообщения (защита от XSS),
+  // кнопки действий добавляются ниже собственным безопасным HTML
+  const escapeHtml = (text: string): string =>
+    text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+
   // Форматирование сообщения с добавлением кнопок действий
   const formatMessage = (text: string, clientInstruction?: any): string => {
-    let formattedText = text.replace(/\n/g, '<br>')
+    let formattedText = escapeHtml(text).replace(/\n/g, '<br>')
 
     // Добавляем кнопки только для действий, которые требуют подтверждения
     if (clientInstruction) {

@@ -20,7 +20,6 @@ const form = reactive({
 const emailError = computed(() => '')
 
 const phoneTarget = computed(() => form.phone.startsWith('+') ? 13 : 11)
-const phoneDigits = computed(() => form.phone.replace(/\D/g, '').length)
 const phoneProgress = computed(() => Math.min(form.phone.length / phoneTarget.value, 1))
 const phoneValid = computed(() => form.phone.length >= phoneTarget.value)
 

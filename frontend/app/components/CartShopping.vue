@@ -107,8 +107,8 @@ onMounted(() => {
           class="cart-items__link"
           :class="{ 'cart-items__link_disabled': item.product.originalLocale !== currentLocale }"
           :disabled="item.product.originalLocale !== currentLocale"
-          @click="openPreview(item)"
           :aria-label="item.product.name"
+          @click="openPreview(item)"
         >
           <NuxtImg
             class="cart-items__image"
@@ -138,23 +138,23 @@ onMounted(() => {
 
       <div class="cart-items__controls">
         <UButton
-          @click="cartStore.updateQuantity(item.product.documentId, item.quantity - 1)"
           :disabled="item.quantity <= 1"
           variant="remove-quantity-prod"
           :aria-label="buttonT.ariaLabelReduceQuantity"
+          @click="cartStore.updateQuantity(item.product.documentId, item.quantity - 1)"
         />
         <span class="cart-items__qty">{{ item.quantity }}</span>
         <UButton
-          @click="cartStore.updateQuantity(item.product.documentId, item.quantity + 1)"
           variant="add-quantity-prod"
           :aria-label="buttonT.ariaLabelIncreaseQuantity"
+          @click="cartStore.updateQuantity(item.product.documentId, item.quantity + 1)"
         />
         <UButton
           variant="secondary"
-          @click="cartStore.removeFromCart(item.product.documentId)"
           icon="material-symbols:delete-outline-rounded"
           :aria-label="buttonT.ariaLabelRemoveItemFromCart"
           class="cart-items__remove"
+          @click="cartStore.removeFromCart(item.product.documentId)"
         />
       </div>
     </div>

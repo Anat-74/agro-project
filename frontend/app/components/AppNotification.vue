@@ -23,13 +23,15 @@ const close = () => {
       v-if="$slots.default"
        :class="['notification', `notification_${type}`]"
     >
-         <Icon class="notification__icon"
+         <Icon
+class="notification__icon"
          name="material-symbols:check-circle"/>
-        <slot></slot>
-      <UButton class="notification__close"
-      @click="close"
+        <slot/>
+      <UButton
+class="notification__close"
       icon="mdi:close"
       :aria-label="buttonT.ariaLabelClosedSuccess"
+      @click="close"
       />
     </div>
   </Transition>

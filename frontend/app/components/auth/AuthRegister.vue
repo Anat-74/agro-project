@@ -9,9 +9,7 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'update:username', value: string): void
-  (e: 'update:email', value: string): void
-  (e: 'update:password', value: string): void
+  (e: 'update:username' | 'update:email' | 'update:password', value: string): void
   (e: 'submit'): void
 }
 

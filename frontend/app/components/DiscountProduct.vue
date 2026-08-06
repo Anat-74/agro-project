@@ -76,17 +76,16 @@ const visibleImagesCount = computed(() => {
     <div class="visually-hidden" itemprop="description">
       {{ product.description }}
     </div>
-    <meta itemprop="priceCurrency" content="BYN" />
+    <meta itemprop="priceCurrency" content="BYN" >
     <meta
       itemprop="availability"
       :content="product.isAvailable
         ? 'https://schema.org/InStock'
         : 'https://schema.org/OutOfStock'"
-    />
+    >
     <ShowModalProduct :product="product" />
     <UButton
       class="discount-card__add"
-      @click="handleAddToCart(product)"
       variant="add"
       :is-in-cart="isInCart(product.documentId)"
       :aria-label="
@@ -94,6 +93,7 @@ const visibleImagesCount = computed(() => {
           ? buttonT.ariaLabelAdded
           : buttonT.label
       "
+      @click="handleAddToCart(product)"
     />
   </li>
 </template>

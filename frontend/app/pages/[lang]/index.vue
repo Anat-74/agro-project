@@ -14,19 +14,15 @@ const {
 } = useCachedAsyncData(
   homePageKey,
   async () => {
-    try {
-      const response = await find("home-page", {
-        filters: { locale: { $eq: currentLocale.value } } as any,
-      });
+    const response = await find("home-page", {
+      filters: { locale: { $eq: currentLocale.value } } as any,
+    });
 
-      if (!response || !response.data) {
-        throw createError({ statusCode: 404, message: "Home page not found" });
-      }
-
-      return response.data as unknown as HomePage;
-    } catch (e) {
-      throw e;
+    if (!response || !response.data) {
+      throw createError({ statusCode: 404, message: "Home page not found" });
     }
+
+    return response.data as unknown as HomePage;
   },
    {
     watch: [() => currentLocale.value],
@@ -38,7 +34,7 @@ console.debug("Home page data:", homePage.value);
 </script>
 
 <template>
-  <Loader v-if="status === 'pending'" />
+  <ULoader v-if="status === 'pending'" />
 
   <HeroSection
     v-if="homePage?.heroSlider || homePage?.heroGrids"

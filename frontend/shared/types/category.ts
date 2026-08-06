@@ -1,6 +1,6 @@
 import type { Image } from "./image";
-import type { Product } from "./product";
-import type { PaginationMeta } from "./product";
+import type { Product, PaginationMeta  } from "./product";
+
 
 export type Category = {
   id: string; // В Strapi v5 это documentId

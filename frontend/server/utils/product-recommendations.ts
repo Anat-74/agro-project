@@ -78,9 +78,6 @@ export async function getRecommendations(
   locale?: string,
 ): Promise<RecommendationResult> {
   try {
-    const { strapi: { url: configUrl } } = useRuntimeConfig();
-    const baseUrl = strapiUrl || configUrl || "http://127.0.0.1:1337";
-
     if (basedOn === "category") {
       if (!sourceId) {
         return {

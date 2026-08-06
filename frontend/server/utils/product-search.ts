@@ -380,7 +380,7 @@ export async function searchProducts(
           }
         });
 
-        let catResults: any[] = [];
+        const catResults: any[] = [];
         if (exactResponse.data && exactResponse.data.length > 0) {
           console.log("Exact category match:", exactResponse.data.map((c: any) => c.name));
           for (const cat of exactResponse.data) {

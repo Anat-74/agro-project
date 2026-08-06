@@ -25,10 +25,10 @@ const copyLink = async () => {
 <template>
    <div>
    <UButton
-   @click="copyLink"
    icon="ph:link-simple-bold"
    variant="share"
-  :aria-label="buttonT.ariaLabelCopyLink"
+   :aria-label="buttonT.ariaLabelCopyLink"
+  @click="copyLink"
    />
 
    <Transition name="fade">

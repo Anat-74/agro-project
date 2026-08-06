@@ -1,6 +1,6 @@
 import { consola } from 'consola'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async () => {
   const config = useRuntimeConfig()
   
   const strapiUrl = config.strapi.url

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
+import { VISIBILITY_KEY } from "#shared/utils/visibility";
 const { currentLocale } = useLocale();
 const t = computed(() => visuallyHiddenTranslations[currentLocale.value]);
-import { VISIBILITY_KEY } from "#shared/utils/visibility";
 const { isContacts } = inject<VisibilityState>(VISIBILITY_KEY)!;
 const { isOpen } = useDialog("hamburgerDialog");
 
@@ -24,17 +24,17 @@ const { grids } = defineProps<Props>();
     ]"
   >
     <li
-      class="hero-grids__item"
       v-for="grid in grids"
-       :key="grid.documentId || grid.id"
       v-show="grid.isVisible"
+       :key="grid.documentId || grid.id"
+      class="hero-grids__item"
     >
       <UImage
-        class="hero-grids__image"
         v-if="grid.icons?.url"
+        class="hero-grids__image"
         :src="grid.icons.url"
         :alt="grid.heading"
-        :smoothLoad="false"
+        :smooth-load="false"
         type="icon"
         width="44"
         height="44"

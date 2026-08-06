@@ -79,7 +79,7 @@ function openPreview(product: Product) {
       :banner-text="global?.header?.bannerText"
     />
     <div class="header__container-top">
-      <Logo
+      <ULogo
         v-if="global"
         class="header__logo"
         :global="global"
@@ -88,7 +88,7 @@ function openPreview(product: Product) {
       />
       <ProductFilter class="header__search" />
       <ChatAssistant />
-      <Basket class="header__cart" @open="cartDialogRef?.open?.()" />
+      <UCartButton class="header__cart" @open="cartDialogRef?.open?.()" />
       <ClientOnly>
         <NuxtLink
           :to="isAuthenticated ? `/${currentLocale}/cabinet` : `/${currentLocale}/auth/login`"
@@ -102,7 +102,7 @@ function openPreview(product: Product) {
         <!-- Заглушка резервирует место при SSR (сам NuxtLink внутри ClientOnly не рендерится на сервере) —
              без неё колонка 0px и ряд сдвигается после гидратации -->
         <template #fallback>
-          <span class="header__profile-placeholder" aria-hidden="true"></span>
+          <span class="header__profile-placeholder" aria-hidden="true"/>
         </template>
       </ClientOnly>
     </div>

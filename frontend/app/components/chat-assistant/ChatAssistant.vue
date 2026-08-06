@@ -317,7 +317,7 @@ onMounted(() => {
         </div>
       </header>
 
-      <div class="chat-assistant__body" ref="chatBody">
+      <div ref="chatBody" class="chat-assistant__body">
         <div v-if="messages.length === 0" class="chat-assistant__empty">
           <div class="chat-assistant__empty-icon">
             <Icon name="material-symbols:chat" />
@@ -355,12 +355,8 @@ onMounted(() => {
               <Icon v-else name="material-symbols:person" />
             </div>
             <div class="message__content">
-              <div
-                class="message__text"
-                v-html="
-                  formatMessage(message.content, message.clientInstruction)
-                "
-              ></div>
+              <!-- eslint-disable-next-line vue/no-v-html -- контент экранируется в formatMessage (useChatMessages.ts) -->
+              <div class="message__text" v-html="formatMessage(message.content, message.clientInstruction)" />
               <div class="message__time">
                 {{ formatTime(message.timestamp, currentLocale) }}
               </div>
@@ -383,9 +379,9 @@ onMounted(() => {
             </div>
             <div class="message__content">
               <div class="message__typing">
-                <span class="message__dot"></span>
-                <span class="message__dot"></span>
-                <span class="message__dot"></span>
+                <span class="message__dot"/>
+                <span class="message__dot"/>
+                <span class="message__dot"/>
               </div>
             </div>
           </div>
@@ -393,7 +389,7 @@ onMounted(() => {
       </div>
 
       <footer class="chat-assistant__footer" aria-label="chat assistant footer">
-        <form @submit.prevent="sendMessage" class="chat-assistant__form">
+        <form class="chat-assistant__form" @submit.prevent="sendMessage">
           <ClientOnly>
             <VoiceInput
               :disabled="isLoading"
@@ -409,7 +405,7 @@ onMounted(() => {
           <ChatAssistantButton
             type="submit"
             variant="send"
-            :isDisabled="!inputMessage.trim() || isLoading"
+            :is-disabled="!inputMessage.trim() || isLoading"
             :aria-label="t.sendButton"
           />
         </form>

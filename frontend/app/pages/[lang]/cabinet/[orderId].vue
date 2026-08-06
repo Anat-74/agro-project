@@ -1,14 +1,13 @@
 <script setup lang="ts">
+import { cabinetTranslations } from '~/locales/cabinet'
+
 definePageMeta({
   middleware: 'auth',
 })
 
-import { cabinetTranslations } from '~/locales/cabinet'
-
 const { currentLocale } = useLocale()
 const t = computed(() => cabinetTranslations[currentLocale.value])
 const route = useRoute()
-const router = useRouter()
 const orderId = computed(() => route.params.orderId as string)
 
 const { findOne, update: updateStrapi } = useStrapi()

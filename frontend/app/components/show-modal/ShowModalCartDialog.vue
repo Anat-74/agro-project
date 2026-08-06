@@ -2,14 +2,11 @@
 import ShowModalCheckoutForm from '~/components/show-modal/ShowModalCheckoutForm.vue'
 import { cartTranslations } from '~/locales/cart'
 import { discountProductTranslations } from '~/locales/discountProduct'
-import { buttonTranslations } from '~/locales/button'
 
 const { currentLocale } = useLocale()
 const cartT = computed(() => cartTranslations[currentLocale.value])
 const discountT = computed(() => discountProductTranslations[currentLocale.value])
-const buttonT = computed(() => buttonTranslations[currentLocale.value])
 const cartStore = useCartStore()
-const config = useRuntimeConfig()
 
 const dialogRef = useTemplateRef<HTMLDialogElement>('cart-dialog')
 const { open, close, isOpen } = useDialog('cartDialog', dialogRef, { useShowMethod: false })
@@ -71,7 +68,7 @@ onMounted(() => {
       <header class="cart-dialog__header">
         <h2 class="cart-dialog__title">{{ cartT.title }}</h2>
         <div class="cart-dialog__header-right">
-          <span class="cart-dialog__count" v-if="cartStore.totalItems > 0">
+          <span v-if="cartStore.totalItems > 0" class="cart-dialog__count">
             {{ cartStore.totalItems }}
           </span>
           <button

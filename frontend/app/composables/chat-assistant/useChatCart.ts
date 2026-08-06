@@ -389,7 +389,7 @@ export function createCartActionHandler(
         }
         break
 
-      case 'clear_cart':
+      case 'clear_cart': {
         cartStore.clearCart()
 
         const successMessage = {
@@ -401,8 +401,9 @@ export function createCartActionHandler(
         saveChatHistory()
         scrollToBottom()
         break
+      }
 
-      case 'show_cart':
+      case 'show_cart': {
         // Показываем сообщение о корзине
         const cartItems = cartStore.items
         const totalItems = cartStore.totalItems
@@ -429,8 +430,9 @@ export function createCartActionHandler(
         saveChatHistory()
         scrollToBottom()
         break
+      }
 
-      case 'cancel':
+      case 'cancel': {
         // Просто закрываем действие, ничего не делаем
         const cancelMessage = {
           role: 'assistant' as const,
@@ -441,6 +443,7 @@ export function createCartActionHandler(
         saveChatHistory()
         scrollToBottom()
         break
+      }
     }
   }
 }

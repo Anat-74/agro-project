@@ -130,20 +130,7 @@ export function useChatQuickActions(options: UseChatQuickActionsOptions = {}) {
       
       // Добавляем результат
       addAssistantMessage(result.message)
-      
-      // Если есть предложение (например, добавить найденный товар)
-      if (result.suggestion) {
-        // Добавляем кнопку для предложения
-        const suggestionMessage = {
-          role: 'assistant' as const,
-          content: result.message + '<br><br><button class="cart-action-button add-to-cart" onclick="window.dispatchEvent(new CustomEvent(\'chat-assistant-cart-action\', { detail: ' + JSON.stringify(result.suggestion).replace(/"/g, '&quot;') + ' }))">✅ Добавить в корзину</button>',
-          timestamp: new Date().toISOString(),
-          clientInstruction: result.suggestion
-        }
-        // Заменяем последнее сообщение
-        // messages.value[messages.value.length - 1] = suggestionMessage
-      }
-      
+
       saveChatHistory()
       scrollToBottom()
     } else {

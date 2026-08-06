@@ -3,6 +3,8 @@ import { cartTranslations } from "~/locales/cart";
 import { discountProductTranslations } from "~/locales/discountProduct";
 import { buttonTranslations } from "~/locales/button";
 
+import { orderSuccessTranslations } from "~/locales/orderSuccess";
+
 const { currentLocale } = useLocale();
 const cartT = computed(() => cartTranslations[currentLocale.value])
 const discountT = computed(() => discountProductTranslations[currentLocale.value])
@@ -57,8 +59,6 @@ const { data: product } = useAsyncData(
 
 const showOrderSuccess = ref(false);
 
-import { orderSuccessTranslations } from "~/locales/orderSuccess";
-
 const successTitle = ref("");
 const successNotice = ref("");
 const successThanks = ref("");
@@ -96,11 +96,11 @@ onMounted(() => {
     </h1>
 
     <UButton
-      @click="goBack"
       icon="material-symbols:arrow-back"
       :aria-label="buttonT.ariaLabelGoBack"
       variant="go-forward-back"
       class="cart-page__back"
+      @click="goBack"
     />
 
     <!-- Пустая корзина -->

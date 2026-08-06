@@ -112,7 +112,6 @@ const openHamburger = () => {
 <template>
   <div class="hamburger-menu">
     <UButton
-      @click="isOpen ? close?.() : openHamburger()"
       :is-open="isOpen"
       variant="hamburger"
       :aria-label="
@@ -120,6 +119,7 @@ const openHamburger = () => {
            ? buttonT.ariaLabelDialogClosed
            : buttonT.ariaLabelDialogOpen
       "
+      @click="isOpen ? close?.() : openHamburger()"
     />
     <span
       :class="[
@@ -130,16 +130,16 @@ const openHamburger = () => {
     </span>
   </div>
   <Teleport to="body" :disabled="!isTablet">
-    <dialog class="dialog-hamburger" ref="dialog-hamburger" id="dialogHamburger">
-    <Loader v-if="pending" />
+    <dialog id="dialogHamburger" ref="dialog-hamburger" class="dialog-hamburger">
+    <ULoader v-if="pending" />
     <h2 class="visually-hidden">
       {{ visuallyHiddenT.showModalMenuTitle }}
     </h2>
     <div class="dialog-hamburger__items">
       <div class="dialog-hamburger__top visible-mobile">
-        <Logo
+        <ULogo
           :global="global"
-          :currentLocale="currentLocale"
+          :current-locale="currentLocale"
           :config="config"
           width="32"
           height="32"
@@ -173,8 +173,8 @@ const openHamburger = () => {
               >
                 <NuxtLink
                   class="accordion__product-link"
-                  @click="close?.()"
                   :to="`/${currentLocale}/${cat.slug}/${sub.slug}`"
+                  @click="close?.()"
                   >
                   {{ sub.name }}
                 </NuxtLink>
@@ -237,14 +237,14 @@ const openHamburger = () => {
         <div class="accordion__content">
           <ul class="accordion__product-list">
             <li
-              class="accordion__product-item"
               v-for="prod in product"
-               :key="prod.documentId"
+              :key="prod.documentId"
+               class="accordion__product-item"
             >
               <NuxtLink
                 class="accordion__product-link accordion__product-link_is-discount"
-                @click="close?.()"
                 :to="getProductLink(prod)"
+                @click="close?.()"
               >
                 <UImage
                   v-if="prod.mainImage?.url || prod.image?.length"
@@ -270,9 +270,9 @@ const openHamburger = () => {
 
       <div class="dialog-hamburger__contacts">
         <div
-          class="dialog-hamburger__phones"
           v-for="item in phones"
-           :key="item.documentId || item.id"
+          :key="item.documentId || item.id"
+           class="dialog-hamburger__phones"
         >
           <Icon v-if="item.isMobile" name="et:phone" />
 
@@ -287,13 +287,13 @@ const openHamburger = () => {
     </div>
     <div class="dialog-hamburger__sidebar sidebar visible-mobile">
       <UButton
-        @click="close?.()"
         :is-open="isOpen"
         variant="hamburger"
         :aria-label="buttonT.ariaLabelDialogClosed"
+        @click="close?.()"
       />
       <LangSwitcher />
-      <Socials :is-open="isOpen" :socials="socials" />
+      <USocials :is-open="isOpen" :socials="socials" />
     </div>
   </dialog>
   </Teleport>

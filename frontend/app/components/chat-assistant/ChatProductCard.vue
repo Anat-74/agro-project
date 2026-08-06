@@ -65,8 +65,8 @@ const handleAddToCart = () => {
       <button
         type="button"
         class="chat-product-card__image-wrap"
-        @click="openPreview"
         :aria-label="t.viewProduct"
+        @click="openPreview"
       >
         <UImage
           :src="product.image"
@@ -87,8 +87,8 @@ const handleAddToCart = () => {
       v-else
       type="button"
       class="chat-product-card__placeholder"
-      @click="openPreview"
       :aria-label="t.viewProduct"
+      @click="openPreview"
     />
     <div class="chat-product-card__info">
       <div class="chat-product-card__name-row">

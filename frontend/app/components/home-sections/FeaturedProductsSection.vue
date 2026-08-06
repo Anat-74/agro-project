@@ -16,9 +16,9 @@ const MAX_PRODUCTS_TO_SHOW = 6;
           featuredProd?.[0]?.backgroundImage?.baseBgImageWebp?.url
         "
         :src="featuredProd?.[0].backgroundImage.baseBgImageWebp?.url"
-        :retinaSrc="featuredProd?.[0].backgroundImage.retinaBgImageAvif?.url"
+        :retina-src="featuredProd?.[0].backgroundImage.retinaBgImageAvif?.url"
         bg-position="bottom left"
-        sizeMode="contain"
+        size-mode="contain"
         filter="brightness"
       />
 
@@ -26,25 +26,27 @@ const MAX_PRODUCTS_TO_SHOW = 6;
     >
          <h2
          v-if="featuredProd?.[0]?.heading"
-         class="featured-products__title"
          id="featured-products"
+         class="featured-products__title"
         >
           {{ featuredProd?.[0].heading }}
         </h2>
       <div class="featured-products__items">
-         <div class="featured-products__link"
-         v-if="featuredProd?.[0]?.link" 
+         <div
+v-if="featuredProd?.[0]?.link"
+         class="featured-products__link" 
          >
              <span>{{ featuredProd?.[0].link }}</span>
               <Icon name="mingcute:arrow-right-line" />
          </div>
-      <ul class="featured-products__card-list"
-      v-if="featuredProd?.[0]?.products?.length" 
+      <ul
+v-if="featuredProd?.[0]?.products?.length"
+      class="featured-products__card-list" 
       >
         <ProductCard
-        class="featured-products__item"
-          v-for="(prod, index) in featuredProd?.[0].products.slice(0, MAX_PRODUCTS_TO_SHOW)"
-           :key="prod.documentId"
+        v-for="(prod, index) in featuredProd?.[0].products.slice(0, MAX_PRODUCTS_TO_SHOW)"
+          :key="prod.documentId"
+           class="featured-products__item"
           :product="prod"
           :index="index"
        /> 

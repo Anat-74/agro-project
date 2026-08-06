@@ -44,7 +44,7 @@ interface Emits {
 }
 
 const { variant = "primary", size = "normal", isLoading = false,
-  isDisabled = false, type = "button", isOpen = false, isInCart = false } = defineProps<Props>()
+  isDisabled = false, type = "button", isOpen = false, isInCart = false, icon = "", theme = "" } = defineProps<Props>()
 
 defineEmits<Emits>();
 </script>
@@ -65,12 +65,12 @@ defineEmits<Emits>();
     :type="type"
     @click="$emit('click', $event)"
   >
-    <span v-if="isLoading" class="button-spinner"></span>
+    <span v-if="isLoading" class="button-spinner"/>
     <span v-else-if="icon" class="btn-icon">
       <Icon :name="icon" />
     </span>
     <span v-else class="button-content">
-      <slot></slot>
+      <slot/>
     </span>
   </button>
 </template>

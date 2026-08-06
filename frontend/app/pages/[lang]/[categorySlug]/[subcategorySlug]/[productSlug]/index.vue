@@ -132,13 +132,13 @@ const handleAddToCart = (product: Product) => {
 </script>
 
 <template>
-  <Loader v-if="pending" class="loader" />
+  <ULoader v-if="pending" class="loader" />
   <section
     v-if="product"
     aria-labelledby="product-description"
     class="product-review product-review__container"
   >
-    <h1 class="visually-hidden" id="product-description">
+    <h1 id="product-description" class="visually-hidden">
       {{ visuallyHiddenT.sectionProductSlugTitle }}
     </h1>
     <div class="product-review__wrapper-left wrapper-left">
@@ -148,10 +148,10 @@ const handleAddToCart = (product: Product) => {
       >
         <UButton
           class="wrapper-left__go-back"
-          @click="goBack"
           icon="material-symbols:arrow-back"
           :aria-label="buttonT.ariaLabelGoBack"
           variant="go-forward-back"
+          @click="goBack"
         />
         <Icon
           v-if="product.isDiscount"
@@ -184,8 +184,8 @@ const handleAddToCart = (product: Product) => {
       </span>
       <UButton
         class="wrapper-right__btn"
-        @click="handleAddToCart(product)"
         :disabled="isInCart(product.documentId)"
+        @click="handleAddToCart(product)"
       >
         {{
           isInCart(product.documentId)

@@ -22,7 +22,8 @@ defineProps<{
   <nav class="nav" aria-label="primary navigation">
     <ul class="nav__list">
       <template v-if="navigation?.length">
-        <li v-for="item in navigation" 
+        <li
+v-for="item in navigation" 
         :key="item.id" 
         :class="['nav__item', { nav__item_contacts: item.url === '/contacts' && isContacts }]" 
         @mouseenter="item.url === '/contacts' ? visibleIsContacts() : null" 
@@ -35,14 +36,14 @@ defineProps<{
               @mouseleave="hideContacts"
             >{{ item.label }} <Icon name="mingcute:down-line" /></NuxtLink>
             <div v-if="isContacts" class="nav__contacts contacts">
-              <div class="contacts__phone-link contacts-link" v-for="item in phones" :key="item.documentId || item.id">
-                <Icon v-if="item.isMobile" name="et:phone" />
-                <Icon v-if="!item.isMobile" name="carbon:phone-ip" />
-                <a :href="`tel:${item.phoneNumber.replace(/[^0-9+]/g, '')}`">{{ formatPhone(item.phoneNumber) }}</a>
+              <div v-for="phone in phones" :key="phone.documentId || phone.id" class="contacts__phone-link contacts-link">
+                <Icon v-if="phone.isMobile" name="et:phone" />
+                <Icon v-if="!phone.isMobile" name="carbon:phone-ip" />
+                <a :href="`tel:${phone.phoneNumber.replace(/[^0-9+]/g, '')}`">{{ formatPhone(phone.phoneNumber) }}</a>
               </div>
-              <div class="contacts__mail-link contacts-link" v-for="item in email" :key="item.documentId || item.id">
-                <Icon v-if="item.isEmail" name="material-symbols:mail-outline" />
-                <a v-if="item.isEmail" :href="`mailto:${item.email}`">{{ item.email }}</a>
+              <div v-for="mail in email" :key="mail.documentId || mail.id" class="contacts__mail-link contacts-link">
+                <Icon v-if="mail.isEmail" name="material-symbols:mail-outline" />
+                <a v-if="mail.isEmail" :href="`mailto:${mail.email}`">{{ mail.email }}</a>
               </div>
             </div>
           </template>

@@ -12,7 +12,6 @@ const { getProductLink } = useProductLink();
 interface Props {
   product: Product;
   index: number;
-  categorySlug?: string;
 }
 const { product } = defineProps<Props>();
 
@@ -78,8 +77,8 @@ const characteristics = computed(() => {
       </div>
       <div class="product-card__content" @click="toggleVisibleLink">
         <UImage
-          class="product-card__image"
           v-if="product.image?.length"
+          class="product-card__image"
           :src="product.image[0]?.url"
           :alt="product.name"
           :loading="index < visibleImagesCount ? 'eager' : 'lazy'"
@@ -119,7 +118,6 @@ const characteristics = computed(() => {
           {{ formatPrice(product.price) }}
         </span>
         <UButton
-          @click="handleAddToCart(product)"
           variant="add"
           :is-in-cart="isInCart(product.documentId)"
           :aria-label="
@@ -127,6 +125,7 @@ const characteristics = computed(() => {
               ? buttonTranslations[currentLocale].ariaLabelAdded
               : buttonTranslations[currentLocale].label
           "
+          @click="handleAddToCart(product)"
         />
       </div>
     </div>
@@ -161,7 +160,7 @@ const characteristics = computed(() => {
         />
         <NuxtLink
           class="product-card__link"
-          :to="`/${currentLocale}/${categorySlug}/products/${product.slug}`"
+          :to="getProductLink(product)"
           ><span>{{
             linkTranslations[currentLocale].featuredProductLabel
           }}</span>
@@ -180,7 +179,6 @@ const characteristics = computed(() => {
           {{ formatPrice(product.price) }}
         </span>
         <UButton
-          @click="handleAddToCart(product)"
           variant="add"
           :is-in-cart="isInCart(product.documentId)"
           :aria-label="
@@ -188,6 +186,7 @@ const characteristics = computed(() => {
               ? buttonTranslations[currentLocale].ariaLabelAdded
               : buttonTranslations[currentLocale].label
           "
+          @click="handleAddToCart(product)"
         />
       </div>
     </div>

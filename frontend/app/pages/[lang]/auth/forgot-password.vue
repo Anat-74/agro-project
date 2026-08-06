@@ -17,6 +17,7 @@ const handleSubmit = async () => {
     await authStore.forgotPassword(email.value)
     sent.value = true
   } catch {
+    // ошибка уже в authStore.error
   } finally {
     isSubmitting.value = false
   }

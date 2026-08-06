@@ -20,13 +20,13 @@ defineProps<Props>();
 <template>
   <footer class="base-footer">
     <div class="base-footer__container">
-      <Logo
+      <ULogo
         class="base-footer__logo"
         :global="global"
-        :currentLocale="currentLocale"
+        :current-locale="currentLocale"
         :config="config"
       />
-      <Socials class="base-footer__socials" :socials="socials" />
+      <USocials class="base-footer__socials" :socials="socials" />
       <div class="base-footer__company company">
         <h2 class="company__title">
           {{ t.titleCompany }}
@@ -46,7 +46,7 @@ defineProps<Props>();
           {{ footer.legalAdress }}
         </p>
 
-         <div class="company__phones" v-for="item in phones" :key="item.documentId || item.id">
+         <div v-for="item in phones" :key="item.documentId || item.id" class="company__phones">
           <Icon v-if="item.isMobile" name="et:phone" />
 
           <Icon v-if="!item.isMobile" name="carbon:phone-ip" />
@@ -56,7 +56,7 @@ defineProps<Props>();
             >{{ formatPhone(item.phoneNumber) }}
           </a>
         </div>
-         <div class="company__email" v-for="item in email" :key="item.documentId || item.id">
+         <div v-for="item in email" :key="item.documentId || item.id" class="company__email">
           <Icon v-if="item.isEmail" name="material-symbols:mail-outline" />
           <a
             v-if="item.isEmail"

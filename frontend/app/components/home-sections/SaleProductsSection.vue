@@ -10,12 +10,13 @@ const { saleProd } = defineProps<Props>();
    <section class="sale-products" aria-labelledby="sale-products">
       <div class="sale-products__container">
       <h2
-         class="sale-products__title"
          id="sale-products"
+         class="sale-products__title"
         > {{ saleProd?.[1]?.heading }}
         </h2>
-      <ul class="sale-products__card-list"
-         v-if="saleProd?.[1]?.products?.length" 
+      <ul
+v-if="saleProd?.[1]?.products?.length"
+         class="sale-products__card-list" 
       >
        <DiscountProduct
           v-for="(prod, index) in saleProd?.[1].products"
@@ -26,18 +27,21 @@ const { saleProd } = defineProps<Props>();
       </ul>
       <div class="sale-products__sale-items">
          <div class="sale-products__hot-sale">
-            <div class="sale-products__items-text"
-               v-if="saleProd?.[1]?.saleText || saleProd?.[1]?.percentDiscount"
+            <div
+v-if="saleProd?.[1]?.saleText || saleProd?.[1]?.percentDiscount"
+               class="sale-products__items-text"
             >
-             <p class="sale-products__discount-text"
-                v-if="saleProd?.[1]?.saleText || saleProd?.[1]?.percentDiscount"
+             <p
+v-if="saleProd?.[1]?.saleText || saleProd?.[1]?.percentDiscount"
+                class="sale-products__discount-text"
              >
                 <span>
                    {{ saleProd?.[1].percentDiscount }}
                 </span>
                 {{ saleProd?.[1].saleText }}
              </p>
-                <p class="sale-products__discount-text visible-tablet"
+                <p
+class="sale-products__discount-text visible-tablet"
                 aria-hidden="true"
                 >
                 <span>
@@ -45,7 +49,8 @@ const { saleProd } = defineProps<Props>();
                 </span>
                 {{ saleProd?.[1].saleText }}
              </p>
-                <p class="sale-products__discount-text visible-tablet"
+                <p
+class="sale-products__discount-text visible-tablet"
                 aria-hidden="true"
                 >
                 <span>

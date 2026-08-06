@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { cabinetTranslations } from '~/locales/cabinet'
+import ConfirmDeleteModal from '~/components/auth/ConfirmDeleteModal.vue'
+
 definePageMeta({
   middleware: 'auth',
 })
-
-import { cabinetTranslations } from '~/locales/cabinet'
-import ConfirmDeleteModal from '~/components/auth/ConfirmDeleteModal.vue'
 
 const { currentLocale } = useLocale()
 const authStore = useAuthStore()
@@ -174,12 +174,12 @@ const deleteAccount = async () => {
               :src="avatarPreview"
               alt="Avatar"
               class="edit-avatar__img"
-            />
+            >
             <span v-else class="edit-avatar__placeholder">
               {{ authStore.user?.username?.charAt(0)?.toUpperCase() || '?' }}
             </span>
           </div>
-          <input ref="fileInput" type="file" accept="image/*" class="edit-avatar__input" @change="handleAvatarChange" />
+          <input ref="fileInput" type="file" accept="image/*" class="edit-avatar__input" @change="handleAvatarChange" >
           <UButton variant="secondary" :is-disabled="false" @click="fileInput?.click()">
             {{ t.editChoosePhoto }}
           </UButton>

@@ -18,7 +18,7 @@ withDefaults(defineProps<Props>(), {
         <!-- Резервируем место под colorMode при SSR/гидратации (иначе langSwitcher
              виден один, потом colorMode «прыгает» и сдвигает вёрстку) -->
         <template #fallback>
-          <div class="banner__color-mode-placeholder" aria-hidden="true"></div>
+          <div class="banner__color-mode-placeholder" aria-hidden="true"/>
         </template>
       </ClientOnly>
     </div>

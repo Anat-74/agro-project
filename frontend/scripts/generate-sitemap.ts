@@ -2,13 +2,20 @@
 // Для работы в CLI-контексте имитируем необходимые Nuxt функции
 
 // Загружаем dotenv до всего остального
+// Импортируем используем серверную функцию
+import { generateSitemap } from '../server/_utils/generate-sitemap';
+
+// Вызов функции для CLI использования
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
 async function loadEnv() {
   try {
     const dotenv = await import('dotenv');
     const path = await import('path');
     const envPath = path.resolve(process.cwd(), '.env');
     dotenv.config({ path: envPath });
-  } catch (error) {
+  } catch {
     console.warn('dotenv not found, using default values');
   }
 }
@@ -37,13 +44,6 @@ const mockRuntimeConfig = {
 
 // Глобальная функция для имитации useRuntimeConfig
 (global as any).useRuntimeConfig = () => mockRuntimeConfig;
-
-// Импортируем используем серверную функцию
-import { generateSitemap } from '../server/_utils/generate-sitemap';
-
-// Вызов функции для CLI использования
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

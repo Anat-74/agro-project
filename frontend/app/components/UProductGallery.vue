@@ -54,8 +54,8 @@ const sliderActive = computed<number>(() => {
         type="button"
         class="product-gallery__thumb"
         :class="{ 'product-gallery__thumb_active': sliderActive === i + 1 }"
-        @click="sliderRef?.go(i + 1)"
         :aria-label="`Изображение ${i + 1}`"
+        @click="sliderRef?.go(i + 1)"
       >
         <UImage
           :src="strapiUrl(img.url)"

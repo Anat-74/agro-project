@@ -4,7 +4,7 @@ import USlider from '~/components/USlider.vue'
 const props = withDefaults(
   defineProps<{
     // Может быть null (общий инстанс в Header, пока не выбран товар)
-    product: Product | null
+    product?: Product | null
     // Скрыть собственный триггер-кнопку (когда модалка открывается через ref, напр. в корзине)
     hideTrigger?: boolean
   }>(),
@@ -182,8 +182,8 @@ const handleAddToCart = () => {
             type="button"
             class="product-modal__thumb"
             :class="{ 'product-modal__thumb_active': sliderActive === i + 1 }"
-            @click="sliderRef?.go(i + 1)"
             :aria-label="`Изображение ${i + 1}`"
+            @click="sliderRef?.go(i + 1)"
           >
               <UImage
                 :src="img.url"
@@ -209,9 +209,9 @@ const handleAddToCart = () => {
         />
         <UButton
           class="product-modal__add"
-          @click="handleAddToCart"
           variant="add"
           :is-in-cart="isInCart(product?.documentId ?? '')"
+          @click="handleAddToCart"
         />
       </div>
     </div>
