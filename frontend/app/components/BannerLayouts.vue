@@ -29,12 +29,11 @@ withDefaults(defineProps<Props>(), {
 .banner {
   overflow-x: auto;
   display: grid;
-  grid-template-columns: 1fr auto;   // текст слева, блок управления справа
+  grid-template-columns: 1fr auto;
   align-items: center;
   column-gap: toRem(4);
   padding-inline: toRem(4);
-  // #7eb693 (--primary-color) с белым текстом не проходил AA — тёмный зелёный (4.95:1)
-  background-color: #4a7a5f;
+  background-color: var(--primary-color);
   @include adaptiveValue("height", 60, 72);
 
   &__marquee {
@@ -44,7 +43,6 @@ withDefaults(defineProps<Props>(), {
 
   &__controls {
     position: relative;
-    // Колонка: LangSwitcher сверху, colorMode снизу, по центру
     display: flex;
     flex-direction: column;
     align-items: center;      // горизонтальное центрирование (cross axis)

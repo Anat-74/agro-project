@@ -24,7 +24,15 @@ export default (config: unknown, { strapi }: { strapi: Core.Strapi }) => {
         phones: true,
         email: true,
         header: {
-          populate: ["navigation"],
+          populate: {
+            navigation: {
+              on: {
+                "layout.link": {
+                  fields: ["label", "url"],
+                },
+              },
+            },
+          },
         },
       };
     }

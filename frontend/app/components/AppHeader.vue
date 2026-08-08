@@ -3,20 +3,20 @@ import { nextTick } from 'vue'
 import ShowHamburger from '~/components/show-modal/ShowHamburger.vue'
 import ShowModalCartDialog from '~/components/show-modal/ShowModalCartDialog.vue'
 import ShowModalProduct from '~/components/show-modal/ShowModalProduct.vue'
-import { cabinetTranslations } from '~/locales/cabinet'
-import { authTranslations } from '~/locales/auth'
+
+const { currentLocale } = useLocale()
 
 interface Props {
   global?: GlobalData | null
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 
-const { isAuthenticated, user } = useAuth()
-const { currentLocale } = useLocale()
-
-const cabinetT = computed(() => cabinetTranslations[currentLocale.value])
-const authT = computed(() => authTranslations[currentLocale.value])
+// Ссылка на «Блог» берётся из Strapi-навигации (label локализуется в CMS),
+// рендерится отдельно от меню «Ещё»
+const blogLink = computed(() =>
+  props.global?.header?.navigation?.find((item) => item.url === '/blog')
+)
 
 // Scroll-based bottom nav visibility
 const isNavHidden = ref(false)
@@ -89,58 +89,17 @@ function openPreview(product: Product) {
       <ProductFilter class="header__search" />
       <ChatAssistant />
       <UCartButton class="header__cart" @open="cartDialogRef?.open?.()" />
-      <ClientOnly>
-        <NuxtLink
-          :to="isAuthenticated ? `/${currentLocale}/cabinet` : `/${currentLocale}/auth/login`"
-          class="header__profile"
-          :aria-label="isAuthenticated ? cabinetT.title : authT.loginButton"
-        >
-          <UImage v-if="isAuthenticated && user?.avatar" :src="user.avatar" :alt="user.username" type="avatar" class="header__avatar" />
-          <span v-else-if="isAuthenticated && user?.username" class="header__initials">{{ user.username.charAt(0).toUpperCase() }}</span>
-          <Icon v-else name="cil:user" width="28" height="28" />
-        </NuxtLink>
-        <!-- Заглушка резервирует место при SSR (сам NuxtLink внутри ClientOnly не рендерится на сервере) —
-             без неё колонка 0px и ряд сдвигается после гидратации -->
-        <template #fallback>
-          <span class="header__profile-placeholder" aria-hidden="true"/>
-        </template>
-      </ClientOnly>
+      <ProfileLink />
     </div>
     <div :class="['header__bottom', { 'header__bottom_hidden': isNavHidden }]">
       <div class="header__container-bottom">
-        <UAnimatedText variant="gradient" />
-        <details class="header__more" name="header-more">
-          <summary class="header__more-summary">
-            Ещё
-            <Icon name="mingcute:down-line" />
-          </summary>
-          <ul class="header__more-list">
-            <li class="header__more-item">
-              <NuxtLink class="header__more-link" :to="`/${currentLocale}/about`">
-                <Icon name="mingcute:information-line" /> О нас
-              </NuxtLink>
-            </li>
-            <li class="header__more-item">
-              <NuxtLink class="header__more-link" :to="`/${currentLocale}/services`">
-                <Icon name="mingcute:settings-4-line" /> Услуги
-              </NuxtLink>
-            </li>
-            <li class="header__more-item">
-              <NuxtLink class="header__more-link" :to="`/${currentLocale}/contacts`">
-                <Icon name="mingcute:mail-line" /> Контакты
-              </NuxtLink>
-            </li>
-            <li class="header__more-item">
-              <NuxtLink class="header__more-link" :to="`/${currentLocale}/news`">
-                <Icon name="ph:megaphone-light" /> Новости
-              </NuxtLink>
-            </li>
-          </ul>
-        </details>
+        <!-- <UAnimatedText variant="gradient" /> -->
+        <MoreMenu :navigation="global?.header?.navigation" />
         <NuxtLink
+          v-if="blogLink"
           class="header__blog-link"
-          :to="`/${currentLocale}/blog`"
-        >Блог</NuxtLink>
+          :to="`/${currentLocale}${blogLink.url}`"
+        >{{ blogLink.label }}</NuxtLink>
         <BaseNavigation
           v-if="global"
           :phones="global.phones"
@@ -177,9 +136,9 @@ function openPreview(product: Product) {
 
   &__container-top {
     position: relative;
-    z-index: 2;
+    z-index: 10;
     display: grid;
-    grid-template-columns: auto 1fr auto auto auto;
+    grid-template-columns: auto 1fr repeat(3, auto);
     align-items: center;
     column-gap: toRem(16);
     padding-block: toEm(16);
@@ -216,71 +175,6 @@ function openPreview(product: Product) {
     translate: 0 toRem(3);
   }
 
-  &__profile {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: toRem(32);   // держит колонку после гидратации (контент 28 или 32px)
-    transition: opacity var(--transition-duration);
-    translate: 0 toRem(3);
-
-    svg {
-      color: var(--primary-color);
-      transition: transform var(--transition-duration);
-    }
-
-    @include hover {
-      svg {
-        transform: scale(1.15);
-      }
-    }
-
-    @media (max-width: $mobile) {
-      justify-self: end;
-    }
-  }
-
-  &__avatar {
-    width: toRem(32);
-    height: toRem(32);
-
-    :deep(.app-image__img) {
-      width: toRem(32);
-      height: toRem(32);
-      object-fit: cover;
-      border-radius: 50%;
-    }
-  }
-
-  &__initials {
-    width: toRem(32);
-    height: toRem(32);
-    border-radius: 50%;
-    background: var(--primary-color);
-    color: #fff;
-    display: grid;
-    place-items: center;
-    font-weight: 700;
-    @include adaptiveValue("font-size", 15, 13);
-    transition: transform var(--transition-duration);
-  }
-
-  &__profile_auth {
-    text-decoration: none;
-
-    @include hover {
-      .header__initials {
-        transform: scale(1.15);
-      }
-    }
-  }
-
-  // SSR-заглушка профиля: размер совпадает с контентом (32px), чтобы колонка была занята с загрузки
-  &__profile-placeholder {
-    width: toRem(32);
-    height: toRem(32);
-  }
-
   &__container-bottom {
     display: flex;
     justify-content: space-between;
@@ -290,65 +184,6 @@ function openPreview(product: Product) {
 
     @media (max-width: $mobile) {
       padding-block: toRem(6);
-    }
-  }
-
-
-  &__more {
-    position: relative;
-
-    &-summary {
-      cursor: pointer;
-      list-style: none;
-      padding: toRem(4) toRem(8);
-      font-weight: 500;
-      // #7eb693 (--primary-color) на светлом фоне не проходит AA — тёмный текст
-      color: var(--dark-color);
-
-      &::-webkit-details-marker {
-        display: none;
-      }
-
-      svg {
-        transition: rotate var(--transition-duration);
-      }
-    }
-
-    &[open] &-summary svg {
-      rotate: -180deg;
-    }
-
-    &-list {
-      position: absolute;
-      top: calc(100% + toRem(4));
-      left: 0;
-      z-index: 10;
-      min-width: toRem(160);
-      background: var(--secondary-color);
-      border: toRem(1) solid var(--border-color);
-      border-radius: toRem(4);
-      padding: toRem(4);
-      display: flex;
-      flex-direction: column;
-      gap: toRem(2);
-      white-space: nowrap;
-      box-shadow: 0 toRem(4) toRem(12) rgba(0,0,0,0.1);
-    }
-
-    &-item {
-      list-style: none;
-    }
-
-    &-link {
-      display: block;
-      padding: toRem(6) toRem(12);
-      color: var(--color);
-      text-decoration: none;
-      border-radius: toRem(4);
-
-      @include hover {
-        background: var(--bg);
-      }
     }
   }
 

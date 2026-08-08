@@ -230,6 +230,12 @@ class="sale-products__discount-text visible-tablet"
          font-size: toEm(20);
       }
    }
+
+   // Анимации для custom-темы
+   @container style(--theme: custom) {
+      animation: cardEntrance 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      opacity: 0;
+   }
 }
 
 @keyframes scroll {
@@ -239,12 +245,6 @@ class="sale-products__discount-text visible-tablet"
    100% {
       translate: -100%;
    }
-
-  // Анимации для custom-темы
-  @container style(--theme: custom) {
-    animation: cardEntrance 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    opacity: 0;
-  }
-
 }
+
 </style>
