@@ -86,6 +86,16 @@ function openPreview(product: Product) {
         width="40"
         height="40"
       />
+      <!-- ColorMode из баннера: на мобилке живёт в шапке после логотипа -->
+      <div class="header__color-mode-wrap">
+        <ClientOnly>
+          <ColorMode class="header__color-mode" />
+          <!-- Резервируем место при SSR/гидратации (ползунок 72×28) -->
+          <template #fallback>
+            <span class="header__color-mode-placeholder" aria-hidden="true" />
+          </template>
+        </ClientOnly>
+      </div>
       <ProductFilter class="header__search" />
       <ChatAssistant />
       <UCartButton class="header__cart" @open="cartDialogRef?.open?.()" />
@@ -94,10 +104,20 @@ function openPreview(product: Product) {
     <div :class="['header__bottom', { 'header__bottom_hidden': isNavHidden }]">
       <div class="header__container-bottom">
         <!-- <UAnimatedText variant="gradient" /> -->
-        <MoreMenu :navigation="global?.header?.navigation" />
+         <ShowHamburger
+          v-if="global"
+          class="header__hamburger"
+          :phones="global.phones"
+          :footer="global.footer"
+          :socials="global.socials"
+          :global="global"
+        />
+        <MoreMenu 
+        :navigation="global?.header?.navigation"
+         />
         <NuxtLink
           v-if="blogLink"
-          class="header__blog-link"
+          class="header__blog-link visible-tablet"
           :to="`/${currentLocale}${blogLink.url}`"
         >{{ blogLink.label }}</NuxtLink>
         <BaseNavigation
@@ -105,15 +125,15 @@ function openPreview(product: Product) {
           :phones="global.phones"
           :email="global.email"
           :navigation="global?.header?.navigation"
-          class="header__navigation hidden-mobile"
+          class="header__navigation hidden-tablet"
         />
-        <ShowHamburger
+        <!-- <ShowHamburger
           v-if="global"
           :phones="global.phones"
           :footer="global.footer"
           :socials="global.socials"
           :global="global"
-        />
+        /> -->
       </div>
     </div>
   </header>
@@ -131,19 +151,53 @@ function openPreview(product: Product) {
   @media (max-width: $tablet) {
     position: sticky;
     z-index: 998;
-   @include adaptiveValue("top", -60, -72);
+   // top = минус высота баннера (60 десктоп/планшет, 40 мобилка) — баннер уезжает за экран
+   @include adaptiveValue("top", -60, -40);
   }
 
   &__container-top {
     position: relative;
     z-index: 10;
     display: grid;
-    grid-template-columns: auto 1fr repeat(3, auto);
+    grid-template-columns: auto auto 1fr repeat(3, auto);
     align-items: center;
     column-gap: toRem(16);
     padding-block: toEm(16);
-    background-color: var(--bg);
+    // Матовое стекло (glassmorphism): полупрозрачный фон темы + blur.
+    // Контент проезжает под sticky-шапкой и красиво матируется.
+    background: var(--bg);   // fallback для браузеров без backdrop-filter
+    @supports (backdrop-filter: blur(1px)) {
+      background: color-mix(in srgb, var(--bg) 70%, transparent);
+      backdrop-filter: blur(toRem(12));
+    }
+    // Hairline-разделитель, отделяющий шапку от контента
+    border-bottom: toRem(1) solid color-mix(in srgb, var(--color) 12%, transparent);
     @include adaptiveValue("height", 60, 46);
+  }
+
+  
+  &__logo {
+    justify-self: start;
+  }
+
+  // ColorMode в шапке: виден на мобилке, на PC остаётся в баннере
+  &__color-mode-wrap {
+    justify-self: start;
+
+    @media (min-width: $tablet) {
+      display: none;
+    }
+  }
+
+  &__color-mode {
+    opacity: 0;
+    animation: fadeIn 0.3s ease-in-out 0.1s forwards;
+  }
+
+  // Заглушка под colorMode (размеры совпадают с ползунком 72×28)
+  &__color-mode-placeholder {
+    width: toRem(72);
+    height: toRem(28);
   }
 
   &__bottom {
@@ -159,16 +213,12 @@ function openPreview(product: Product) {
     }
   }
 
-  &__logo {
-    justify-self: start;
+  &__hamburger{
+
   }
 
   &__search {
     justify-self: end;
-  }
-
-  .chat-assistant {
-    display: contents;
   }
 
   &__cart {
@@ -200,6 +250,12 @@ function openPreview(product: Product) {
 
   &__navigation {
     justify-self: end;
+  }
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
   }
 }
 </style>

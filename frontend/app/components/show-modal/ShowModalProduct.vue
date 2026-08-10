@@ -190,7 +190,7 @@ const handleAddToCart = () => {
             class="product-modal__thumb"
             :class="{ 'product-modal__thumb_active': sliderActive === i + 1 }"
             :aria-label="`Изображение ${i + 1}`"
-            @click="sliderRef?.value?.go(i + 1)"
+            @click="sliderRef?.go(i + 1)"
           >
               <UImage
                 :src="img.url"

@@ -13,14 +13,17 @@ withDefaults(defineProps<Props>(), {
     <UMarqueeText class="banner__marquee" :text="bannerText" />
     <div class="banner__controls">
       <LangSwitcher class="banner__lang-switcher" />
-      <ClientOnly>
-        <ColorMode class="banner__color-mode" />
-        <!-- Резервируем место под colorMode при SSR/гидратации (иначе langSwitcher
-             виден один, потом colorMode «прыгает» и сдвигает вёрстку) -->
-        <template #fallback>
-          <div class="banner__color-mode-placeholder" aria-hidden="true"/>
-        </template>
-      </ClientOnly>
+      <!-- На мобилке colorMode переезжает в шапку (container-top) — скрыт через banner__color-mode-wrap -->
+      <div class="banner__color-mode-wrap">
+        <ClientOnly>
+          <ColorMode class="banner__color-mode" />
+          <!-- Резервируем место под colorMode при SSR/гидратации (иначе langSwitcher
+               виден один, потом colorMode «прыгает» и сдвигает вёрстку) -->
+          <template #fallback>
+            <div class="banner__color-mode-placeholder" aria-hidden="true"/>
+          </template>
+        </ClientOnly>
+      </div>
     </div>
   </div>
 </template>
@@ -34,7 +37,8 @@ withDefaults(defineProps<Props>(), {
   column-gap: toRem(4);
   padding-inline: toRem(4);
   background-color: var(--primary-color);
-  @include adaptiveValue("height", 60, 72);
+  // colorMode уехал в шапку на мобилке → баннер (текст + langSwitcher) вдвое ниже
+  @include adaptiveValue("height", 60, 40);
 
   &__marquee {
     color: var(--light-color);
@@ -68,6 +72,23 @@ withDefaults(defineProps<Props>(), {
       height: 1px;
       background: rgba(0, 0, 0, 0.25);
       box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+
+    // На мобилке остаётся один langSwitcher — разделитель не нужен
+    @media (max-width: $tablet) {
+      &::after {
+        display: none;
+      }
+    }
+  }
+
+  &__color-mode-wrap {
+    // На десктопе обёртка «растворяется» (flex-детки controls напрямую);
+    // на мобилке colorMode в шапке — скрываем
+    display: contents;
+
+    @media (max-width: $tablet) {
+      display: none;
     }
   }
 

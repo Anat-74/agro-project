@@ -293,7 +293,6 @@ const openHamburger = () => {
         :aria-label="buttonT.ariaLabelDialogClosed"
         @click="close?.()"
       />
-      <LangSwitcher />
       <USocials :is-open="isOpen" :socials="socials" />
     </div>
     </dialog>
@@ -324,8 +323,6 @@ const openHamburger = () => {
 
   &__categories {
     font-size: toEm(24);
-    // #9acd32 (--success-color) на светлом не проходит AA — тёмный текст
-    color: var(--success-color);
     transition: color var(--transition-duration);
 
     &_is-open {
@@ -347,19 +344,18 @@ const openHamburger = () => {
   backdrop-filter: blur(22px);
   transition: translate var(--transition-duration);
 
-  @media (min-width: $mobile) {
+  @media (min-width:$mobile) {
     height: toEm(632);
     scale: 0;
     translate: 0;
     top: calc(100% + toRem(22));
-    margin-inline-end: 0;
     left: toRem(15);
     border-radius: toEm(4);
     border-width: 0 toEm(3) toEm(3) toEm(3);
     border-style: solid;
     border-color: var(--border-color-transparent);
     transition: scale 0.1s linear;
-    @include adaptiveValue("width", 316, 235);
+    @include adaptiveValue("width", 320, 235);
   }
 
   &[open] {

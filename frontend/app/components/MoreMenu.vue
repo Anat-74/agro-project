@@ -29,7 +29,7 @@ const iconFor = (url: string): string => iconByUrl[url] ?? ''
 </script>
 
 <template>
-  <details class="more-menu" name="header-more">
+  <details class="more-menu visible-tablet" name="header-more">
     <summary class="more-menu__summary">
       {{ t.summary }}
       <Icon name="mingcute:down-line" />
@@ -83,16 +83,6 @@ const iconFor = (url: string): string => iconByUrl[url] ?? ''
     gap: toRem(2);
     white-space: nowrap;
     box-shadow: 0 toRem(4) toRem(12) rgba(0, 0, 0, 0.1);
-  }
-
-  &__item {
-    &:last-child {
-      .more-menu__link {
-        svg {
-          color: var(--danger-color);
-        }
-      }
-    }
   }
 
   &__link {
