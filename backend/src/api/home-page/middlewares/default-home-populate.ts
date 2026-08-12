@@ -1,5 +1,4 @@
 import type { Core } from '@strapi/strapi';
-import category from '../../category/controllers/category';
 
 export default (config: unknown, { strapi }: { strapi: Core.Strapi }) => {
   return async (ctx: any, next: () => Promise<void>) => {
