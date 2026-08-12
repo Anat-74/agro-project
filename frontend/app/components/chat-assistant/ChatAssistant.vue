@@ -273,7 +273,6 @@ onMounted(() => {
 <template>
   <div class="chat-assistant">
     <ChatAssistantButton
-      v-if="!isOpen"
       variant="chat-toggle"
       :aria-label="t.title"
       :title="t.subtitle"
@@ -287,7 +286,10 @@ onMounted(() => {
       </span>
     </ChatAssistantButton>
 
-    <dialog ref="chat-dialog" class="chat-assistant__modal">
+    <!-- Teleport в body: диалог вне stacking context/backdrop-filter шапки —
+         иначе position: fixed «уезжает за шапку» -->
+    <Teleport to="body">
+      <dialog ref="chat-dialog" class="chat-assistant__modal">
       <div class="chat-assistant__items">
       <div class="chat-assistant__header">
         <div class="chat-assistant__header-content">
@@ -421,6 +423,7 @@ onMounted(() => {
       </div>
       </div>
     </dialog>
+    </Teleport>
   </div>
 </template>
 
@@ -444,28 +447,39 @@ onMounted(() => {
 }
 
 .chat-assistant__modal {
-  display: none;
+  // Закрытый диалог скрывает UA (dialog:not([open]) { display: none }) — без явного display.
+  // Без display/overlay ... allow-discrete: закрытие мгновенное (нет «блика» выхода),
+  // а входная анимация остаётся через @starting-style (как в ShowModalProduct).
+  scale: 0.96;
+  opacity: 0;
+  transition:
+    scale var(--transition-duration),
+    opacity var(--transition-duration);
 
   &[open] {
-  display: block;
-  position: fixed;
-  margin-inline-end: 0;
-  bottom: toRem(24);
-  right: toRem(24);
-  z-index: 10001;
-  width: toRem(400);
-  max-width: calc(100vw - toRem(48));
-  height: toRem(600);
-  max-height: calc(100vh - toRem(48));
-  background: var(--light-color);
-  border: none;
-  border-radius: toRem(16);
-  padding: 0;
-
-  &::backdrop {
-    background: rgba(0, 0, 0, 0.3);
+    position: fixed;
+    margin-inline-end: 0;
+    bottom: toRem(24);
+    right: toRem(24);
+    z-index: 10001;
+    width: toRem(400);
+    max-width: calc(100vw - toRem(48));
+    height: toRem(600);
+    max-height: calc(100vh - toRem(48));
+    background: var(--light-color);
+    border: none;
+    border-radius: toRem(16);
+    padding: 0;
+    scale: 1;
+    opacity: 1;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   }
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+
+  @starting-style {
+    &[open] {
+      scale: 0.96;
+      opacity: 0;
+    }
   }
 }
 

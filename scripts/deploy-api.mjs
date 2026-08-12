@@ -57,7 +57,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
     await sleep(3000);
     console.log('   ✅', page.url());
 
-    if (!page.url().includes('/id/')) {
+    if (!page.url().includes('/id/845/')) {
       throw new Error('Wrong domain: ' + page.url());
     }
 
@@ -78,14 +78,18 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
     await sleep(2000);
     console.log('   ✅ Git страница');
 
-    // Получить сейчас
-    const pullBtn = page.locator('button.pul-button').first();
+    // Получить сейчас — ТОЛЬКО по точному тексту!
+    // (button.pul-button.first() брал первую кнопку Plesk, а не «Получить сейчас» →
+    //  git fetch не выполнялся и деплоился старый код)
+    const pullBtn = page.locator('button:has-text("Получить сейчас")');
     if (await pullBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
       await pullBtn.click(); await sleep(2000);
       const closeBtn = page.locator('button:has-text("Закрыть")');
       if (await closeBtn.isVisible({ timeout: 3000 }).catch(() => false)) await closeBtn.click();
       await sleep(1000);
       console.log('   ✅ Получить сейчас');
+    } else {
+      console.log('   ⚠️ "Получить сейчас" не найдена');
     }
 
     // Развернуть сейчас
@@ -120,16 +124,33 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
       await runBtn.click(); await sleep(1500);
       console.log('   ✅ run-script-button');
 
-      const input = page.locator('input.pul-input__input').last();
-      if (await input.isVisible({ timeout: 3000 }).catch(() => false)) {
+      const inputs = await page.locator('input.pul-input__input').all();
+      let input = null;
+      for (const inp of inputs) {
+        const id = await inp.getAttribute('id');
+        if (id !== 'searchTerm') { input = inp; break; }
+      }
+      if (input && await input.isVisible({ timeout: 3000 }).catch(() => false)) {
         await input.fill('build'); await sleep(500);
         console.log('   ✅ build введён');
+      } else {
+        await page.keyboard.type('build', { delay: 50 });
+        await sleep(500);
+      }
 
-        const launchBtn = page.locator('button.pul-toolbar__group-item').filter({ hasText: 'Запустить' });
-        if (await launchBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
-          await launchBtn.click();
+      const allBtns = await page.locator('button').all();
+      let clicked = false;
+      for (const btn of allBtns) {
+        const t = (await btn.textContent())?.trim();
+        if (t === 'Запустить') {
+          await btn.click();
+          clicked = true;
           console.log('   ✅ Нажата кнопка "Запустить"');
+          break;
         }
+      }
+      if (!clicked) {
+        console.log('   ⚠️ Кнопка "Запустить" не найдена');
       }
     }
 

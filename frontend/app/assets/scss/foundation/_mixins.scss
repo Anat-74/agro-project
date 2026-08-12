@@ -160,7 +160,7 @@
   $mix-color: var(--color-mix-color, rgba(0, 0, 0, 0.35)),
   $ratio: null
 ) {
-  $percent: if($ratio != null, $ratio, calc(100% - var(--brightness, 50) * 0.5%));
+  $percent: if(sass($ratio != null): $ratio; else: calc(100% - var(--brightness, 50) * 0.5%));
   #{$property}: color-mix(
     in srgb,
     $base-color $percent,
