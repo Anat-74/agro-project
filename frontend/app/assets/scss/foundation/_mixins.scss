@@ -151,15 +151,19 @@
 }
 
 
-//* colorMix — точечное тонирование через color-mix()
+//* colorMix — точечное тонирование через color-mix().
+//  $ratio: фиксированная доля базового цвета (например 70%); если null —
+//  доля управляется CSS-переменной --brightness (ползунок яркости).
 @mixin colorMix(
   $property: background-color,
   $base-color: var(--bg),
-  $mix-color: var(--color-mix-color, rgba(0, 0, 0, 0.35))
+  $mix-color: var(--color-mix-color, rgba(0, 0, 0, 0.35)),
+  $ratio: null
 ) {
+  $percent: if($ratio != null, $ratio, calc(100% - var(--brightness, 50) * 0.5%));
   #{$property}: color-mix(
     in srgb,
-    $base-color calc(100% - var(--brightness, 50) * 0.5%),
+    $base-color $percent,
     $mix-color
   );
 }

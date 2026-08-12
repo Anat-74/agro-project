@@ -141,16 +141,20 @@ function setTheme(theme: string) {
   &__slider {
     :deep(.u-input__range) {
       width: 100%;
-      height: toRem(7);   // на 1px ниже (было 8)
+      height: toRem(9);   // на 2px больше (было 7) — читаем на стекле шапки
       appearance: none;
       border-radius: toRem(4);
       outline: none;
       cursor: pointer;
+      // «Втисненный» желобок: затемнение сверху + светлый блик снизу (recessed)
+      box-shadow:
+        inset 0 toRem(1) toRem(2) rgba(0, 0, 0, 0.2),
+        0 toRem(1) 0 rgba(255, 255, 255, 0.3);
 
       &::-webkit-slider-thumb {
         -webkit-appearance: none;
-        width: toRem(24);
-        height: toRem(24);
+        width: toRem(26);
+        height: toRem(26);
         border-radius: 50%;
         background: var(--light-color);
         border: toRem(3) solid var(--warning-color);
@@ -161,8 +165,8 @@ function setTheme(theme: string) {
       }
 
       &::-moz-range-thumb {
-        width: toRem(24);
-        height: toRem(24);
+        width: toRem(26);
+        height: toRem(26);
         border-radius: 50%;
         background: var(--light-color);
         border: toRem(3) solid var(--warning-color);
@@ -178,15 +182,18 @@ function setTheme(theme: string) {
     left: calc(var(--slider-value, 50) * 1%);
     top: 50%;
     translate: -50% -50%;
-    width: toRem(24);   // на 2px меньше (было 26)
-    height: toRem(24);
+    width: toRem(26);   // на 2px больше (было 24)
+    height: toRem(26);
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
     background: var(--light-color);
     border: toRem(3) solid var(--warning-color);
-    box-shadow: 0 0 toRem(8) rgba(0, 0, 0, 0.15);
+    // «Втисненный» бордер: тёмная внутренняя грань сверху + белый блик снизу
+    box-shadow:
+      inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
+      0 toRem(1) 0 rgba(255, 255, 255, 0.4);
     cursor: pointer;
     z-index: 2;
     color: var(--warning-color);

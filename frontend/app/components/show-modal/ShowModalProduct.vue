@@ -72,7 +72,12 @@ const galleryImages = computed(() =>
 // Управление слайдером извне (пагинация-миниатюры вынесены отдельным блоком)
 const sliderRef = useTemplateRef<SliderApi>("slider")
 
-const sliderActive = computed<number>(() => sliderRef.value?.active?.value ?? 1)
+// Экспонированный `active` из USlider приходит через defineExpose уже развёрнутым
+// (в Vue 3.5 exposed-refs авторазворачиваются) — обрабатываем оба случая: число или ref
+const sliderActive = computed<number>(() => {
+  const active = sliderRef.value?.active
+  return typeof active === "number" ? active : (active?.value ?? 1)
+})
 
 // Префетч деталей товара при скролле — когда карточка входит в область видимости
 let prefetchObserver: IntersectionObserver | null = null

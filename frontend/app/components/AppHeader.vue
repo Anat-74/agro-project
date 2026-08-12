@@ -86,8 +86,9 @@ function openPreview(product: Product) {
         width="40"
         height="40"
       />
-      <!-- ColorMode из баннера: на мобилке живёт в шапке после логотипа -->
-      <div class="header__color-mode-wrap">
+      <!-- ColorMode из баннера: на мобилке живёт в шапке после логотипа
+           (visible-tablet = только на экранах ниже tablet) -->
+      <div class="header__color-mode-wrap visible-tablet">
         <ClientOnly>
           <ColorMode class="header__color-mode" />
           <!-- Резервируем место при SSR/гидратации (ползунок 72×28) -->
@@ -159,19 +160,18 @@ function openPreview(product: Product) {
     position: relative;
     z-index: 10;
     display: grid;
-    grid-template-columns: auto auto 1fr repeat(3, auto);
+    grid-template-columns: repeat(2, auto) 1fr repeat(3, auto);
     align-items: center;
     column-gap: toRem(16);
     padding-block: toEm(16);
     // Матовое стекло (glassmorphism): полупрозрачный фон темы + blur.
     // Контент проезжает под sticky-шапкой и красиво матируется.
-    background: var(--bg);   // fallback для браузеров без backdrop-filter
-    @supports (backdrop-filter: blur(1px)) {
-      background: color-mix(in srgb, var(--bg) 70%, transparent);
-      backdrop-filter: blur(toRem(12));
-    }
+    background: var(--bg);   // fallback при не-поддержке color-mix/backdrop-filter
+    @include colorMix($mix-color: transparent, $ratio: 70%);
+    backdrop-filter: blur(toRem(12));
     // Hairline-разделитель, отделяющий шапку от контента
-    border-bottom: toRem(1) solid color-mix(in srgb, var(--color) 12%, transparent);
+    border-bottom: toRem(1) solid transparent;
+    @include colorMix($property: border-bottom-color, $base-color: var(--color), $mix-color: transparent, $ratio: 12%);
     @include adaptiveValue("height", 60, 46);
   }
 
@@ -180,13 +180,10 @@ function openPreview(product: Product) {
     justify-self: start;
   }
 
-  // ColorMode в шапке: виден на мобилке, на PC остаётся в баннере
+  // ColorMode в шапке: виден на мобилке (утилита visible-tablet),
+  // на PC остаётся в баннере
   &__color-mode-wrap {
     justify-self: start;
-
-    @media (min-width: $tablet) {
-      display: none;
-    }
   }
 
   &__color-mode {

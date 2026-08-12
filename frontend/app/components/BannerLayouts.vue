@@ -13,8 +13,10 @@ withDefaults(defineProps<Props>(), {
     <UMarqueeText class="banner__marquee" :text="bannerText" />
     <div class="banner__controls">
       <LangSwitcher class="banner__lang-switcher" />
-      <!-- На мобилке colorMode переезжает в шапку (container-top) — скрыт через banner__color-mode-wrap -->
-      <div class="banner__color-mode-wrap">
+      <!-- На мобилке colorMode переезжает в шапку (container-top).
+           Обёртка как в шапке (header__color-mode-wrap): единая точка скрытия
+           ColorMode + SSR-заглушки через утилиту hidden-tablet -->
+      <div class="banner__color-mode-wrap hidden-tablet">
         <ClientOnly>
           <ColorMode class="banner__color-mode" />
           <!-- Резервируем место под colorMode при SSR/гидратации (иначе langSwitcher
@@ -61,35 +63,27 @@ withDefaults(defineProps<Props>(), {
     border-radius: toRem(6);
     padding: toRem(4);
 
-    // Заглублённая (recessed) линия на весь блок, по центру между langSwitcher и colorMode
-    &::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 0;
-      right: 0;
-      transform: translate(0, -50%);
-      height: 1px;
-      background: rgba(0, 0, 0, 0.25);
-      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
-    }
-
-    // На мобилке остаётся один langSwitcher — разделитель не нужен
-    @media (max-width: $tablet) {
+    // Заглублённая (recessed) линия — только на экранах выше tablet
+    // (на мобилке остаётся один langSwitcher, разделитель не нужен)
+    @media (min-width: $tablet) {
       &::after {
-        display: none;
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        transform: translate(0, -50%);
+        height: 1px;
+        background: rgba(0, 0, 0, 0.25);
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
       }
     }
   }
 
   &__color-mode-wrap {
-    // На десктопе обёртка «растворяется» (flex-детки controls напрямую);
-    // на мобилке colorMode в шапке — скрываем
+    // На десктопе «растворяется»: дети — прямые flex-элементы controls (как до обёртки);
+    // на мобилке скрывается утилитой hidden-tablet (display:none с !important перекрывает contents)
     display: contents;
-
-    @media (max-width: $tablet) {
-      display: none;
-    }
   }
 
   &__color-mode {

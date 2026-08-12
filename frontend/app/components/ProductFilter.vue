@@ -140,13 +140,21 @@ onUnmounted(() => {
          outline: none;
          transition: border-radius var(--transition-duration), box-shadow var(--transition-duration);
 
+         // Цвет фокус-кольца считает миксин (в CSS-переменную) — без прямого color-mix
+         @include colorMix(
+            $property: --focus-ring-color,
+            $base-color: var(--primary-color),
+            $mix-color: transparent,
+            $ratio: 20%
+         );
+
          &::placeholder {
             color: transparent;   // текст в поле не нужен — набранное видно в оверлее
          }
 
          &:focus {
             border-radius: toRem(20);
-            box-shadow: 0 0 0 toRem(4) color-mix(in srgb, var(--primary-color) 20%, transparent);
+            box-shadow: 0 0 0 toRem(4) var(--focus-ring-color);
          }
       }
 
