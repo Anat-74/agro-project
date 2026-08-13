@@ -11,9 +11,9 @@ interface Props {
 
 const props = defineProps<Props>()
 
-// «Блог» рендерится отдельно в AppHeader (header__blog-link) — исключаем из меню «Ещё»
+// «Главная» (/ — на неё ведёт логотип) исключена из меню «Ещё»
 const filteredNavigation = computed(() =>
-  (props.navigation ?? []).filter((item) => item.url !== '/blog')
+  (props.navigation ?? []).filter((item) => item.url !== '/')
 )
 
 // Иконки сопоставляем по url — в админке поля icon нет (label/url приходят из Strapi)
@@ -21,27 +21,61 @@ const iconByUrl: Record<string, string> = {
   '/about': 'mingcute:information-line',
   '/services': 'mingcute:settings-4-line',
   '/contacts': 'mingcute:mail-line',
-  '/news': 'ph:megaphone-light'
+  '/news': 'ph:megaphone-light',
+  '/blog': 'mingcute:article-line'
 }
 
 // Helper возвращает строку (не string | undefined) — убирает подчёркивание у :name
 const iconFor = (url: string): string => iconByUrl[url] ?? ''
+
+// <details> не закрывается сам по клику вне — добавляем закрытие по клику снаружи и по Escape.
+// Контент — сосед details (приём grid-template-rows из ShowHamburger), поэтому проверяем обёртку
+const menuRef = useTemplateRef<HTMLDivElement>('more-menu')
+
+const closeOnOutsideClick = (e: MouseEvent) => {
+  const root = menuRef.value
+  if (!root) return
+  const details = root.querySelector<HTMLDetailsElement>('details')
+  if (details?.open && !root.contains(e.target as Node)) {
+    details.open = false
+  }
+}
+
+const closeOnEscape = (e: KeyboardEvent) => {
+  const root = menuRef.value
+  const details = root?.querySelector<HTMLDetailsElement>('details')
+  if (e.key === 'Escape' && details?.open) details.open = false
+}
+
+onMounted(() => {
+  document.addEventListener('click', closeOnOutsideClick)
+  document.addEventListener('keydown', closeOnEscape)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', closeOnOutsideClick)
+  document.removeEventListener('keydown', closeOnEscape)
+})
 </script>
 
 <template>
-  <details class="more-menu visible-tablet" name="header-more">
-    <summary class="more-menu__summary">
-      {{ t.summary }}
-      <Icon name="mingcute:down-line" />
-    </summary>
-    <ul v-if="filteredNavigation.length" class="more-menu__list">
-      <li v-for="item in filteredNavigation" :key="item.id" class="more-menu__item">
-        <NuxtLink class="more-menu__link" :to="`/${currentLocale}${item.url}`">
-          <Icon v-if="iconFor(item.url)" :name="iconFor(item.url)" /> {{ item.label }}
-        </NuxtLink>
-      </li>
-    </ul>
-  </details>
+  <div ref="more-menu" class="more-menu visible-tablet">
+    <details class="more-menu__details" name="header-more">
+      <summary class="more-menu__summary">
+        {{ t.summary }}
+        <Icon name="ph:dots-three-horizontal" />
+      </summary>
+    </details>
+    <div class="more-menu__dropdown">
+      <ul v-if="filteredNavigation.length" class="more-menu__list">
+        <li v-for="item in filteredNavigation" :key="item.id" class="more-menu__item">
+          <NuxtLink class="more-menu__link" :to="`/${currentLocale}${item.url}`">
+            <Icon v-if="iconFor(item.url)" :name="iconFor(item.url)" /> {{ item.label }}
+          </NuxtLink>
+        </li>
+      </ul>
+    </div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -49,6 +83,9 @@ const iconFor = (url: string): string => iconByUrl[url] ?? ''
   position: relative;
 
   &__summary {
+    display: flex;
+    align-items: center;
+    gap: toRem(4);
     cursor: pointer;
     list-style: none;
     padding: toRem(4) toRem(8);
@@ -58,21 +95,30 @@ const iconFor = (url: string): string => iconByUrl[url] ?? ''
     &::-webkit-details-marker {
       display: none;
     }
-
-    svg {
-      transition: rotate var(--transition-duration);
-    }
   }
 
-  &[open] &__summary svg {
-    rotate: -180deg;
-  }
-
-  &__list {
+  // Приём из ShowHamburger: контент — сосед details, анимация высоты через grid-template-rows
+  &__dropdown {
     position: absolute;
     top: calc(100% + toRem(4));
     left: 0;
     z-index: 10;
+    display: grid;
+    grid-template-rows: 0fr;   // свёрнуто: строка 0
+    opacity: 0;
+    transition:
+      grid-template-rows 0.3s,
+      opacity 0.3s;
+  }
+
+  &__details[open] + &__dropdown {
+    grid-template-rows: 1fr;   // раскрыто
+    opacity: 1;
+  }
+
+  &__list {
+    overflow: hidden;   // ключ: обрезает контент при 0fr
+    min-height: 0;
     min-width: toRem(160);
     background: var(--secondary-color);
     border: toRem(1) solid var(--border-color);

@@ -83,8 +83,8 @@ function openPreview(product: Product) {
         v-if="global"
         class="header__logo"
         :global="global"
-        width="40"
-        height="40"
+        width="38"
+        height="38"
       />
       <!-- ColorMode из баннера: на мобилке живёт в шапке после логотипа
            (visible-tablet = только на экранах ниже tablet) -->
@@ -172,7 +172,7 @@ function openPreview(product: Product) {
     // Hairline-разделитель, отделяющий шапку от контента
     border-bottom: toRem(1) solid transparent;
     @include colorMix($property: border-bottom-color, $base-color: var(--color), $mix-color: transparent, $ratio: 12%);
-    @include adaptiveValue("height", 60, 46);
+    @include adaptiveValue("height", 56, 42);   // на 4px ниже (было 60/46)
   }
 
   
