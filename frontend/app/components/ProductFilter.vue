@@ -110,9 +110,11 @@ onUnmounted(() => {
       height: toRem(33);   // на 1px ниже (было 34), круг сохраняется
       transition: width var(--transition-duration);
 
-      // Круг расширяется в пилюлю при фокусе/вводе
+      // Круг расширяется в пилюлю при фокусе/вводе; max-width: 100% — не вылезает
+      // за колонку (minmax(0,1fr)), поэтому правые элементы не сдвигаются
       &:focus-within {
          width: toRem(108);
+         max-width: 100%;
       }
 
       :deep(.u-input) {

@@ -14,9 +14,12 @@ interface Props {
   socials: SocialLink[];
   phones: Phone[];
   global: any;
+  // Утилита видимости (hidden-tablet / visible-tablet) — применяется на корень,
+  // т.к. у fragment-компонента атрибуты из родителя не наследуются
+  visibilityClass?: string;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
 const dialogElement = useTemplateRef<HTMLDialogElement>("dialog-hamburger");
 
@@ -110,7 +113,7 @@ const openHamburger = () => {
 </script>
 
 <template>
-  <div class="hamburger-menu">
+  <div :class="['hamburger-menu', props.visibilityClass]">
     <UButton
       :is-open="isOpen"
       variant="hamburger"
@@ -314,16 +317,14 @@ const openHamburger = () => {
   border-radius: toRem(6);   // фон закруглён (все углы)
   @include adaptiveValue("width", 320, 235);
 
-  // Tablet и ниже: каталог — в конец ряда (правый угол) + закругление фона
-  // (класс header__hamburger из AppHeader на корень fragment-компонента не наследуется)
+  // Tablet и ниже: мобильный экземпляр (в DOM последним) — в правый угол колонки
   @media (max-width: $tablet) {
     height: 90%;
     width: toRem(150);
     direction: rtl;
     border-left: 0;
     border-right: 0;
-    order: 3;
-    justify-self: end;
+    justify-self: end;   // без order: положение задаёт DOM (после блога) + justify-self
   }
 
   &__categories {

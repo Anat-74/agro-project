@@ -107,6 +107,7 @@ function openPreview(product: Product) {
         <ShowHamburger
           v-if="global"
           class="header__hamburger"
+          visibility-class="hidden-tablet"
           :phones="global.phones"
           :footer="global.footer"
           :socials="global.socials"
@@ -129,6 +130,15 @@ function openPreview(product: Product) {
         >
           {{ blogLink.label }} <Icon name="ph:newspaper" />
         </NuxtLink>
+        <ShowHamburger
+          v-if="global"
+          class="header__hamburger"
+          visibility-class="visible-tablet"
+          :phones="global.phones"
+          :footer="global.footer"
+          :socials="global.socials"
+          :global="global"
+        />
       </div>
     </div>
   </header>
@@ -155,7 +165,7 @@ function openPreview(product: Product) {
     position: relative;
     z-index: 10;
     display: grid;
-    grid-template-columns: repeat(2, auto) 1fr repeat(3, auto);
+    grid-template-columns: repeat(2, auto) minmax(0, 1fr) repeat(3, auto);   // minmax(0,1fr): колонка поиска может сжиматься ниже контента → расширение не сдвигает правые элементы
     align-items: center;
     column-gap: toRem(16);
     padding-block: toEm(16);
@@ -173,17 +183,16 @@ function openPreview(product: Product) {
   
   &__logo {
     justify-self: start;
-    overflow: hidden;   // обрезает логотип при схлопывании
     transition:
       opacity var(--transition-duration),
-      width var(--transition-duration);
+      visibility var(--transition-duration);
   }
 
-  // План А: при фокусе поиска логотип плавно исчезает (освобождая место),
-  // при потере фокуса — плавно возвращается
+  // План А: при фокусе поиска логотип плавно исчезает, при потере фокуса — возвращается
+  // (только opacity/visibility — без обрезки и схлопывания ширины)
   &__container-top:has(.header__search:focus-within) &__logo {
     opacity: 0;
-    width: 0;
+    visibility: hidden;
     pointer-events: none;
   }
 
