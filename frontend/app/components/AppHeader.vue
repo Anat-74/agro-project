@@ -127,7 +127,7 @@ function openPreview(product: Product) {
           class="header__blog-link visible-tablet"
           :to="`/${currentLocale}${blogLink.url}`"
         >
-          <Icon name="ph:newspaper" /> {{ blogLink.label }}
+          {{ blogLink.label }} <Icon name="ph:newspaper" />
         </NuxtLink>
       </div>
     </div>
@@ -173,6 +173,18 @@ function openPreview(product: Product) {
   
   &__logo {
     justify-self: start;
+    overflow: hidden;   // обрезает логотип при схлопывании
+    transition:
+      opacity var(--transition-duration),
+      width var(--transition-duration);
+  }
+
+  // План А: при фокусе поиска логотип плавно исчезает (освобождая место),
+  // при потере фокуса — плавно возвращается
+  &__container-top:has(.header__search:focus-within) &__logo {
+    opacity: 0;
+    width: 0;
+    pointer-events: none;
   }
 
   // ColorMode в шапке: виден на мобилке (утилита visible-tablet),
@@ -226,16 +238,11 @@ function openPreview(product: Product) {
     column-gap: toRem(12);
     @include adaptiveValue("height", 64, 44);
 
-    // ≤tablet: навигация скрыта (hidden-tablet), появляются MoreMenu и Блог,
-    // каталог из первого элемента переносится в конец (правый угол)
+    // ≤tablet: навигация скрыта (hidden-tablet), появляются MoreMenu и Блог.
+    // Каталог переносится в правый угол стилями ShowHamburger (order/justify-self)
     @media (max-width: $tablet) {
       grid-template-columns: auto auto 1fr;   // MoreMenu | блог | каталог
       padding-block: toRem(6);
-
-      .header__hamburger {
-        order: 3;          // единственный нужный order — каталог в правый угол
-        justify-self: end;
-      }
     }
   }
 
@@ -247,7 +254,7 @@ function openPreview(product: Product) {
     color: var(--danger-color);
     text-decoration: none;
     white-space: nowrap;
-    @include adaptiveValue("font-size", 20, 17);   // на 2px больше (было наследование)
+    @include adaptiveValue("font-size", 19, 16);   // на 1px меньше
 
     @include hover {
       text-decoration: underline;

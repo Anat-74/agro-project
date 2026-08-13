@@ -188,14 +188,15 @@ defineEmits<Emits>();
 
   &_hamburger {
     position: relative;
-    height: calc(100% - toRem(4));   // на 4px меньше по высоте
+    height: 100%;   // на всю высоту фона
     padding-inline: toRem(32);
     background-color: var(--success-color);
-    border-radius: toRem(6);   // все углы 6px
+    border-radius: toRem(6);
 
-    @media (max-width: $mobile) {
+    @media (max-width: $tablet) {
       padding-inline: toRem(27);
-      border-radius: toRem(6);   // все углы 6px (было 0 25px 4px 0)
+      // Кнопка справа (rtl): закруглены только правые углы, слева — 0
+      border-radius: 0 toRem(6) toRem(6) 0;
     }
 
     span,

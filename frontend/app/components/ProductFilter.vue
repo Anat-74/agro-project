@@ -136,7 +136,7 @@ onUnmounted(() => {
          border: toRem(2) solid var(--primary-color);   // толще на 1px (было toEm(2)≈1px)
          font-size: toEm(14);
          color: var(--color);
-         background-color: var(--light-color);
+         background-color: transparent;   // без фона — адаптируется к теме (не белеет на тёмной)
          outline: none;
          transition: border-radius var(--transition-duration), box-shadow var(--transition-duration);
 

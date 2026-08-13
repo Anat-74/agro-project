@@ -63,7 +63,7 @@ onUnmounted(() => {
     <details class="more-menu__details" name="header-more">
       <summary class="more-menu__summary">
         {{ t.summary }}
-        <Icon name="ph:dots-three" />
+        <Icon name="ph:caret-down" />
       </summary>
     </details>
     <div class="more-menu__dropdown">
@@ -91,11 +91,19 @@ onUnmounted(() => {
     padding: toRem(4) toRem(8);
     font-weight: 500;
     color: var(--dark-color);
-    @include adaptiveValue("font-size", 22, 19);   // на 4px больше (блог-ссылка 18/15)
+    @include adaptiveValue("font-size", 21, 18);   // на 1px меньше
 
     &::-webkit-details-marker {
       display: none;
     }
+
+    svg {
+      transition: rotate var(--transition-duration);
+    }
+  }
+
+  &__details[open] &__summary svg {
+    rotate: -180deg;   // caret разворачивается при открытии
   }
 
   // Приём из ShowHamburger: контент — сосед details, анимация высоты через grid-template-rows

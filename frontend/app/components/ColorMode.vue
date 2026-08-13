@@ -146,8 +146,8 @@ function setTheme(theme: string) {
       border-radius: toRem(4);
       outline: none;
       cursor: pointer;
-      // Тонкий бордер для читаемости (слабое зрение) + «втисненный» желобок
-      border: toRem(1) solid rgba(0, 0, 0, 0.15);
+      // Тонкий бордер для читаемости (слабое зрение) — var(--border-color) виден в обеих темах
+      border: toRem(1) solid var(--border-color);
       box-shadow:
         inset 0 toRem(1) toRem(2) rgba(0, 0, 0, 0.2),
         0 toRem(1) 0 rgba(255, 255, 255, 0.3);

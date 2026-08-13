@@ -311,14 +311,19 @@ const openHamburger = () => {
   border-left: toEm(9) solid var(--bg);
   border-right: toEm(9) solid var(--bg);
   background-color: var(--whitesmoke-color);
+  border-radius: toRem(6);   // фон закруглён (все углы)
   @include adaptiveValue("width", 320, 235);
 
-  @media (max-width: $mobile) {
+  // Tablet и ниже: каталог — в конец ряда (правый угол) + закругление фона
+  // (класс header__hamburger из AppHeader на корень fragment-компонента не наследуется)
+  @media (max-width: $tablet) {
     height: 90%;
     width: toRem(150);
     direction: rtl;
     border-left: 0;
     border-right: 0;
+    order: 3;
+    justify-self: end;
   }
 
   &__categories {
