@@ -165,7 +165,7 @@ function openPreview(product: Product) {
     position: relative;
     z-index: 10;
     display: grid;
-    grid-template-columns: repeat(2, auto) minmax(0, 1fr) repeat(3, auto);   // minmax(0,1fr): колонка поиска может сжиматься ниже контента → расширение не сдвигает правые элементы
+    grid-template-columns: repeat(2, auto) 1fr repeat(3, auto);
     align-items: center;
     column-gap: toRem(16);
     padding-block: toEm(16);
@@ -183,23 +183,24 @@ function openPreview(product: Product) {
   
   &__logo {
     justify-self: start;
-    transition:
-      opacity var(--transition-duration),
-      visibility var(--transition-duration);
-  }
-
-  // План А: при фокусе поиска логотип плавно исчезает, при потере фокуса — возвращается
-  // (только opacity/visibility — без обрезки и схлопывания ширины)
-  &__container-top:has(.header__search:focus-within) &__logo {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
   }
 
   // ColorMode в шапке: виден на мобилке (утилита visible-tablet),
   // на PC остаётся в баннере
   &__color-mode-wrap {
     justify-self: start;
+    transition:
+      opacity var(--transition-duration),
+      width var(--transition-duration);
+  }
+
+  // При фокусе поиска цветMode плавно исчезает (схлопывается) — освобождает
+  // колонку (~72px), поиск (1fr) расширяется на полные 108px без сдвига правых элементов
+  &__container-top:has(.header__search:focus-within) &__color-mode-wrap {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    pointer-events: none;
   }
 
   &__color-mode {
@@ -240,18 +241,25 @@ function openPreview(product: Product) {
 
   &__container-bottom {
     display: grid;
-    // ≥tablet: каталог (первый в DOM, слева) | навигация (1fr).
-    // MoreMenu/Блог скрыты visible-tablet, навигация видна (hidden-tablet)
-    grid-template-columns: auto 1fr;
+    // Mobile-first: базовая сетка = мобильная (MoreMenu | блог | каталог).
+    // Каталог — последний в DOM (мобильный экземпляр) → колонка 1fr, справа.
+    grid-template-columns: auto auto 1fr;
     align-items: center;
     column-gap: toRem(12);
+    padding-block: toRem(6);
     @include adaptiveValue("height", 64, 44);
 
-    // ≤tablet: навигация скрыта (hidden-tablet), появляются MoreMenu и Блог.
-    // Каталог переносится в правый угол стилями ShowHamburger (order/justify-self)
-    @media (max-width: $tablet) {
-      grid-template-columns: auto auto 1fr;   // MoreMenu | блог | каталог
-      padding-block: toRem(6);
+    // Десктоп: каталог (первый в DOM, слева) | навигация (1fr).
+    // MoreMenu/Блог скрыты visible-tablet, навигация видна (hidden-tablet)
+    @media (min-width: $tablet) {
+      grid-template-columns: auto 1fr;
+      padding-block: 0;
+    }
+
+    // Каталог в правый угол мобильной колонки (1fr) — здесь, в CSS шапки
+    // (раньше в scoped-стилях ShowHamburger — применялось позже и давало прыжок)
+    :deep(.hamburger-menu) {
+      justify-self: end;
     }
   }
 

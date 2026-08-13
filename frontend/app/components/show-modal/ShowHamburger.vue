@@ -317,14 +317,14 @@ const openHamburger = () => {
   border-radius: toRem(6);   // фон закруглён (все углы)
   @include adaptiveValue("width", 320, 235);
 
-  // Tablet и ниже: мобильный экземпляр (в DOM последним) — в правый угол колонки
+  // Tablet и ниже: мобильный экземпляр (в DOM последним).
+  // justify-self: end задаёт AppHeader (:deep) — раньше жил здесь и применялся поздно
   @media (max-width: $tablet) {
     height: 90%;
     width: toRem(150);
     direction: rtl;
     border-left: 0;
     border-right: 0;
-    justify-self: end;   // без order: положение задаёт DOM (после блога) + justify-self
   }
 
   &__categories {
