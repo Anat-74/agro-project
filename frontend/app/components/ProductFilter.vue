@@ -106,8 +106,8 @@ onUnmounted(() => {
       position: relative;
       display: flex;
       align-items: center;
-      width: toRem(34);
-      height: toRem(34);   // на 2px ниже (было 36)
+      width: toRem(33);
+      height: toRem(33);   // на 1px ниже (было 34), круг сохраняется
       transition: width var(--transition-duration);
 
       // Круг расширяется в пилюлю при фокусе/вводе
@@ -183,7 +183,7 @@ onUnmounted(() => {
       position: absolute;
       z-index: 1;
       top: 50%;
-      left: toRem(17);   // центр круга 34px (34/2); при расширении остаётся слева
+      left: toRem(16.5);   // центр круга 33px (33/2); при расширении остаётся слева
       translate: -50% -50%;
       color: var(--primary-color);
       font-size: toEm(20);

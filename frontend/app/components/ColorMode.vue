@@ -141,7 +141,7 @@ function setTheme(theme: string) {
   &__slider {
     :deep(.u-input__range) {
       width: 100%;
-      height: toRem(11);   // на 2px больше (было 9) — читаем на стекле шапки
+      height: toRem(10);
       appearance: none;
       border-radius: toRem(4);
       outline: none;
@@ -154,8 +154,8 @@ function setTheme(theme: string) {
 
       &::-webkit-slider-thumb {
         -webkit-appearance: none;
-        width: toRem(28);
-        height: toRem(28);
+        width: toRem(27);
+        height: toRem(27);
         border-radius: 50%;
         background: var(--light-color);
         border: toRem(3) solid var(--warning-color);
@@ -166,8 +166,8 @@ function setTheme(theme: string) {
       }
 
       &::-moz-range-thumb {
-        width: toRem(28);
-        height: toRem(28);
+        width: toRem(27);
+        height: toRem(27);
         border-radius: 50%;
         background: var(--light-color);
         border: toRem(3) solid var(--warning-color);
@@ -183,8 +183,8 @@ function setTheme(theme: string) {
     left: calc(var(--slider-value, 50) * 1%);
     top: 50%;
     translate: -50% -50%;
-    width: toRem(28);   // на 2px больше (было 26)
-    height: toRem(28);
+    width: toRem(27);
+    height: toRem(27);
     display: flex;
     align-items: center;
     justify-content: center;

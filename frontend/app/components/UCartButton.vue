@@ -62,7 +62,7 @@ onMounted(() => {
     padding-inline: toRem(4);
     padding-block: toRem(1);
     position: absolute;
-    top: toRem(-18);
+    top: toRem(-14);   // на 4px ниже — ближе к корзине (было -18)
     right: toRem(-6);
     font-weight: 500;
     border-radius: 50%;

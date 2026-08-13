@@ -302,6 +302,7 @@ const openHamburger = () => {
 
 <style lang="scss" scoped>
 .hamburger-menu {
+  // Стили самой кнопки (высота/радиус/цвет) — в UButton variant="hamburger"
   height: 100%;
   display: grid;
   grid-template-columns: auto 1fr;
@@ -318,11 +319,10 @@ const openHamburger = () => {
     direction: rtl;
     border-left: 0;
     border-right: 0;
-    border-radius: toEm(4) toEm(25) 0 toEm(25);
   }
 
   &__categories {
-    font-size: toEm(24);
+    font-size: toEm(22);   // на 2px меньше (было 24)
     transition: color var(--transition-duration);
 
     &_is-open {

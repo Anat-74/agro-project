@@ -188,14 +188,14 @@ defineEmits<Emits>();
 
   &_hamburger {
     position: relative;
-    height: 100%;
+    height: calc(100% - toRem(4));   // на 4px меньше по высоте
     padding-inline: toRem(32);
     background-color: var(--success-color);
-    border-radius: toRem(0);
+    border-radius: toRem(6);   // все углы 6px
 
     @media (max-width: $mobile) {
       padding-inline: toRem(27);
-      border-radius: 0 toRem(25) toRem(4) 0;
+      border-radius: toRem(6);   // все углы 6px (было 0 25px 4px 0)
     }
 
     span,

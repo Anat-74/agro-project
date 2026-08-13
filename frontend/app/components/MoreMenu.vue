@@ -22,7 +22,7 @@ const iconByUrl: Record<string, string> = {
   '/services': 'mingcute:settings-4-line',
   '/contacts': 'mingcute:mail-line',
   '/news': 'ph:megaphone-light',
-  '/blog': 'mingcute:article-line'
+  '/blog': 'ph:newspaper'
 }
 
 // Helper возвращает строку (не string | undefined) — убирает подчёркивание у :name
@@ -63,7 +63,7 @@ onUnmounted(() => {
     <details class="more-menu__details" name="header-more">
       <summary class="more-menu__summary">
         {{ t.summary }}
-        <Icon name="ph:dots-three-horizontal" />
+        <Icon name="ph:dots-three" />
       </summary>
     </details>
     <div class="more-menu__dropdown">
@@ -91,6 +91,7 @@ onUnmounted(() => {
     padding: toRem(4) toRem(8);
     font-weight: 500;
     color: var(--dark-color);
+    @include adaptiveValue("font-size", 22, 19);   // на 4px больше (блог-ссылка 18/15)
 
     &::-webkit-details-marker {
       display: none;

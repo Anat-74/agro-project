@@ -104,8 +104,7 @@ function openPreview(product: Product) {
     </div>
     <div :class="['header__bottom', { 'header__bottom_hidden': isNavHidden }]">
       <div class="header__container-bottom">
-        <!-- <UAnimatedText variant="gradient" /> -->
-         <ShowHamburger
+        <ShowHamburger
           v-if="global"
           class="header__hamburger"
           :phones="global.phones"
@@ -113,14 +112,6 @@ function openPreview(product: Product) {
           :socials="global.socials"
           :global="global"
         />
-        <MoreMenu 
-        :navigation="global?.header?.navigation"
-         />
-        <NuxtLink
-          v-if="blogLink"
-          class="header__blog-link visible-tablet"
-          :to="`/${currentLocale}${blogLink.url}`"
-        >{{ blogLink.label }}</NuxtLink>
         <BaseNavigation
           v-if="global"
           :phones="global.phones"
@@ -128,13 +119,16 @@ function openPreview(product: Product) {
           :navigation="global?.header?.navigation"
           class="header__navigation hidden-tablet"
         />
-        <!-- <ShowHamburger
-          v-if="global"
-          :phones="global.phones"
-          :footer="global.footer"
-          :socials="global.socials"
-          :global="global"
-        /> -->
+        <MoreMenu
+          :navigation="global?.header?.navigation"
+        />
+        <NuxtLink
+          v-if="blogLink"
+          class="header__blog-link visible-tablet"
+          :to="`/${currentLocale}${blogLink.url}`"
+        >
+          <Icon name="ph:newspaper" /> {{ blogLink.label }}
+        </NuxtLink>
       </div>
     </div>
   </header>
@@ -152,7 +146,8 @@ function openPreview(product: Product) {
   @media (max-width: $tablet) {
     position: sticky;
     z-index: 998;
-   // top = минус высота баннера (60 десктоп/планшет, 40 мобилка) — баннер уезжает за экран
+   // top = минус высота баннера (60 планшет / 40 мобилка) — при скролле скрывается
+   // ТОЛЬКО баннер, container-top остаётся полностью видимым
    @include adaptiveValue("top", -60, -40);
   }
 
@@ -172,7 +167,7 @@ function openPreview(product: Product) {
     // Hairline-разделитель, отделяющий шапку от контента
     border-bottom: toRem(1) solid transparent;
     @include colorMix($property: border-bottom-color, $base-color: var(--color), $mix-color: transparent, $ratio: 12%);
-    @include adaptiveValue("height", 56, 42);   // на 4px ниже (было 60/46)
+    @include adaptiveValue("height", 52, 38);   // ещё на 4px ниже (было 56/42)
   }
 
   
@@ -223,22 +218,36 @@ function openPreview(product: Product) {
   }
 
   &__container-bottom {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    // ≥tablet: каталог (первый в DOM, слева) | навигация (1fr).
+    // MoreMenu/Блог скрыты visible-tablet, навигация видна (hidden-tablet)
+    grid-template-columns: auto 1fr;
     align-items: center;
-    gap: toRem(12);
+    column-gap: toRem(12);
     @include adaptiveValue("height", 64, 44);
 
-    @media (max-width: $mobile) {
+    // ≤tablet: навигация скрыта (hidden-tablet), появляются MoreMenu и Блог,
+    // каталог из первого элемента переносится в конец (правый угол)
+    @media (max-width: $tablet) {
+      grid-template-columns: auto auto 1fr;   // MoreMenu | блог | каталог
       padding-block: toRem(6);
+
+      .header__hamburger {
+        order: 3;          // единственный нужный order — каталог в правый угол
+        justify-self: end;
+      }
     }
   }
 
   &__blog-link {
+    display: inline-flex;
+    align-items: center;
+    gap: toRem(4);
     font-weight: 600;
     color: var(--danger-color);
     text-decoration: none;
     white-space: nowrap;
+    @include adaptiveValue("font-size", 20, 17);   // на 2px больше (было наследование)
 
     @include hover {
       text-decoration: underline;
