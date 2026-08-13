@@ -165,7 +165,7 @@ function openPreview(product: Product) {
     position: relative;
     z-index: 10;
     display: grid;
-    grid-template-columns: repeat(2, auto) 1fr repeat(3, auto);
+    grid-template-columns: repeat(2, auto) minmax(0, 1fr) repeat(3, auto);   // 1fr может сжиматься → правые элементы не двигаются при расширении поиска
     align-items: center;
     column-gap: toRem(16);
     padding-block: toEm(16);
@@ -189,22 +189,15 @@ function openPreview(product: Product) {
   // на PC остаётся в баннере
   &__color-mode-wrap {
     justify-self: start;
-    // Появление (blur): width анимируется С ЗАДЕРЖКОЙ (0.2s = длительность сворачивания поиска),
-    // чтобы поиск успел сжаться; opacity фейдится сразу.
-    // Иначе мгновенный возврат width конфликтует с ещё расширенным поиском → дёргание
-    transition:
-      opacity var(--transition-duration),
-      width var(--transition-duration) var(--transition-duration);
+    // Только фейд; колонка (72px) НЕ меняется → 1fr постоянна → правые элементы не дёргаются.
+    // Расширенный поиск перекрывает погасший colorMode слева
+    transition: opacity var(--transition-duration);
   }
 
-  // При фокусе поиска цветMode плавно исчезает (схлопывается) — освобождает
-  // колонку (~72px), поиск (1fr) расширяется на полные 108px без сдвига правых элементов.
-  // width здесь МГНОВЕННЫЙ (переопределяем transition), opacity фейдится
+  // При фокусе поиска цветMode плавно исчезает (без изменения ширины колонки)
   &__container-top:has(.header__search:focus-within) &__color-mode-wrap {
-    transition: opacity var(--transition-duration);
     opacity: 0;
-    width: 0;
-    overflow: hidden;
+    visibility: hidden;
     pointer-events: none;
   }
 
