@@ -113,7 +113,10 @@ const openHamburger = () => {
 </script>
 
 <template>
-  <div :class="['hamburger-menu', props.visibilityClass]">
+  <!-- Единый корень: ShowHamburger — fragment, иначе ClientOnly/Teleport диалога
+       добавляет в grid container-bottom лишний элемент и ломает размещение каталога -->
+  <div class="hamburger" :class="props.visibilityClass">
+  <div :class="['hamburger-menu']">
     <UButton
       :is-open="isOpen"
       variant="hamburger"
@@ -301,9 +304,14 @@ const openHamburger = () => {
     </dialog>
     </Teleport>
   </ClientOnly>
+  </div>
 </template>
 
 <style lang="scss" scoped>
+.hamburger {
+  height: 100%;   // корень-обёртка — единый grid-элемент
+}
+
 .hamburger-menu {
   // Стили самой кнопки (высота/радиус/цвет) — в UButton variant="hamburger"
   height: 100%;

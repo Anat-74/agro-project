@@ -189,14 +189,19 @@ function openPreview(product: Product) {
   // на PC остаётся в баннере
   &__color-mode-wrap {
     justify-self: start;
+    // Появление (blur): width анимируется С ЗАДЕРЖКОЙ (0.2s = длительность сворачивания поиска),
+    // чтобы поиск успел сжаться; opacity фейдится сразу.
+    // Иначе мгновенный возврат width конфликтует с ещё расширенным поиском → дёргание
     transition:
       opacity var(--transition-duration),
-      width var(--transition-duration);
+      width var(--transition-duration) var(--transition-duration);
   }
 
   // При фокусе поиска цветMode плавно исчезает (схлопывается) — освобождает
-  // колонку (~72px), поиск (1fr) расширяется на полные 108px без сдвига правых элементов
+  // колонку (~72px), поиск (1fr) расширяется на полные 108px без сдвига правых элементов.
+  // width здесь МГНОВЕННЫЙ (переопределяем transition), opacity фейдится
   &__container-top:has(.header__search:focus-within) &__color-mode-wrap {
+    transition: opacity var(--transition-duration);
     opacity: 0;
     width: 0;
     overflow: hidden;
@@ -256,9 +261,8 @@ function openPreview(product: Product) {
       padding-block: 0;
     }
 
-    // Каталог в правый угол мобильной колонки (1fr) — здесь, в CSS шапки
-    // (раньше в scoped-стилях ShowHamburger — применялось позже и давало прыжок)
-    :deep(.hamburger-menu) {
+    // Каталог в правый угол мобильной колонки (1fr) — корень .hamburger теперь единый grid-элемент
+    :deep(.hamburger) {
       justify-self: end;
     }
   }
