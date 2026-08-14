@@ -121,6 +121,7 @@ function openPreview(product: Product) {
           class="header__navigation hidden-tablet"
         />
         <MoreMenu
+          class="visible-tablet"
           :navigation="global?.header?.navigation"
         />
         <NuxtLink

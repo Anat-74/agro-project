@@ -3,6 +3,7 @@ const colorMode = useColorMode();
 
 interface Props {
   variant?:
+    | "plain"
     | "primary"
     | "secondary"
     | "outline"

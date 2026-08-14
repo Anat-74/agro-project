@@ -1,10 +1,10 @@
 export const moreMenuTranslations: Record<LocaleCode, {
-  summary: string
+  trigger: string
 }> = {
   ru: {
-    summary: "Ещё"
+    trigger: "Ещё"
   },
   be: {
-    summary: "Яшчэ"
+    trigger: "Яшчэ"
   }
 }

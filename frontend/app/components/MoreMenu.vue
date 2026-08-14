@@ -30,15 +30,15 @@ const iconFor = (url: string): string => iconByUrl[url] ?? ''
 </script>
 
 <template>
-  <div class="more-menu visible-tablet">
-    <button
-      type="button"
-      class="more-menu__summary"
+  <div class="more-menu">
+    <UButton
+      variant="plain"
+      class="more-menu__trigger"
       popovertarget="header-more-menu"
     >
-      {{ t.summary }}
+      {{ t.trigger }}
       <Icon name="ph:caret-down" />
-    </button>
+    </UButton>
     <!-- Popover API: открытие/закрытие кликом, Escape и кликом вне — нативно, без JS.
          Позиционирование — Anchor Positioning относительно кнопки (--more-menu). -->
     <div id="header-more-menu" popover class="more-menu__dropdown">
@@ -55,18 +55,17 @@ const iconFor = (url: string): string => iconByUrl[url] ?? ''
 
 <style lang="scss" scoped>
 .more-menu {
+  interpolate-size: allow-keywords;   // анимация height: auto (Chrome/Edge/Opera; FF/Safari — мгновенно, progressive enhancement)
+
   // Caret разворачивается, когда поповер открыт (top-layer, но остаётся DOM-потомком)
-  &:has(.more-menu__dropdown:popover-open) &__summary svg {
+  &:has(.more-menu__dropdown:popover-open) &__trigger svg {
     rotate: -180deg;
   }
 
-  &__summary {
-    display: flex;
-    align-items: center;
-    gap: toRem(4);
-    cursor: pointer;
+  // Триггер — <UButton variant="plain">; базовые стили (flex, font-weight, cursor)
+  // даёт UButton/_normalize, здесь только отступы, цвет и якорь для дропдауна
+  &__trigger {
     padding: toRem(4) toRem(8);
-    font-weight: 500;
     color: var(--dark-color);
     anchor-name: --more-menu;   // якорь для дропдауна (Anchor Positioning)
     @include adaptiveValue("font-size", 21, 18);   // на 1px меньше
@@ -89,27 +88,28 @@ const iconFor = (url: string): string => iconByUrl[url] ?? ''
     position-try-fallbacks: flip-block, --fb-left;
 
     opacity: 0;
-    translate: 0 -toRem(4);
     transition:
-      opacity var(--transition-duration),
-      translate var(--transition-duration),
-      overlay var(--transition-duration) allow-discrete,
-      display var(--transition-duration) allow-discrete;
+      opacity 0.3s,
+      overlay 0.3s allow-discrete,
+      display 0.3s allow-discrete;
 
     &:popover-open {
       opacity: 1;
-      translate: 0 0;
     }
 
     @starting-style {
       &:popover-open {
         opacity: 0;
-        translate: 0 -toRem(4);
       }
     }
   }
 
+  // Плавное раскрытие высоты: height: auto интерполируется через interpolate-size
+  // (Chrome/Edge/Opera; в FF/Safari без interpolate-size — открытие мгновенное).
+  // height на карточке, а не на [popover]: display на поповере задавать нельзя,
+  // а собственный overflow: hidden не режет box-shadow самой карточки
   &__list {
+    height: 0;
     overflow: hidden;
     min-width: toRem(160);
     background: var(--secondary-color);
@@ -121,6 +121,17 @@ const iconFor = (url: string): string => iconByUrl[url] ?? ''
     gap: toRem(2);
     white-space: nowrap;
     box-shadow: 0 toRem(4) toRem(12) rgba(0, 0, 0, 0.1);
+    transition: height 0.3s;
+  }
+
+  &__dropdown:popover-open &__list {
+    height: auto;
+  }
+
+  @starting-style {
+    &__dropdown:popover-open &__list {
+      height: 0;
+    }
   }
 
   &__link {
@@ -133,6 +144,7 @@ const iconFor = (url: string): string => iconByUrl[url] ?? ''
     border-radius: toRem(4);
 
     svg {
+      order: 2;   // иконка справа (текст слева, space-between)
       font-size: toEm(26);
       color: var(--green-color);
     }
