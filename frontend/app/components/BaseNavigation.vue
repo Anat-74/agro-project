@@ -206,6 +206,5 @@ v-for="item in navigation"
 
 .router-link-active {
   color: var(--danger-color) !important;
-  pointer-events: none !important;
 }
 </style>

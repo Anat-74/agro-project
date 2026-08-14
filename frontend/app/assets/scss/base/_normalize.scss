@@ -57,18 +57,27 @@
    padding: 0;
    border: none;
  }
+
+ /**
+   Сбрасываем стандартное оформление popover: UA-стили рисуют рамку,
+   внутренние отступы и фон Canvas. Центрирование (inset: 0 + margin: auto)
+   оставлено браузерным — для якорных поповеров сбрасывается в компоненте
+   (margin: 0; inset: auto; — см. style guide 13.2)
+  */
+ :where([popover][class]) {
+   border: none;
+   padding: 0;
+   color: inherit;
+   background: transparent;
+ }
  
  /**
    Убираем стандартный маркер маркированному списку,
    у которого есть атрибут class
   */
- :where(ul[class]) {
-   list-style: none;
- }
-
- :where(adress[class]) {
-   list-style: normal;
- }
+  :where(ul[class]) {
+    list-style: none;
+  }
  
  /**
    Обнуляем вертикальные внешние отступы параграaфа,
