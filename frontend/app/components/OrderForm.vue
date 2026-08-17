@@ -135,6 +135,12 @@ const submitOrder = async () => {
 <style lang="scss" scoped>
 .order-form {
   max-width: toRem(340);
+  // Единый «фрейм» вокруг всего контента — соединяет верхнюю и нижнюю плашки.
+  // Плашки прилегают к рамке через отрицательные margin-inline/block
+  border: toRem(1) solid var(--border-color);
+  border-radius: toRem(8);
+  padding-inline: toRem(12);
+  padding-block: toRem(8);
 
   &_disabled {
     max-width: toRem(264);
@@ -143,12 +149,18 @@ const submitOrder = async () => {
   }
 
   &__title {
+    // Прилегает к рамке фрейма сверху и по бокам
+    margin-inline: toRem(-12);
+    margin-block-start: toRem(-8);
     text-align: center;
     padding-block: toEm(9);
     border-radius: toRem(8) toRem(8) 0 0;          // нижний край — скос маской
     color: var(--light-color);                     // текст на красной плашке
     background-color: var(--danger-color);         // контраст с панелью (--bg) — срез виден
-    border: toRem(1) solid var(--border-color);    // общий бордер обеих плашек — «цельность»
+    // Эффект втиснения (как recessed в colorMode): тёмная верхняя грань + светлый блик
+    box-shadow:
+      inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
+      0 toRem(1) 0 rgba(255, 255, 255, 0.4);
     @include adaptiveValue("margin-block-end", 16, 12);
 
     // Скос нижнего края (правый нижний угол) — «пазл»: у плашки итога скос верхнего левого
@@ -204,6 +216,9 @@ const submitOrder = async () => {
   }
 
   &__submit-wrapper {
+    // Прилегает к рамке фрейма снизу и по бокам
+    margin-inline: toRem(-12);
+    margin-block-end: toRem(-8);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -213,7 +228,10 @@ const submitOrder = async () => {
     border-radius: 0 0 toRem(8) toRem(8);          // верхний край — скос маской
     color: var(--light-color);                     // текст на красной плашке (как у заголовка)
     background-color: var(--danger-color);         // один цвет с заголовком — «цельность»
-    border: toRem(1) solid var(--border-color);    // общий бордер обеих плашек
+    // Эффект втиснения (как recessed в colorMode)
+    box-shadow:
+      inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
+      0 toRem(1) 0 rgba(255, 255, 255, 0.4);
 
     // Скос верхнего края (левый верхний угол) — противоположен скосу заголовка: «пазл»
     @include maskEdgeCut(toRem(8), "top-left");
@@ -226,6 +244,18 @@ const submitOrder = async () => {
     svg {
       translate: 0 toRem(4);
       font-size: toEm(18);
+    }
+  }
+
+  &__submit {
+    // Белая, как карточка; текст — цвет плашек (красный)
+    background-color: var(--bg);
+    color: var(--danger-color);
+    border: toRem(2) solid var(--danger-color);
+
+    @include hover {
+      background-color: var(--danger-color);
+      color: var(--light-color);
     }
   }
 }
