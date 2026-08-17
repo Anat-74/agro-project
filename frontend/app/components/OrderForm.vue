@@ -146,8 +146,8 @@ const submitOrder = async () => {
     text-align: center;
     padding-block: toEm(9);
     border-radius: toRem(8) toRem(8) 0 toRem(2);   // правый низ — скос маской
-    color: var(--danger-color);
-    background-color: var(--secondary-color);
+    color: var(--light-color);                     // текст на красной плашке
+    background-color: var(--danger-color);         // контраст с панелью (--bg) — срез виден
     @include adaptiveValue("margin-block-end", 16, 12);
 
     // Скос нижнего края «как у чека»: база (слой 1, верхний) минус треугольник (слой 2).
@@ -218,8 +218,8 @@ const submitOrder = async () => {
     padding-inline: toRem(16);
     padding-block: toEm(9);
     border-radius: toRem(2) 0 toRem(8) toRem(8);   // правый верх — скос маской
-    color: var(--color);
-    background-color: var(--secondary-color);
+    color: var(--bg);                              // текст-инверсия на тёмной плашке
+    background-color: var(--color);                // контраст с панелью (--bg) — срез виден
 
     // Скос верхнего края (зеркально): база − треугольник в правом верхнем углу
     mask-image:
