@@ -31,6 +31,7 @@ const props = withDefaults(
     // Тип изображения (стили берутся из компонента)
     type?:
       | "product"
+      | "discount-content"
       | "hero"
       | "avatar"
       | "logo"
@@ -227,15 +228,12 @@ const finalSrc = computed(() => {
     }
   }
 
-  // Тип discount-content удалён — всё что было, переведено на product.
-  // При необходимости вернуть старые размеры:
-  // &_discount-content {
-  //   @media (max-width: $tablet) { display: none; }
-  //   img {
-  //     height: toEm(417);
-  //     border-radius: toRem(6);
-  //     @include adaptiveValue("width", 302, 194, 0, $containerWidth, 1023.98);
-  //   }
-  // }
+  &_discount-content {
+    img {
+      height: toEm(340);
+      border-radius: toRem(6);
+      @include adaptiveValue("width", 302, 180, 0, $containerWidth, 1023.98);
+    }
+  }
 }
 </style>

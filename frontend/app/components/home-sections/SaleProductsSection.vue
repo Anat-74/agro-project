@@ -69,11 +69,12 @@ class="sale-products__discount-text visible-tablet"
          </div>
         <UImage
           v-if="saleProd?.[1]?.image?.url"
-          class="sale-products__image hidden-tablet"
+          class="hidden-tablet"
           :src="saleProd?.[1].image.url"
           :alt="saleProd?.[1]?.heading"
           width="302"
           height="417"
+          type="discount-content"
         />
         </div>
       </div>
@@ -121,7 +122,6 @@ class="sale-products__discount-text visible-tablet"
       grid-template-columns: repeat(3, 1fr);
       row-gap: toEm(25);
       column-gap: toEm(12);
-      > * { min-width: 0; }
       @include adaptiveValue("row-gap", 25, 18, 0, $containerWidth, 1023.98);
 
       @media (max-width:toEm(800)){
@@ -132,16 +132,6 @@ class="sale-products__discount-text visible-tablet"
    &__sale-items {
       @media (min-width:$tablet){
          position: relative;
-      }
-   }
-
-   // Изображение акции: скрыто на мобильном (hidden-tablet),
-   // размеры — как у удалённого типа discount-content
-   &__image {
-      :deep(img) {
-         height: toEm(417);
-         border-radius: toRem(6);
-         @include adaptiveValue("width", 302, 194, 0, $containerWidth, 1023.98);
       }
    }
 
