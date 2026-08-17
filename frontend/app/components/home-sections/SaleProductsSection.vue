@@ -242,10 +242,19 @@ class="sale-products__discount-text visible-tablet"
       }
    }
 
-   // Анимации для custom-темы
+   // Анимации для custom-темы: каскадный вход карточек ПРИ СКРОЛЛЕ.
+   // Десктоп (≥ $mobile): scroll-driven вход (animation-timeline: view()) +
+   // stagger через sibling-index() — каждая карточка стартует с задержкой по своей позиции.
+   // Мобильный (< $mobile): свой scroll-animate в DiscountProduct — не трогаем.
    @container style(--theme: custom) {
-      animation: cardEntrance 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      opacity: 0;
+      @media (min-width: $mobile) {
+         :deep(.sale-products__card-list > *) {
+            animation: cardEntrance 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+            animation-timeline: view();
+            animation-range: entry 0% entry 100%;
+            animation-delay: calc(sibling-index() * 60ms);
+         }
+      }
    }
 }
 

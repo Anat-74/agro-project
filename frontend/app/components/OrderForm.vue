@@ -145,21 +145,14 @@ const submitOrder = async () => {
   &__title {
     text-align: center;
     padding-block: toEm(9);
-    border-radius: toRem(8) toRem(8) 0 toRem(2);   // правый низ — скос маской
+    border-radius: toRem(8) toRem(8) 0 0;          // нижний край — скос маской
     color: var(--light-color);                     // текст на красной плашке
     background-color: var(--danger-color);         // контраст с панелью (--bg) — срез виден
+    border: toRem(1) solid var(--border-color);    // общий бордер обеих плашек — «цельность»
     @include adaptiveValue("margin-block-end", 16, 12);
 
-    // Скос нижнего края «как у чека»: база (слой 1, верхний) минус треугольник (слой 2).
-    // mask-composite: subtract применяется к текущему слою относительно нижележащих:
-    // база − треугольник = срезан правый нижний угол.
-    mask-image:
-      linear-gradient(#000 0 0),                            // слой 1 — база (полный прямоугольник)
-      linear-gradient(135deg, transparent 50%, #000 50%);   // слой 2 — треугольник (8px внизу)
-    mask-size: 100% 100%, 100% toRem(8);
-    mask-position: 0 0, 0 100%;
-    mask-repeat: no-repeat;
-    mask-composite: subtract;
+    // Скос нижнего края (правый нижний угол) — «пазл»: у плашки итога скос верхнего левого
+    @include maskEdgeCut(toRem(8), "bottom-right");
   }
 
   &__input {
@@ -217,18 +210,13 @@ const submitOrder = async () => {
     column-gap: toRem(8);
     padding-inline: toRem(16);
     padding-block: toEm(9);
-    border-radius: toRem(2) 0 toRem(8) toRem(8);   // правый верх — скос маской
-    color: var(--bg);                              // текст-инверсия на тёмной плашке
-    background-color: var(--color);                // контраст с панелью (--bg) — срез виден
+    border-radius: 0 0 toRem(8) toRem(8);          // верхний край — скос маской
+    color: var(--light-color);                     // текст на красной плашке (как у заголовка)
+    background-color: var(--danger-color);         // один цвет с заголовком — «цельность»
+    border: toRem(1) solid var(--border-color);    // общий бордер обеих плашек
 
-    // Скос верхнего края (зеркально): база − треугольник в правом верхнем углу
-    mask-image:
-      linear-gradient(#000 0 0),                           // слой 1 — база
-      linear-gradient(45deg, transparent 50%, #000 50%);   // слой 2 — треугольник (8px сверху)
-    mask-size: 100% 100%, 100% toRem(8);
-    mask-position: 0 0, 0 0;
-    mask-repeat: no-repeat;
-    mask-composite: subtract;
+    // Скос верхнего края (левый верхний угол) — противоположен скосу заголовка: «пазл»
+    @include maskEdgeCut(toRem(8), "top-left");
 
     strong {
       letter-spacing: 1px;

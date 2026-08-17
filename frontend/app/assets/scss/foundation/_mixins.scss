@@ -167,3 +167,36 @@
     $mix-color
   );
 }
+
+//* maskEdgeCut — диагональный срез края плашки через CSS-маску.
+//  Рабочий паттерн: база + треугольник, mask-composite: subtract (база − треугольник).
+//  НЕ использовать conic-gradient: у него цветовые стопы принимают только углы/проценты,
+//  length-стопы (`transparent 0 8px`) невалидны — объявление отбрасывается.
+//  $size — глубина среза (высота полосы), $side — какой край/угол срезается.
+//  Пример: @include maskEdgeCut(toRem(8), "bottom-right");
+//  ВАЖНО: миксин будет развиваться — в планах поддержка выреза ОДНОГО угла
+//  (квадратная зона $size × $size, а не полоса на всю ширину), для этого
+//  $size планируется принимать список из двух значений (одно — скос края, два — вырез угла).
+@mixin maskEdgeCut($size: toRem(8), $side: "bottom-right") {
+  $gradient: linear-gradient(135deg, transparent 50%, #000 50%);
+  $position: 0 100%;
+
+  @if $side == "bottom-left" {
+    $gradient: linear-gradient(225deg, transparent 50%, #000 50%);
+    $position: 0 100%;
+  } @else if $side == "top-right" {
+    $gradient: linear-gradient(45deg, transparent 50%, #000 50%);
+    $position: 0 0;
+  } @else if $side == "top-left" {
+    $gradient: linear-gradient(315deg, transparent 50%, #000 50%);
+    $position: 0 0;
+  }
+
+  mask-image:
+    linear-gradient(#000 0 0),
+    $gradient;
+  mask-size: 100% 100%, 100% $size;
+  mask-position: 0 0, $position;
+  mask-repeat: no-repeat;
+  mask-composite: subtract;
+}
