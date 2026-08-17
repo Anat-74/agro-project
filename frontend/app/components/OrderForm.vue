@@ -136,9 +136,13 @@ const submitOrder = async () => {
 .order-form {
   max-width: toRem(340);
   // Единый «фрейм» вокруг всего контента — соединяет верхнюю и нижнюю плашки.
-  // Плашки прилегают к рамке через отрицательные margin-inline/block
-  border: toRem(1) solid var(--border-color);
+  // Плашки прилегают к рамке через отрицательные margin-inline/block.
+  // Цвет бордера — как у плашек (фон mask), с эффектом втиснения (как recessed в colorMode)
+  border: toRem(1) solid var(--danger-color);
   border-radius: toRem(8);
+  box-shadow:
+    inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
+    0 toRem(1) 0 rgba(255, 255, 255, 0.4);
   padding-inline: toRem(12);
   padding-block: toRem(8);
 

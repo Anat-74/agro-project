@@ -21,6 +21,9 @@ const containerVars = computed(() => ({
   '--theme': colorMode.preference,
   '--brightness': brightness.value,
   '--locale': currentLocale.value,
+  // Обёртка — стилевой контейнер: БЕЗ container-type: style запросы
+  // @container style(--theme: custom) не матчатся (поиск идёт по предкам с container-type)
+  'container-type': 'style',
 }));
 
 useHead({
