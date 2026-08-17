@@ -150,15 +150,16 @@ const submitOrder = async () => {
     background-color: var(--secondary-color);
     @include adaptiveValue("margin-block-end", 16, 12);
 
-    // Скос нижнего края «как у чека»: диагональный градиент обрезает правый нижний угол.
-    // Один слой — надёжнее mask-composite (одиночное значение применяется ко всем слоям
-    // и обнуляет маску). Чёрный цвет — важен только alpha-канал.
-    mask-image: linear-gradient(
-      to bottom right,
-      #000 0,
-      #000 calc(100% - toRem(8)),
-      transparent calc(100% - toRem(8))
-    );
+    // Скос нижнего края «как у чека»: база (слой 1, верхний) минус треугольник (слой 2).
+    // mask-composite: subtract применяется к текущему слою относительно нижележащих:
+    // база − треугольник = срезан правый нижний угол.
+    mask-image:
+      linear-gradient(#000 0 0),                            // слой 1 — база (полный прямоугольник)
+      linear-gradient(135deg, transparent 50%, #000 50%);   // слой 2 — треугольник (8px внизу)
+    mask-size: 100% 100%, 100% toRem(8);
+    mask-position: 0 0, 0 100%;
+    mask-repeat: no-repeat;
+    mask-composite: subtract;
   }
 
   &__input {
@@ -220,13 +221,14 @@ const submitOrder = async () => {
     color: var(--color);
     background-color: var(--secondary-color);
 
-    // Скос верхнего края (зеркально): диагональный градиент обрезает правый верхний угол
-    mask-image: linear-gradient(
-      to top right,
-      #000 0,
-      #000 calc(100% - toRem(8)),
-      transparent calc(100% - toRem(8))
-    );
+    // Скос верхнего края (зеркально): база − треугольник в правом верхнем углу
+    mask-image:
+      linear-gradient(#000 0 0),                           // слой 1 — база
+      linear-gradient(45deg, transparent 50%, #000 50%);   // слой 2 — треугольник (8px сверху)
+    mask-size: 100% 100%, 100% toRem(8);
+    mask-position: 0 0, 0 0;
+    mask-repeat: no-repeat;
+    mask-composite: subtract;
 
     strong {
       letter-spacing: 1px;
