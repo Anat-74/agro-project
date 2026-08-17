@@ -74,7 +74,6 @@ class="sale-products__discount-text visible-tablet"
           :alt="saleProd?.[1]?.heading"
           width="302"
           height="417"
-          type="product"
         />
         </div>
       </div>
@@ -242,22 +241,19 @@ class="sale-products__discount-text visible-tablet"
       }
    }
 
-   // Каскадный вход карточек ПРИ СКРОЛЛЕ (custom-тема, десктоп ≥ $mobile).
+   // Каскадный вход карточек ПРИ СКРОЛЛЕ (custom-тема, все экраны).
    // animation-delay НЕ работает со scroll-таймлайном (view()) — каскад делаем
    // сдвигом animation-range через sibling-index(): карточка N стартует, когда
    // её entry-прогресс достигает (N-1)*15% (без JS и без :nth-child).
    // @supports: без scroll-driven браузеры получают обычное отображение (без opacity:0).
-   // Мобильный (< $mobile): свой scroll-animate в DiscountProduct — не трогаем.
    @supports (animation-timeline: view()) and (animation-range: entry 0% entry 100%) {
       @container style(--theme: custom) {
-         @media (min-width: $mobile) {
-            :deep(.sale-products__card-list > *) {
-               animation: cardEntrance 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
-               animation-timeline: view();
-               animation-range:
-                  entry calc((sibling-index() - 1) * 15%)
-                  entry calc(100% + (sibling-index() - 1) * 15%);
-            }
+         :deep(.sale-products__card-list > *) {
+            animation: cardEntrance 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+            animation-timeline: view();
+            animation-range:
+               entry calc((sibling-index() - 1) * 15%)
+               entry calc(100% + (sibling-index() - 1) * 15%);
          }
       }
    }

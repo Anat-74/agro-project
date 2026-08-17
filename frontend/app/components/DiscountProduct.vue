@@ -125,14 +125,6 @@ const visibleImagesCount = computed(() => {
     }
   }
 
-  @media (max-width: $mobile) {
-    @media (prefers-reduced-motion: no-preference) {
-      animation: scroll-animate;
-      animation-timeline: view();
-      animation-range: entry 0% entry 150%;
-    }
-  }
-
   @media (max-width: toEm(540)) {
     grid-template-columns: repeat(2, auto);
     row-gap: toEm(8);
