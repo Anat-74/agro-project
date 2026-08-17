@@ -3,6 +3,7 @@ import { nextTick } from 'vue'
 import ShowHamburger from '~/components/show-modal/ShowHamburger.vue'
 import ShowModalCartDialog from '~/components/show-modal/ShowModalCartDialog.vue'
 import ShowModalProduct from '~/components/show-modal/ShowModalProduct.vue'
+import MoreMenuPopover from '~/components/popover/MoreMenuPopover.vue'
 
 const { currentLocale } = useLocale()
 
@@ -120,7 +121,7 @@ function openPreview(product: Product) {
           :navigation="global?.header?.navigation"
           class="header__navigation hidden-tablet"
         />
-        <MoreMenu
+        <MoreMenuPopover
           class="visible-tablet"
           :navigation="global?.header?.navigation"
         />

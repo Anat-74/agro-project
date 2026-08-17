@@ -26,7 +26,8 @@ const containerVars = computed(() => ({
 useHead({
   link: [
     { rel: "preconnect", href: config.public.strapi.url },
-    { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon-180x180.png" },
+    // apple-touch-icon НЕ дублировать: @vite-pwa/nuxt сам инжектит его
+    // из манифеста (nuxt.config.ts pwa.manifest.icons)
   ],
 });
 
@@ -60,7 +61,7 @@ watch([currentLocale, () => route.path], () => {
       { property: "og:url", content: fullUrl.value },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "Organick" },
-      { property: "og:image", content: `${config.public.siteUrl}/logo.png` },
+      { property: "og:image", content: `${config.public.siteUrl}/logo.svg` },
       { property: "og:locale", content: currentLocale.value },
       {
         property: "og:locale:alternate",
@@ -69,12 +70,12 @@ watch([currentLocale, () => route.path], () => {
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: seoData.value.ogTitle },
       { name: "twitter:description", content: seoData.value.ogDescription },
-      { name: "twitter:image", content: `${config.public.siteUrl}/logo.png` },
-      { property: "vk:image", content: `${config.public.siteUrl}/logo.png` },
+      { name: "twitter:image", content: `${config.public.siteUrl}/logo.svg` },
+      { property: "vk:image", content: `${config.public.siteUrl}/logo.svg` },
       { property: "vk:title", content: seoData.value.ogTitle },
       {
         property: "telegram:image",
-        content: `${config.public.siteUrl}/logo.png`,
+        content: `${config.public.siteUrl}/logo.svg`,
       },
       { property: "al:ios:app_name", content: "Organick" },
       { property: "al:android:app_name", content: "Organick" },

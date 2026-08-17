@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { colorModeTranslations } from "~/locales/colorMode"
+import ColorModePopover from "~/components/popover/ColorModePopover.vue"
 
 const colorMode = useColorMode();
 const { currentLocale } = useLocale();
 const t = computed(() => colorModeTranslations[currentLocale.value]);
 const { brightness } = useThemeBrightness();
 const showPercent = ref(false);
-const showPopup = ref(false);
-const popupRef = useTemplateRef<HTMLDivElement>("popup");
 let hideTimer: ReturnType<typeof setTimeout> | null = null;
+
+// Уникальный id попапа — на странице 2 экземпляра ColorMode (шапка + баннер)
+const popupId = useId();
 
 const sliderValue = computed(() => brightness.value);
 
@@ -27,20 +29,9 @@ watch(brightness, () => {
   }, 2000);
 });
 
-onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
-});
-
 onUnmounted(() => {
   if (hideTimer) clearTimeout(hideTimer);
-  document.removeEventListener("click", handleClickOutside);
 });
-
-function handleClickOutside(e: MouseEvent) {
-  if (popupRef.value && !popupRef.value.contains(e.target as Node)) {
-    showPopup.value = false;
-  }
-}
 
 function themeLabel(theme: string) {
   if (theme === "light") return t.value.themeLight;
@@ -57,20 +48,19 @@ const orderedThemes = computed(() => {
   return [...baseOrder.filter((t) => t !== active), active]
 })
 
-function togglePopup() {
-  showPopup.value = !showPopup.value;
-}
+// Опции для ColorModePopover (ключ + локализованная подпись)
+const popupThemes = computed(() =>
+  orderedThemes.value.map((theme) => ({ key: theme, label: themeLabel(theme) }))
+)
 
 function setTheme(theme: string) {
   colorMode.preference = theme;
-  showPopup.value = false;
 }
 </script>
 
 <template>
   <div :class="['color-mode', themeClass]">
     <div
-      ref="popupRef"
       class="color-mode__slider-wrapper"
       :style="{ '--slider-value': sliderValue }"
     >
@@ -84,40 +74,17 @@ function setTheme(theme: string) {
         class="color-mode__slider"
       />
 
-      <button
+      <UButton
+        variant="theme"
         class="color-mode__thumb"
+        :popovertarget="popupId"
         :aria-label="`${t.ariaLabelTheme}: ${themeLabel(colorMode.preference)}. ${t.ariaLabelSwitch}`"
-        @click.stop="togglePopup"
       >
         <!-- Статические имена → бандится в build (без runtime-фетча Iconify) -->
         <Icon v-if="colorMode.preference === 'light'" name="ph:sun-duotone" />
         <Icon v-else-if="colorMode.preference === 'dark'" name="ph:moon-light" />
         <Icon v-else name="material-symbols:auto-awesome" />
-      </button>
-
-      <Transition name="popup">
-        <Teleport to="body">
-          <div v-if="showPopup" class="color-mode__popup">
-            <button
-              v-for="theme in orderedThemes"
-              :key="theme"
-            :class="[
-              'color-mode__option',
-              `color-mode__option_${theme}`,
-              {
-                'color-mode__option_active': colorMode.preference === theme,
-              },
-            ]"
-            @click="setTheme(theme)"
-          >
-            <Icon v-if="theme === 'light'" name="ph:sun-duotone" />
-            <Icon v-else-if="theme === 'dark'" name="ph:moon-light" />
-            <Icon v-else name="material-symbols:auto-awesome" />
-            <span>{{ themeLabel(theme) }}</span>
-          </button>
-        </div>
-        </Teleport>
-      </Transition>
+      </UButton>
 
       <Transition name="fade">
         <span v-if="showPercent" class="color-mode__percent"
@@ -125,6 +92,14 @@ function setTheme(theme: string) {
         >
       </Transition>
     </div>
+
+    <!-- Поповер выбора темы: top-center экрана, popover="auto" (нативный dismiss) -->
+    <ColorModePopover
+      :popup-id="popupId"
+      :themes="popupThemes"
+      :active="colorMode.preference"
+      @select="setTheme"
+    />
   </div>
 </template>
 
@@ -179,95 +154,12 @@ function setTheme(theme: string) {
   }
 
   &__thumb {
+    // Позиционирование на слайдере; внешний вид — в UButton (variant="theme")
     position: absolute;
     left: calc(var(--slider-value, 50) * 1%);
     top: 50%;
     translate: -50% -50%;
-    width: toRem(27);
-    height: toRem(27);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: var(--light-color);
-    border: toRem(3) solid var(--warning-color);
-    // «Втисненный» бордер (внутр. тёмная грань + белый блик) + тень снизу —
-    // кнопка приподнята и читается (слабое зрение)
-    box-shadow:
-      0 toRem(2) toRem(4) rgba(0, 0, 0, 0.25),
-      inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
-      0 toRem(1) 0 rgba(255, 255, 255, 0.4);
-    cursor: pointer;
     z-index: 2;
-    color: var(--warning-color);
-    font-size: toRem(14);
-    transition: transform var(--transition-duration);
-
-    @include hover {
-      transform: scale(1.1) rotate(45deg);
-    }
-  }
-
-  &__popup {
-    // Правый верхний угол вьюпорта, поверх всего (fixed выходит из клиппинга
-    // overflow баннера и корневого stacking context → z-index реально работает)
-    position: fixed;
-    top: 0;
-    right: 0;
-    display: flex;
-    flex-direction: column;
-    gap: toRem(4);
-    padding: toRem(8);
-    border-radius: toRem(8);
-    background: var(--secondary-color);
-    box-shadow: 0 toRem(4) toRem(12) rgba(0, 0, 0, 0.15);
-    z-index: 9999;
-  }
-
-  &__option {
-    display: flex;
-    align-items: center;
-    gap: toRem(8);
-    padding: toRem(6) toRem(12);
-    border: none;
-    border-radius: toRem(4);
-    cursor: pointer;
-    background: transparent;
-    color: var(--color);
-    font-size: toEm(14);
-    transition: background var(--transition-duration);
-
-    // Заглублённая (recessed) линия между опциями (как у controls)
-    &:not(:last-child) {
-      border-block-end: 1px solid rgba(0, 0, 0, 0.25);
-      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
-    }
-
-    // Цветные иконки по теме
-    &_light {
-      color: var(--warning-color);   // солнце
-    }
-
-    &_custom {
-      color: #ff5e7e;   // яркий «анимированный» цвет
-
-      svg {
-        animation: custom-sway 3s ease-in-out infinite;
-      }
-    }
-
-    &_dark {
-      color: #5b6ee1;                // луна (индиго)
-    }
-
-    @include hover {
-      background: var(--bg);
-    }
-
-    &_active {
-      background: var(--success-color);
-      color: var(--light-color);
-    }
   }
 
   &__percent {
@@ -326,28 +218,6 @@ function setTheme(theme: string) {
   100% {
     background-position: 200% 0;
   }
-}
-
-@keyframes custom-sway {
-  0%,
-  100% {
-    transform: rotate(-8deg);
-  }
-  50% {
-    transform: rotate(8deg);
-  }
-}
-
-.popup-enter-active,
-.popup-leave-active {
-  transition:
-    opacity 0.2s,
-    transform 0.2s;
-}
-.popup-enter-from,
-.popup-leave-to {
-  opacity: 0;
-  transform: translateY(toRem(-8));   // появление сверху / исчезание вверх
 }
 
 .fade-enter-active,

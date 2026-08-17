@@ -145,10 +145,19 @@ const submitOrder = async () => {
   &__title {
     text-align: center;
     padding-block: toEm(9);
-    border-radius: toRem(8) toRem(8) toRem(2) toRem(2);
+    border-radius: toRem(8) toRem(8) 0 0;   // низ — скос маской (вместо 2px)
     color: var(--danger-color);
     background-color: var(--secondary-color);
     @include adaptiveValue("margin-block-end", 16, 12);
+
+    // Скос нижнего края «как у чека»: верхний слой-треугольник вычитается из базы
+    mask-image:
+      linear-gradient(135deg, transparent 50%, #000 50%),
+      linear-gradient(#000 0 0);
+    mask-size: 100% toRem(8), 100% 100%;
+    mask-position: 0 100%, 0 0;
+    mask-repeat: no-repeat;
+    mask-composite: subtract;
   }
 
   &__input {
@@ -206,9 +215,18 @@ const submitOrder = async () => {
     column-gap: toRem(8);
     padding-inline: toRem(16);
     padding-block: toEm(9);
-    border-radius: toRem(2) toRem(2) toRem(8) toRem(8);
+    border-radius: 0 0 toRem(8) toRem(8);   // верх — скос маской (вместо 2px)
     color: var(--color);
     background-color: var(--secondary-color);
+
+    // Скос верхнего края (зеркально): верхний слой-треугольник вычитается из базы
+    mask-image:
+      linear-gradient(45deg, transparent 50%, #000 50%),
+      linear-gradient(#000 0 0);
+    mask-size: 100% toRem(8), 100% 100%;
+    mask-position: 0 0, 0 0;
+    mask-repeat: no-repeat;
+    mask-composite: subtract;
 
     strong {
       letter-spacing: 1px;

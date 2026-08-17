@@ -28,6 +28,7 @@ interface Props {
     | "slide-next"
     | "product-details"
     | "color-theme"
+    | "theme"
     | "slide-prev"
     | "cart-pill"
   size?: "small" | "normal" | "large";
@@ -146,6 +147,28 @@ defineEmits<Emits>();
 
   &_icon {
     padding: 0;
+  }
+
+  // Кнопка-«кружок» переключателя темы (thumb на слайдере ColorMode).
+  // Позиционирование на слайдере — через класс в ColorMode, здесь только внешний вид
+  &_theme {
+    width: toRem(27);
+    height: toRem(27);
+    padding: 0;
+    border-radius: 50%;
+    background: var(--light-color);
+    border: toRem(3) solid var(--warning-color);
+    font-size: toRem(14);
+    color: var(--warning-color);
+    box-shadow:
+      0 toRem(2) toRem(4) rgba(0, 0, 0, 0.25),
+      inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
+      0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+    transition: transform var(--transition-duration);
+
+    @include hover {
+      transform: scale(1.1) rotate(45deg);
+    }
   }
 
   &_color-theme {

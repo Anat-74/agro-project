@@ -1,5 +1,28 @@
+@use 'sass:math';
 @use "../foundation/functions" as *;
 @use "../foundation/settings" as c;
+
+//! Ограничивающий контейнер ======================================================================================
+/*
+ Стили будут применяться ко всем классам содержащим *__container.
+ Здесь, а не в _settings.scss: settings подмешивается в каждый scoped-блок
+ через additionalData, и правило дублировалось в CSS каждого компонента.
+ Этот файл компилируется один раз через styles.scss.
+*/
+[class*="__container"] {
+  @if (c.$maxWidthContainer > 0) {
+    max-width: toRem(c.$maxWidthContainer);
+    box-sizing: content-box;
+    margin-inline: auto;
+  }
+  @if (c.$containerPaddingX > 0) {
+    padding-inline: toRem(math.div(c.$containerPaddingX, 2));
+
+    @media (max-width: c.$mobile) {
+      padding-inline: toRem(math.div(c.$containerPaddingX, 2.5));
+    }
+  }
+}
 
 // .backdrop-visible {
 //   background-color: var(--back-drop-main);
