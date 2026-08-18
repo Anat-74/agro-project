@@ -165,6 +165,7 @@ const handleAddToCart = (product: Product) => {
 </script>
 
 <template>
+  <div>
   <ULoader v-if="pending" class="loader" />
   <section
     v-else
@@ -265,6 +266,7 @@ const handleAddToCart = (product: Product) => {
 
   <div v-if="error" class="subcategory-products__error">
     {{ error.message }}
+  </div>
   </div>
 </template>
 

@@ -34,16 +34,18 @@ useHead({
 </script>
 
 <template>
-  <article v-if="post" class="blog-post">
-    <NuxtLink :to="`/${currentLocale}/blog`" class="blog-post__back">← Назад к блогу</NuxtLink>
-    <header class="blog-post__header">
-      <h1>{{ post.title }}</h1>
-      <time class="blog-post__date">{{ post.date }}</time>
-      <span v-if="post.author" class="blog-post__author">{{ post.author }}</span>
-    </header>
-    <MDC v-if="post.content" :value="post.content" class="blog-post__content" />
-  </article>
-  <div v-else class="blog-post__empty">Статья не найдена</div>
+  <div>
+    <article v-if="post" class="blog-post">
+      <NuxtLink :to="`/${currentLocale}/blog`" class="blog-post__back">← Назад к блогу</NuxtLink>
+      <header class="blog-post__header">
+        <h1>{{ post.title }}</h1>
+        <time class="blog-post__date">{{ post.date }}</time>
+        <span v-if="post.author" class="blog-post__author">{{ post.author }}</span>
+      </header>
+      <MDC v-if="post.content" :value="post.content" class="blog-post__content" />
+    </article>
+    <div v-else class="blog-post__empty">Статья не найдена</div>
+  </div>
 </template>
 
 <style lang="scss" scoped>

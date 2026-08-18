@@ -107,7 +107,7 @@ definePageMeta({
 
 ## Риски (проверить при внедрении)
 
-1. Единый корневой элемент у страниц-кандидатов на Vue transition (требование `<Transition>`); стиль «минимум обёрток» может дать фрагменты → проверить страницы в dev.
+1. ✅ **Единый корневой элемент — РЕАЛИЗОВАНО (08.18):** страницы-фрагменты ломали SPA-навигацию при глобальном `pageTransition` (`Component inside <Transition> renders non-element root node`, `out-in` не монтировал новую страницу — данные не видны до перезагрузки). Обёрнуты в единый `<div>`: `[lang]/index.vue`, `[lang]/blog/[slug].vue`, `[lang]/news/[slug].vue`, `[lang]/[categorySlug]/index.vue`, `[lang]/[categorySlug]/products/index.vue`, `[lang]/[categorySlug]/products/[productSlug]/index.vue`, `[lang]/[categorySlug]/[subcategorySlug]/index.vue`, `[lang]/[categorySlug]/[subcategorySlug]/[productSlug]/index.vue`. Проверено локально: главная→товар, главная→категория — контент рендерится при SPA-переходе.
 2. `.dark-mode { filter: brightness(95%) }` создаёт stacking context — проверить позиционирование снимков VT.
 3. Кандидаты на VT: только страницы без тяжёлых async-данных (корзина, избранное и т.п.).
 

@@ -132,12 +132,13 @@ const handleAddToCart = (product: Product) => {
 </script>
 
 <template>
-  <ULoader v-if="pending" class="loader" />
-  <section
-    v-if="product"
-    aria-labelledby="product-description"
-    class="product-review product-review__container"
-  >
+  <div>
+    <ULoader v-if="pending" class="loader" />
+    <section
+      v-if="product"
+      aria-labelledby="product-description"
+      class="product-review product-review__container"
+    >
     <h1 id="product-description" class="visually-hidden">
       {{ visuallyHiddenT.sectionProductSlugTitle }}
     </h1>
@@ -196,6 +197,7 @@ const handleAddToCart = (product: Product) => {
     </div>
   </section>
   <span v-else-if="error"> Error: {{ error.message }} </span>
+  </div>
 </template>
 
 <style lang="scss" scoped>

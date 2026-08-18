@@ -124,6 +124,7 @@ watchEffect(() => {
 </script>
 
 <template>
+  <div>
   <ULoader v-show="isLoading" class="loader" />
   <section
     v-show="!isLoading"
@@ -180,6 +181,7 @@ watchEffect(() => {
   <span v-if="error" class="error">
     {{ error.message }}
   </span>
+  </div>
 </template>
 
 <style lang="scss" scoped>

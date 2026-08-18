@@ -109,6 +109,7 @@ const handleAddToCart = (product: Product) => {
 </script> 
 
 <template>
+  <div>
    <ULoader
 v-if="pending"
      class="loader"
@@ -175,10 +176,11 @@ v-if="pending"
       {{ isInCart(product.documentId) ? buttonT.addedIsCart : buttonT.label }}
      </UButton>
    </div>
-</section>
+ </section>
    <span v-else-if="error">
       Error: {{ error.message }}
    </span>
+  </div>
  </template>
 
  <style lang="scss" scoped>

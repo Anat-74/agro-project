@@ -34,15 +34,17 @@ useHead({
 </script>
 
 <template>
-  <article v-if="item" class="news-article">
-    <NuxtLink :to="`/${currentLocale}/news`" class="news-article__back">← Назад к новостям</NuxtLink>
-    <header class="news-article__header">
-      <h1>{{ item.title }}</h1>
-      <time class="news-article__date">{{ item.date }}</time>
-    </header>
-    <MDC v-if="item.content" :value="item.content" class="news-article__content" />
-  </article>
-  <div v-else class="news-article__empty">Новость не найдена</div>
+  <div>
+    <article v-if="item" class="news-article">
+      <NuxtLink :to="`/${currentLocale}/news`" class="news-article__back">← Назад к новостям</NuxtLink>
+      <header class="news-article__header">
+        <h1>{{ item.title }}</h1>
+        <time class="news-article__date">{{ item.date }}</time>
+      </header>
+      <MDC v-if="item.content" :value="item.content" class="news-article__content" />
+    </article>
+    <div v-else class="news-article__empty">Новость не найдена</div>
+  </div>
 </template>
 
 <style lang="scss" scoped>

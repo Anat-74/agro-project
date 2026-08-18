@@ -34,27 +34,29 @@ console.debug("Home page data:", homePage.value);
 </script>
 
 <template>
-  <ULoader v-show="status === 'pending'" />
+  <div>
+    <ULoader v-show="status === 'pending'" />
 
-  <HeroSection
-    v-if="homePage?.heroSlider || homePage?.heroGrids"
-    :slides="homePage.heroSlider"
-    :hero-grids="homePage.heroGrids"
-  />
+    <HeroSection
+      v-if="homePage?.heroSlider || homePage?.heroGrids"
+      :slides="homePage.heroSlider"
+      :hero-grids="homePage.heroGrids"
+    />
 
-  <FeaturedProductsSection
-    v-if="homePage?.featuredProducts"
-    :featured-prod="homePage.featuredProducts"
-  />
+    <FeaturedProductsSection
+      v-if="homePage?.featuredProducts"
+      :featured-prod="homePage.featuredProducts"
+    />
 
-  <SaleProductsSection
-    v-if="homePage?.featuredProducts"
-    :sale-prod="homePage.featuredProducts"
-  />
+    <SaleProductsSection
+      v-if="homePage?.featuredProducts"
+      :sale-prod="homePage.featuredProducts"
+    />
 
-  <span v-if="error" class="error">
-    {{ error.message }}
-  </span>
+    <span v-if="error" class="error">
+      {{ error.message }}
+    </span>
+  </div>
 </template>
 
 <style lang="scss" scoped></style>
