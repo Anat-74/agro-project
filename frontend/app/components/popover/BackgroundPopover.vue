@@ -2,6 +2,9 @@
 import { backgroundTranslations } from '~/locales/background'
 
 interface Props {
+  // Уникальный id попапа — генерируется в UBackground (useId), т.к. у async-компонента
+  // useId на сервере/клиенте расходится (popovertarget не совпал бы с id)
+  popupId: string;
   backgrounds: BackgroundItem[]
   selectedId?: number | string | null
 }
@@ -18,11 +21,8 @@ const emit = defineEmits<{
 const { currentLocale } = useLocale()
 const backgroundT = computed(() => backgroundTranslations[currentLocale.value])
 
-// Уникальный id поповера (аналогично ColorMode — на странице может быть несколько UBackground)
-const popupId = useId()
-
 const popupRef = useTemplateRef<HTMLElement>('popup')
-const { close } = usePopover(popupId, popupRef)
+const { close } = usePopover(props.popupId, popupRef)
 
 const selectBackground = (bg: BackgroundItem) => {
   emit('select', bg)

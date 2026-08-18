@@ -4,6 +4,10 @@ import { defineAsyncComponent } from 'vue'
 // Переключатель фонов — поповер, лениво (настройки, открываются по требованию)
 const BackgroundSwitcher = defineAsyncComponent(() => import('./popover/BackgroundPopover.vue'))
 
+// Id поповера генерируется в синхронном родителе: у async-компонентов useId()
+// на сервере и клиенте даёт разные значения → popovertarget не совпадёт с id.
+const backgroundPopupId = useId()
+
 interface Props {
   src?: string;
   retinaSrc?: string;
@@ -139,6 +143,7 @@ const interactiveClass = computed(() => ({
     <slot />
     <BackgroundSwitcher
       v-if="isDynamic"
+      :popup-id="backgroundPopupId"
       :backgrounds="backgroundOptions || []"
       :selected-id="selectedBg?.id"
       @select="onSelectBg"
