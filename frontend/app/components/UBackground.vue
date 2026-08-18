@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue'
-import type { BackgroundItem } from '~/types/background'
 
 // Переключатель фонов — лениво (настройки, открываются по требованию)
-const BackgroundSwitcher = defineAsyncComponent(() => import('./BackgroundSwitcher.vue'))
+const BackgroundSwitcher = defineAsyncComponent(() => import('./show-modal/ShowModalBackground.vue'))
 
 interface Props {
   src?: string;
@@ -45,7 +44,7 @@ onMounted(() => {
   if (isDynamic.value && props.backgroundOptions) {
     const saved = localStorage.getItem('selectedBackground')
     if (saved) {
-      const found = props.backgroundOptions.find(bg => bg.id === saved)
+      const found = props.backgroundOptions.find(bg => String(bg.id) === saved)
       if (found) { selectedBg.value = found; return }
     }
     const defaultBg = props.backgroundOptions.find(bg => bg.isDefault === true)
@@ -55,15 +54,17 @@ onMounted(() => {
 
 const onSelectBg = (bg: BackgroundItem) => {
   selectedBg.value = bg
-  localStorage.setItem('selectedBackground', bg.id)
+  localStorage.setItem('selectedBackground', String(bg.id))
 }
 
 const imageUrls = computed(() => {
   let baseImageUrl: string | null = null;
   let retinaImageUrl: string | null = null;
+  const strapiUrl = config.public.strapi.url;
   if (isDynamic.value && selectedBg.value) {
-    baseImageUrl = selectedBg.value.imageWebp || null
-    retinaImageUrl = selectedBg.value.imageAvif || null
+    const toFull = (url?: string) => (url && url.startsWith("/") ? `${strapiUrl}${url}` : url || null)
+    baseImageUrl = toFull(selectedBg.value.imageWebp?.url)
+    retinaImageUrl = toFull(selectedBg.value.imageAvif?.url)
   } else {
     if (props.src) {
       baseImageUrl = props.src.startsWith("http") || props.src.startsWith("//") || props.src.startsWith("/uploads/")

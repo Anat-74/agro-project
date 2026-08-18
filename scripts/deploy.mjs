@@ -3,7 +3,8 @@ import { chromium } from 'playwright';
 const PLESK_URL = 'https://vh324.by3020.ihb.by:8443';
 const USER = 'santexsistem_gmail_com6809';
 const PASS = '27cwr7UCn%%8JDU';
-const DOMAIN = 'vh324.by3020.ihb.by';
+// Домен по умолчанию — фронтенд. Для Strapi: node scripts/deploy.mjs api.vh324.by3020.ihb.by
+const DOMAIN = process.argv[2] || 'vh324.by3020.ihb.by';
 
 async function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
@@ -96,11 +97,13 @@ try {
 
   // Проверка домена
   const url1 = page.url();
-  if (!url1.includes('/id/589/')) {
+  const domIdMatch = url1.match(/\/id\/(\d+)\//);
+  if (!domIdMatch) {
     console.log(`   ❌ Неверный домен: ${url1}`);
     throw new Error('Wrong domain selected');
   }
-  console.log(`   ✅ ${url1}`);
+  const domId = domIdMatch[1];
+  console.log(`   ✅ ${url1} (dom_id=${domId})`);
 
   // ====== 3. GIT ======
   console.log('[3] Git...');
@@ -136,7 +139,7 @@ try {
 
   // ====== 4. NODE.JS BUILD ======
   console.log('[4] Node.js...');
-  await page.goto(`${PLESK_URL}/modules/nodejs/index.php/domain/index?dom_id=589&site_id=589`, { timeout: 30000, waitUntil: 'domcontentloaded' });
+  await page.goto(`${PLESK_URL}/modules/nodejs/index.php/domain/index?dom_id=${domId}&site_id=${domId}`, { timeout: 30000, waitUntil: 'domcontentloaded' });
   await sleep(3000);
 
   // Запустить скрипт
@@ -187,9 +190,12 @@ try {
 
   await sleep(2000);
   console.log('\n✅ Build запущен! Через 3-5 мин проверь сайт.');
+  await browser.close();
+  console.log('   ✅ Браузер закрыт');
 
 } catch (e) {
   console.error('❌', e.message);
   await page.screenshot({ path: 'deploy-err.png' }).catch(() => {});
+  await browser.close();
 }
 })();

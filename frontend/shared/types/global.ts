@@ -1,4 +1,5 @@
 import type { StrapiImage } from "./image";
+import type { BackgroundData } from "./background";
 
 export interface SocialLink {
   id: string; // В Strapi v5 это documentId
@@ -68,4 +69,5 @@ export type GlobalData = {
   footer: FooterData;
   legal: LegalInfo;
   header?: HeaderData;
+  background?: BackgroundData | null;
 };

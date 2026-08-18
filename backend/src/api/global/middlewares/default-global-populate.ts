@@ -23,6 +23,17 @@ export default (config: unknown, { strapi }: { strapi: Core.Strapi }) => {
         legal: true,
         phones: true,
         email: true,
+        background: {
+          populate: {
+            options: {
+              populate: {
+                imageAvif: { fields: ["alternativeText", "url"] },
+                imageWebp: { fields: ["alternativeText", "url"] },
+                thumbnail: { fields: ["alternativeText", "url"] },
+              },
+            },
+          },
+        },
         header: {
           populate: {
             navigation: {
