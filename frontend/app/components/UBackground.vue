@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue'
 
-// Переключатель фонов — лениво (настройки, открываются по требованию)
-const BackgroundSwitcher = defineAsyncComponent(() => import('./show-modal/ShowModalBackground.vue'))
+// Переключатель фонов — поповер, лениво (настройки, открываются по требованию)
+const BackgroundSwitcher = defineAsyncComponent(() => import('./popover/BackgroundPopover.vue'))
 
 interface Props {
   src?: string;

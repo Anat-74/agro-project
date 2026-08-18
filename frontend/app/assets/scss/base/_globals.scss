@@ -30,7 +30,7 @@ body {
 //! DIALOG-RELATED STYLES
 // ===================================================================
 
-body:has(.dialog-hamburger[open], .chat-assistant__modal[open], .cart-dialog[open], .background-switcher__dialog[open]) {
+body:has(.dialog-hamburger[open], .chat-assistant__modal[open], .cart-dialog[open]) {
   @media (max-width: c.$mobile) {
     overflow: hidden;
   }

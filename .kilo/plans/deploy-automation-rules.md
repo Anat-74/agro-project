@@ -200,6 +200,7 @@ const PASS = '27cwr7UCn%%8JDU';
 | "Запустить" не найдена | Неправильный селектор | Искать через кнопку с текстом `=== "Запустить"` |
 | Enter отключает Node.js | Фокус на неправильном поле | Не использовать Enter, только прямые селекторы |
 | Edit/Write инструмент "invalid" | Kilo в --auto режиме с permissions "ask" | Добавить `"edit": "allow"` в .kilo/kilo.json |
+| `searchNav('Git')` после выбора поддомена ведёт на Git главного домена (589) | Глобальный поиск Plesk возвращает Git основного домена, а не текущего | Для Git — прямой переход `page.goto(PLESK_URL + '/modules/git/index.php/domain/repositories?dom_id=' + domId + '&site_id=' + domId)` (как для Node.js). Проверять Title «Репозитории Git на <домен>». Без этого поддомен Strapi не получает коммиты |
 
 ---
 

@@ -107,15 +107,16 @@ try {
 
   // ====== 3. GIT ======
   console.log('[3] Git...');
-  await searchNav(page, 'Git', 'Git');
-  await sleep(1000);
+  // Прямой переход (глобальный поиск после выбора поддомена возвращает Git главного домена)
+  await page.goto(`${PLESK_URL}/modules/git/index.php/domain/repositories?dom_id=${domId}&site_id=${domId}`, { timeout: 30000, waitUntil: 'domcontentloaded' });
+  await sleep(3000);
 
   const gitTitle = await checkTitle(page, 'Репозитории Git');
   if (!gitTitle) {
     console.log('   ❌ Не Git страница, abort');
     throw new Error('Not on Git page');
   }
-  console.log('   ✅ Git страница');
+  console.log(`   ✅ Git страница (dom_id=${domId})`);
 
   // Получить сейчас
   const fetchBtn = page.locator('button:has-text("Получить сейчас")');

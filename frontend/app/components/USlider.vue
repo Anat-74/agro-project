@@ -3,7 +3,7 @@ interface Props<T = any> {
   slides: T[];
   slideKey?: keyof T | string;
   height?: string;
-  variant?: "hero" | "product";
+  variant?: "hero" | "product" | "background";
   paginationPosition?: "bottom" | "left";
   showPagination?: boolean;
   showNavigation?: boolean;
@@ -284,6 +284,29 @@ defineExpose({ go, active });
       gap: toRem(8);
       margin: 0;
       align-self: flex-start;
+    }
+  }
+
+  // ===== Вариант: background (выбор фона, поповер) =====
+  // Компактный горизонтальный слайдер: по одному превью на экран,
+  // навигация prev/next по бокам, свайп — нативный (scroll-snap)
+  &_background {
+    background-color: transparent;
+    min-height: 0 !important;
+
+    .slider__container {
+      column-gap: toRem(8);
+      padding: 0;
+      scroll-snap-type: x mandatory;
+    }
+
+    .slider__slide {
+      flex: 0 0 100%;
+      padding: 0;
+    }
+
+    .slider__pagination {
+      margin-block-start: toRem(8);
     }
   }
 }
