@@ -5,6 +5,11 @@ import OrderHistory from '~/components/auth/OrderHistory.vue'
 
 definePageMeta({
   middleware: 'auth',
+  viewTransition: {
+    enabled: true,
+    toTypes: ['slide-forward'],
+    fromTypes: ['slide-back'],
+  },
 })
 
 const { currentLocale } = useLocale()

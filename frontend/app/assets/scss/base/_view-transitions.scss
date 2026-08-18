@@ -1,0 +1,68 @@
+// ===================================================================
+//! Переходы между страницами
+// ===================================================================
+
+// -------------------------------------------------------------------
+//? Vue Transitions — глобальный кроссфейд (все страницы, SSR-дефолт)
+// -------------------------------------------------------------------
+.page-fade-enter-active,
+.page-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.page-fade-enter-from,
+.page-fade-leave-to {
+  opacity: 0;
+}
+
+// -------------------------------------------------------------------
+//? View Transitions API — opt-in на лёгких CSR-страницах
+// -------------------------------------------------------------------
+
+// Дефолтная длительность кроссфейда
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.3s;
+}
+
+@keyframes slide-out-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slide-out-right {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+// Навигация вперёд: старая страница уезжает влево, новая въезжает справа
+html:active-view-transition-type(slide-forward) {
+  &::view-transition-old(root) {
+    animation: slide-out-left 0.3s ease-in-out;
+  }
+
+  &::view-transition-new(root) {
+    animation: slide-in-right 0.3s ease-in-out;
+  }
+}
+
+// Навигация назад: старая уезжает вправо, новая въезжает слева
+html:active-view-transition-type(slide-back) {
+  &::view-transition-old(root) {
+    animation: slide-out-right 0.3s ease-in-out;
+  }
+
+  &::view-transition-new(root) {
+    animation: slide-in-left 0.3s ease-in-out;
+  }
+}

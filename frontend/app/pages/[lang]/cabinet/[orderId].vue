@@ -3,6 +3,11 @@ import { cabinetTranslations } from '~/locales/cabinet'
 
 definePageMeta({
   middleware: 'auth',
+  viewTransition: {
+    enabled: true,
+    toTypes: ['slide-forward'],
+    fromTypes: ['slide-back'],
+  },
 })
 
 const { currentLocale } = useLocale()

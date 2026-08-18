@@ -5,6 +5,14 @@ import { buttonTranslations } from "~/locales/button";
 
 import { orderSuccessTranslations } from "~/locales/orderSuccess";
 
+definePageMeta({
+  viewTransition: {
+    enabled: true,
+    toTypes: ["slide-forward"],
+    fromTypes: ["slide-back"],
+  },
+});
+
 const { currentLocale } = useLocale();
 const cartT = computed(() => cartTranslations[currentLocale.value])
 const discountT = computed(() => discountProductTranslations[currentLocale.value])

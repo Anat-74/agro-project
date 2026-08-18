@@ -5,6 +5,19 @@ export default defineNuxtConfig({
   devtools: {
     enabled: false,
   },
+  experimental: {
+    // View Transitions API (нативно, opt-in на страницах через definePageMeta)
+    viewTransition: true,
+  },
+  app: {
+    // Глобальный дефолт VT — выключен; включается точечно (лёгкие CSR-страницы)
+    viewTransition: false,
+    // Vue Transitions — глобальный кроссфейд для всех страниц (SSR-дефолт)
+    pageTransition: {
+      name: "page-fade",
+      mode: "out-in",
+    },
+  },
   modules: [
     "@nuxt/image",
     "@nuxt/icon",

@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { authTranslations } from '~/locales/auth'
 
+definePageMeta({
+  viewTransition: {
+    enabled: true,
+    toTypes: ['slide-forward'],
+    fromTypes: ['slide-back'],
+  },
+})
+
 const { currentLocale } = useLocale()
 const t = computed(() => authTranslations[currentLocale.value])
 const authStore = useAuthStore()
