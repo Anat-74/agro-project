@@ -141,14 +141,16 @@ const interactiveClass = computed(() => ({
     @click="isActive = !isActive"
   >
     <slot />
-    <BackgroundSwitcher
-      v-if="isDynamic"
-      :popup-id="backgroundPopupId"
-      :backgrounds="backgroundOptions || []"
-      :selected-id="selectedBg?.id"
-      @select="onSelectBg"
-    />
   </div>
+  <!-- Переключатель вне .app-bg: transform/filter фона (is-active) создаёт
+       containing block, ломающий position:fixed кнопки внутри .app-bg -->
+  <BackgroundSwitcher
+    v-if="isDynamic"
+    :popup-id="backgroundPopupId"
+    :backgrounds="backgroundOptions || []"
+    :selected-id="selectedBg?.id"
+    @select="onSelectBg"
+  />
 </template>
 
 <style lang="scss" scoped>

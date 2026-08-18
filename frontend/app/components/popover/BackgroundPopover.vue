@@ -159,8 +159,10 @@ const sliderActive = computed<number>(() => {
     gap: toRem(8);
     padding: toRem(12);
     border-radius: toRem(8);
-    background: var(--secondary-color);
-    box-shadow: 0 toRem(4) toRem(12) rgba(0, 0, 0, 0.15);
+    // Контрастный фон (отличается от фона страницы) + рамка
+    background: var(--bg-product);
+    border: toRem(1) solid var(--border-color);
+    box-shadow: 0 toRem(4) toRem(16) rgba(0, 0, 0, 0.2);
     width: min(90vw, toRem(280));
   }
 

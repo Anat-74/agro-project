@@ -311,10 +311,6 @@ defineEmits<Emits>();
     background-color: var(--light-color);
     transition: all var(--transition-duration);
 
-    @media (max-width:$mobileSmall){
-      display: none;
-    }
-
     svg {
       font-size: toEm(24);
       color: var(--success-color);

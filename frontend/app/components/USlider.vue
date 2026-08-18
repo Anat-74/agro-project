@@ -100,6 +100,7 @@ defineExpose({ go, active });
       :disabled="active <= 1"
       icon="mdi:chevron-left"
       variant="slide-prev"
+      :class="{ 'hidden-mobilesmall': props.variant === 'hero' }"
       aria-label="Предыдущий слайд"
       @click="prev"
     />
@@ -109,6 +110,7 @@ defineExpose({ go, active });
       :disabled="active === props.slides.length"
       icon="mdi:chevron-left"
       variant="slide-next"
+      :class="{ 'hidden-mobilesmall': props.variant === 'hero' }"
       aria-label="Следующий слайд"
       @click="next"
     />
