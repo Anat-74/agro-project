@@ -169,22 +169,22 @@ watch(sliderActive, (n) => {
 
   &__card {
     display: grid;
-    gap: toRem(8);
-    padding: toRem(12);
+    gap: toRem(6);
+    padding: toRem(10);
     border-radius: toRem(8);
-    // Контрастный фон (отличается от фона страницы) + рамка
-    background: var(--bg-product);
+    // Прозрачный фон с блюром (паттерн ShowHamburger)
+    background-color: var(--light-color-transparent);
+    backdrop-filter: blur(toRem(22));
     border: toRem(1) solid var(--border-color);
     box-shadow: 0 toRem(4) toRem(16) rgba(0, 0, 0, 0.2);
-    width: min(90vw, toRem(280));
-    // Для позиционирования кнопок навигации по центру всего окна
+    width: min(90vw, toRem(260));   // уже — окно ниже
     position: relative;
   }
 
   &__title {
     margin: 0;
     font-weight: 700;
-    @include adaptiveValue("font-size", 16, 14);
+    @include adaptiveValue("font-size", 15, 13);
   }
 
   &__slider-wrap {
@@ -193,10 +193,13 @@ watch(sliderActive, (n) => {
 
   &__preview {
     width: 100%;
-    // ~10% ниже прежнего (16/9 → 2/1)
-    aspect-ratio: 2 / 1;
+    // Ниже (2/1 → 16/9: высота ~на 12% меньше)
+    aspect-ratio: 16 / 9;
     object-fit: cover;
     border-radius: toRem(4);
+    // Свой бордер, как у пагинации — чтобы не сливалось
+    border: toRem(2) solid var(--border-color);
+    box-sizing: border-box;
   }
 
   // Пагинация — отдельный блок вне слайдера: миниатюры с рамкой, активная подсвечена

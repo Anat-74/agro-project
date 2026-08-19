@@ -1,6 +1,13 @@
 <script setup lang="ts">
 const { find } = useStrapi();
 const { currentLocale } = useLocale();
+const route = useRoute();
+
+// Динамический фон (с переключателем) — на контентных типах страниц.
+// Главная исключена: там секции (Hero/Featured/Sale) перекрывают глобальный фон
+// своими статическими фонами.
+const BG_PAGE_KEYS: BackgroundKey[] = ["catalog", "blog", "news", "cart", "cabinet", "auth", "static"];
+const isBgPage = computed(() => BG_PAGE_KEYS.includes(getBackgroundKey(route.path)));
 
 const {
   data: global,
@@ -33,7 +40,7 @@ console.debug("global data:", global.value);
   <main class="page-main">
     <SearchOverlay />
     <UBackground
-      v-if="global?.background?.enableBackground"
+      v-if="global?.background?.enableBackground && isBgPage"
       :background-options="global.background.options"
       variant="clean"
       size-mode="cover"

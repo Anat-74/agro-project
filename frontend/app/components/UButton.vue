@@ -175,8 +175,8 @@ defineEmits<Emits>();
   // Кнопка-палитра выбора фона. Позиционирование — в родителе (BackgroundPopover),
   // здесь только внешний вид: светлый фон + втиснение (паттерн _theme) + жёлтая иконка
   &_palette {
-    width: toRem(40);
-    height: toRem(40);
+    width: toRem(37);   // на 3px меньше базовой
+    height: toRem(37);
     padding: 0;
     border-radius: 50%;
     background: var(--light-color);
@@ -186,9 +186,15 @@ defineEmits<Emits>();
       inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
       0 toRem(1) 0 rgba(255, 255, 255, 0.4);
 
+    .btn-icon {
+      width: 100%;
+      height: 100%;
+    }
+
     svg {
       color: var(--yellow-color);
-      font-size: toEm(26);   // базовый ~24 + 2px
+      width: toRem(32);   // практически всё пространство кнопки
+      height: toRem(32);
     }
 
     @include hover {

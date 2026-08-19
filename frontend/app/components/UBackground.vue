@@ -44,21 +44,32 @@ const isActive = ref(false)
 
 const isDynamic = computed(() => !!(props.backgroundOptions && props.backgroundOptions.length > 0))
 
-onMounted(() => {
-  if (isDynamic.value && props.backgroundOptions) {
-    const saved = localStorage.getItem('selectedBackground')
-    if (saved) {
-      const found = props.backgroundOptions.find(bg => String(bg.id) === saved)
-      if (found) { selectedBg.value = found; return }
-    }
-    const defaultBg = props.backgroundOptions.find(bg => bg.isDefault === true)
-    selectedBg.value = defaultBg || props.backgroundOptions[0] || null
+// Ключ выбранного фона — по типу страницы: на разных страницах (блог, кабинет,
+// корзина…) пользователь может выбрать разные фоны; каждый тип хранится отдельно
+const route = useRoute()
+const backgroundKey = computed(() => getBackgroundKey(route.path))
+
+const storageKey = computed(() => `selectedBackground:${backgroundKey.value}`)
+
+const loadSelectedBg = () => {
+  if (!isDynamic.value || !props.backgroundOptions) return
+  const saved = localStorage.getItem(storageKey.value)
+  if (saved) {
+    const found = props.backgroundOptions.find(bg => String(bg.id) === saved)
+    if (found) { selectedBg.value = found; return }
   }
-})
+  const defaultBg = props.backgroundOptions.find(bg => bg.isDefault === true)
+  selectedBg.value = defaultBg || props.backgroundOptions[0] || null
+}
+
+onMounted(loadSelectedBg)
+
+// При переходе на другой тип страницы — подхватываем его сохранённый фон
+watch(backgroundKey, loadSelectedBg)
 
 const onSelectBg = (bg: BackgroundItem) => {
   selectedBg.value = bg
-  localStorage.setItem('selectedBackground', String(bg.id))
+  localStorage.setItem(storageKey.value, String(bg.id))
 }
 
 const imageUrls = computed(() => {
@@ -433,7 +444,9 @@ const interactiveClass = computed(() => ({
 }
 
 /* ========== ГЛОБАЛЬНЫЕ СТИЛИ ДЛЯ КОНТЕНТА ========== */
-.app-bg + *,
+/* .app-bg absolute рисуется поверх статичного контента → поднимаем ВСЕХ
+   соседей после него (~), а не только первого (+): switcher вынесен из .app-bg */
+.app-bg ~ *,
 .app-bg > :slotted(*) {
   position: relative;
   z-index: 1;
