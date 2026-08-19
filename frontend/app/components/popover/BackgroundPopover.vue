@@ -53,15 +53,12 @@ const sliderActive = computed<number>(() => {
   return typeof active === "number" ? active : (active?.value ?? 1)
 })
 
-// Выбор фона при любом способе смены слайда (свайп, кнопки, миниатюры):
+// Выбор фона при смене слайда (свайп, клик по миниатюрам):
 // следим за активным слайдом и применяем соответствующий фон
 watch(sliderActive, (n) => {
   const bg = props.backgrounds[n - 1]
   if (bg) selectBackground(bg)
 })
-
-const prevSlide = () => sliderRef.value?.prev?.()
-const nextSlide = () => sliderRef.value?.next?.()
 </script>
 
 <template>
@@ -100,26 +97,6 @@ const nextSlide = () => sliderRef.value?.next?.()
               />
             </template>
           </USlider>
-
-          <!-- Навигация вынесена в карточку: по центру всего окна, не изображения -->
-          <UButton
-            v-if="backgrounds.length > 1"
-            :disabled="sliderActive <= 1"
-            icon="mdi:chevron-left"
-            variant="slide-prev"
-            class="background-popover__nav background-popover__nav_prev"
-            aria-label="Предыдущий фон"
-            @click="prevSlide"
-          />
-          <UButton
-            v-if="backgrounds.length > 1"
-            :disabled="sliderActive === backgrounds.length"
-            icon="mdi:chevron-left"
-            variant="slide-next"
-            class="background-popover__nav background-popover__nav_next"
-            aria-label="Следующий фон"
-            @click="nextSlide"
-          />
         </div>
 
         <!-- Пагинация — отдельный блок вне слайдера: миниатюры, активная с бордером.
@@ -157,24 +134,14 @@ const nextSlide = () => sliderRef.value?.next?.()
     bottom: toRem(24);
     inset-inline-end: toRem(24);
     z-index: 900;
-    // +3px к базовому размеру и жёлтая палитра
-    @include adaptiveValue("width", 43, 37);
-    @include adaptiveValue("height", 43, 37);
-    border-radius: 50%;
-    background-color: var(--warning-color);
-    border: none;
-    // Эффект втиснения: тень от верхнего края внутрь + блик снизу (паттерн _theme)
-    box-shadow:
-      inset 0 toRem(3) toRem(5) rgba(0, 0, 0, 0.3),
-      inset 0 -toRem(2) toRem(3) rgba(255, 255, 255, 0.3),
-      0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+    // Без фона — только жёлтая иконка, на 2px больше базовой
+    @include adaptiveValue("width", 40, 34);
+    @include adaptiveValue("height", 40, 34);
+    padding: 0;
 
     svg {
-      color: var(--light-color);
-    }
-
-    @include hover {
-      background-color: var(--warning-hover);
+      color: var(--yellow-color);
+      font-size: toEm(26);   // базовый ~24 + 2px
     }
   }
 
@@ -229,13 +196,7 @@ const nextSlide = () => sliderRef.value?.next?.()
   }
 
   &__slider-wrap {
-    // Без position:relative — кнопки навигации позиционируются относительно
-    // карточки (position: relative), чтобы центрироваться по всему окну
-  }
-
-  // Навигация — по вертикальному центру всего окна (карточки), а не изображения
-  &__nav {
-    z-index: 2;
+    // Кнопки навигации убраны: переключение фона — свайпом или по миниатюрам
   }
 
   &__preview {

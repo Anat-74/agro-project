@@ -593,6 +593,8 @@ defineEmits<Emits>();
     margin-inline: auto;
     padding: toRem(4);
     border: toRem(1) solid var(--success-color);
+    // Втиснение видно только на непрозрачном фоне (inset-тени внутрь)
+    background-color: var(--light-color);
     // Эффект втиснения (паттерн _theme)
     box-shadow:
       inset 0 toRem(3) toRem(5) rgba(0, 0, 0, 0.3),
