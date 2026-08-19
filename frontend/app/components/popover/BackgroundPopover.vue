@@ -41,6 +41,8 @@ const optionKey = (bg: BackgroundItem, index: number) => String(bg.id ?? index)
 interface SliderApi {
   go: (n: number) => void
   active: Ref<number>
+  prev: () => void
+  next: () => void
 }
 
 const sliderRef = useTemplateRef<SliderApi>('slider')
@@ -50,6 +52,16 @@ const sliderActive = computed<number>(() => {
   const active = sliderRef.value?.active
   return typeof active === "number" ? active : (active?.value ?? 1)
 })
+
+// Выбор фона при любом способе смены слайда (свайп, кнопки, миниатюры):
+// следим за активным слайдом и применяем соответствующий фон
+watch(sliderActive, (n) => {
+  const bg = props.backgrounds[n - 1]
+  if (bg) selectBackground(bg)
+})
+
+const prevSlide = () => sliderRef.value?.prev?.()
+const nextSlide = () => sliderRef.value?.next?.()
 </script>
 
 <template>
@@ -68,27 +80,50 @@ const sliderActive = computed<number>(() => {
       <div class="background-popover__card">
         <h3 class="background-popover__title">{{ backgroundT.title }}</h3>
 
-        <USlider
-          ref="slider"
-          :slides="backgrounds"
-          variant="background"
-          :slide-key="optionKey"
-          :show-pagination="false"
-          :show-navigation="backgrounds.length > 1"
-        >
-          <template #default="{ slide }">
-            <UImage
-              v-if="slide.thumbnail?.url || slide.imageWebp?.url"
-              :src="slide.thumbnail?.url || slide.imageWebp.url"
-              :alt="slide.title"
-              width="220"
-              height="124"
-              class="background-popover__preview"
-            />
-          </template>
-        </USlider>
+        <div class="background-popover__slider-wrap">
+          <USlider
+            ref="slider"
+            :slides="backgrounds"
+            variant="background"
+            :slide-key="optionKey"
+            :show-pagination="false"
+            :show-navigation="false"
+          >
+            <template #default="{ slide }">
+              <UImage
+                v-if="slide.thumbnail?.url || slide.imageWebp?.url"
+                :src="slide.thumbnail?.url || slide.imageWebp.url"
+                :alt="slide.title"
+                width="220"
+                height="112"
+                class="background-popover__preview"
+              />
+            </template>
+          </USlider>
 
-        <!-- Пагинация — отдельный блок вне слайдера: миниатюры, активная с бордером -->
+          <!-- Навигация вынесена в карточку: по центру всего окна, не изображения -->
+          <UButton
+            v-if="backgrounds.length > 1"
+            :disabled="sliderActive <= 1"
+            icon="mdi:chevron-left"
+            variant="slide-prev"
+            class="background-popover__nav background-popover__nav_prev"
+            aria-label="Предыдущий фон"
+            @click="prevSlide"
+          />
+          <UButton
+            v-if="backgrounds.length > 1"
+            :disabled="sliderActive === backgrounds.length"
+            icon="mdi:chevron-left"
+            variant="slide-next"
+            class="background-popover__nav background-popover__nav_next"
+            aria-label="Следующий фон"
+            @click="nextSlide"
+          />
+        </div>
+
+        <!-- Пагинация — отдельный блок вне слайдера: миниатюры, активная с бордером.
+             Клик листает слайдер, фон применяет watch(sliderActive) -->
         <div v-if="backgrounds.length > 1" class="background-popover__thumbs">
           <button
             v-for="(bg, i) in backgrounds"
@@ -98,7 +133,7 @@ const sliderActive = computed<number>(() => {
             :class="{ 'background-popover__thumb_active': sliderActive === i + 1 }"
             :aria-label="`${backgroundT.ariaLabelOption}: ${bg.title}`"
             :aria-pressed="sliderActive === i + 1"
-            @click="selectBackground(bg); sliderRef?.go(i + 1)"
+            @click="sliderRef?.go(i + 1)"
           >
             <UImage
               v-if="bg.thumbnail?.url || bg.imageWebp?.url"
@@ -122,6 +157,25 @@ const sliderActive = computed<number>(() => {
     bottom: toRem(24);
     inset-inline-end: toRem(24);
     z-index: 900;
+    // +3px к базовому размеру и жёлтая палитра
+    @include adaptiveValue("width", 43, 37);
+    @include adaptiveValue("height", 43, 37);
+    border-radius: 50%;
+    background-color: var(--warning-color);
+    border: none;
+    // Эффект втиснения: тень от верхнего края внутрь + блик снизу (паттерн _theme)
+    box-shadow:
+      inset 0 toRem(3) toRem(5) rgba(0, 0, 0, 0.3),
+      inset 0 -toRem(2) toRem(3) rgba(255, 255, 255, 0.3),
+      0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+
+    svg {
+      color: var(--light-color);
+    }
+
+    @include hover {
+      background-color: var(--warning-hover);
+    }
   }
 
   // Окно по центру в самом низу экрана (top-layer)
@@ -164,6 +218,8 @@ const sliderActive = computed<number>(() => {
     border: toRem(1) solid var(--border-color);
     box-shadow: 0 toRem(4) toRem(16) rgba(0, 0, 0, 0.2);
     width: min(90vw, toRem(280));
+    // Для позиционирования кнопок навигации по центру всего окна
+    position: relative;
   }
 
   &__title {
@@ -172,9 +228,20 @@ const sliderActive = computed<number>(() => {
     @include adaptiveValue("font-size", 16, 14);
   }
 
+  &__slider-wrap {
+    // Без position:relative — кнопки навигации позиционируются относительно
+    // карточки (position: relative), чтобы центрироваться по всему окну
+  }
+
+  // Навигация — по вертикальному центру всего окна (карточки), а не изображения
+  &__nav {
+    z-index: 2;
+  }
+
   &__preview {
     width: 100%;
-    aspect-ratio: 16 / 9;
+    // ~10% ниже прежнего (16/9 → 2/1)
+    aspect-ratio: 2 / 1;
     object-fit: cover;
     border-radius: toRem(4);
   }

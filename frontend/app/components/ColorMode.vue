@@ -164,12 +164,13 @@ function setTheme(theme: string) {
 
   &__percent {
     position: absolute;
-    left: -32px;   // на 10px левее
-    top: 50%;
-    translate: 0 -50%;
+    // Над кнопкой по центру (кнопка позиционируется по --slider-value)
+    left: calc(var(--slider-value, 50) * 1%);
+    bottom: calc(100% + toRem(6));
+    translate: -50% 0;
     font-weight: 600;
     font-size: toEm(14);
-    color: var(--light-color);
+    color: var(--color);   // цвет соседних элементов (шапка/баннер)
   }
 
   // Ползунок под текущую тему:

@@ -65,7 +65,7 @@ onUnmounted(() => {
 });
 
 // Для внешнего управления слайдером (напр. пагинация-миниатюры вне слайдера в модалке)
-defineExpose({ go, active });
+defineExpose({ go, active, prev, next });
 </script>
 
 <template>

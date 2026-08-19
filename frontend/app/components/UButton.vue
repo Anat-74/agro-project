@@ -587,10 +587,16 @@ defineEmits<Emits>();
   &_go-to-top {
     position: fixed;
     z-index: 999;
-    right: toRem(15);
-    bottom: toRem(14);
+    // По горизонтали по центру экрана, от низа 4px
+    inset-inline: 0;
+    bottom: toRem(4);
+    margin-inline: auto;
     padding: toRem(4);
     border: toRem(1) solid var(--success-color);
+    // Эффект втиснения (паттерн _theme)
+    box-shadow:
+      inset 0 toRem(3) toRem(5) rgba(0, 0, 0, 0.3),
+      inset 0 -toRem(2) toRem(3) rgba(255, 255, 255, 0.3);
     transition: color var(--transition-duration);
     @include adaptiveValue("width", 36, 30);
     @include adaptiveValue("height", 36, 30);
