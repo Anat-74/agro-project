@@ -31,6 +31,7 @@ interface Props {
     | "theme"
     | "slide-prev"
     | "cart-pill"
+    | "palette"
   size?: "small" | "normal" | "large";
   isLoading?: boolean;
   isDisabled?: boolean;
@@ -168,6 +169,30 @@ defineEmits<Emits>();
 
     @include hover {
       transform: scale(1.1) rotate(45deg);
+    }
+  }
+
+  // Кнопка-палитра выбора фона. Позиционирование — в родителе (BackgroundPopover),
+  // здесь только внешний вид: светлый фон + втиснение (паттерн _theme) + жёлтая иконка
+  &_palette {
+    width: toRem(40);
+    height: toRem(40);
+    padding: 0;
+    border-radius: 50%;
+    background: var(--light-color);
+    border: toRem(1) solid var(--border-color);
+    box-shadow:
+      0 toRem(2) toRem(4) rgba(0, 0, 0, 0.25),
+      inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
+      0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+
+    svg {
+      color: var(--yellow-color);
+      font-size: toEm(26);   // базовый ~24 + 2px
+    }
+
+    @include hover {
+      background-color: var(--warning-hover);
     }
   }
 
@@ -591,28 +616,25 @@ defineEmits<Emits>();
     inset-inline: 0;
     bottom: toRem(4);
     margin-inline: auto;
-    padding: toRem(4);
-    border: toRem(1) solid var(--success-color);
-    // Втиснение видно только на непрозрачном фоне (inset-тени внутрь)
-    background-color: var(--light-color);
-    // Эффект втиснения (паттерн _theme)
+    padding: 0;
+    border-radius: 50%;
+    border: toRem(1) solid var(--border-color);
+    // Втиснение: светлый фон + inset-тени (полный паттерн кнопки темы)
+    background: var(--light-color);
     box-shadow:
-      inset 0 toRem(3) toRem(5) rgba(0, 0, 0, 0.3),
-      inset 0 -toRem(2) toRem(3) rgba(255, 255, 255, 0.3);
+      0 toRem(2) toRem(4) rgba(0, 0, 0, 0.25),
+      inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
+      0 toRem(1) 0 rgba(255, 255, 255, 0.4);
     transition: color var(--transition-duration);
     @include adaptiveValue("width", 36, 30);
     @include adaptiveValue("height", 36, 30);
 
-    svg {
+    :deep(svg) {
       color: var(--success-color);
     }
 
     @include hover {
       background-color: var(--warning-hover);
-    }
-
-    @media (max-width: $mobile) {
-      border-width: 1px;
     }
   }
 

@@ -67,7 +67,7 @@ watch(sliderActive, (n) => {
       class="background-popover__trigger"
       icon="mingcute:palette-line"
       :aria-label="backgroundT.ariaLabelTrigger"
-      variant="icon"
+      variant="palette"
       :popovertarget="popupId"
     />
 
@@ -130,19 +130,11 @@ watch(sliderActive, (n) => {
 <style lang="scss" scoped>
 .background-popover {
   &__trigger {
+    // Только позиционирование — внешний вид в UButton (variant="palette")
     position: fixed;
     bottom: toRem(24);
     inset-inline-end: toRem(24);
     z-index: 900;
-    // Без фона — только жёлтая иконка, на 2px больше базовой
-    @include adaptiveValue("width", 40, 34);
-    @include adaptiveValue("height", 40, 34);
-    padding: 0;
-
-    svg {
-      color: var(--yellow-color);
-      font-size: toEm(26);   // базовый ~24 + 2px
-    }
   }
 
   // Окно по центру в самом низу экрана (top-layer)
