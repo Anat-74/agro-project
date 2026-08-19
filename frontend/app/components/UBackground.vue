@@ -6,7 +6,9 @@ const BackgroundSwitcher = defineAsyncComponent(() => import('./popover/Backgrou
 
 // Id поповера генерируется в синхронном родителе: у async-компонентов useId()
 // на сервере и клиенте даёт разные значения → popovertarget не совпадёт с id.
-const backgroundPopupId = useId()
+// Префикс обязателен: у ColorModePopover и этого попапа useId() совпадает
+// (одинаковая позиция в дереве) → дубликаты id ломали popovertarget.
+const backgroundPopupId = `bg-popover-${useId()}`
 
 interface Props {
   src?: string;
@@ -72,6 +74,33 @@ const onSelectBg = (bg: BackgroundItem) => {
   localStorage.setItem(storageKey.value, String(bg.id))
 }
 
+// ===== Размер отображения фона (пользовательский выбор) =====
+// Хранится по типу страницы (как фон). Приоритет: выбор пользователя > пропс родителя.
+const sizeStorageKey = computed(() => `backgroundSize:${backgroundKey.value}`)
+
+const userSizeMode = ref<"cover" | "contain" | "original">(props.sizeMode)
+
+const loadSizeMode = () => {
+  if (!isDynamic.value) return
+  const saved = localStorage.getItem(sizeStorageKey.value)
+  if (saved === "cover" || saved === "contain" || saved === "original") {
+    userSizeMode.value = saved
+    return
+  }
+  // Нет выбора пользователя → дефолт от родителя (пропс)
+  userSizeMode.value = props.sizeMode
+}
+
+onMounted(loadSizeMode)
+
+// При переходе на другой тип страницы — подхватываем его сохранённый размер
+watch(backgroundKey, loadSizeMode)
+
+const onSizeChange = (mode: "cover" | "contain" | "original") => {
+  userSizeMode.value = mode
+  localStorage.setItem(sizeStorageKey.value, mode)
+}
+
 const imageUrls = computed(() => {
   let baseImageUrl: string | null = null;
   let retinaImageUrl: string | null = null;
@@ -101,7 +130,9 @@ const imageUrls = computed(() => {
 
 const backgroundStyle = computed(() => {
   const styles: any = { backgroundPosition: props.bgPosition, backgroundRepeat: "no-repeat" };
-  switch (props.sizeMode) {
+  // Приоритет: выбор пользователя > пропс родителя
+  const sizeMode = isDynamic.value ? userSizeMode.value : props.sizeMode
+  switch (sizeMode) {
     case "cover": styles.backgroundSize = "cover"; break;
     case "contain": styles.backgroundSize = "contain"; break;
     default: styles.backgroundSize = "auto";
@@ -160,7 +191,9 @@ const interactiveClass = computed(() => ({
     :popup-id="backgroundPopupId"
     :backgrounds="backgroundOptions || []"
     :selected-id="selectedBg?.id"
+    :size-mode="userSizeMode"
     @select="onSelectBg"
+    @size-change="onSizeChange"
   />
 </template>
 
@@ -444,8 +477,9 @@ const interactiveClass = computed(() => ({
 }
 
 /* ========== ГЛОБАЛЬНЫЕ СТИЛИ ДЛЯ КОНТЕНТА ========== */
-/* .app-bg absolute рисуется поверх статичного контента → поднимаем ВСЕХ
-   соседей после него (~), а не только первого (+): switcher вынесен из .app-bg */
+/* .app-bg absolute рисуется поверх статичного контента → поднимаем соседей
+   после него (~). Обёртке переключателя z-index задан в BackgroundPopover
+   (выше контента), т.к. его fixed-кнопка должна быть поверх страницы */
 .app-bg ~ *,
 .app-bg > :slotted(*) {
   position: relative;

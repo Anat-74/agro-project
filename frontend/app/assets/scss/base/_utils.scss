@@ -113,6 +113,37 @@
   border-radius: toRem(6);
 }
 
+// Браузеры с поддержкой base-select: нативный select + современная стилизация
+// (прогрессивное улучшение; кастомный вид выше — fallback для Firefox/iOS<27)
+@supports (appearance: base-select) {
+  .select {
+    appearance: base-select;
+
+    // Нативный пикер открывается в top-layer: панель списка
+    &::picker(select) {
+      border: toRem(2) solid var(--warning-color);
+      border-radius: toEm(4, 16);
+      background-color: var(--light-color);
+    }
+
+    // Состояние «список открыт»
+    &:open {
+      // акцентные стили при открытом пикере
+    }
+
+    // Галочка выбранного варианта
+    &::checkmark {
+      color: var(--warning-color);
+    }
+  }
+
+  // При base-select кастомная стрелка wrapper не нужна (её рисует ::picker-icon)
+  .select-wrapper::before,
+  .select-wrapper::after {
+    display: none;
+  }
+}
+
 // Класс для визуального скрытия элемента, но сохранения доступности для скринридеров
 .visually-hidden {
   position: absolute !important;

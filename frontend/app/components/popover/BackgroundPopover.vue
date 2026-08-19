@@ -7,19 +7,33 @@ interface Props {
   popupId: string;
   backgrounds: BackgroundItem[]
   selectedId?: number | string | null
+  sizeMode?: "cover" | "contain" | "original"
 }
 
 const props = withDefaults(defineProps<Props>(), {
   backgrounds: () => [],
   selectedId: null,
+  sizeMode: "cover",
 })
 
 const emit = defineEmits<{
   select: [bg: BackgroundItem]
+  sizeChange: [mode: "cover" | "contain" | "original"]
 }>()
 
 const { currentLocale } = useLocale()
 const backgroundT = computed(() => backgroundTranslations[currentLocale.value])
+
+const sizeOptions = computed(() => [
+  { value: "cover", label: backgroundT.value.sizeCover },
+  { value: "contain", label: backgroundT.value.sizeContain },
+  { value: "original", label: backgroundT.value.sizeOriginal },
+] as const)
+
+const onSizeChange = (event: Event) => {
+  const value = (event.target as HTMLSelectElement).value as "cover" | "contain" | "original"
+  emit('sizeChange', value)
+}
 
 const popupRef = useTemplateRef<HTMLElement>('popup')
 // usePopover синхронизирует isOpen; закрытие — только нативное (клик вне/Escape)
@@ -122,124 +136,165 @@ watch(sliderActive, (n) => {
             />
           </button>
         </div>
+
+        <!-- Размер отображения фона: единый класс .select (fallback + base-select) -->
+        <div class="background-popover__size-wrapper select-wrapper">
+          <label class="visually-hidden" for="background-size-select">
+            {{ backgroundT.sizeLabel }}
+          </label>
+          <select
+            id="background-size-select"
+            class="background-popover__size select"
+            :value="sizeMode"
+            @change="onSizeChange"
+          >
+            <option
+              v-for="opt in sizeOptions"
+              :key="opt.value"
+              :value="opt.value"
+            >
+              {{ opt.label }}
+            </option>
+          </select>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+// Обёртка на весь экран в top-слое, но НЕ перехватывает клики (pointer-events: none).
+// !important — перебить глобальное правило .app-bg ~ * (z-index:1; position:relative),
+// иначе обёртка получает z-index 1 и контент страницы перекрывает её.
 .background-popover {
-  &__trigger {
-    // Только позиционирование — внешний вид в UButton (variant="palette")
-    position: fixed;
-    bottom: toRem(24);
-    inset-inline-end: toRem(24);
-    z-index: 900;
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 900 !important;
+  pointer-events: none;
+}
+
+// Только позиционирование — внешний вид в UButton (variant="palette")
+.background-popover__trigger {
+  position: fixed;
+  bottom: toRem(24);
+  inset-inline-end: toRem(24);
+  z-index: 900;
+  pointer-events: auto;
+}
+
+// Окно по центру в самом низу экрана (top-layer)
+.background-popover__popover {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-start: auto;
+  inset-block-end: 0;
+  margin: 0 auto toRem(24);
+  width: fit-content;
+
+  opacity: 0;
+  translate: 0 toRem(8);
+  transition:
+    opacity 0.2s,
+    translate 0.2s,
+    overlay 0.2s allow-discrete,
+    display 0.2s allow-discrete;
+
+  &:popover-open {
+    opacity: 1;
+    translate: 0 0;
   }
 
-  // Окно по центру в самом низу экрана (top-layer)
-  &__popover {
-    position: fixed;
-    inset-inline: 0;
-    inset-block-start: auto;
-    inset-block-end: 0;
-    margin: 0 auto toRem(24);
-    width: fit-content;
-
-    opacity: 0;
-    translate: 0 toRem(8);
-    transition:
-      opacity 0.2s,
-      translate 0.2s,
-      overlay 0.2s allow-discrete,
-      display 0.2s allow-discrete;
-
+  @starting-style {
     &:popover-open {
-      opacity: 1;
-      translate: 0 0;
-    }
-
-    @starting-style {
-      &:popover-open {
-        opacity: 0;
-        translate: 0 toRem(8);
-      }
+      opacity: 0;
+      translate: 0 toRem(8);
     }
   }
+}
 
-  &__card {
-    display: grid;
-    gap: toRem(6);
-    padding: toRem(10);
-    border-radius: toRem(8);
-    // Прозрачный фон с блюром (паттерн ShowHamburger)
-    background-color: var(--light-color-transparent);
-    backdrop-filter: blur(toRem(22));
-    border: toRem(1) solid var(--border-color);
-    box-shadow: 0 toRem(4) toRem(16) rgba(0, 0, 0, 0.2);
-    width: min(90vw, toRem(260));   // уже — окно ниже
-    position: relative;
+.background-popover__card {
+  display: grid;
+  gap: toRem(6);
+  padding: toRem(10);
+  border-radius: toRem(8);
+  // Прозрачный фон с блюром (паттерн ShowHamburger, размытие вдвое меньше — 11px)
+  background-color: var(--light-color-transparent);
+  backdrop-filter: blur(toRem(11));
+  border: toRem(1) solid var(--border-color);
+  box-shadow: 0 toRem(4) toRem(16) rgba(0, 0, 0, 0.2);
+  width: min(90vw, toRem(260));   // уже — окно ниже
+  position: relative;
+}
+
+.background-popover__title {
+  margin: 0;
+  font-weight: 700;
+  @include adaptiveValue("font-size", 15, 13);
+}
+
+.background-popover__slider-wrap {
+  // Кнопки навигации убраны: переключение фона — свайпом или по миниатюрам
+}
+
+.background-popover__preview {
+  width: 100%;
+  // Ниже (2/1 → 16/9: высота ~на 12% меньше)
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: toRem(4);
+  // Свой бордер, как у пагинации — чтобы не сливалось
+  border: toRem(2) solid var(--border-color);
+  box-sizing: border-box;
+}
+
+// Пагинация — отдельный блок вне слайдера: миниатюры с рамкой, активная подсвечена
+// (паттерн ShowModalProduct: бордер переносится на активную миниатюру)
+.background-popover__thumbs {
+  display: flex;
+  justify-content: center;
+  gap: toRem(8);
+  margin-block-start: toRem(12);
+}
+
+.background-popover__thumb {
+  border: toRem(2) solid transparent;
+  border-radius: toRem(6);
+  padding: toRem(2);
+  background: none;
+  cursor: pointer;
+  opacity: 0.65;
+  transition:
+    opacity var(--transition-duration),
+    border-color var(--transition-duration);
+
+  &_active {
+    opacity: 1;
+    border-color: var(--success-color);
   }
 
-  &__title {
-    margin: 0;
-    font-weight: 700;
-    @include adaptiveValue("font-size", 15, 13);
+  @include hover {
+    opacity: 1;
   }
+}
 
-  &__slider-wrap {
-    // Кнопки навигации убраны: переключение фона — свайпом или по миниатюрам
-  }
+.background-popover__thumb-img {
+  width: toRem(40);
+  height: toRem(40);
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: toRem(4);
+  background-color: var(--bg-product);
+  display: block;
+}
 
-  &__preview {
-    width: 100%;
-    // Ниже (2/1 → 16/9: высота ~на 12% меньше)
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    border-radius: toRem(4);
-    // Свой бордер, как у пагинации — чтобы не сливалось
-    border: toRem(2) solid var(--border-color);
-    box-sizing: border-box;
-  }
+// Размер фона: единый класс .select (fallback + base-select из _utils.scss),
+// здесь только компактная ширина для попапа
+.background-popover__size-wrapper {
+  justify-self: center;
+}
 
-  // Пагинация — отдельный блок вне слайдера: миниатюры с рамкой, активная подсвечена
-  // (паттерн ShowModalProduct: бордер переносится на активную миниатюру)
-  &__thumbs {
-    display: flex;
-    justify-content: center;
-    gap: toRem(8);
-    margin-block-start: toRem(12);
-  }
-
-  &__thumb {
-    border: toRem(2) solid transparent;
-    border-radius: toRem(6);
-    padding: toRem(2);
-    background: none;
-    cursor: pointer;
-    opacity: 0.65;
-    transition:
-      opacity var(--transition-duration),
-      border-color var(--transition-duration);
-
-    &_active {
-      opacity: 1;
-      border-color: var(--success-color);
-    }
-
-    @include hover {
-      opacity: 1;
-    }
-  }
-
-  &__thumb-img {
-    width: toRem(40);
-    height: toRem(40);
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    border-radius: toRem(4);
-    background-color: var(--bg-product);
-    display: block;
-  }
+.background-popover__size {
+  width: toRem(150);
+  font-size: toEm(13);
 }
 </style>
