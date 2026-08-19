@@ -25,9 +25,9 @@ const { currentLocale } = useLocale()
 const backgroundT = computed(() => backgroundTranslations[currentLocale.value])
 
 const sizeOptions = computed(() => [
-  { value: "cover", label: backgroundT.value.sizeCover },
-  { value: "contain", label: backgroundT.value.sizeContain },
-  { value: "original", label: backgroundT.value.sizeOriginal },
+  { value: "cover", label: backgroundT.value.sizeCover, icon: "▣" },
+  { value: "contain", label: backgroundT.value.sizeContain, icon: "⤡" },
+  { value: "original", label: backgroundT.value.sizeOriginal, icon: "◻" },
 ] as const)
 
 const onSizeChange = (event: Event) => {
@@ -45,9 +45,7 @@ const selectBackground = (bg: BackgroundItem) => {
   // Закрытие: клик вне окна / Escape (нативный light-dismiss popover="auto").
 }
 
-const isActive = (bg: BackgroundItem) =>
-  props.selectedId != null && String(bg.id) === String(props.selectedId)
-
+// Уникальный ключ для v-for по фонам (id фона или индекс как fallback)
 const optionKey = (bg: BackgroundItem, index: number) => String(bg.id ?? index)
 
 // Пагинация-миниатюры вынесены отдельным блоком вне слайдера (как в ShowModalProduct):
@@ -96,7 +94,7 @@ watch(sliderActive, (n) => {
             ref="slider"
             :slides="backgrounds"
             variant="background"
-            :slide-key="optionKey"
+            :slide-key="'id'"
             :show-pagination="false"
             :show-navigation="false"
           >
@@ -153,7 +151,7 @@ watch(sliderActive, (n) => {
               :key="opt.value"
               :value="opt.value"
             >
-              {{ opt.label }}
+              {{ opt.icon }} {{ opt.label }}
             </option>
           </select>
         </div>
@@ -182,7 +180,9 @@ watch(sliderActive, (n) => {
   pointer-events: auto;
 }
 
-// Окно по центру в самом низу экрана (top-layer)
+// Окно по центру в самом низу экрана (top-layer).
+// pointer-events: auto — иначе попап наследует none от обёртки, и клики
+// проходят сквозь него → нативный light-dismiss закрывает окно сразу
 .background-popover__popover {
   position: fixed;
   inset-inline: 0;
@@ -190,6 +190,7 @@ watch(sliderActive, (n) => {
   inset-block-end: 0;
   margin: 0 auto toRem(24);
   width: fit-content;
+  pointer-events: auto;
 
   opacity: 0;
   translate: 0 toRem(8);
@@ -218,8 +219,8 @@ watch(sliderActive, (n) => {
   padding: toRem(10);
   border-radius: toRem(8);
   // Прозрачный фон с блюром (паттерн ShowHamburger, размытие вдвое меньше — 11px)
-  background-color: var(--light-color-transparent);
-  backdrop-filter: blur(toRem(11));
+  background-color: var(--transparent-color);
+  backdrop-filter: blur(toRem(42));
   border: toRem(1) solid var(--border-color);
   box-shadow: 0 toRem(4) toRem(16) rgba(0, 0, 0, 0.2);
   width: min(90vw, toRem(260));   // уже — окно ниже
@@ -230,10 +231,6 @@ watch(sliderActive, (n) => {
   margin: 0;
   font-weight: 700;
   @include adaptiveValue("font-size", 15, 13);
-}
-
-.background-popover__slider-wrap {
-  // Кнопки навигации убраны: переключение фона — свайпом или по миниатюрам
 }
 
 .background-popover__preview {

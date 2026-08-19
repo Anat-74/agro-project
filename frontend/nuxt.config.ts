@@ -40,6 +40,7 @@ export default defineNuxtConfig({
       { name: 'Roboto', provider: 'local' },
       { name: 'Open Sans', provider: 'local' },
       { name: 'Yellowtail', provider: 'local' },
+      { name: 'Comic Sans MS', provider: 'local' },
     ],
   },
   hints: {

@@ -72,75 +72,120 @@
   translate: 0 100%;
 }
 
-.select-wrapper {
-  position: relative;
+// .select-wrapper {
+//   position: relative;
 
-  &::before,
-  &::after {
-    content: "";
-    pointer-events: none;
-    position: absolute;
-    top: calc(50% - toRem(1));
-    width: toRem(6);
-    height: toRem(2);
-    background-color: var(--warning-color);
-  }
-  &::before {
-    right: toRem(9);
-    transform: rotate(-125deg);
-  }
-  &::after {
-    right: toRem(6);
-    transform: rotate(125deg);
-  }
-}
-.select {
-  width: toEm(154);
-  padding-inline: toEm(4);
-  padding-block: toRem(1);
-  border: toRem(2) solid var(--warning-color);
-  border-radius: toEm(4, 16);
-  outline: none;
-  appearance: none;
-  cursor: pointer;
-  background-color: var(--light-color);
+//   &::before,
+//   &::after {
+//     content: "";
+//     pointer-events: none;
+//     position: absolute;
+//     top: calc(50% - toRem(1));
+//     width: toRem(6);
+//     height: toRem(2);
+//     background-color: var(--warning-color);
+//   }
+//   &::before {
+//     right: toRem(9);
+//     transform: rotate(-125deg);
+//   }
+//   &::after {
+//     right: toRem(6);
+//     transform: rotate(125deg);
+//   }
+// }
+// .select {
+//   width: toEm(154);
+//   padding-inline: toEm(4);
+//   padding-block: toRem(1);
+//   border: toRem(2) solid var(--warning-color);
+//   border-radius: toEm(4, 16);
+//   outline: none;
+//   appearance: none;
+//   cursor: pointer;
+//   background-color: var(--light-color);
 
-  @media (max-width: c.$mobile) {
-    width: toEm(112);
-  }
-}
-.option {
-  border-radius: toRem(6);
-}
+//   @media (max-width: c.$mobile) {
+//     width: toEm(112);
+//   }
+// }
+// .option {
+//   border-radius: toRem(6);
+// }
 
-// Браузеры с поддержкой base-select: нативный select + современная стилизация
-// (прогрессивное улучшение; кастомный вид выше — fallback для Firefox/iOS<27)
+// Обновлённый нативный select (base-select): полная стилизация кнопки, пикера,
+// стрелки и галочки — по паттерну из блога (интерполяция высоты + анимация).
+// Кастомный вид (.select appearance:none + wrapper-стрелка) остаётся fallback.
 @supports (appearance: base-select) {
+  // Разрешает анимировать height (пикер)
+  :root {
+    interpolate-size: allow-keywords;
+  }
+
   .select {
     appearance: base-select;
+    color: var(--color);
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    cursor: pointer;
 
-    // Нативный пикер открывается в top-layer: панель списка
-    &::picker(select) {
-      border: toRem(2) solid var(--warning-color);
-      border-radius: toEm(4, 16);
-      background-color: var(--light-color);
+    // Стрелка раскрытия: жёлтая
+    &::picker-icon {
+      width: toRem(16);
+      height: toRem(16);
+      color: var(--warning-color);
     }
 
     // Состояние «список открыт»
     &:open {
-      // акцентные стили при открытом пикере
+      border-color: var(--success-color);
     }
 
-    // Галочка выбранного варианта
+    // Галочка выбранного варианта (справа)
     &::checkmark {
-      color: var(--warning-color);
+      color: var(--success-color);
     }
-  }
 
-  // При base-select кастомная стрелка wrapper не нужна (её рисует ::picker-icon)
-  .select-wrapper::before,
-  .select-wrapper::after {
-    display: none;
+    // Панель списка (top-layer): закрыта — 0, открыта — фикс. высота + анимация
+    &::picker(select) {
+      opacity: 0;
+      height: 0;
+      transition:
+        opacity 0.5s,
+        height 0.5s;
+      transition-behavior: allow-discrete;
+
+      border: toRem(2) solid var(--border-color);
+      border-radius: toRem(8);
+      background: var(--light-color);
+      color: var(--color);
+      padding: toRem(8);
+      overflow: clip;
+    }
+
+    &:open::picker(select) {
+      // 144px — хватает на 3 опции (как в примере из блога)
+      height: toRem(144);
+      opacity: 1;
+
+      @starting-style {
+        opacity: 0;
+        height: 0;
+      }
+    }
+
+    // Опции внутри пикера
+    option {
+      border-radius: toRem(6);
+      padding-block: toRem(4);
+      color: var(--color);
+      background-color: var(--light-color);
+
+      &:checked,
+      &:hover {
+        background-color: var(--bg-product);
+        color: var(--color);
+      }
+    }
   }
 }
 
