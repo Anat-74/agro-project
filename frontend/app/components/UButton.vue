@@ -173,18 +173,14 @@ defineEmits<Emits>();
   }
 
   // Кнопка-палитра выбора фона. Позиционирование — в родителе (BackgroundPopover),
-  // здесь только внешний вид: светлый фон + втиснение (паттерн _theme) + жёлтая иконка
+  // здесь только внешний вид: без фона/бордера — видна лишь жёлтая иконка.
+  // (Эффект втиснения требует фона, поэтому не применяется.)
   &_palette {
     width: toRem(35);   // на 2px меньше
     height: toRem(35);
     padding: 0;
-    border-radius: 50%;
-    background: var(--light-color);
-    border: toRem(1) solid var(--border-color);
-    box-shadow:
-      0 toRem(2) toRem(4) rgba(0, 0, 0, 0.25),
-      inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
-      0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+    background: transparent;
+    border: none;
 
     .btn-icon {
       width: 100%;
@@ -195,10 +191,6 @@ defineEmits<Emits>();
       color: var(--yellow-color);
       width: toRem(30);   // на 2px меньше
       height: toRem(30);
-    }
-
-    @include hover {
-      background-color: var(--warning-hover);
     }
   }
 

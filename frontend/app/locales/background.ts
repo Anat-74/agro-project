@@ -15,8 +15,8 @@ export const backgroundTranslations: Record<LocaleCode, {
     ariaLabelOption: "Установить фон",
     sizeLabel: "Размер фона",
     sizeCover: "Заполнить",
-    sizeContain: "Вписать",
-    sizeOriginal: "Оригинал",
+    sizeContain: "Целиком",
+    sizeOriginal: "Натуральный",
   },
   be: {
     title: "Выберыце фон",
@@ -25,7 +25,7 @@ export const backgroundTranslations: Record<LocaleCode, {
     ariaLabelOption: "Усталяваць фон",
     sizeLabel: "Памер фона",
     sizeCover: "Запоўніць",
-    sizeContain: "Упісаць",
-    sizeOriginal: "Арыгінал",
+    sizeContain: "Цалкам",
+    sizeOriginal: "Натуральны",
   },
 }

@@ -105,6 +105,22 @@ imports: { dirs: ["shared/types/**", "shared/utils/**"] },
 - Медиа указываются по **id файла** из `GET /api/upload/files` (id на проде отличаются от локальных).
 - Токены/пароли локальной Strapi (из AGENTS.md) на проде **не работают**.
 
+## 9. Select — base-select (обновлённый нативный) в `_utils.scss`
+
+- Единый класс `.select` + `.select-wrapper`: **fallback** (appearance:none + стрелка `::before/::after`) для Firefox/Safari<27, **base-select** (`@supports`) для Chrome/Edge/Opera/Safari 27+.
+- В `@supports`: `appearance: base-select`, глобальные `::picker(select)` / `:open::picker(select)` / `@starting-style` + `:root { interpolate-size: allow-keywords }` (анимация открытия, как в блоге), `::picker-icon` (стрелка), скрытие кастомной стрелки wrapper.
+- **Ограничения base-select:** `option` рендерится нативно (top-layer) — только текст, `::before`/HTML/`::checkmark` кастомизация **не работает**. Иконки/эмодзи — прямо в тексте option (`{{ icon }} {{ label }}`).
+- **Анимация пикера работает в Chrome (десктоп и Android); на Firefox/Safari — fallback без анимации** (нативный дропдаун).
+- Шрифт select: **Comic Neue** (google) — Comic Sans MS локальный недоступен на мобильных.
+
+## 10. Фон по типам страниц + попап
+
+- `shared/utils/backgroundKey.ts` → `getBackgroundKey(path)`: home/catalog/blog/news/cart/auth/cabinet/static.
+- Выбор фона и размера хранится **per-type**: `localStorage('selectedBackground:<type>')`, `('backgroundSize:<type>')`. Приоритет размера: выбор пользователя > пропс родителя.
+- Кнопка-палитра (`UBackground` → `BackgroundPopover`): **без фона/бордера**, только жёлтая иконка (`--yellow-color`), `variant="palette"` в UButton.
+- `BackgroundPopover`: `popover="auto"`, `usePopover`; **обёртке `pointer-events: none`, попапу/кнопке `auto`** (иначе клик уходит сквозь → light-dismiss закрывает). id попапа: `bg-popover-${useId()}` (префикс обязателен — useId совпадает с ColorModePopover).
+- `optionKey` нужен для `:key` миниатюр; `:slide-key="'id'"` (строка, не функция) в USlider.
+
 ---
 
 ## Формат работы

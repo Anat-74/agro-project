@@ -5,7 +5,7 @@ interface Props {
   // Уникальный id попапа — генерируется в UBackground (useId), т.к. у async-компонента
   // useId на сервере/клиенте расходится (popovertarget не совпал бы с id)
   popupId: string;
-  backgrounds: BackgroundItem[]
+  backgrounds?: BackgroundItem[]
   selectedId?: number | string | null
   sizeMode?: "cover" | "contain" | "original"
 }
@@ -25,9 +25,9 @@ const { currentLocale } = useLocale()
 const backgroundT = computed(() => backgroundTranslations[currentLocale.value])
 
 const sizeOptions = computed(() => [
-  { value: "cover", label: backgroundT.value.sizeCover, icon: "▣" },
-  { value: "contain", label: backgroundT.value.sizeContain, icon: "⤡" },
-  { value: "original", label: backgroundT.value.sizeOriginal, icon: "◻" },
+  { value: "cover", label: backgroundT.value.sizeCover, icon: "🖼️" },
+  { value: "contain", label: backgroundT.value.sizeContain, icon: "🔲" },
+  { value: "original", label: backgroundT.value.sizeOriginal, icon: "📏" },
 ] as const)
 
 const onSizeChange = (event: Event) => {

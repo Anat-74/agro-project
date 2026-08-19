@@ -40,7 +40,8 @@ export default defineNuxtConfig({
       { name: 'Roboto', provider: 'local' },
       { name: 'Open Sans', provider: 'local' },
       { name: 'Yellowtail', provider: 'local' },
-      { name: 'Comic Sans MS', provider: 'local' },
+      // Веб-аналог Comic Sans: системного Comic Sans MS нет на мобильных (local не сработает)
+      { name: 'Comic Neue', provider: 'google' },
     ],
   },
   hints: {

@@ -72,46 +72,48 @@
   translate: 0 100%;
 }
 
-// .select-wrapper {
-//   position: relative;
 
-//   &::before,
-//   &::after {
-//     content: "";
-//     pointer-events: none;
-//     position: absolute;
-//     top: calc(50% - toRem(1));
-//     width: toRem(6);
-//     height: toRem(2);
-//     background-color: var(--warning-color);
-//   }
-//   &::before {
-//     right: toRem(9);
-//     transform: rotate(-125deg);
-//   }
-//   &::after {
-//     right: toRem(6);
-//     transform: rotate(125deg);
-//   }
-// }
-// .select {
-//   width: toEm(154);
-//   padding-inline: toEm(4);
-//   padding-block: toRem(1);
-//   border: toRem(2) solid var(--warning-color);
-//   border-radius: toEm(4, 16);
-//   outline: none;
-//   appearance: none;
-//   cursor: pointer;
-//   background-color: var(--light-color);
+// Кастомный вид select (fallback): appearance:none + кастомная стрелка.
+// Используется в браузерах БЕЗ поддержки base-select (Firefox, iOS<27).
+.select-wrapper {
+  position: relative;
 
-//   @media (max-width: c.$mobile) {
-//     width: toEm(112);
-//   }
-// }
-// .option {
-//   border-radius: toRem(6);
-// }
+  &::before,
+  &::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    top: calc(50% - toRem(1));
+    width: toRem(6);
+    height: toRem(2);
+    background-color: var(--success-color);
+  }
+  &::before {
+    right: toRem(9);
+    transform: rotate(-125deg);
+  }
+  &::after {
+    right: toRem(6);
+    transform: rotate(125deg);
+  }
+}
+.select {
+  width: toEm(154);
+  padding-inline: toEm(4);
+  padding-block: toRem(1);
+  border-radius: toEm(6);
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  background-color: var(--light-color);
+
+  @media (max-width: c.$mobile) {
+    width: toEm(112);
+  }
+}
+.option {
+  border-radius: toRem(6);
+}
 
 // Обновлённый нативный select (base-select): полная стилизация кнопки, пикера,
 // стрелки и галочки — по паттерну из блога (интерполяция высоты + анимация).
@@ -125,67 +127,75 @@
   .select {
     appearance: base-select;
     color: var(--color);
-    font-family: "Comic Sans MS", cursive, sans-serif;
+    background-color: var(--light-color);
+    font-family: "Comic Neue", "Comic Sans MS", cursive, sans-serif;
     cursor: pointer;
+    // Эффект втиснения: внутренняя тень сверху + светлая кромка снизу (паттерн _theme)
+    box-shadow:
+      inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
+      0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+    // Явные паддинги: нативные у base-select несимметричны, а эмодзи в опциях
+    // выше обычного текста → без паддингов строка оптически смещается
+    padding-block: toRem(3);
+    line-height: 1.2;
 
     // Стрелка раскрытия: жёлтая
     &::picker-icon {
       width: toRem(16);
       height: toRem(16);
-      color: var(--warning-color);
+      color: var(--success-color);
     }
 
     // Состояние «список открыт»
     &:open {
       border-color: var(--success-color);
     }
+  }
 
-    // Галочка выбранного варианта (справа)
-    &::checkmark {
-      color: var(--success-color);
-    }
+  // Панель списка (top-layer): глобальные селекторы, как в примере блога.
+  // transition: all + allow-discrete + @starting-style — плавное открытие.
+  ::picker(select) {
+    opacity: 0;
+    height: 0;
+    transition: all 0.5s;
+    transition-behavior: allow-discrete;
 
-    // Панель списка (top-layer): закрыта — 0, открыта — фикс. высота + анимация
-    &::picker(select) {
+    background: var(--light-color);
+    border: toRem(2) solid var(--border-color);
+    border-radius: toRem(8);
+    color: var(--color);
+    padding: toRem(8);
+    overflow: clip;
+  }
+
+  :open::picker(select) {
+    height: toRem(144);
+    opacity: 1;
+
+    @starting-style {
       opacity: 0;
       height: 0;
-      transition:
-        opacity 0.5s,
-        height 0.5s;
-      transition-behavior: allow-discrete;
+    }
+  }
 
-      border: toRem(2) solid var(--border-color);
-      border-radius: toRem(8);
-      background: var(--light-color);
+  // Опции внутри пикера
+  option {
+    border-radius: toRem(6);
+    padding-block: toRem(4);
+    color: var(--color);
+    background-color: var(--light-color);
+
+    &:checked,
+    &:hover {
+      background-color: var(--bg-product);
       color: var(--color);
-      padding: toRem(8);
-      overflow: clip;
     }
+  }
 
-    &:open::picker(select) {
-      // 144px — хватает на 3 опции (как в примере из блога)
-      height: toRem(144);
-      opacity: 1;
-
-      @starting-style {
-        opacity: 0;
-        height: 0;
-      }
-    }
-
-    // Опции внутри пикера
-    option {
-      border-radius: toRem(6);
-      padding-block: toRem(4);
-      color: var(--color);
-      background-color: var(--light-color);
-
-      &:checked,
-      &:hover {
-        background-color: var(--bg-product);
-        color: var(--color);
-      }
-    }
+  // При base-select кастомная стрелка wrapper не нужна (её рисует ::picker-icon)
+  .select-wrapper::before,
+  .select-wrapper::after {
+    display: none;
   }
 }
 
