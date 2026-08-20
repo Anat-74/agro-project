@@ -227,8 +227,6 @@ const interactiveClass = computed(() => ({
     :selected-id="selectedBg?.id"
     :size-mode="userSizeMode"
     :effect-name="effectName"
-    :effect-index="bgEffectIndex"
-    :effect-count="BG_EFFECTS.length"
     @select="onSelectBg"
     @size-change="onSizeChange"
     @cycle-effect="cycleBgEffect"

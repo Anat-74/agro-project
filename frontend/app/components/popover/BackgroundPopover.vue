@@ -10,8 +10,6 @@ interface Props {
   selectedId?: number | string | null
   sizeMode?: "cover" | "contain" | "original"
   effectName?: string
-  effectIndex?: number
-  effectCount?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -19,8 +17,6 @@ const props = withDefaults(defineProps<Props>(), {
   selectedId: null,
   sizeMode: "cover",
   effectName: "",
-  effectIndex: 0,
-  effectCount: 1,
 })
 
 const emit = defineEmits<{
@@ -187,7 +183,7 @@ watch(isOpen, (open) => {
           </select>
         </div>
 
-        <!-- Эффект фона: выпуклая кнопка в правом нижнем углу (outline-outset) -->
+        <!-- Эффект фона: мини-кнопка-иконка в правом нижнем углу (выпуклость outline-outset) -->
         <UTooltip :text="effectName">
           <UButton
             class="background-popover__effect"
@@ -196,7 +192,6 @@ watch(isOpen, (open) => {
             @click="emit('cycleEffect')"
           >
             <Icon name="mingcute:sparkles-line" />
-            {{ effectName }} ({{ effectIndex + 1 }}/{{ effectCount }})
           </UButton>
         </UTooltip>
       </div>
@@ -341,24 +336,32 @@ watch(isOpen, (open) => {
   // font-size не задаём: базовый .select (toRem(17)) — единый размер для всех select
 }
 
-// Кнопка эффекта фона: правая нижняя часть карточки, выпуклый вид (outline-outset,
-// паттерн ShowHamburger). Вложен в .background-popover__card — выше специфичность UButton.
+// Кнопка эффекта фона: мини-иконка в правом нижнем углу карточки, выпуклый вид
+// (outline-outset, паттерн ShowHamburger). Вложен в .background-popover__card —
+// выше специфичность UButton.
 .background-popover__card {
-  // UTooltip-обёртка — grid-элемент: прижимаем к правому краю
+  // UTooltip-обёртка — якорь в правом нижнем углу (сброшен её padding/margin)
   :deep(.tooltip-trigger) {
-    justify-self: end;
+    position: absolute;
+    inset-block-end: toRem(8);
+    inset-inline-end: toRem(8);
+    padding: 0;
+    margin: 0;
   }
 
   .background-popover__effect {
-    font-family: "Neucha", cursive, sans-serif;
-    font-weight: 600;
-    font-size: toEm(13);
-    color: var(--primary-color);
+    width: toRem(30);
+    height: toRem(30);
+    padding: 0;
     background-color: var(--light-color);
     outline: toRem(2) var(--whitesmoke-color) outset;
     border-radius: toRem(6);
-    padding-block: toRem(4);
-    padding-inline: toRem(8);
+
+    :deep(svg) {
+      color: var(--warning-hover);
+      width: toRem(20);
+      height: toRem(20);
+    }
   }
 }
 </style>
