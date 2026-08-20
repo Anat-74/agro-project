@@ -106,19 +106,17 @@
   padding-block: toRem(2) 0;
   border-radius: toEm(6);
   border: toRem(1) solid var(--border-color);
-  // Углубление: вложенный контур (паттерн ShowHamburger) + вдавленная тень
-  outline: toRem(2) var(--whitesmoke-color) inset;
   appearance: none;
   cursor: pointer;
   background-color: var(--light-color);
   color: var(--primary-color);
   font-family: "Neucha", cursive, sans-serif;
-  font-size: toRem(15);
+  font-size: toRem(14);
   font-weight: 600;
-  // Эффект втиснения (паттерн UInput в ColorMode): внутренняя тень сверху + светлая кромка снизу
+  // Вдавливание (паттерн UInput в ColorMode, чуть сильнее): внутренняя тень сверху + светлая кромка снизу
   box-shadow:
-    inset 0 toRem(1) toRem(2) rgba(0, 0, 0, 0.2),
-    0 toRem(1) 0 rgba(255, 255, 255, 0.3);
+    inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
+    0 toRem(1) 0 rgba(255, 255, 255, 0.4);
 
   @media (max-width: c.$mobile) {
     width: toEm(112);

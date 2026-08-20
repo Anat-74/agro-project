@@ -183,17 +183,15 @@ watch(isOpen, (open) => {
           </select>
         </div>
 
-        <!-- Эффект фона: мини-кнопка-иконка в правом нижнем углу (выпуклость outline-outset) -->
-        <UTooltip :text="effectName">
-          <UButton
-            class="background-popover__effect"
-            variant="plain"
-            :aria-label="`${effectT.ariaLabel}: ${effectName}`"
-            @click="emit('cycleEffect')"
-          >
-            <Icon name="mingcute:sparkles-line" />
-          </UButton>
-        </UTooltip>
+        <!-- Эффект фона: мини-кнопка-иконка в правом нижнем углу (выпуклость box-shadow) -->
+        <UButton
+          class="background-popover__effect"
+          variant="plain"
+          :aria-label="`${effectT.ariaLabel}: ${effectName}`"
+          @click="emit('cycleEffect')"
+        >
+          <Icon name="mingcute:sparkles-line" />
+        </UButton>
       </div>
     </div>
   </div>
@@ -337,30 +335,28 @@ watch(isOpen, (open) => {
 }
 
 // Кнопка эффекта фона: мини-иконка в правом нижнем углу карточки, выпуклый вид
-// (outline-outset, паттерн ShowHamburger). Вложен в .background-popover__card —
+// (box-shadow по паттерну кнопки темы). Вложен в .background-popover__card —
 // выше специфичность UButton.
 .background-popover__card {
-  // UTooltip-обёртка — якорь в правом нижнем углу (сброшен её padding/margin)
-  :deep(.tooltip-trigger) {
+  .background-popover__effect {
     position: absolute;
     inset-block-end: toRem(8);
     inset-inline-end: toRem(8);
-    padding: 0;
-    margin: 0;
-  }
-
-  .background-popover__effect {
-    width: toRem(30);
-    height: toRem(30);
+    width: toRem(22);
+    height: toRem(22);
     padding: 0;
     background-color: var(--light-color);
-    outline: toRem(2) var(--whitesmoke-color) outset;
     border-radius: toRem(6);
+    // Выпуклость: внешняя тень снизу + светлая кромка сверху + втисненная тень
+    box-shadow:
+      0 toRem(2) toRem(4) rgba(0, 0, 0, 0.25),
+      inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
+      0 toRem(1) 0 rgba(255, 255, 255, 0.4);
 
     :deep(svg) {
       color: var(--warning-hover);
-      width: toRem(20);
-      height: toRem(20);
+      width: toRem(18);
+      height: toRem(18);
     }
   }
 }
