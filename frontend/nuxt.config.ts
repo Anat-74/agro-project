@@ -40,9 +40,8 @@ export default defineNuxtConfig({
       { name: 'Roboto', provider: 'local' },
       { name: 'Open Sans', provider: 'local' },
       { name: 'Yellowtail', provider: 'local' },
-      // Веб-аналог Comic Sans: системного Comic Sans MS нет на мобильных (local не сработает).
-      // subsets: без cyrillic Google отдаёт только латиницу → кириллица в select не рендерится
-      { name: 'Comic Neue', provider: 'google', subsets: ['latin', 'cyrillic'] },
+      // Рукописный аналог Comic Sans с кириллицей (Comic Neue/Comic Sans MS не поддерживают ru)
+      { name: 'Neucha', provider: 'google' },
     ],
   },
   hints: {
