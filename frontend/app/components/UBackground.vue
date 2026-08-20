@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue'
+import { effectTranslations } from '~/locales/effects'
 
 // Переключатель фонов — поповер, лениво (настройки, открываются по требованию)
 const BackgroundSwitcher = defineAsyncComponent(() => import('./popover/BackgroundPopover.vue'))
@@ -42,9 +43,55 @@ const props = withDefaults(defineProps<Props>(), {
 
 const selectedBg = ref<BackgroundItem | null>(null)
 const isHovered = ref(false)
-const isActive = ref(false)
 
 const isDynamic = computed(() => !!(props.backgroundOptions && props.backgroundOptions.length > 0))
+
+// ===== Эффекты фона по тапу (чип «✦ Эффект») =====
+const { currentLocale } = useLocale()
+const effectT = computed(() => effectTranslations[currentLocale.value])
+
+const BG_EFFECTS = ["press", "zoom", "focus"] as const
+type BgEffect = (typeof BG_EFFECTS)[number]
+
+const bgEffectIndex = ref(0)
+const bgEffectClass = computed(() => `bgfx-${BG_EFFECTS[bgEffectIndex.value]}`)
+const bgEffectName = computed(() => {
+  const names: Record<BgEffect, string> = {
+    press: effectT.value.press,
+    zoom: effectT.value.zoom,
+    focus: effectT.value.focus,
+  }
+  return names[BG_EFFECTS[bgEffectIndex.value]]
+})
+
+const showEffectHint = ref(false)
+let hintTimer: ReturnType<typeof setTimeout> | undefined
+
+const cycleBgEffect = () => {
+  showEffectHint.value = false
+  bgEffectIndex.value = (bgEffectIndex.value + 1) % BG_EFFECTS.length
+}
+
+// Клик по фону / чипу — перебор эффектов (только для динамического фона)
+const handleBgClick = () => {
+  if (isDynamic.value) cycleBgEffect()
+}
+
+// Одноразовая подсказка при первом визите
+onMounted(() => {
+  if (!isDynamic.value) return
+  if (!localStorage.getItem("bgEffectHintShown")) {
+    localStorage.setItem("bgEffectHintShown", "1")
+    showEffectHint.value = true
+    hintTimer = setTimeout(() => {
+      showEffectHint.value = false
+    }, 5000)
+  }
+})
+
+onUnmounted(() => {
+  clearTimeout(hintTimer)
+})
 
 // Ключ выбранного фона — по типу страницы: на разных страницах (блог, кабинет,
 // корзина…) пользователь может выбрать разные фоны; каждый тип хранится отдельно
@@ -160,7 +207,6 @@ const filterClass = computed(() =>
 
 const interactiveClass = computed(() => ({
   "is-hovered": isHovered.value,
-  "is-active": isActive.value,
   [`hover-${props.hoverEffect}`]:
     isHovered.value && props.hoverEffect !== "none",
 }));
@@ -175,12 +221,13 @@ const interactiveClass = computed(() => ({
       loadingClass,
       gradientClass,
       filterClass,
+      bgEffectClass,
       interactiveClass,
     ]"
     :style="backgroundStyle"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
-    @click="isActive = !isActive"
+    @click="handleBgClick"
   >
     <slot />
   </div>
@@ -195,6 +242,22 @@ const interactiveClass = computed(() => ({
     @select="onSelectBg"
     @size-change="onSizeChange"
   />
+
+  <!-- Чип переключения эффектов фона (тап по свободному месту фона работает аналогично) -->
+  <div v-if="isDynamic" class="bg-effects">
+    <Transition name="bg-hint">
+      <span v-if="showEffectHint" class="bg-effects__hint">{{ effectT.hint }}</span>
+    </Transition>
+    <UButton
+      class="bg-effects__chip"
+      variant="plain"
+      :aria-label="`${effectT.ariaLabel}: ${bgEffectName}`"
+      @click="handleBgClick"
+    >
+      <Icon name="mingcute:sparkles-line" />
+      {{ effectT.chip }}: {{ bgEffectName }} ({{ bgEffectIndex + 1 }}/{{ BG_EFFECTS.length }})
+    </UButton>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -324,6 +387,7 @@ const interactiveClass = computed(() => ({
 @media (prefers-reduced-motion: no-preference) {
   &.effect-kenburns,
   &.effect-zoom,
+  &.bgfx-zoom,
   &.loading-shimmer,
   &.loading-pulse,
   &.loading-wave {
@@ -351,11 +415,20 @@ const interactiveClass = computed(() => ({
     box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
   }
 
-  /* Active состояние */
-  &.is-active {
-    transition: filter .6s, transform .5s;
+  /* ========== ЭФФЕКТЫ ПО ТАПУ (чип «✦ Эффект») ========== */
+  &.bgfx-press {
     filter: brightness(0.7);
     transform: scale(0.95);
+  }
+
+  &.bgfx-zoom {
+    animation:
+      zoom 15s ease infinite,
+      app-bg-fade-in 0.3s ease;
+  }
+
+  &.bgfx-focus {
+    filter: blur(toRem(8));
   }
 
   /* ========== ГРАДИЕНТНЫЕ ОВЕРЛЕИ ========== */
@@ -484,5 +557,57 @@ const interactiveClass = computed(() => ({
 .app-bg > :slotted(*) {
   position: relative;
   z-index: 1;
+}
+
+/* ========== ЧИП ЭФФЕКТОВ ФОНА ========== */
+/* Фиксированная кнопка-чип над палитрой: переключение эффектов фона по тапу.
+   Вложенный селектор — чтобы перебить scoped-стили UButton (специфичность выше). */
+.bg-effects {
+  position: fixed;
+  inset-block-end: toRem(72);
+  inset-inline-end: toRem(24);
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: toRem(8);
+  pointer-events: none;
+
+  .bg-effects__chip {
+    pointer-events: auto;
+    font-family: "Neucha", cursive, sans-serif;
+    font-weight: 600;
+    font-size: toRem(13);
+    color: var(--primary-color);
+    background-color: var(--transparent-color);
+    backdrop-filter: blur(toRem(42));
+    border: toRem(1) solid var(--border-color);
+    border-radius: toRem(20);
+    padding-block: toRem(5);
+    padding-inline: toRem(12);
+    box-shadow: 0 toRem(4) toRem(16) rgba(0, 0, 0, 0.2);
+  }
+
+  .bg-effects__hint {
+    font-family: "Neucha", cursive, sans-serif;
+    font-size: toEm(12);
+    color: var(--primary-color);
+    background-color: var(--transparent-color);
+    backdrop-filter: blur(toRem(42));
+    border: toRem(1) solid var(--border-color);
+    border-radius: toRem(8);
+    padding-block: toRem(6);
+    padding-inline: toRem(10);
+    box-shadow: 0 toRem(4) toRem(16) rgba(0, 0, 0, 0.2);
+  }
+}
+
+.bg-hint-enter-active,
+.bg-hint-leave-active {
+  transition: opacity 0.3s;
+}
+.bg-hint-enter-from,
+.bg-hint-leave-to {
+  opacity: 0;
 }
 </style>
