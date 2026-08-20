@@ -314,6 +314,6 @@ watch(isOpen, (open) => {
 
 .background-popover__size {
   width: toRem(150);
-  font-size: toEm(15);
+  // font-size не задаём: базовый .select (toRem(17)) — единый размер для всех select
 }
 </style>
