@@ -101,8 +101,8 @@
   width: toEm(154);
   padding-inline: toEm(4);
   // Вертикальное центрирование: фикс. высота = line-height (flex на select не работает)
-  height: toRem(32);
-  line-height: toRem(30);
+  height: toRem(30);
+  line-height: toRem(28);
   padding-block: 0;
   border-radius: toEm(6);
   border: toRem(1) solid var(--border-color);
@@ -112,7 +112,7 @@
   background-color: var(--light-color);
   color: var(--primary-color);
   font-family: "Neucha", cursive, sans-serif;
-  font-size: toRem(17);
+  font-size: toRem(19);
   font-weight: 600;
   // Эффект втиснения (паттерн UInput в ColorMode): внутренняя тень сверху + светлая кромка снизу
   box-shadow:

@@ -3,6 +3,7 @@ export type BackgroundKey =
   | "home"
   | "catalog"
   | "subcategory"
+  | "product"
   | "products"
   | "blog"
   | "news"
@@ -25,13 +26,18 @@ export const getBackgroundKey = (path: string): BackgroundKey => {
   if (p.startsWith("/cabinet")) return "cabinet";
   if (p.startsWith("/about") || p.startsWith("/contacts") || p.startsWith("/services")) return "static";
 
-  // Каталог: страницы со списком/карточкой товара (/products) — отдельный тип
+  // Каталог: сегменты после локали
+  const segments = p.split("/").filter(Boolean);
+
+  // Карточки товаров ([cat]/[subcat]/[slug] и [cat]/products/[slug]) — отдельный тип
+  if (segments.length === 3) return "product";
+
+  // [cat]/products — список товаров категории
   if (p.includes("/products")) return "products";
 
-  // Каталог: подкатегории и карточки внутри них ([cat]/[subcat][/product]) — отдельный тип
-  const segments = p.split("/").filter(Boolean);
-  if (segments.length >= 2 && segments.length <= 3) return "subcategory";
+  // [cat]/[subcat] — подкатегория
+  if (segments.length === 2) return "subcategory";
 
-  // Каталог: категории
+  // Категории
   return "catalog";
 };
