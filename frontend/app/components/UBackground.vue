@@ -54,6 +54,7 @@ const BG_EFFECTS = ["press", "zoom", "focus"] as const
 
 const bgEffectIndex = ref(0)
 const bgEffectClass = computed(() => `bgfx-${BG_EFFECTS[bgEffectIndex.value]}`)
+const effectName = computed(() => effectT.value.effectNames[BG_EFFECTS[bgEffectIndex.value]])
 
 const showEffectHint = ref(false)
 let hintTimer: ReturnType<typeof setTimeout> | undefined
@@ -74,8 +75,8 @@ const handleBgClick = () => {
 // Одноразовая подсказка при первом визите
 onMounted(() => {
   if (!isDynamic.value) return
-  if (!localStorage.getItem("bgEffectHintShown")) {
-    localStorage.setItem("bgEffectHintShown", "1")
+  if (!localStorage.getItem("bgEffectHintShownV2")) {
+    localStorage.setItem("bgEffectHintShownV2", "1")
     showEffectHint.value = true
     hintTimer = setTimeout(() => {
       showEffectHint.value = false
@@ -256,11 +257,21 @@ const interactiveClass = computed(() => ({
     @size-change="onSizeChange"
   />
 
-  <!-- Подсказка: тап по фону меняет эффект (показывается один раз) -->
+  <!-- Мини-кнопка эффектов фона + одноразовая подсказка при первом визите.
+       Клик по свободному месту фона работает аналогично -->
   <div v-if="isDynamic" class="bg-effects">
     <Transition name="bg-hint">
       <span v-if="showEffectHint" class="bg-effects__hint">{{ effectT.hint }}</span>
     </Transition>
+    <UTooltip :text="effectName">
+      <UButton
+        class="bg-effects__trigger"
+        variant="palette"
+        icon="mingcute:sparkles-line"
+        :aria-label="effectT.ariaLabel"
+        @click="handleBgClick"
+      />
+    </UTooltip>
   </div>
 </template>
 
@@ -568,15 +579,31 @@ const interactiveClass = computed(() => ({
   z-index: 1;
 }
 
-/* ========== ЧИП/ПОДСКАЗКА ЭФФЕКТОВ ФОНА ========== */
-/* Подсказка «тап по фону — эффект»: фиксированная плашка над палитрой,
-   показывается один раз при первом визите. */
+/* ========== МИНИ-КНОПКА И ПОДСКАЗКА ЭФФЕКТОВ ФОНА ========== */
+/* Кнопка-иконка над палитрой (стиль палитры, без текста): переключение
+   эффектов фона. Фон перекрыт контентом, поэтому явная кнопка — гарантированная
+   цель для тапа (в т.ч. на мобильном). */
 .bg-effects {
   position: fixed;
-  inset-block-end: toRem(72);
+  inset-block-end: toRem(66);
   inset-inline-end: toRem(24);
   z-index: 900;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: toRem(8);
   pointer-events: none;
+
+  // UTooltip-обёртка — кликабельна (контейнер pointer-events: none)
+  :deep(.tooltip-trigger) {
+    pointer-events: auto;
+  }
+
+  .bg-effects__trigger {
+    svg {
+      color: var(--warning-hover);
+    }
+  }
 
   .bg-effects__hint {
     font-family: "Neucha", cursive, sans-serif;

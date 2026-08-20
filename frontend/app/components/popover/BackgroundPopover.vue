@@ -254,7 +254,7 @@ watch(isOpen, (open) => {
   font-family: "Neucha", cursive, sans-serif;
   color: var(--warning-hover);
   font-weight: 700;
-  @include adaptiveValue("font-size", 15, 13);
+  @include adaptiveValue("font-size", 17, 15);
 }
 
 .background-popover__preview {
