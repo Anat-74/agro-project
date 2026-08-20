@@ -46,7 +46,7 @@ const isHovered = ref(false)
 
 const isDynamic = computed(() => !!(props.backgroundOptions && props.backgroundOptions.length > 0))
 
-// ===== Эффекты фона по тапу =====
+// ===== Эффекты фона (управление — кнопка в попапе выбора фона) =====
 const { currentLocale } = useLocale()
 const effectT = computed(() => effectTranslations[currentLocale.value])
 
@@ -56,37 +56,12 @@ const bgEffectIndex = ref(0)
 const bgEffectClass = computed(() => `bgfx-${BG_EFFECTS[bgEffectIndex.value]}`)
 const effectName = computed(() => effectT.value.effectNames[BG_EFFECTS[bgEffectIndex.value]])
 
-const showEffectHint = ref(false)
-let hintTimer: ReturnType<typeof setTimeout> | undefined
-
 const cycleBgEffect = () => {
-  showEffectHint.value = false
   bgEffectIndex.value = (bgEffectIndex.value + 1) % BG_EFFECTS.length
   if (isDynamic.value) {
     localStorage.setItem(bgEffectStorageKey.value, String(bgEffectIndex.value))
   }
 }
-
-// Клик по фону — перебор эффектов (только для динамического фона)
-const handleBgClick = () => {
-  if (isDynamic.value) cycleBgEffect()
-}
-
-// Одноразовая подсказка при первом визите
-onMounted(() => {
-  if (!isDynamic.value) return
-  if (!localStorage.getItem("bgEffectHintShownV2")) {
-    localStorage.setItem("bgEffectHintShownV2", "1")
-    showEffectHint.value = true
-    hintTimer = setTimeout(() => {
-      showEffectHint.value = false
-    }, 5000)
-  }
-})
-
-onUnmounted(() => {
-  clearTimeout(hintTimer)
-})
 
 // Ключ выбранного фона — по типу страницы: на разных страницах (блог, кабинет,
 // корзина…) пользователь может выбрать разные фоны; каждый тип хранится отдельно
@@ -235,13 +210,11 @@ const interactiveClass = computed(() => ({
       gradientClass,
       filterClass,
       bgEffectClass,
-      { 'bg-interactive': isDynamic },
       interactiveClass,
     ]"
     :style="backgroundStyle"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
-    @click="handleBgClick"
   >
     <slot />
   </div>
@@ -253,26 +226,13 @@ const interactiveClass = computed(() => ({
     :backgrounds="backgroundOptions || []"
     :selected-id="selectedBg?.id"
     :size-mode="userSizeMode"
+    :effect-name="effectName"
+    :effect-index="bgEffectIndex"
+    :effect-count="BG_EFFECTS.length"
     @select="onSelectBg"
     @size-change="onSizeChange"
+    @cycle-effect="cycleBgEffect"
   />
-
-  <!-- Мини-кнопка эффектов фона + одноразовая подсказка при первом визите.
-       Клик по свободному месту фона работает аналогично -->
-  <div v-if="isDynamic" class="bg-effects">
-    <Transition name="bg-hint">
-      <span v-if="showEffectHint" class="bg-effects__hint">{{ effectT.hint }}</span>
-    </Transition>
-    <UTooltip :text="effectName">
-      <UButton
-        class="bg-effects__trigger"
-        variant="palette"
-        icon="mingcute:sparkles-line"
-        :aria-label="effectT.ariaLabel"
-        @click="handleBgClick"
-      />
-    </UTooltip>
-  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -285,11 +245,6 @@ const interactiveClass = computed(() => ({
   /* ========== АНИМАЦИЯ ПОЯВЛЕНИЯ ========== */
   opacity: 1;
   transition: opacity 1.8s ease;
-
-  // Динамический фон кликабелен (тап — сменить эффект)
-  &.bg-interactive {
-    cursor: pointer;
-  }
 
   @starting-style {
     opacity: 0;
@@ -577,54 +532,5 @@ const interactiveClass = computed(() => ({
 .app-bg > :slotted(*) {
   position: relative;
   z-index: 1;
-}
-
-/* ========== МИНИ-КНОПКА И ПОДСКАЗКА ЭФФЕКТОВ ФОНА ========== */
-/* Кнопка-иконка над палитрой (стиль палитры, без текста): переключение
-   эффектов фона. Фон перекрыт контентом, поэтому явная кнопка — гарантированная
-   цель для тапа (в т.ч. на мобильном). */
-.bg-effects {
-  position: fixed;
-  inset-block-end: toRem(66);
-  inset-inline-end: toRem(24);
-  z-index: 900;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: toRem(8);
-  pointer-events: none;
-
-  // UTooltip-обёртка — кликабельна (контейнер pointer-events: none)
-  :deep(.tooltip-trigger) {
-    pointer-events: auto;
-  }
-
-  .bg-effects__trigger {
-    svg {
-      color: var(--warning-hover);
-    }
-  }
-
-  .bg-effects__hint {
-    font-family: "Neucha", cursive, sans-serif;
-    font-size: toEm(12);
-    color: var(--primary-color);
-    background-color: var(--transparent-color);
-    backdrop-filter: blur(toRem(42));
-    border: toRem(1) solid var(--border-color);
-    border-radius: toRem(8);
-    padding-block: toRem(6);
-    padding-inline: toRem(10);
-    box-shadow: 0 toRem(4) toRem(16) rgba(0, 0, 0, 0.2);
-  }
-}
-
-.bg-hint-enter-active,
-.bg-hint-leave-active {
-  transition: opacity 0.3s;
-}
-.bg-hint-enter-from,
-.bg-hint-leave-to {
-  opacity: 0;
 }
 </style>

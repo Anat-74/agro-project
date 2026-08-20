@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { backgroundTranslations } from '~/locales/background'
+import { effectTranslations } from '~/locales/effects'
 
 interface Props {
   // Уникальный id попапа — генерируется в UBackground (useId), т.к. у async-компонента
@@ -8,21 +9,29 @@ interface Props {
   backgrounds?: BackgroundItem[]
   selectedId?: number | string | null
   sizeMode?: "cover" | "contain" | "original"
+  effectName?: string
+  effectIndex?: number
+  effectCount?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
   backgrounds: () => [],
   selectedId: null,
   sizeMode: "cover",
+  effectName: "",
+  effectIndex: 0,
+  effectCount: 1,
 })
 
 const emit = defineEmits<{
   select: [bg: BackgroundItem]
   sizeChange: [mode: "cover" | "contain" | "original"]
+  cycleEffect: []
 }>()
 
 const { currentLocale } = useLocale()
 const backgroundT = computed(() => backgroundTranslations[currentLocale.value])
+const effectT = computed(() => effectTranslations[currentLocale.value])
 
 const sizeOptions = computed(() => [
   { value: "cover", label: backgroundT.value.sizeCover, icon: "🖼️" },
@@ -177,6 +186,19 @@ watch(isOpen, (open) => {
             </option>
           </select>
         </div>
+
+        <!-- Эффект фона: выпуклая кнопка в правом нижнем углу (outline-outset) -->
+        <UTooltip :text="effectName">
+          <UButton
+            class="background-popover__effect"
+            variant="plain"
+            :aria-label="`${effectT.ariaLabel}: ${effectName}`"
+            @click="emit('cycleEffect')"
+          >
+            <Icon name="mingcute:sparkles-line" />
+            {{ effectName }} ({{ effectIndex + 1 }}/{{ effectCount }})
+          </UButton>
+        </UTooltip>
       </div>
     </div>
   </div>
@@ -317,5 +339,26 @@ watch(isOpen, (open) => {
 .background-popover__size {
   width: toRem(150);
   // font-size не задаём: базовый .select (toRem(17)) — единый размер для всех select
+}
+
+// Кнопка эффекта фона: правая нижняя часть карточки, выпуклый вид (outline-outset,
+// паттерн ShowHamburger). Вложен в .background-popover__card — выше специфичность UButton.
+.background-popover__card {
+  // UTooltip-обёртка — grid-элемент: прижимаем к правому краю
+  :deep(.tooltip-trigger) {
+    justify-self: end;
+  }
+
+  .background-popover__effect {
+    font-family: "Neucha", cursive, sans-serif;
+    font-weight: 600;
+    font-size: toEm(13);
+    color: var(--primary-color);
+    background-color: var(--light-color);
+    outline: toRem(2) var(--whitesmoke-color) outset;
+    border-radius: toRem(6);
+    padding-block: toRem(4);
+    padding-inline: toRem(8);
+  }
 }
 </style>
