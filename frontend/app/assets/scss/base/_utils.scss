@@ -106,13 +106,14 @@
   padding-block: toRem(2) 0;
   border-radius: toEm(6);
   border: toRem(1) solid var(--border-color);
-  outline: none;
+  // Углубление: вложенный контур (паттерн ShowHamburger) + вдавленная тень
+  outline: toRem(2) var(--whitesmoke-color) inset;
   appearance: none;
   cursor: pointer;
   background-color: var(--light-color);
   color: var(--primary-color);
   font-family: "Neucha", cursive, sans-serif;
-  font-size: toRem(17);
+  font-size: toRem(15);
   font-weight: 600;
   // Эффект втиснения (паттерн UInput в ColorMode): внутренняя тень сверху + светлая кромка снизу
   box-shadow:

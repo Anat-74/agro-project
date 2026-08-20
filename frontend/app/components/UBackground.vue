@@ -46,23 +46,14 @@ const isHovered = ref(false)
 
 const isDynamic = computed(() => !!(props.backgroundOptions && props.backgroundOptions.length > 0))
 
-// ===== Эффекты фона по тапу (чип «✦ Эффект») =====
+// ===== Эффекты фона по тапу =====
 const { currentLocale } = useLocale()
 const effectT = computed(() => effectTranslations[currentLocale.value])
 
 const BG_EFFECTS = ["press", "zoom", "focus"] as const
-type BgEffect = (typeof BG_EFFECTS)[number]
 
 const bgEffectIndex = ref(0)
 const bgEffectClass = computed(() => `bgfx-${BG_EFFECTS[bgEffectIndex.value]}`)
-const bgEffectName = computed(() => {
-  const names: Record<BgEffect, string> = {
-    press: effectT.value.press,
-    zoom: effectT.value.zoom,
-    focus: effectT.value.focus,
-  }
-  return names[BG_EFFECTS[bgEffectIndex.value]]
-})
 
 const showEffectHint = ref(false)
 let hintTimer: ReturnType<typeof setTimeout> | undefined
@@ -70,9 +61,12 @@ let hintTimer: ReturnType<typeof setTimeout> | undefined
 const cycleBgEffect = () => {
   showEffectHint.value = false
   bgEffectIndex.value = (bgEffectIndex.value + 1) % BG_EFFECTS.length
+  if (isDynamic.value) {
+    localStorage.setItem(bgEffectStorageKey.value, String(bgEffectIndex.value))
+  }
 }
 
-// Клик по фону / чипу — перебор эффектов (только для динамического фона)
+// Клик по фону — перебор эффектов (только для динамического фона)
 const handleBgClick = () => {
   if (isDynamic.value) cycleBgEffect()
 }
@@ -148,6 +142,24 @@ const onSizeChange = (mode: "cover" | "contain" | "original") => {
   localStorage.setItem(sizeStorageKey.value, mode)
 }
 
+// ===== Эффект фона хранится по типу страницы (как фон и размер) =====
+const bgEffectStorageKey = computed(() => `bgEffect:${backgroundKey.value}`)
+
+const loadBgEffect = () => {
+  if (!isDynamic.value) return
+  const saved = Number(localStorage.getItem(bgEffectStorageKey.value))
+  if (Number.isInteger(saved) && saved >= 0 && saved < BG_EFFECTS.length) {
+    bgEffectIndex.value = saved
+  } else {
+    bgEffectIndex.value = 0
+  }
+}
+
+onMounted(loadBgEffect)
+
+// При переходе на другой тип страницы — подхватываем его сохранённый эффект
+watch(backgroundKey, loadBgEffect)
+
 const imageUrls = computed(() => {
   let baseImageUrl: string | null = null;
   let retinaImageUrl: string | null = null;
@@ -222,6 +234,7 @@ const interactiveClass = computed(() => ({
       gradientClass,
       filterClass,
       bgEffectClass,
+      { 'bg-interactive': isDynamic },
       interactiveClass,
     ]"
     :style="backgroundStyle"
@@ -243,20 +256,11 @@ const interactiveClass = computed(() => ({
     @size-change="onSizeChange"
   />
 
-  <!-- Чип переключения эффектов фона (тап по свободному месту фона работает аналогично) -->
+  <!-- Подсказка: тап по фону меняет эффект (показывается один раз) -->
   <div v-if="isDynamic" class="bg-effects">
     <Transition name="bg-hint">
       <span v-if="showEffectHint" class="bg-effects__hint">{{ effectT.hint }}</span>
     </Transition>
-    <UButton
-      class="bg-effects__chip"
-      variant="plain"
-      :aria-label="`${effectT.ariaLabel}: ${bgEffectName}`"
-      @click="handleBgClick"
-    >
-      <Icon name="mingcute:sparkles-line" />
-      {{ effectT.chip }}: {{ bgEffectName }} ({{ bgEffectIndex + 1 }}/{{ BG_EFFECTS.length }})
-    </UButton>
   </div>
 </template>
 
@@ -270,6 +274,11 @@ const interactiveClass = computed(() => ({
   /* ========== АНИМАЦИЯ ПОЯВЛЕНИЯ ========== */
   opacity: 1;
   transition: opacity 1.8s ease;
+
+  // Динамический фон кликабелен (тап — сменить эффект)
+  &.bg-interactive {
+    cursor: pointer;
+  }
 
   @starting-style {
     opacity: 0;
@@ -559,34 +568,15 @@ const interactiveClass = computed(() => ({
   z-index: 1;
 }
 
-/* ========== ЧИП ЭФФЕКТОВ ФОНА ========== */
-/* Фиксированная кнопка-чип над палитрой: переключение эффектов фона по тапу.
-   Вложенный селектор — чтобы перебить scoped-стили UButton (специфичность выше). */
+/* ========== ЧИП/ПОДСКАЗКА ЭФФЕКТОВ ФОНА ========== */
+/* Подсказка «тап по фону — эффект»: фиксированная плашка над палитрой,
+   показывается один раз при первом визите. */
 .bg-effects {
   position: fixed;
   inset-block-end: toRem(72);
   inset-inline-end: toRem(24);
   z-index: 900;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: toRem(8);
   pointer-events: none;
-
-  .bg-effects__chip {
-    pointer-events: auto;
-    font-family: "Neucha", cursive, sans-serif;
-    font-weight: 600;
-    font-size: toRem(13);
-    color: var(--primary-color);
-    background-color: var(--transparent-color);
-    backdrop-filter: blur(toRem(42));
-    border: toRem(1) solid var(--border-color);
-    border-radius: toRem(20);
-    padding-block: toRem(5);
-    padding-inline: toRem(12);
-    box-shadow: 0 toRem(4) toRem(16) rgba(0, 0, 0, 0.2);
-  }
 
   .bg-effects__hint {
     font-family: "Neucha", cursive, sans-serif;
