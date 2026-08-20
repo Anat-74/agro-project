@@ -314,6 +314,6 @@ watch(isOpen, (open) => {
 
 .background-popover__size {
   width: toRem(150);
-  font-size: toEm(13);
+  font-size: toEm(15);
 }
 </style>

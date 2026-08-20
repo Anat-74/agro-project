@@ -6,7 +6,7 @@ const route = useRoute();
 // Динамический фон (с переключателем) — на контентных типах страниц.
 // Главная исключена: там секции (Hero/Featured/Sale) перекрывают глобальный фон
 // своими статическими фонами.
-const BG_PAGE_KEYS: BackgroundKey[] = ["catalog", "blog", "news", "cart", "cabinet", "auth", "static"];
+const BG_PAGE_KEYS: BackgroundKey[] = ["catalog", "subcategory", "products", "blog", "news", "cart", "cabinet", "auth", "static"];
 const isBgPage = computed(() => BG_PAGE_KEYS.includes(getBackgroundKey(route.path)));
 
 const {
