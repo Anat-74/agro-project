@@ -28,11 +28,11 @@ let rafId: number;
 let suppressScrollActive = false;
 let scrollEndTimer: ReturnType<typeof setTimeout> | undefined;
 
-const go = (n: number) => {
+const go = (n: number, smooth = true) => {
   const width = container.value?.clientWidth || 0;
   container.value?.scrollTo({
     left: (n - 1) * width,
-    behavior: "smooth",
+    behavior: smooth ? "smooth" : "auto",
   });
   active.value = n;
   suppressScrollActive = true;

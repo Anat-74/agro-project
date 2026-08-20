@@ -37,7 +37,7 @@ const onSizeChange = (event: Event) => {
 
 const popupRef = useTemplateRef<HTMLElement>('popup')
 // usePopover синхронизирует isOpen; закрытие — только нативное (клик вне/Escape)
-usePopover(props.popupId, popupRef)
+const { isOpen } = usePopover(props.popupId, popupRef)
 
 const selectBackground = (bg: BackgroundItem) => {
   emit('select', bg)
@@ -51,7 +51,7 @@ const optionKey = (bg: BackgroundItem, index: number) => String(bg.id ?? index)
 // Пагинация-миниатюры вынесены отдельным блоком вне слайдера (как в ShowModalProduct):
 // активная миниатюра подсвечивается бордером, клик листает слайдер
 interface SliderApi {
-  go: (n: number) => void
+  go: (n: number, smooth?: boolean) => void
   active: Ref<number>
   prev: () => void
   next: () => void
@@ -70,6 +70,28 @@ const sliderActive = computed<number>(() => {
 watch(sliderActive, (n) => {
   const bg = props.backgrounds[n - 1]
   if (bg) selectBackground(bg)
+})
+
+// Индекс выбранного на странице фона (selectedId из UBackground) — 1-based
+const selectedIndex = computed<number | null>(() => {
+  if (props.selectedId == null) return null
+  const i = props.backgrounds.findIndex((bg) => String(bg.id) === String(props.selectedId))
+  return i >= 0 ? i + 1 : null
+})
+
+// Навигация на страницу с другим фоном: активный слайд/миниатюра должны показывать
+// фон этой страницы. Прокрутку при закрытом поповере сделать нельзя (clientWidth = 0),
+// поэтому ставим активный индекс сразу, а позицию скролла выставим при открытии.
+watch(selectedIndex, (n) => {
+  if (n == null || sliderActive.value === n) return
+  sliderRef.value?.go(n, false)
+}, { immediate: true })
+
+// При открытии поповера — прокрутить слайдер к выбранному фону страницы
+watch(isOpen, (open) => {
+  if (!open) return
+  const n = selectedIndex.value
+  if (n != null) nextTick(() => sliderRef.value?.go(n, false))
 })
 </script>
 
