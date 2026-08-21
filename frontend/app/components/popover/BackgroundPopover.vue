@@ -104,6 +104,7 @@ watch(isOpen, (open) => {
   <div class="background-popover">
     <UButton
       class="background-popover__trigger"
+      :class="{ 'background-popover__trigger_hidden': isOpen }"
       icon="mingcute:palette-line"
       :aria-label="backgroundT.ariaLabelTrigger"
       variant="palette"
@@ -208,18 +209,30 @@ watch(isOpen, (open) => {
   pointer-events: none;
 }
 
-// Только позиционирование — внешний вид в UButton (variant="palette")
+// Только позиционирование — внешний вид в UButton (variant="palette").
+// Плавно скрывается, когда окно открыто (isOpen из usePopover)
 .background-popover__trigger {
   position: fixed;
-  bottom: toRem(24);
-  inset-inline-end: toRem(24);
+  bottom: toRem(29);
+  inset-inline-end: toRem(29);
   z-index: 900;
   pointer-events: auto;
+  transition:
+    opacity 0.2s,
+    visibility 0.2s;
+
+  &_hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
 }
 
 // Окно по центру в самом низу экрана (top-layer).
 // pointer-events: auto — иначе попап наследует none от обёртки, и клики
-// проходят сквозь него → нативный light-dismiss закрывает окно сразу
+// проходят сквозь него → нативный light-dismiss закрывает окно сразу.
+// Фон и блюр — на самом [popover] (top-layer), а не на карточке: так блюр
+// рендерится сразу при открытии, без задержки вложенного backdrop-filter
 .background-popover__popover {
   position: fixed;
   inset-inline: 0;
@@ -228,6 +241,14 @@ watch(isOpen, (open) => {
   margin: 0 auto toRem(24);
   width: fit-content;
   pointer-events: auto;
+
+  // Фон окна: полупрозрачный + блюр (уменьшен в ~1.75 раза, чтобы были видны
+  // очертания элементов под окном)
+  background-color: var(--transparent-color);
+  backdrop-filter: blur(toRem(24));
+  border: toRem(1) solid var(--border-color);
+  border-radius: toRem(8);
+  box-shadow: 0 toRem(4) toRem(16) rgba(0, 0, 0, 0.2);
 
   opacity: 0;
   translate: 0 toRem(8);
@@ -255,11 +276,7 @@ watch(isOpen, (open) => {
   gap: toRem(6);
   padding: toRem(10);
   border-radius: toRem(8);
-  // Прозрачный фон с блюром (паттерн ShowHamburger, размытие вдвое меньше — 11px)
-  background-color: var(--transparent-color);
-  backdrop-filter: blur(toRem(42));
-  border: toRem(1) solid var(--border-color);
-  box-shadow: 0 toRem(4) toRem(16) rgba(0, 0, 0, 0.2);
+  // Фон/блюр/бордер окна — на самом [popover] (см. выше)
   width: min(90vw, toRem(260));   // уже — окно ниже
   position: relative;
 }
@@ -342,11 +359,14 @@ watch(isOpen, (open) => {
     position: absolute;
     inset-block-end: toRem(8);
     inset-inline-end: toRem(8);
-    width: toRem(22);
-    height: toRem(22);
+    width: toRem(24);
+    height: toRem(24);
     padding: 0;
     background-color: var(--light-color);
     border-radius: toRem(6);
+    // Тонкий бордер с медленным еле заметным переливом — намёк, что это кнопка
+    border: toRem(1) solid var(--border-color);
+    animation: effect-btn-border 4s ease-in-out infinite;
     // Выпуклость: внешняя тень снизу + светлая кромка сверху + втисненная тень
     box-shadow:
       0 toRem(2) toRem(4) rgba(0, 0, 0, 0.25),
@@ -358,6 +378,18 @@ watch(isOpen, (open) => {
       width: toRem(18);
       height: toRem(18);
     }
+  }
+}
+
+// Перелив бордера: едва заметный, медленный (снижен при prefers-reduced-motion
+// глобальным правилом в _normalize.scss)
+@keyframes effect-btn-border {
+  0%,
+  100% {
+    border-color: var(--border-color);
+  }
+  50% {
+    border-color: color-mix(in srgb, var(--warning-hover) 35%, var(--border-color));
   }
 }
 </style>
