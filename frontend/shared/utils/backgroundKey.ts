@@ -10,7 +10,9 @@ export type BackgroundKey =
   | "cart"
   | "auth"
   | "cabinet"
-  | "static";
+  | "about"
+  | "services"
+  | "contacts";
 
 // Маршрут → тип страницы (для фонов по типам страниц).
 // Примеры: /ru → home, /ru/bobovye → catalog, /ru/blog → blog, /ru/cartshopping → cart
@@ -24,7 +26,9 @@ export const getBackgroundKey = (path: string): BackgroundKey => {
   if (p.startsWith("/cartshopping")) return "cart";
   if (p.startsWith("/auth")) return "auth";
   if (p.startsWith("/cabinet")) return "cabinet";
-  if (p.startsWith("/about") || p.startsWith("/contacts") || p.startsWith("/services")) return "static";
+  if (p.startsWith("/about")) return "about";
+  if (p.startsWith("/services")) return "services";
+  if (p.startsWith("/contacts")) return "contacts";
 
   // Каталог: сегменты после локали
   const segments = p.split("/").filter(Boolean);
