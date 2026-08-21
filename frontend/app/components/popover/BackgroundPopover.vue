@@ -218,8 +218,8 @@ watch(isOpen, (open) => {
   z-index: 900;
   pointer-events: auto;
   transition:
-    opacity 0.2s,
-    visibility 0.2s;
+    opacity var(--transition-duration),
+    visibility var(--transition-duration);
 
   &_hidden {
     opacity: 0;
@@ -242,10 +242,10 @@ watch(isOpen, (open) => {
   width: fit-content;
   pointer-events: auto;
 
-  // Фон окна: полупрозрачный + блюр (уменьшен в ~1.75 раза, чтобы были видны
+  // Фон окна: полупрозрачный + блюр (уменьшен, чтобы были видны
   // очертания элементов под окном)
   background-color: var(--transparent-color);
-  backdrop-filter: blur(toRem(24));
+  backdrop-filter: blur(toRem(12));
   border: toRem(1) solid var(--border-color);
   border-radius: toRem(8);
   box-shadow: 0 toRem(4) toRem(16) rgba(0, 0, 0, 0.2);
@@ -253,10 +253,10 @@ watch(isOpen, (open) => {
   opacity: 0;
   translate: 0 toRem(8);
   transition:
-    opacity 0.2s,
-    translate 0.2s,
-    overlay 0.2s allow-discrete,
-    display 0.2s allow-discrete;
+    opacity var(--transition-duration),
+    translate var(--transition-duration),
+    overlay var(--transition-duration) allow-discrete,
+    display var(--transition-duration) allow-discrete;
 
   &:popover-open {
     opacity: 1;
@@ -365,7 +365,7 @@ watch(isOpen, (open) => {
     background-color: var(--light-color);
     border-radius: toRem(6);
     // Тонкий бордер с медленным еле заметным переливом — намёк, что это кнопка
-    border: toRem(1) solid var(--border-color);
+    border: toRem(2) solid var(--border-color);
     animation: effect-btn-border 4s ease-in-out infinite;
     // Выпуклость: внешняя тень снизу + светлая кромка сверху + втисненная тень
     box-shadow:
