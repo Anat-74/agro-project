@@ -24,3 +24,15 @@
 - On Windows, use the `edit` tool for all file modifications. Do NOT use `bash`/`shell`/`cat`/heredocs for editing files — the Windows shell (PowerShell/MINGW64) does not reliably support heredoc syntax and complex command-line escaping.
 - The project has `edit` tool available. Always check your tool list before falling back to shell commands.
 - Use `read` to review file content, then `edit` to apply changes. Use `bash` only for running commands (git, npm, build), not for file manipulation.
+
+## Пиковые и не пиковые часы (стоимость токенов)
+
+Время по UTC+3 (Московское). Не пиковые часы — стоимость токенов в 2 раза ниже.
+
+- **НЕ пиковые (дешевле ×2):** с 7:00 до 9:00 и с 13:00 до 4:00 следующего дня.
+- **Пиковые (дорого):** с 9:00 до 13:00 и с 4:00 до 7:00.
+
+Правила работы:
+- **Объёмные работы** (большой анализ кода, проверки на проде, длинные операции, генерация больших объёмов) — выполнять в **не пиковые часы**.
+- **В пиковые часы** — только лёгкая работа с минимальным расходом токенов: мелкие правки, короткие ответы, без больших анализов и проверок.
+- Если агент видит, что задача **в пиковое время** потребует большого расхода токенов — он **обязан предупредить пользователя** и предложить перенести на не пиковые часы либо выполнить минимально.
