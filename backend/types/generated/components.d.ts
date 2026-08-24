@@ -80,6 +80,21 @@ export interface ContactsSocial extends Struct.ComponentSchema {
   };
 }
 
+export interface LayoutBreadcrumbs extends Struct.ComponentSchema {
+  collectionName: 'components_layout_breadcrumbs';
+  info: {
+    displayName: 'breadcrumbs';
+    icon: 'brush';
+  };
+  attributes: {
+    background: Schema.Attribute.Component<
+      'background.background-image',
+      false
+    >;
+    title: Schema.Attribute.String;
+  };
+}
+
 export interface LayoutFooter extends Struct.ComponentSchema {
   collectionName: 'components_layout_footers';
   info: {
@@ -224,6 +239,7 @@ declare module '@strapi/strapi' {
       'contacts.email': ContactsEmail;
       'contacts.phone': ContactsPhone;
       'contacts.social': ContactsSocial;
+      'layout.breadcrumbs': LayoutBreadcrumbs;
       'layout.footer': LayoutFooter;
       'layout.header': LayoutHeader;
       'layout.link': LayoutLink;

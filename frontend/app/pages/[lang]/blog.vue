@@ -23,42 +23,42 @@ useSeoMeta({
 
 <template>
   <section class="blog-page" aria-labelledby="blog-page-title">
-    <h1 id="blog-page-title">Блог</h1>
+    <div class="blog-page__container">
+      <h1 id="blog-page-title">Блог</h1>
 
-    <div v-if="!posts?.length" class="blog-page__empty">
-      Скоро здесь появятся статьи
+      <div v-if="!posts?.length" class="blog-page__empty">
+        Скоро здесь появятся статьи
+      </div>
+
+      <ul v-else class="blog-page__list">
+        <li v-for="post in posts || []" :key="post.documentId || post.id" class="blog-page__item">
+          <NuxtLink
+            :to="`/${currentLocale}/blog/${post.slug}`"
+            class="blog-page__link"
+          >
+            <article class="blog-card">
+              <img
+                v-if="post.image?.url"
+                :src="post.image.url"
+                :alt="post.title"
+                class="blog-card__image"
+              >
+              <div class="blog-card__body">
+                <time class="blog-card__date">{{ post.date }}</time>
+                <h2 class="blog-card__title">{{ post.title }}</h2>
+                <span v-if="post.author" class="blog-card__author">{{ post.author }}</span>
+              </div>
+            </article>
+          </NuxtLink>
+        </li>
+      </ul>
     </div>
-
-    <ul v-else class="blog-page__list">
-      <li v-for="post in posts || []" :key="post.documentId || post.id" class="blog-page__item">
-        <NuxtLink
-          :to="`/${currentLocale}/blog/${post.slug}`"
-          class="blog-page__link"
-        >
-          <article class="blog-card">
-            <img
-              v-if="post.image?.url"
-              :src="post.image.url"
-              :alt="post.title"
-              class="blog-card__image"
-            >
-            <div class="blog-card__body">
-              <time class="blog-card__date">{{ post.date }}</time>
-              <h2 class="blog-card__title">{{ post.title }}</h2>
-              <span v-if="post.author" class="blog-card__author">{{ post.author }}</span>
-            </div>
-          </article>
-        </NuxtLink>
-      </li>
-    </ul>
   </section>
 </template>
 
 <style lang="scss" scoped>
 .blog-page {
   padding-block-start: toEm(32);
-  max-width: toRem(800);
-  margin-inline: auto;
 
   h1 {
     font-size: toEm(32);

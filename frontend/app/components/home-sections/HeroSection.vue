@@ -73,7 +73,7 @@ const { slides, heroGrids } = props;
           </p>
           <NuxtLink
             class="hero-slider__link"
-            :to="`/${currentLocale}/contacts`"
+            :to="`/${currentLocale}/products`"
           >
             {{ slide.textLink }}
             <Icon name="mingcute:arrow-right-line" />

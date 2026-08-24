@@ -155,7 +155,8 @@ const openHamburger = () => {
       </div>
       <ul v-if="category?.length" class="dialog-hamburger__accordion accordion">
          <li v-for="cat in category" :key="cat.documentId" class="accordion__item">
-          <details name="faq" class="accordion__details">
+          
+            <details name="faq" class="accordion__details">
             <summary class="accordion__summary">
               <UImage
                 v-if="cat.image?.url"
@@ -228,7 +229,8 @@ const openHamburger = () => {
       </div>
 
       <div v-if="product?.length" class="accordion">
-        <details name="faq" class="accordion__details">
+        
+         <details name="faq" class="accordion__details">
           <summary class="accordion__summary accordion__summary_is-discount">
             <Icon
               class="accordion__discount-icon"

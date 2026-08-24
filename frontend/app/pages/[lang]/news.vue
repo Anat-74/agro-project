@@ -23,41 +23,41 @@ useSeoMeta({
 
 <template>
   <section class="news-page" aria-labelledby="news-page-title">
-    <h1 id="news-page-title">Новости</h1>
+    <div class="news-page__container">
+      <h1 id="news-page-title">Новости</h1>
 
-    <div v-if="!items?.length" class="news-page__empty">
-      Скоро здесь появятся новости
+      <div v-if="!items?.length" class="news-page__empty">
+        Скоро здесь появятся новости
+      </div>
+
+      <ul v-else class="news-page__list">
+        <li v-for="item in items || []" :key="item.documentId || item.id" class="news-page__item">
+          <NuxtLink
+            :to="`/${currentLocale}/news/${item.slug}`"
+            class="news-page__link"
+          >
+            <article class="news-card">
+              <img
+                v-if="item.image?.url"
+                :src="item.image.url"
+                :alt="item.title"
+                class="news-card__image"
+              >
+              <div class="news-card__body">
+                <time class="news-card__date">{{ item.date }}</time>
+                <h2 class="news-card__title">{{ item.title }}</h2>
+              </div>
+            </article>
+          </NuxtLink>
+        </li>
+      </ul>
     </div>
-
-    <ul v-else class="news-page__list">
-      <li v-for="item in items || []" :key="item.documentId || item.id" class="news-page__item">
-        <NuxtLink
-          :to="`/${currentLocale}/news/${item.slug}`"
-          class="news-page__link"
-        >
-          <article class="news-card">
-            <img
-              v-if="item.image?.url"
-              :src="item.image.url"
-              :alt="item.title"
-              class="news-card__image"
-            >
-            <div class="news-card__body">
-              <time class="news-card__date">{{ item.date }}</time>
-              <h2 class="news-card__title">{{ item.title }}</h2>
-            </div>
-          </article>
-        </NuxtLink>
-      </li>
-    </ul>
   </section>
 </template>
 
 <style lang="scss" scoped>
 .news-page {
   padding-block-start: toEm(32);
-  max-width: toRem(800);
-  margin-inline: auto;
 
   h1 {
     font-size: toEm(32);

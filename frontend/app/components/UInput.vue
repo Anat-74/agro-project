@@ -1,5 +1,5 @@
 <script setup lang="ts">
-type InputType = 'text' | 'textarea' | 'search' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'checkbox' | 'range'
+type InputType = 'text' | 'textarea' | 'search' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'checkbox' | 'radio' | 'range'
 
 interface Props {
   type?: InputType
@@ -16,11 +16,14 @@ interface Props {
   max?: number
   step?: number
   ariaLabel?: string
+  // Для radio: значение опции и имя группы
+  value?: string
+  name?: string
 }
 
 const { type = 'text', label = '', placeholder = '', rows = 3,
   disabled = false, readonly = false, required = false, error = '', icon = '',
-  autocomplete = '', min = 0, max = 100, step = 1, ariaLabel = '' } = defineProps<Props>()
+  autocomplete = '', min = 0, max = 100, step = 1, ariaLabel = '', value = '', name = '' } = defineProps<Props>()
 
 const model = defineModel<any>()
 const inputId = useId()
@@ -70,6 +73,25 @@ const inputType = computed(() => {
         @change="($e) => model = ($e.target as HTMLInputElement).checked"
       >
       <label v-if="label" :for="inputId" class="u-input__checkbox-label">
+        {{ label }}
+        <span v-if="required" class="u-input__required">*</span>
+      </label>
+    </div>
+
+    <div v-else-if="type === 'radio'" class="u-input__radio-wrapper">
+      <input
+        :id="inputId"
+        type="radio"
+        :name="name"
+        :value="value"
+        :checked="model === value"
+        :disabled="disabled"
+        :required="required"
+        :aria-label="ariaLabel || undefined"
+        class="u-input__radio"
+        @change="model = value"
+      >
+      <label v-if="label" :for="inputId" class="u-input__radio-label">
         {{ label }}
         <span v-if="required" class="u-input__required">*</span>
       </label>
@@ -230,6 +252,63 @@ const inputType = computed(() => {
     cursor: pointer;
     font-size: toRem(14);
     color: var(--color);
+    user-select: none;
+  }
+
+  &__radio-wrapper {
+    display: flex;
+    align-items: center;
+    gap: toEm(8);
+  }
+
+  &__radio {
+    appearance: none;
+    width: toRem(16);
+    height: toRem(16);
+    border: toRem(2) solid var(--border-color);
+    border-radius: 50%;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    transition: all var(--transition-duration);
+
+    &:checked {
+      border-color: var(--success-color);
+      background-color: var(--success-color);
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: toRem(6);
+        height: toRem(6);
+        background: var(--light-color);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    @include hover {
+      border-color: var(--success-color);
+    }
+
+    &:focus-visible {
+      outline: toRem(2) solid var(--warning-color);
+      outline-offset: toRem(2);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &__radio-label {
+    cursor: pointer;
+    font-size: toRem(15);
+    color: var(--gray-color);
+    transition: color var(--transition-duration);
     user-select: none;
   }
 

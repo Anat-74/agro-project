@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_layout_breadcrumbs",
+  "info": {
+    "displayName": "breadcrumbs",
+    "icon": "brush"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": false
+    },
+    "background": {
+      "type": "component",
+      "component": "background.background-image"
+    }
+  }
+}

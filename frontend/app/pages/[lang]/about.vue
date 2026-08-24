@@ -32,16 +32,16 @@ useHead({
 
 <template>
   <section class="about-page" aria-labelledby="about-page-title">
-    <h1 id="about-page-title">{{ page?.title }}</h1>
-    <MDC v-if="page?.content" :value="page.content" />
+    <div class="about-page__container">
+      <h1 id="about-page-title">{{ page?.title }}</h1>
+      <MDC v-if="page?.content" :value="page.content" />
+    </div>
   </section>
 </template>
 
 <style lang="scss" scoped>
 .about-page {
   padding-block-start: toEm(32);
-  max-width: toRem(800);
-  margin-inline: auto;
 
   h1 {
     font-size: toEm(32);

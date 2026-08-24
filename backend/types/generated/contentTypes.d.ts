@@ -713,6 +713,7 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
       'background.background-options',
       false
     >;
+    breadcrumbs: Schema.Attribute.Component<'layout.breadcrumbs', false>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

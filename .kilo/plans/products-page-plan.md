@@ -82,3 +82,10 @@ find("products", {
 4. Подключить данные из Strapi (фильтры + query-параметры).
 5. Перенаправить hero-кнопку на новый маршрут.
 6. Локализация + SEO + проверка (spyglass) + коммит/деплой по команде.
+
+## 7. Хлебные крошки (переиспользуемые)
+
+- **Strapi:** компонент `layout.breadcrumbs` (вложенный `background.background-image` — `baseBgImageWebp` + `retinaBgImageAvif`). Поле `breadcrumbs` добавлено в **`global`** (для продуктовой страницы — нет контент-типа).
+- **Фронт:** `app/components/Breadcrumbs.vue` — `image-set(url(webp) 1x, url(avif) 2x)`, «Главная» через `useLocale`. Заголовок текущей страницы — из данных страницы (`page.title`), не из Strapi-компонента.
+- **TODO (подключить на каждой странице):** `about-page`, `services-page`, `contacts-page`, `blog`, `news` — добавить поле `breadcrumbs` (со своим `background-image`) в каждый контент-тип и использовать `<Breadcrumbs>` на страницах.
+- **Временный фон:** сейчас используются существующие изображения Hero (webp 456 + avif 442). Когда пользователь подготовит свои два формата — заменить в админке (загрузить через mcp-strapi `upload_media`).
