@@ -55,10 +55,17 @@ const backgroundStyle = computed(() => {
 .breadcrumbs {
   // Полноширинный блок с фоном: фиксированная высота, контент в __container
   height: toEm(60);
-  display: grid;
+  display: flex;
   align-items: center;
   background-size: cover;
   background-position: center;
+
+  // Контейнер растягивается на всю ширину и прижат влево
+  // (глобальное правило __container задаёт margin-inline: auto → в flex это центрирует)
+  &__container {
+    flex: 1;
+    margin-inline: 0;
+  }
 
   &__list {
     display: flex;

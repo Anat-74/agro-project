@@ -162,12 +162,10 @@ useSeoMeta({
         <ShowShopFilter
           ref="shopFilter"
           :category="category"
-          :sort="sort"
           :price-min="priceMin"
           :price-max="priceMax"
           :tags="tags"
           @update:category="category = $event"
-          @update:sort="sort = $event"
           @update:price-min="priceMin = $event"
           @update:price-max="priceMax = $event"
           @update:tags="tags = $event"
@@ -343,27 +341,29 @@ useSeoMeta({
 
   // ==== Адаптив ====
   @media (max-width: $mobile) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: toRem(12);
-
+    // Кнопка + select в одну строку (space-between), количество — отдельной строкой
     &__right {
+      flex: 1;
+      justify-content: flex-end;
       flex-wrap: wrap;
       gap: toRem(12);
-      width: 100%;
     }
 
     &__sort {
-      flex: 1;
-      min-width: toRem(150);
+      flex: 0 1 auto;
+      min-width: 0;
     }
 
     &__select {
-      width: 100%;
-      padding-block: toRem(6);
+      width: auto;
+      min-width: 0;
+      padding-block: toRem(4);
+      white-space: nowrap;
     }
 
     &__results {
+      flex-basis: 100%;
+      text-align: end;
       font-size: toEm(13);
     }
 
@@ -380,13 +380,11 @@ useSeoMeta({
     }
 
     &__sort {
-      flex-direction: row;
-      align-items: center;
       width: 100%;
     }
 
     &__select {
-      flex: 1;
+      width: 100%;
     }
 
     &__results {

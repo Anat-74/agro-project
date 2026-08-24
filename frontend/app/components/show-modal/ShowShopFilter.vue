@@ -7,7 +7,6 @@ const t = computed(() => shopFiltersTranslations[currentLocale.value])
 
 interface Props {
   category?: string
-  sort?: string
   priceMin?: number
   priceMax?: number
   tags?: string[]
@@ -15,7 +14,6 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   category: "",
-  sort: "name:asc",
   priceMin: 0,
   priceMax: 2000,
   tags: () => [],
@@ -23,7 +21,6 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   "update:category": [v: string]
-  "update:sort": [v: string]
   "update:priceMin": [v: number]
   "update:priceMax": [v: number]
   "update:tags": [v: string[]]
@@ -75,12 +72,6 @@ const { data: saleData } = useCachedAsyncData(
 
 const saleProducts = computed(() => (saleData.value?.data as Product[] | undefined) ?? [])
 
-// ===== Сортировка =====
-const sortOption = computed({
-  get: () => props.sort,
-  set: (v) => emit("update:sort", v),
-})
-
 // ===== Диапазон цены (два ползунка) =====
 const PRICE_MAX = 2000
 const localMin = ref(props.priceMin)
@@ -112,22 +103,6 @@ const toggleTag = (tag: string) => {
   <div class="show-shop-filter">
     <dialog id="dialogShopFilter" ref="dialog-shop-filter" class="show-shop-filter__dialog">
       <aside class="shop-filters">
-            <div class="shop-filters__header">
-              <h2 class="shop-filters__title">{{ t.filterTitle }}</h2>
-              <div class="shop-filters__sort">
-                <USelect
-                  v-model="sortOption"
-                  class="shop-filters__select"
-                  :label="t.sortLabel"
-                  :options="[
-                    { value: 'name:asc', label: t.sortName },
-                    { value: 'price:asc', label: t.sortPriceAsc },
-                    { value: 'price:desc', label: t.sortPriceDesc },
-                  ]"
-                />
-              </div>
-            </div>
-
             <!-- Категории: без заголовка — название блока дублирует текст радио-кнопок -->
             <section class="shop-filters__section" aria-label="Categories">
               <ul class="shop-filters__category-list">
@@ -241,10 +216,6 @@ const toggleTag = (tag: string) => {
   flex-shrink: 0;
   display: flex;
 
-  @media (max-width: $mobile) {
-    width: 100%;
-  }
-
   // ===== Диалог сайдбара (без телепорта — в потоке страницы) =====
   &__dialog {
     // show() диалог по умолчанию absolute по центру — возвращаем в поток
@@ -268,30 +239,6 @@ const toggleTag = (tag: string) => {
   width: 100%;
   flex-shrink: 0;
   color: var(--color);
-
-  &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-block-end: toRem(18);
-    border-bottom: toRem(1) solid var(--border-color);
-    margin-block-end: toRem(24);
-  }
-
-  &__title {
-    margin: 0;
-    font-weight: 600;
-    @include adaptiveValue("font-size", 20, 18);
-  }
-
-  &__sort {
-    display: flex;
-    align-items: center;
-  }
-
-  &__select {
-    width: auto;
-  }
 
   &__section {
     margin-block-end: toRem(24);
