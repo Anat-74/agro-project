@@ -53,7 +53,10 @@ const backgroundStyle = computed(() => {
 
 <style lang="scss" scoped>
 .breadcrumbs {
-  padding-block: toRem(16) toRem(20);
+  // Полноширинный блок с фоном: фиксированная высота, контент в __container
+  height: toEm(60);
+  display: grid;
+  align-items: center;
   background-size: cover;
   background-position: center;
 
@@ -101,7 +104,7 @@ const backgroundStyle = computed(() => {
 
   // ==== Адаптив ====
   @media (max-width: $mobile) {
-    padding-block: toRem(12) toRem(16);
+    height: toEm(50);
 
     &__item {
       font-size: toEm(13);
@@ -118,7 +121,7 @@ const backgroundStyle = computed(() => {
   }
 
   @media (max-width: $mobileSmall) {
-    padding-block: toRem(10) toRem(14);
+    height: toEm(44);
 
     &__list {
       gap: toRem(6);

@@ -89,3 +89,9 @@ find("products", {
 - **Фронт:** `app/components/Breadcrumbs.vue` — `image-set(url(webp) 1x, url(avif) 2x)`, «Главная» через `useLocale`. Заголовок текущей страницы — из данных страницы (`page.title`), не из Strapi-компонента.
 - **TODO (подключить на каждой странице):** `about-page`, `services-page`, `contacts-page`, `blog`, `news` — добавить поле `breadcrumbs` (со своим `background-image`) в каждый контент-тип и использовать `<Breadcrumbs>` на страницах.
 - **Временный фон:** сейчас используются существующие изображения Hero (webp 456 + avif 442). Когда пользователь подготовит свои два формата — заменить в админке (загрузить через mcp-strapi `upload_media`).
+
+## 8. SEO страницы «все товары»
+
+- **Реализовано:** `useSeoMeta` с локализованными title/description/ogTitle/ogDescription/ogImage (фон breadcrumbs из Strapi)/ogUrl (siteUrl + fullPath). Без `useHead` — у страницы нет контент-типа, нет `structuredData`.
+- **TODO (отдельная задача):** если позже захотим статический JSON-LD (например, `ItemList` товаров или `WebSite`), добавить `useHead` с вручную составленным объектом — сейчас данных для разметки нет.
+- **TODO (проверка/доработка):** страницы навигации (about/services/contacts/blog/news) — SEO должно быть как на динамических страницах (useSeoMeta + useHead со `structuredData` из Strapi). Проверить и привести к единому виду.

@@ -15,6 +15,9 @@ export const shopFiltersTranslations: Record<LocaleCode, {
   newsletterText: string
   breadcrumbsCurrent: string
   resultsCount: string
+  noResults: string
+  seoTitle: string
+  seoDescription: string
   tags: string[]
 }> = {
   ru: {
@@ -34,6 +37,9 @@ export const shopFiltersTranslations: Record<LocaleCode, {
     newsletterText: "Оставьте почту и получайте свежие новости, рецепты и персональные скидки.",
     breadcrumbsCurrent: "Продукты",
     resultsCount: "Найдено: {count}",
+    noResults: "Товары не найдены",
+    seoTitle: "Все товары",
+    seoDescription: "Интернет-магазин агропродуктов: все товары — фрукты, овощи, зелень, орехи и многое другое с быстрой доставкой.",
     tags: ["Здоровое", "Низкокалорийное", "Вегетарианское", "Для детей", "Витамины", "Хлеб", "Мясо", "Снеки", "Обед", "Ужин", "Завтрак", "Фрукты"],
   },
   be: {
@@ -53,6 +59,9 @@ export const shopFiltersTranslations: Record<LocaleCode, {
     newsletterText: "Пакіньце пошту і атрымлівайце свежыя навіны, рэцэпты і персанальныя зніжкі.",
     breadcrumbsCurrent: "Прадукты",
     resultsCount: "Знойдзена: {count}",
+    noResults: "Тавары не знойдзены",
+    seoTitle: "Усе тавары",
+    seoDescription: "Інтэрнэт-крама аграпрадуктаў: усе тавары — садавіна, агародніна, зеляніна, арэхі і многае іншае з хуткай дастаўкай.",
     tags: ["Здаровае", "Нізкакаларыйнае", "Вегетарыянскае", "Для дзяцей", "Вітаміны", "Хлеб", "Мяса", "Снэкі", "Абед", "Вячэра", "Сняданак", "Фрукты"],
   },
 }

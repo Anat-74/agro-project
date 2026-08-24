@@ -4,6 +4,7 @@ import ShowShopFilter from '~/components/show-modal/ShowShopFilter.vue'
 
 const { find } = useStrapi();
 const { currentLocale } = useLocale();
+const route = useRoute();
 const t = computed(() => shopFiltersTranslations[currentLocale.value])
 
 const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopFilter")
@@ -25,7 +26,10 @@ const { data: globalData } = useCachedAsyncData(
       breadcrumbs: {
         populate: {
           background: {
-            populate: ["baseBgImageWebp", "retinaBgImageAvif"],
+            populate: {
+              baseBgImageWebp: { fields: ["url"] },
+              retinaBgImageAvif: { fields: ["url"] },
+            },
           },
         },
       },
@@ -35,69 +39,80 @@ const { data: globalData } = useCachedAsyncData(
 )
 
 const breadcrumbsBackground = computed(() => {
-  const bc = (globalData.value?.data?.[0] as any)?.breadcrumbs
+  // global — single type: Content API возвращает data как объект (не массив)
+  const g = globalData.value?.data as any
+  const bc = Array.isArray(g) ? g[0]?.breadcrumbs : g?.breadcrumbs
   return bc?.background ?? null
 })
 
-// ===== Количество результатов =====
-const { data: productsMeta } = useCachedAsyncData(
-  `shop-total-${currentLocale.value}`,
-  () => find("products", {
-    filters: { locale: { $eq: currentLocale.value } },
-    fields: ["id"],
-    pagination: { page: 1, pageSize: 1 },
-  } as any),
+// ===== Товары: все продукты с фильтрами/сортировкой/пагинацией =====
+const page = ref(route.query.page ? +route.query.page : 1);
+const PAGE_SIZE = 12;
+
+const productsKey = () =>
+  `shop-products-${currentLocale.value}-${category.value}-${sort.value}-${priceMin.value}-${priceMax.value}-${tags.value.join(",")}-${page.value}`
+
+const { data: productsData, pending, refresh } = useCachedAsyncData(
+  productsKey,
+  async () => {
+    const filters: any = { locale: { $eq: currentLocale.value } }
+    if (category.value) filters.category = { slug: { $eq: category.value } }
+    if (priceMin.value > 0 || priceMax.value < 2000) {
+      filters.price = {}
+      if (priceMin.value > 0) filters.price.$gte = priceMin.value
+      if (priceMax.value < 2000) filters.price.$lte = priceMax.value
+    }
+    return find("products", {
+      filters,
+      populate: { image: { fields: ["alternativeText", "url"] } },
+      sort: [sort.value],
+      pagination: { page: page.value, pageSize: PAGE_SIZE },
+    } as any) as Promise<ProductsResponse>
+  },
   { ttl: 600_000 },
 )
 
-const resultsCount = computed(() => productsMeta.value?.meta?.pagination?.total ?? 0)
+const products = computed(() => productsData.value?.data ?? [])
+const pageCount = computed(() => productsData.value?.meta?.pagination?.pageCount || 1)
+const resultsCount = computed(() => productsData.value?.meta?.pagination?.total ?? 0)
 
-// SEO
+// Смена фильтров/сортировки — сброс на первую страницу и перезагрузка
+watch([category, sort, priceMin, priceMax, tags], () => {
+  page.value = 1
+  refresh()
+})
+
+// Пагинация из query-параметра
+watch(
+  () => route.query.page,
+  (newPage) => {
+    page.value = newPage ? +newPage : 1
+    refresh()
+  },
+)
+
+// SEO — страница «все товары» не имеет контент-типа в Strapi, поэтому мета
+// статическая локализованная (паттерн подкатегории адаптирован). ogImage — фон
+// breadcrumbs из Strapi. StructuredData не добавляем (нет источника данных).
+const config = useRuntimeConfig();
+
+const seoTitle = computed(() => t.value.seoTitle)
+const seoDescription = computed(() => t.value.seoDescription)
+const seoImage = computed(() => {
+  const webp = breadcrumbsBackground.value?.baseBgImageWebp?.url
+  const avif = breadcrumbsBackground.value?.retinaBgImageAvif?.url
+  const url = webp || avif
+  return url ? `${config.public.strapi.url}${url}` : null
+})
+
 useSeoMeta({
-  title: "All Products",
-  description: "All products",
+  title: seoTitle,
+  description: seoDescription,
+  ogTitle: seoTitle,
+  ogDescription: seoDescription,
+  ogImage: seoImage,
+  ogUrl: computed(() => `${config.public.siteUrl}${route.fullPath}`),
 });
-
-// watchEffect(() => {
-//   if (subcategory.value) {
-//     useSeoMeta({
-//       title:
-//         subcategory.value.seo?.metaTitle ||
-//         subcategory.value.seoTitle ||
-//         subcategory.value.name,
-//       description:
-//         subcategory.value.seo?.metaDescription ||
-//         subcategory.value.seoDescription ||
-//         subcategory.value.name,
-//       ogTitle:
-//         subcategory.value.seo?.metaTitle ||
-//         subcategory.value.seoTitle ||
-//         subcategory.value.name,
-//       ogDescription:
-//         subcategory.value.seo?.metaDescription ||
-//         subcategory.value.seoDescription ||
-//         subcategory.value.name,
-//       ogImage: subcategory.value.seoImage?.[0]?.url
-//         ? `${config.public.strapi.url}${subcategory.value.seoImage[0].url}`
-//         : subcategory.value.image?.url
-//           ? `${config.public.strapi.url}${subcategory.value.image.url}`
-//           : `${config.public.siteUrl}/default-subcategory-image.jpg`,
-//       ogUrl: `${config.public.siteUrl}${route.fullPath}`,
-//     });
-
-//     // Добавляем structured data в useHead
-//     useHead({
-//       script: subcategory.value?.seo?.structuredData
-//         ? [
-//             {
-//               type: "application/ld+json",
-//               innerHTML: JSON.stringify(subcategory.value.seo.structuredData),
-//             },
-//           ]
-//         : [],
-//     });
-//   }
-// });
 </script>
 
 <template>
@@ -108,9 +123,10 @@ useSeoMeta({
       :background="breadcrumbsBackground"
     />
 
-    <!-- Верхний блок: кнопка-диалог + сортировка + количество -->
-    <div class="top-bar">
-      <div class="top-bar__container">
+    <!-- Основной контейнер: top-bar + контент -->
+    <div class="products-page__container">
+      <!-- Верхний блок: кнопка-диалог + сортировка + количество -->
+      <div class="top-bar">
         <div class="top-bar__left">
           <UButton
             class="top-bar__filter-btn"
@@ -140,10 +156,7 @@ useSeoMeta({
           </span>
         </div>
       </div>
-    </div>
 
-    <!-- Основной контент: сайдбар + сетка товаров -->
-    <div class="products-page__container">
       <div class="products-page__body">
         <!-- Сайдбар фильтров: диалог изначально открыт, кнопка «Фильтр» в top-bar -->
         <ShowShopFilter
@@ -160,9 +173,29 @@ useSeoMeta({
           @update:tags="tags = $event"
         />
 
-        <!-- TODO: сетка товаров (ProductCard + пагинация) -->
+        <!-- Список карточек товаров + пагинация -->
         <section class="products-page__content" aria-label="Products">
-          <span class="visually-hidden">Products grid</span>
+          <ULoader v-show="pending" class="products-page__loader loader" />
+          <ul v-if="products.length" class="products-page__card-list">
+            <ProductCard
+              v-for="(prod, index) in products"
+              :key="prod.documentId"
+              class="products-page__item"
+              :product="prod"
+              :index="index"
+            />
+          </ul>
+          <div v-else-if="!pending" class="products-page__empty">
+            {{ t.noResults }}
+          </div>
+
+          <UPagination
+            v-if="pageCount > 1"
+            class="products-page__pagination"
+            :page="page"
+            :page-count="pageCount"
+            :route-name="route.name?.toString() || ''"
+          />
         </section>
       </div>
     </div>
@@ -174,12 +207,44 @@ useSeoMeta({
   &__body {
     display: flex;
     gap: toRem(30);
-    align-items: flex-start;
+    align-items: stretch;
+
+    @media (max-width: $mobile) {
+      flex-direction: column;
+    }
   }
 
   &__content {
     flex: 1;
     min-width: 0;
+  }
+
+  &__card-list {
+    display: grid;
+    justify-items: center;
+    row-gap: toEm(32);
+    @include gridCards;
+    @include adaptiveValue("column-gap", 64, 5);
+  }
+
+  &__item {
+    @include adaptiveValue("height", 395, 320);
+  }
+
+  &__pagination {
+    justify-self: end;
+    margin-block-start: toRem(24);
+  }
+
+  &__empty {
+    text-align: center;
+    padding: toEm(20);
+    font-size: toEm(18);
+    color: var(--gray-color);
+  }
+
+  &__loader {
+    translate: 0;
   }
 }
 
@@ -188,17 +253,14 @@ useSeoMeta({
 
 // ===== Верхний блок (top-bar) =====
 .top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: toRem(12);
   padding-block-end: toRem(18);
   border-bottom: toRem(1) solid var(--border-color);
   margin-block-end: toRem(24);
-
-  &__container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: toRem(12);
-  }
 
   &__left {
     display: flex;
@@ -281,11 +343,9 @@ useSeoMeta({
 
   // ==== Адаптив ====
   @media (max-width: $mobile) {
-    &__container {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: toRem(12);
-    }
+    flex-direction: column;
+    align-items: flex-start;
+    gap: toRem(12);
 
     &__right {
       flex-wrap: wrap;

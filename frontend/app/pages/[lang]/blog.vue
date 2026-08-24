@@ -1,6 +1,11 @@
 <script lang="ts" setup>
+import { seoTranslations } from '~/locales/seo'
+
 const { find } = useStrapi()
 const { currentLocale } = useLocale()
+const route = useRoute()
+const config = useRuntimeConfig()
+const t = computed(() => seoTranslations[currentLocale.value])
 
 const { data: posts } = useAsyncData(
   `blog-list-${currentLocale.value}`,
@@ -13,11 +18,14 @@ const { data: posts } = useAsyncData(
   }
 )
 
+// SEO (страница-список: статическая локализованная мета + ogUrl/ogImage)
 useSeoMeta({
-  title: "Блог | АгроМаркет",
-  ogTitle: "Блог | АгроМаркет",
-  description: "Статьи и советы о свежих органических продуктах",
-  ogDescription: "Статьи и советы о свежих органических продуктах",
+  title: t.value.blogTitle,
+  ogTitle: t.value.blogTitle,
+  description: t.value.blogDescription,
+  ogDescription: t.value.blogDescription,
+  ogUrl: `${config.public.siteUrl}${route.fullPath}`,
+  ogImage: `${config.public.siteUrl}/pwa-512x512.png`,
 })
 </script>
 

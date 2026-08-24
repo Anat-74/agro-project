@@ -35,12 +35,7 @@ const { open, close, isOpen } = useDialog("shopFilterDialog", dialogElement, {
   useShowMethod: true,
 });
 
-// const { width } = useViewport()
-// const isTablet = computed(() => width.value <= 1024)
-
-// Изначально открыт при переходе на страницу.
-// Диалог внутри ClientOnly/Teleport — элемент появляется после монтирования,
-// поэтому ждём ref (onMounted срабатывает раньше, show() не вызовется).
+// Изначально открыт при переходе на страницу (show() — клиентский API)
 watch(dialogElement, (el) => {
   if (el) open?.()
 })
@@ -115,24 +110,21 @@ const toggleTag = (tag: string) => {
 
 <template>
   <div class="show-shop-filter">
-    <ClientOnly>
-        <dialog id="dialogShopFilter" ref="dialog-shop-filter" class="show-shop-filter__dialog">
-          <aside class="shop-filters">
+    <dialog id="dialogShopFilter" ref="dialog-shop-filter" class="show-shop-filter__dialog">
+      <aside class="shop-filters">
             <div class="shop-filters__header">
               <h2 class="shop-filters__title">{{ t.filterTitle }}</h2>
               <div class="shop-filters__sort">
-                <label class="visually-hidden" for="shop-filters-sort">
-                  {{ t.sortLabel }}
-                </label>
-                <select
-                  id="shop-filters-sort"
+                <USelect
                   v-model="sortOption"
-                  class="shop-filters__select select"
-                >
-                  <option value="name:asc">{{ t.sortName }}</option>
-                  <option value="price:asc">{{ t.sortPriceAsc }}</option>
-                  <option value="price:desc">{{ t.sortPriceDesc }}</option>
-                </select>
+                  class="shop-filters__select"
+                  :label="t.sortLabel"
+                  :options="[
+                    { value: 'name:asc', label: t.sortName },
+                    { value: 'price:asc', label: t.sortPriceAsc },
+                    { value: 'price:desc', label: t.sortPriceDesc },
+                  ]"
+                />
               </div>
             </div>
 
@@ -239,56 +231,42 @@ const toggleTag = (tag: string) => {
               <p class="shop-filters__newsletter-text">{{ t.newsletterText }}</p>
             </div>
           </aside>
-        </dialog>
-    </ClientOnly>
+    </dialog>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .show-shop-filter {
-  // ===== Диалог сайдбара =====
+  width: toRem(300);
+  flex-shrink: 0;
+  display: flex;
+
+  @media (max-width: $mobile) {
+    width: 100%;
+  }
+
+  // ===== Диалог сайдбара (без телепорта — в потоке страницы) =====
   &__dialog {
+    // show() диалог по умолчанию absolute по центру — возвращаем в поток
+    position: static;
+    flex: 1;
+    width: 100%;
     border: none;
     padding: 0;
     margin: 0;
     background: transparent;
-    width: fit-content;
     max-width: none;
 
     &[open] {
       display: block;
     }
   }
-
-  // На планшете/мобильном диалог телепортируется в body — фиксированное окно слева
-  @media (max-width: $tablet) {
-    &__dialog {
-      position: fixed;
-      inset-block-start: toRem(70);
-      inset-inline-start: toRem(16);
-      z-index: 100;
-      max-height: calc(100vh - toRem(90));
-      overflow-y: auto;
-    }
-  }
-
-  @media (max-width: $mobile) {
-    &__dialog {
-      inset-inline: 0;
-      inset-inline-start: 0;
-      width: 100%;
-      max-width: none;
-      padding-inline: toRem(16);
-      box-sizing: border-box;
-    }
-  }
 }
 
 // ===== Содержимое сайдбара фильтров =====
 .shop-filters {
-  width: toRem(280);
+  width: 100%;
   flex-shrink: 0;
-  padding-inline-end: toRem(30);
   color: var(--color);
 
   &__header {
@@ -598,14 +576,8 @@ const toggleTag = (tag: string) => {
   }
 
   // ==== Адаптив ====
-  @media (max-width: $tablet) {
-    width: toRem(240);
-    padding-inline-end: toRem(20);
-  }
-
   @media (max-width: $mobile) {
     width: 100%;
-    padding-inline-end: 0;
     padding-block-end: toRem(30);
 
     &__header {

@@ -30,6 +30,7 @@ watchEffect(() => {
     description: cartT.value.description,
     ogDescription: cartT.value.description,
     ogUrl: `${config.public.siteUrl}${route.fullPath}`,
+    ogImage: `${config.public.siteUrl}/pwa-512x512.png`,
   });
 });
 

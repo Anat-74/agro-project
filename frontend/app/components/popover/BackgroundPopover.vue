@@ -33,11 +33,10 @@ const sizeOptions = computed(() => [
   { value: "cover", label: backgroundT.value.sizeCover, icon: "🖼️" },
   { value: "contain", label: backgroundT.value.sizeContain, icon: "🔲" },
   { value: "original", label: backgroundT.value.sizeOriginal, icon: "📏" },
-] as const)
+])
 
-const onSizeChange = (event: Event) => {
-  const value = (event.target as HTMLSelectElement).value as "cover" | "contain" | "original"
-  emit('sizeChange', value)
+const onSizeChange = (value: string) => {
+  emit('sizeChange', value as "cover" | "contain" | "original")
 }
 
 const popupRef = useTemplateRef<HTMLElement>('popup')
@@ -163,26 +162,14 @@ watch(isOpen, (open) => {
           </button>
         </div>
 
-        <!-- Размер отображения фона: единый класс .select (fallback + base-select) -->
-        <div class="background-popover__size-wrapper select-wrapper">
-          <label class="visually-hidden" for="background-size-select">
-            {{ backgroundT.sizeLabel }}
-          </label>
-          <select
-            id="background-size-select"
-            class="background-popover__size select"
-            :value="sizeMode"
-            @change="onSizeChange"
-          >
-            <option
-              v-for="opt in sizeOptions"
-              :key="opt.value"
-              :value="opt.value"
-            >
-              {{ opt.icon }} {{ opt.label }}
-            </option>
-          </select>
-        </div>
+        <!-- Размер отображения фона: переиспользуемый USelect -->
+        <USelect
+          class="background-popover__size-wrapper"
+          :model-value="sizeMode"
+          :label="backgroundT.sizeLabel"
+          :options="sizeOptions"
+          @update:model-value="onSizeChange"
+        />
 
         <!-- Эффект фона: мини-кнопка-иконка в правом нижнем углу (выпуклость box-shadow) -->
         <UButton
@@ -344,11 +331,10 @@ watch(isOpen, (open) => {
 // здесь только компактная ширина для попапа
 .background-popover__size-wrapper {
   justify-self: center;
-}
 
-.background-popover__size {
-  width: toRem(150);
-  // font-size не задаём: базовый .select (toRem(17)) — единый размер для всех select
+  :deep(.select) {
+    width: toRem(150);
+  }
 }
 
 // Кнопка эффекта фона: мини-иконка в правом нижнем углу карточки, выпуклый вид

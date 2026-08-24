@@ -185,26 +185,16 @@ const handleAddToCart = (product: Product) => {
         variant="go-forward-back"
         @click="goForward"
       />
-      <div class="subcategory-products__select-wrapper select-wrapper">
-        <label class="visually-hidden" for="sort-subcategory-product">
-          {{ productFilterT.labelSelect }}
-        </label>
-        <select
-          id="sort-subcategory-product"
-          v-model="sortOption"
-          class="subcategory-products__select select"
-        >
-          <option value="name:asc">
-            {{ productFilterT.optionName }}
-          </option>
-          <option value="price:asc">
-            {{ productFilterT.optionPrice }}
-          </option>
-          <option value="price:desc">
-            {{ productFilterT.optionPriceDesc }}
-          </option>
-        </select>
-      </div>
+      <USelect
+        v-model="sortOption"
+        class="subcategory-products__select-wrapper"
+        :label="productFilterT.labelSelect"
+        :options="[
+          { value: 'name:asc', label: productFilterT.optionName },
+          { value: 'price:asc', label: productFilterT.optionPrice },
+          { value: 'price:desc', label: productFilterT.optionPriceDesc },
+        ]"
+      />
     </div>
     <h2 class="visually-hidden">
       {{ visuallyHiddenT.sectionSubcategorySlugList }}
