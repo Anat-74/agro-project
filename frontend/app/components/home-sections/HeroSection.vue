@@ -183,8 +183,7 @@ const { slides, heroGrids } = props;
     column-gap: toEm(8);
     padding-inline: toEm(25);
     border-radius: toEm(25);
-    // Тёмный текст на #9acd32: белый даёт 1.9:1, #274c5b — 4.9:1 (AA)
-    color: var(--dark-color);
+    color: var(--light-color);
     background-color: var(--success-color);
     @include adaptiveValue("margin-block-start", 48, 16);
 
