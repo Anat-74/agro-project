@@ -19,11 +19,14 @@ interface Props {
   // Для radio: значение опции и имя группы
   value?: string
   name?: string
+  // checkbox-пилюля (теги): скрытый чекбокс + label-пилюля, модель — массив значений
+  pill?: boolean
 }
 
 const { type = 'text', label = '', placeholder = '', rows = 3,
   disabled = false, readonly = false, required = false, error = '', icon = '',
-  autocomplete = '', min = 0, max = 100, step = 1, ariaLabel = '', value = '', name = '' } = defineProps<Props>()
+  autocomplete = '', min = 0, max = 100, step = 1, ariaLabel = '', value = '', name = '',
+  pill = false } = defineProps<Props>()
 
 const model = defineModel<any>()
 const inputId = useId()
@@ -37,11 +40,23 @@ const inputType = computed(() => {
   if (type === 'password' && showPassword.value) return 'text'
   return type
 })
+
+// Проверка/смена: для пилюли модель — массив выбранных значений, для обычного checkbox — boolean
+const onCheckboxChange = (e: Event) => {
+  const checked = (e.target as HTMLInputElement).checked
+  if (pill) {
+    const arr: string[] = Array.isArray(model.value) ? [...model.value] : []
+    model.value = checked ? [...arr, value] : arr.filter((v) => v !== value)
+  } else {
+    model.value = checked
+  }
+}
 </script>
 
 <template>
   <div class="u-input" :class="{ 'u-input_error': error }">
-    <label v-if="label && type !== 'checkbox'" :for="inputId" class="u-input__label">
+    <!-- Общий label: для checkbox/radio не рендерится — у них свой label внутри обёртки -->
+    <label v-if="label && type !== 'checkbox' && type !== 'radio'" :for="inputId" class="u-input__label">
       {{ label }}
       <span v-if="required" class="u-input__required">*</span>
     </label>
@@ -60,19 +75,20 @@ const inputType = computed(() => {
       class="u-input__field u-input__field_textarea"
     />
 
-    <div v-else-if="type === 'checkbox'" class="u-input__checkbox-wrapper">
+    <div v-else-if="type === 'checkbox'" :class="['u-input__checkbox-wrapper', { 'u-input__checkbox-wrapper_pill': pill }]">
       <input
         :id="inputId"
         type="checkbox"
-        :checked="!!model"
+        :checked="pill ? (Array.isArray(model) ? model.includes(value) : !!model) : !!model"
+        :value="value"
         :disabled="disabled"
         :required="required"
         :autocomplete="autocomplete || undefined"
         :aria-label="ariaLabel || undefined"
         class="u-input__checkbox"
-        @change="($e) => model = ($e.target as HTMLInputElement).checked"
+        @change="onCheckboxChange"
       >
-      <label v-if="label" :for="inputId" class="u-input__checkbox-label">
+      <label v-if="label" :for="inputId" :class="['u-input__checkbox-label', { 'u-input__checkbox-label_pill': pill }]">
         {{ label }}
         <span v-if="required" class="u-input__required">*</span>
       </label>
@@ -253,6 +269,41 @@ const inputType = computed(() => {
     font-size: toRem(14);
     color: var(--color);
     user-select: none;
+  }
+
+  // ===== Checkbox-пилюля (теги) =====
+  &__checkbox-wrapper_pill {
+    .u-input__checkbox {
+      display: none;
+    }
+  }
+
+  &__checkbox-label_pill {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    padding: toRem(6) toRem(16);
+    background: var(--whitesmoke-color);
+    border-radius: toRem(20);
+    border: toRem(1) solid transparent;
+    font-size: toEm(13);
+    color: var(--gray-color);
+    transition: all var(--transition-duration);
+    user-select: none;
+
+    @include hover {
+      background: var(--bg-product);
+      border-color: var(--success-color);
+    }
+  }
+
+  // Выбранная пилюля (input скрыт → управляем через :has на обёртке)
+  &__checkbox-wrapper_pill:has(.u-input__checkbox:checked) {
+    .u-input__checkbox-label_pill {
+      background: var(--success-color);
+      border-color: var(--success-color);
+      color: var(--light-color);
+    }
   }
 
   &__radio-wrapper {

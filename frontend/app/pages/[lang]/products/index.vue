@@ -180,7 +180,7 @@ useSeoMeta({
         />
 
         <!-- Список карточек товаров + пагинация -->
-        <section class="products-page__content" aria-label="Products">
+        <div class="products-page__content" aria-label="Products">
           <ULoader v-show="pending" class="products-page__loader loader" />
           <ul v-if="products.length" class="products-page__card-list">
             <ProductCard
@@ -202,7 +202,7 @@ useSeoMeta({
             :page-count="pageCount"
             :route-name="route.name?.toString() || ''"
           />
-        </section>
+        </div>
       </div>
     </div>
   </section>

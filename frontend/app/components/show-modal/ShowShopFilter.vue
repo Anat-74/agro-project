@@ -90,13 +90,6 @@ const onMaxInput = () => {
   emit("update:priceMax", localMax.value)
 }
 
-// ===== Теги (чекбоксы-пилюли) =====
-const toggleTag = (tag: string) => {
-  const next = props.tags.includes(tag)
-    ? props.tags.filter((item) => item !== tag)
-    : [...props.tags, tag]
-  emit("update:tags", next)
-}
 </script>
 
 <template>
@@ -154,19 +147,18 @@ const toggleTag = (tag: string) => {
               </div>
             </section>
 
-            <!-- Популярные теги -->
+            <!-- Популярные теги (UInput checkbox-пилюли, модель — массив) -->
             <section class="shop-filters__section">
               <ul class="shop-filters__tags">
                 <li v-for="tag in t.tags" :key="tag" class="shop-filters__tag-item">
-                  <label class="shop-filters__tag">
-                    <input
-                      type="checkbox"
-                      :checked="tags.includes(tag)"
-                      class="shop-filters__tag-input"
-                      @change="toggleTag(tag)"
-                    >
-                    <span class="shop-filters__tag-text">{{ tag }}</span>
-                  </label>
+                  <UInput
+                    type="checkbox"
+                    pill
+                    :value="tag"
+                    :model-value="tags"
+                    :label="tag"
+                    @update:model-value="emit('update:tags', $event)"
+                  />
                 </li>
               </ul>
             </section>
@@ -397,43 +389,6 @@ const toggleTag = (tag: string) => {
     margin: 0;
   }
 
-  &__tag {
-    display: inline-flex;
-    align-items: center;
-    cursor: pointer;
-    padding: toRem(6) toRem(16);
-    background: var(--whitesmoke-color);
-    border-radius: toRem(20);
-    border: toRem(1) solid transparent;
-    transition: all var(--transition-duration);
-
-    @include hover {
-      background: var(--bg-product);
-      border-color: var(--success-color);
-    }
-
-    // Выбранный тег: заливка акцентным цветом (input скрыт)
-    &:has(.shop-filters__tag-input:checked) {
-      background: var(--success-color);
-      border-color: var(--success-color);
-
-      .shop-filters__tag-text {
-        color: var(--light-color);
-      }
-    }
-  }
-
-  &__tag-input {
-    display: none;
-  }
-
-  &__tag-text {
-    font-size: toEm(13);
-    color: var(--gray-color);
-    transition: color var(--transition-duration);
-    user-select: none;
-  }
-
   // ==== Баннер «Скидка 79%» ====
   &__banner {
     border-radius: toRem(12);
@@ -544,14 +499,6 @@ const toggleTag = (tag: string) => {
 
     &__tags {
       gap: toRem(6);
-    }
-
-    &__tag {
-      padding: toRem(4) toRem(12);
-
-      &-text {
-        font-size: toEm(12);
-      }
     }
 
     &__banner {
