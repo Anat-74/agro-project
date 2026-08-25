@@ -123,7 +123,6 @@ const toggleTag = (tag: string) => {
 
             <!-- Цена -->
             <section class="shop-filters__section">
-              <h3 class="shop-filters__section-title">{{ t.priceTitle }}</h3>
               <div class="shop-filters__price">
                 <div class="shop-filters__price-track">
                   <div
@@ -157,7 +156,6 @@ const toggleTag = (tag: string) => {
 
             <!-- Популярные теги -->
             <section class="shop-filters__section">
-              <h3 class="shop-filters__section-title">{{ t.tagsTitle }}</h3>
               <ul class="shop-filters__tags">
                 <li v-for="tag in t.tags" :key="tag" class="shop-filters__tag-item">
                   <label class="shop-filters__tag">
@@ -187,7 +185,6 @@ const toggleTag = (tag: string) => {
 
             <!-- Товары со скидкой -->
             <section v-if="saleProducts.length" class="shop-filters__section">
-              <h3 class="shop-filters__section-title">{{ t.saleTitle }}</h3>
               <ul class="shop-filters__sale-list">
                 <li
                   v-for="prod in saleProducts"
@@ -212,9 +209,9 @@ const toggleTag = (tag: string) => {
 
 <style lang="scss" scoped>
 .show-shop-filter {
-  width: toRem(300);
   flex-shrink: 0;
   display: flex;
+  @include adaptiveValue("width", 300, 200);
 
   // ===== Диалог сайдбара (без телепорта — в потоке страницы) =====
   &__dialog {
@@ -228,8 +225,26 @@ const toggleTag = (tag: string) => {
     background: transparent;
     max-width: none;
 
+    // Анимация (паттерн корзинного диалога, зеркально): при открытии выезжает
+    // справа (translate 0), при закрытии уезжает влево (translate -100%)
+    translate: -100%;
+    opacity: 0;
+    transition:
+      translate var(--transition-duration),
+      opacity var(--transition-duration),
+      display var(--transition-duration) allow-discrete;
+
     &[open] {
+      translate: 0;
+      opacity: 1;
       display: block;
+    }
+
+    @starting-style {
+      &[open] {
+        translate: -100%;
+        opacity: 0;
+      }
     }
   }
 }
@@ -526,11 +541,6 @@ const toggleTag = (tag: string) => {
   @media (max-width: $mobile) {
     width: 100%;
     padding-block-end: toRem(30);
-
-    &__header {
-      flex-wrap: wrap;
-      gap: toRem(8);
-    }
 
     &__tags {
       gap: toRem(6);

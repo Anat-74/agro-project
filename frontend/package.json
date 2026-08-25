@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "nuxt build",
+    "build": "nuxi clean && nuxt build",
     "build:with-sitemap": "nuxt build && npm run generate-sitemap",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
