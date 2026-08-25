@@ -19,20 +19,22 @@ const props = withDefaults(defineProps<Props>(), {
 const { currentLocale } = useLocale()
 const t = computed(() => breadcrumbsTranslations[currentLocale.value])
 
-// image-set(url(webp) 1x, url(avif) 2x) — как UBackground рендерит фоновые изображения
-const backgroundStyle = computed(() => {
-  const webp = props.background?.baseBgImageWebp?.url
-  const avif = props.background?.retinaBgImageAvif?.url
-  if (!webp && !avif) return {}
-  const parts: string[] = []
-  if (webp) parts.push(`url("${webp}") 1x`)
-  if (avif) parts.push(`url("${avif}") 2x`)
-  return { backgroundImage: `image-set(${parts.join(", ")})` }
-})
+// Фон рендерит UBackground (webp 1x + avif 2x через image-set)
+const hasBackground = computed(() =>
+  !!(props.background?.baseBgImageWebp?.url || props.background?.retinaBgImageAvif?.url),
+)
 </script>
 
 <template>
-  <nav class="breadcrumbs" aria-label="Breadcrumb" :style="backgroundStyle">
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <UBackground
+      v-if="hasBackground"
+      :src="background?.baseBgImageWebp?.url"
+      :retina-src="background?.retinaBgImageAvif?.url"
+      variant="clean"
+      bg-position="center"
+      size-mode="cover"
+    />
     <div class="breadcrumbs__container">
       <ol class="breadcrumbs__list">
         <li class="breadcrumbs__item">
@@ -53,18 +55,14 @@ const backgroundStyle = computed(() => {
 
 <style lang="scss" scoped>
 .breadcrumbs {
-  // Полноширинный блок с фоном: фиксированная высота, контент в __container
-  height: toEm(60);
-  display: flex;
+  // (центрируется, ссылки слева внутри). position: relative — якорь для .app-bg.
+  position: relative;
+  height: toEm(110);
+  display: grid;
   align-items: center;
-  background-size: cover;
-  background-position: center;
 
-  // Контейнер растягивается на всю ширину и прижат влево
-  // (глобальное правило __container задаёт margin-inline: auto → в flex это центрирует)
   &__container {
-    flex: 1;
-    margin-inline: 0;
+    width: 100%;
   }
 
   &__list {

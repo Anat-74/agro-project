@@ -1,97 +1,30 @@
-# План: страница «Все товары» с фильтрами
+# Страница «Все товары» — статус работ
 
-> **Режим:** удалённая работа (без npm install / nuxi module add)
-> **Правило:** ни шага без одобрения, после каждого шага — отчёт
-> **Приоритет данных:** mcp-strapi (основной инструмент), Strapi локально на `127.0.0.1:1337`
+> **Режим:** удалённая работа. **Правило:** ни шага без одобрения, после каждого шага — отчёт.
+> **Данные:** mcp-strapi — основной инструмент; локальный Strapi на `127.0.0.1:1337`.
 
-## Цель
+## Готово ✅
 
-Новая страница каталога со всеми товарами из Strapi. Переход на неё — из секции hero
-(кнопка «Купить сейчас» / «За покупками»; сейчас ведут на `/ru/contacts`).
-Слева — панель фильтров (сайдбар), справа — сетка товаров с сортировкой и пагинацией.
+- **Страница** `/[lang]/products`: `<section class="products-page">` + скрытый H1, breadcrumbs (фон на всю ширину, ссылки в контейнере), top-bar (USelect сортировки, кнопка «Фильтр» зелёная, количество), body: сайдбар + сетка `ProductCard` + `UPagination`.
+- **Сайдбар (`ShowShopFilter`)**: категории (UInput `radio`), цена (UInput `range-dual`), теги (UInput `checkbox`+`pill`) — **все инпуты централизованы в UInput**; секции со скрытыми заголовками; баннер — `<section>` (заголовок-бейдж); товары со скидкой с `mainImage`; рассылка удалена.
+- **UInput**: типы `radio`, `range-dual` (модель-кортеж), `pill` (массив-модель); фикс дубля label.
+- **Карточки**: контейнер `card product / inline-size`, 2 в ряд на мобильном (container-query), `UImage type="product"`.
+- **Данные**: фильтры (категория, цена), сортировка, пагинация, «Найдено: N».
+- **SEO**: локализованный `useSeoMeta` (title/desc/og*, ogImage из фона breadcrumbs).
+- **Breadcrumbs**: `UBreadcrumbs` использует `UBackground` (webp/avif из Strapi `global.breadcrumbs`).
+- Hero-ссылка → `/ru/products`.
 
-**Исключение:** фильтр **«Рейтинг» НЕ реализуем** (в проекте нет поля рейтинга у товаров).
+## TODO / открытые вопросы 🔜
 
-## 1. Маршрут и структура
+- **Диалог фильтров**: поведение/позиционирование на мобильном — перерабатывается отдельно.
+- **Breadcrumbs на других страницах** (about/services/contacts/blog/news): добавить поле `breadcrumbs` (свой фон) в каждый контент-тип и подключить `UBreadcrumbs`.
+- **Свой фон breadcrumbs** (webp/avif от пользователя): сейчас временные Hero-изображения (webp 456 / avif 442).
+- **Статический JSON-LD** (`ItemList`/`WebSite`) — отдельная задача.
+- **Прод**: деплой + **перезапуск приложения в Plesk вручную** (deploy.mjs не перезапускает).
 
-- **Маршрут:** `/[lang]/products` → файл `app/pages/[lang]/products/index.vue`
-- **Композиция страницы:**
-  - шапка: заголовок + кнопки назад/вперёд (паттерн `products-section` у категории);
-  - сайдбар фильтров (слева, адаптив — на мобильном раскрывается);
-  - основная область: сортировка + сетка `ProductCard` + `UPagination`.
+## Технические заметки ⚠️
 
-## 2. Данные (Strapi v5)
-
-```ts
-find("products", {
-  filters: {
-    locale: { $eq: currentLocale },
-    category: { slug: { $eq: selectedCategory } },   // при выборе
-    subcategory: { slug: { $eq: selectedSub } },      // при выборе
-    isAvailable: { $eq: true },                       // «В наличии»
-    isDiscount: { $eq: true },                        // «Со скидкой»
-    price: { $gte: min, $lte: max },                  // диапазон цены
-    name: { $contains: search },                      // поиск
-  },
-  sort: sortOption,                 // name:asc | price:asc | price:desc
-  pagination: { page, pageSize: 12 },
-  populate: { image: { fields: ["url", "alternativeText"] } },
-})
-```
-
-- Запросы: `useStrapi().find` + `useCachedAsyncData` (паттерн `[categorySlug]/products`).
-- Все фильтры — в **URL-query** (`?category=...&priceMin=...&page=2`) → шаринг, «назад», SEO.
-- Проверка данных/структуры — через **mcp-strapi** (`get_entries`, схемы).
-
-## 3. Сайдбар фильтров (слева)
-
-| Группа | Поле Strapi | Элемент |
-|---|---|---|
-| Категория (7 шт.) | `category.slug`, `category.image` | радио-чипы / карточки с иконкой |
-| Подкатегория | `subcategory.slug` | зависит от выбранной категории |
-| В наличии | `isAvailable` | чекбокс |
-| Со скидкой | `isDiscount` | чекбокс |
-| Цена | `price` | диапазон (`min`/`max`) |
-| Поиск | `name` | текстовое поле |
-
-- Верстка/стили — по **style guide** (BEM, `toRem`/`toEm`, `adaptiveValue`, `@include hover`, миксины в конце).
-- Локализация всех текстов — `app/locales/*.ts` (ru/be).
-- На мобильном сайдбар скрыт/раскрывается (решение — после получения макета).
-
-## 4. UInput — расширение
-
-`UInput` уже имеет: `text`, `search`, `checkbox`, `range`, `number` и др.
-Вероятно понадобится **новый тип `radio`** (одиночный выбор категории/подкатегории).
-Рейтинг — не добавлять.
-
-## 5. Переиспользуемое
-
-- `ProductCard` — карточка товара;
-- `UPagination` — пагинация по `?page=`;
-- select сортировки + `products-section__card-list` (миксин `gridCards`);
-- `useProductLink` — ссылки на товары;
-- `useCachedAsyncData` + `useStrapi` — запросы с кэшем;
-- `useSeoMeta` — SEO (title/description);
-- `UButton`, `UInput`, `ULoader`.
-
-## 6. Шаги
-
-1. Получить структуру страницы из макета (от пользователя).
-2. Реализовать **сайдбар** (только сайдбар, исходя из стиля и данных проекта).
-3. Реализовать основную область (сетка + сортировка + пагинация).
-4. Подключить данные из Strapi (фильтры + query-параметры).
-5. Перенаправить hero-кнопку на новый маршрут.
-6. Локализация + SEO + проверка (spyglass) + коммит/деплой по команде.
-
-## 7. Хлебные крошки (переиспользуемые)
-
-- **Strapi:** компонент `layout.breadcrumbs` (вложенный `background.background-image` — `baseBgImageWebp` + `retinaBgImageAvif`). Поле `breadcrumbs` добавлено в **`global`** (для продуктовой страницы — нет контент-типа).
-- **Фронт:** `app/components/Breadcrumbs.vue` — `image-set(url(webp) 1x, url(avif) 2x)`, «Главная» через `useLocale`. Заголовок текущей страницы — из данных страницы (`page.title`), не из Strapi-компонента.
-- **TODO (подключить на каждой странице):** `about-page`, `services-page`, `contacts-page`, `blog`, `news` — добавить поле `breadcrumbs` (со своим `background-image`) в каждый контент-тип и использовать `<Breadcrumbs>` на страницах.
-- **Временный фон:** сейчас используются существующие изображения Hero (webp 456 + avif 442). Когда пользователь подготовит свои два формата — заменить в админке (загрузить через mcp-strapi `upload_media`).
-
-## 8. SEO страницы «все товары»
-
-- **Реализовано:** `useSeoMeta` с локализованными title/description/ogTitle/ogDescription/ogImage (фон breadcrumbs из Strapi)/ogUrl (siteUrl + fullPath). Без `useHead` — у страницы нет контент-типа, нет `structuredData`.
-- **TODO (отдельная задача):** если позже захотим статический JSON-LD (например, `ItemList` товаров или `WebSite`), добавить `useHead` с вручную составленным объектом — сейчас данных для разметки нет.
-- **TODO (проверка/доработка):** страницы навигации (about/services/contacts/blog/news) — SEO должно быть как на динамических страницах (useSeoMeta + useHead со `structuredData` из Strapi). Проверить и привести к единому виду.
+- **Build-скрипт**: `nuxt build` (рабочий). `nuxi cleanup && nuxi prepare && nuxt build` **НЕ использовать** — зависает на Plesk.
+- **Прод** обновляется после сборки **только после перезапуска приложения** в Plesk.
+- **Strapi**: создан компонент `layout.breadcrumbs` (вложенный `background.background-image`); поле `breadcrumbs` в `global` (опубликовано).
+- **Модули** `nuxt-spyglass`/`@nuxtjs/mcp-toolkit` билду не мешают (оставляем).
