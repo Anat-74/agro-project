@@ -294,11 +294,11 @@ useSeoMeta({
     border-radius: toRem(8);
     font-size: toEm(16);
     font-weight: 500;
-    color: var(--color);
+    color: var(--green-color);
     transition: background-color var(--transition-duration);
 
     svg {
-      color: var(--color);
+      color: var(--green-color);
       flex-shrink: 0;
       width: toRem(20);
       height: toRem(20);
