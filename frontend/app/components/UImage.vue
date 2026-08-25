@@ -210,6 +210,11 @@ const finalSrc = computed(() => {
 
     // Все container queries — здесь, в компоненте.
     // Контейнер `product` задаётся на обёртке места использования (containerParent).
+    // Узкий контейнер (миниатюры, напр. товары со скидкой) — изображение компактное
+    @container product (max-width: 16rem) {
+      max-width: toEm(150);
+    }
+
     @container product (min-width: 20rem) {
       max-width: toEm(220);
     }

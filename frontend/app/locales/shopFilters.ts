@@ -11,8 +11,6 @@ export const shopFiltersTranslations: Record<LocaleCode, {
   discountBadge: string
   discountText: string
   discountLink: string
-  newsletterTitle: string
-  newsletterText: string
   breadcrumbsCurrent: string
   resultsCount: string
   noResults: string
@@ -33,8 +31,6 @@ export const shopFiltersTranslations: Record<LocaleCode, {
     discountBadge: "Скидка 79%",
     discountText: "на первый заказ",
     discountLink: "Купить сейчас",
-    newsletterTitle: "Подпишитесь на рассылку",
-    newsletterText: "Оставьте почту и получайте свежие новости, рецепты и персональные скидки.",
     breadcrumbsCurrent: "Продукты",
     resultsCount: "Найдено: {count}",
     noResults: "Товары не найдены",
@@ -55,8 +51,6 @@ export const shopFiltersTranslations: Record<LocaleCode, {
     discountBadge: "Зніжка 79%",
     discountText: "на першы заказ",
     discountLink: "Купіць зараз",
-    newsletterTitle: "Падпішыцеся на рассылку",
-    newsletterText: "Пакіньце пошту і атрымлівайце свежыя навіны, рэцэпты і персанальныя зніжкі.",
     breadcrumbsCurrent: "Прадукты",
     resultsCount: "Знойдзена: {count}",
     noResults: "Тавары не знойдзены",

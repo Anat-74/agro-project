@@ -35,8 +35,8 @@ const sizeOptions = computed(() => [
   { value: "original", label: backgroundT.value.sizeOriginal, icon: "📏" },
 ])
 
-const onSizeChange = (value: string) => {
-  emit('sizeChange', value as "cover" | "contain" | "original")
+const onSizeChange = (value: string | number) => {
+  emit('sizeChange', String(value) as "cover" | "contain" | "original")
 }
 
 const popupRef = useTemplateRef<HTMLElement>('popup')

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-type InputType = 'text' | 'textarea' | 'search' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'checkbox' | 'radio' | 'range'
+type InputType = 'text' | 'textarea' | 'search' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'checkbox' | 'radio' | 'range' | 'range-dual'
 
 interface Props {
   type?: InputType
@@ -50,6 +50,26 @@ const onCheckboxChange = (e: Event) => {
   } else {
     model.value = checked
   }
+}
+
+// ===== Двойной ползунок (range-dual): модель — кортеж [min, max] =====
+const modelTuple = computed<[number, number]>(() => {
+  if (Array.isArray(model.value)) {
+    return [Number(model.value[0] ?? min), Number(model.value[1] ?? max)]
+  }
+  return [min, max]
+})
+const minPct = computed(() => ((modelTuple.value[0] - min) / (max - min)) * 100)
+const maxPct = computed(() => 100 - ((modelTuple.value[1] - min) / (max - min)) * 100)
+
+// Ручки не пересекаются: min не может стать больше max (и наоборот)
+const onRangeMinInput = (e: Event) => {
+  const v = Number((e.target as HTMLInputElement).value)
+  model.value = [v, Math.max(v, modelTuple.value[1])]
+}
+const onRangeMaxInput = (e: Event) => {
+  const v = Number((e.target as HTMLInputElement).value)
+  model.value = [Math.min(v, modelTuple.value[0]), v]
 }
 </script>
 
@@ -124,6 +144,34 @@ const onCheckboxChange = (e: Event) => {
         :disabled="disabled"
         :aria-label="ariaLabel || undefined"
         class="u-input__range"
+      >
+    </div>
+
+    <!-- Двойной ползунок (диапазон): модель — кортеж [min, max] -->
+    <div v-else-if="type === 'range-dual'" class="u-input__range-dual-track">
+      <div
+        class="u-input__range-dual-fill"
+        :style="{ left: `${minPct}%`, right: `${maxPct}%` }"
+      />
+      <input
+        type="range"
+        :min="min"
+        :max="max"
+        :step="step"
+        :value="modelTuple[0]"
+        :disabled="disabled"
+        class="u-input__range-dual-input u-input__range-dual-input_min"
+        @input="onRangeMinInput"
+      >
+      <input
+        type="range"
+        :min="min"
+        :max="max"
+        :step="step"
+        :value="modelTuple[1]"
+        :disabled="disabled"
+        class="u-input__range-dual-input u-input__range-dual-input_max"
+        @input="onRangeMaxInput"
       >
     </div>
 
@@ -393,6 +441,69 @@ const onCheckboxChange = (e: Event) => {
       height: toRem(6);
       border-radius: toRem(4);
       background: var(--gray-color);
+    }
+  }
+
+  // ===== Двойной ползунок (range-dual) =====
+  &__range-dual-track {
+    position: relative;
+    height: toRem(4);
+    background: var(--border-color);
+    border-radius: toRem(2);
+  }
+
+  &__range-dual-fill {
+    position: absolute;
+    height: 100%;
+    background: var(--success-color);
+    border-radius: toRem(2);
+    pointer-events: none;
+  }
+
+  &__range-dual-input {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    height: toRem(4);
+    appearance: none;
+    background: transparent;
+    pointer-events: none;
+    transform: translateY(-50%);
+
+    &_min {
+      z-index: 2;
+    }
+
+    &_max {
+      z-index: 1;
+    }
+
+    &::-webkit-slider-thumb {
+      appearance: none;
+      width: toRem(16);
+      height: toRem(16);
+      background: var(--light-color);
+      border: toRem(2) solid var(--success-color);
+      border-radius: 50%;
+      cursor: pointer;
+      pointer-events: auto;
+      box-shadow: 0 toRem(2) toRem(6) rgba(0, 0, 0, 0.15);
+      transition: transform var(--transition-duration);
+
+      @include hover {
+        transform: scale(1.15);
+      }
+    }
+
+    &::-moz-range-thumb {
+      width: toRem(16);
+      height: toRem(16);
+      background: var(--light-color);
+      border: toRem(2) solid var(--success-color);
+      border-radius: 50%;
+      cursor: pointer;
+      pointer-events: auto;
+      box-shadow: 0 toRem(2) toRem(6) rgba(0, 0, 0, 0.15);
     }
   }
 

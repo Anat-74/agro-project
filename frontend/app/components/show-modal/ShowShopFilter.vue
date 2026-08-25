@@ -63,7 +63,11 @@ const { data: saleData } = useCachedAsyncData(
   `shop-sale-${currentLocale.value}`,
   () => find("products", {
     filters: { isDiscount: { $eq: true }, locale: { $eq: currentLocale.value } },
-    fields: ["name", "price"],
+    fields: ["name", "price", "slug"],
+    populate: {
+      mainImage: { fields: ["alternativeText", "url"] },
+      image: { fields: ["alternativeText", "url"] },
+    },
     sort: ["price:asc"],
     pagination: { page: 1, pageSize: 5 },
   } as any),
@@ -72,22 +76,16 @@ const { data: saleData } = useCachedAsyncData(
 
 const saleProducts = computed(() => (saleData.value?.data as Product[] | undefined) ?? [])
 
-// ===== Диапазон цены (два ползунка) =====
+// ===== Диапазон цены (двойной ползунок — UInput range-dual) =====
 const PRICE_MAX = 2000
 const localMin = ref(props.priceMin)
 const localMax = ref(props.priceMax)
 
-const minPct = computed(() => (localMin.value / PRICE_MAX) * 100)
-const maxPct = computed(() => 100 - (localMax.value / PRICE_MAX) * 100)
-
-const onMinInput = () => {
-  if (localMin.value > localMax.value) localMin.value = localMax.value
-  emit("update:priceMin", localMin.value)
-}
-
-const onMaxInput = () => {
-  if (localMax.value < localMin.value) localMax.value = localMin.value
-  emit("update:priceMax", localMax.value)
+const onRangeChange = (range: [number, number]) => {
+  localMin.value = range[0]
+  localMax.value = range[1]
+  emit("update:priceMin", range[0])
+  emit("update:priceMax", range[1])
 }
 
 </script>
@@ -96,8 +94,14 @@ const onMaxInput = () => {
   <div class="show-shop-filter">
     <dialog id="dialogShopFilter" ref="dialog-shop-filter" class="show-shop-filter__dialog">
       <aside class="shop-filters">
-            <!-- Категории: без заголовка — название блока дублирует текст радио-кнопок -->
-            <section class="shop-filters__section" aria-label="Categories">
+            <!-- Категории: скрытый заголовок (у section обязан быть) -->
+            <section
+              class="shop-filters__section"
+              aria-labelledby="shop-filters-categories-title"
+            >
+              <h2 id="shop-filters-categories-title" class="visually-hidden">
+                {{ t.categoriesTitle }}
+              </h2>
               <ul class="shop-filters__category-list">
                 <li v-for="cat in categories" :key="cat.slug" class="shop-filters__category">
                   <UInput
@@ -114,41 +118,38 @@ const onMaxInput = () => {
               </ul>
             </section>
 
-            <!-- Цена -->
-            <section class="shop-filters__section">
+            <!-- Цена (двойной ползунок — UInput range-dual) -->
+            <section
+              class="shop-filters__section"
+              aria-labelledby="shop-filters-price-title"
+            >
+              <h2 id="shop-filters-price-title" class="visually-hidden">
+                {{ t.priceTitle }}
+              </h2>
               <div class="shop-filters__price">
-                <div class="shop-filters__price-track">
-                  <div
-                    class="shop-filters__price-fill"
-                    :style="{ left: `${minPct}%`, right: `${maxPct}%` }"
-                  />
-                  <input
-                    v-model.number="localMin"
-                    type="range"
-                    :min="0"
-                    :max="PRICE_MAX"
-                    class="shop-filters__price-input shop-filters__price-input_min"
-                    @input="onMinInput"
-                  >
-                  <input
-                    v-model.number="localMax"
-                    type="range"
-                    :min="0"
-                    :max="PRICE_MAX"
-                    class="shop-filters__price-input shop-filters__price-input_max"
-                    @input="onMaxInput"
-                  >
-                </div>
-                <div class="shop-filters__price-values">
+                  <div class="shop-filters__price-values">
                   <span class="shop-filters__price-value">{{ formatPrice(localMin) }}</span>
                   <span class="shop-filters__price-separator">—</span>
                   <span class="shop-filters__price-value">{{ formatPrice(localMax) }}</span>
                 </div>
+                <UInput
+                  type="range-dual"
+                  :min="0"
+                  :max="PRICE_MAX"
+                  :model-value="[localMin, localMax]"
+                  @update:model-value="onRangeChange"
+                />
               </div>
             </section>
 
             <!-- Популярные теги (UInput checkbox-пилюли, модель — массив) -->
-            <section class="shop-filters__section">
+            <section
+              class="shop-filters__section"
+              aria-labelledby="shop-filters-tags-title"
+            >
+              <h2 id="shop-filters-tags-title" class="visually-hidden">
+                {{ t.tagsTitle }}
+              </h2>
               <ul class="shop-filters__tags">
                 <li v-for="tag in t.tags" :key="tag" class="shop-filters__tag-item">
                   <UInput
@@ -164,36 +165,53 @@ const onMaxInput = () => {
             </section>
 
             <!-- Баннер «Скидка 79%» (изображение Bannar.jpg) -->
-            <div class="shop-filters__banner">
+            <section
+              class="shop-filters__banner"
+              aria-labelledby="shop-filters-banner-title"
+            >
               <div class="shop-filters__banner-content">
-                <span class="shop-filters__banner-badge">{{ t.discountBadge }}</span>
+                <h2 id="shop-filters-banner-title" class="shop-filters__banner-badge">
+                  {{ t.discountBadge }}
+                </h2>
                 <p class="shop-filters__banner-text">{{ t.discountText }}</p>
                 <span class="shop-filters__banner-link">
                   {{ t.discountLink }}
                   <Icon name="mdi:arrow-right" />
                 </span>
               </div>
-            </div>
+            </section>
 
             <!-- Товары со скидкой -->
-            <section v-if="saleProducts.length" class="shop-filters__section">
+            <section
+              v-if="saleProducts.length"
+              class="shop-filters__section"
+              aria-labelledby="shop-filters-sale-title"
+            >
+              <h2 id="shop-filters-sale-title" class="visually-hidden">
+                {{ t.saleTitle }}
+              </h2>
               <ul class="shop-filters__sale-list">
                 <li
                   v-for="prod in saleProducts"
                   :key="prod.documentId"
                   class="shop-filters__sale-item"
                 >
+                  <div class="shop-filters__sale-thumb">
+                    <UImage
+                      v-if="prod.mainImage?.url || prod.image?.length"
+                      class="shop-filters__sale-image"
+                      type="product"
+                      :src="prod.mainImage?.url || prod.image?.[0]?.url"
+                      :alt="prod.name"
+                      width="44"
+                      height="44"
+                    />
+                  </div>
                   <span class="shop-filters__sale-name">{{ prod.name }}</span>
                   <span class="shop-filters__sale-price">{{ formatPrice(prod.price) }}</span>
                 </li>
               </ul>
             </section>
-
-            <!-- Рассылка -->
-            <div class="shop-filters__newsletter">
-              <h4 class="shop-filters__newsletter-title">{{ t.newsletterTitle }}</h4>
-              <p class="shop-filters__newsletter-text">{{ t.newsletterText }}</p>
-            </div>
           </aside>
     </dialog>
   </div>
@@ -299,70 +317,7 @@ const onMaxInput = () => {
     color: var(--gray-color);
   }
 
-  // ==== Цена (двойной ползунок) ====
-  &__price-track {
-    position: relative;
-    height: toRem(4);
-    background: var(--border-color);
-    border-radius: toRem(2);
-    margin-block-end: toRem(16);
-  }
-
-  &__price-fill {
-    position: absolute;
-    height: 100%;
-    background: var(--success-color);
-    border-radius: toRem(2);
-    pointer-events: none;
-  }
-
-  &__price-input {
-    position: absolute;
-    top: 50%;
-    width: 100%;
-    height: toRem(4);
-    appearance: none;
-    background: transparent;
-    pointer-events: none;
-    transform: translateY(-50%);
-
-    &_min {
-      z-index: 2;
-    }
-
-    &_max {
-      z-index: 1;
-    }
-
-    &::-webkit-slider-thumb {
-      appearance: none;
-      width: toRem(16);
-      height: toRem(16);
-      background: var(--light-color);
-      border: toRem(2) solid var(--success-color);
-      border-radius: 50%;
-      cursor: pointer;
-      pointer-events: auto;
-      box-shadow: 0 toRem(2) toRem(6) rgba(0, 0, 0, 0.15);
-      transition: transform var(--transition-duration);
-
-      @include hover {
-        transform: scale(1.15);
-      }
-    }
-
-    &::-moz-range-thumb {
-      width: toRem(16);
-      height: toRem(16);
-      background: var(--light-color);
-      border: toRem(2) solid var(--success-color);
-      border-radius: 50%;
-      cursor: pointer;
-      pointer-events: auto;
-      box-shadow: 0 toRem(2) toRem(6) rgba(0, 0, 0, 0.15);
-    }
-  }
-
+  // ==== Цена (двойной ползунок — трек/ручки в UInput range-dual) ====
   &__price-values {
     display: flex;
     align-items: center;
@@ -412,9 +367,9 @@ const onMaxInput = () => {
   }
 
   &__banner-badge {
+    margin: 0 0 toRem(4) 0;
     font-weight: 700;
     color: var(--success-color);
-    margin-block-end: toRem(4);
     @include adaptiveValue("font-size", 22, 18);
   }
 
@@ -448,10 +403,25 @@ const onMaxInput = () => {
     gap: toRem(12);
   }
 
+  &__sale-thumb {
+    flex-shrink: 0;
+    width: toRem(44);
+    height: toRem(44);
+    border-radius: toRem(4);
+    overflow: hidden;
+    // Узкий product-контейнер — UImage применяет @container product (миниатюра ≤ 16rem)
+    @include containerParent(product, inline-size);
+  }
+
+  &__sale-image {
+   width: 100%;
+   height: 100%;
+  }
+
   &__sale-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: toRem(8);
     font-size: toEm(14);
     color: var(--color);
     padding-block: toRem(4);
@@ -465,31 +435,13 @@ const onMaxInput = () => {
 
   &__sale-name {
     font-weight: 400;
+    flex: 1;
+    min-width: 0;
   }
 
   &__sale-price {
     color: var(--success-color);
     font-weight: 600;
-  }
-
-  // ==== Рассылка ====
-  &__newsletter {
-    margin-block-start: toRem(12);
-    padding-block-start: toRem(20);
-    border-top: toRem(1) solid var(--border-color);
-  }
-
-  &__newsletter-title {
-    margin: 0 0 toRem(8) 0;
-    font-weight: 600;
-    @include adaptiveValue("font-size", 16, 15);
-  }
-
-  &__newsletter-text {
-    margin: 0;
-    font-size: toEm(13);
-    color: var(--gray-color);
-    line-height: 1.6;
   }
 
   // ==== Адаптив ====
