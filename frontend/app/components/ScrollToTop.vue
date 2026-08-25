@@ -6,7 +6,7 @@ const buttonT = computed(() => buttonTranslations[currentLocale.value])
 const isVisible = ref(false)
 
 const checkScroll = () => {
-  isVisible.value = window.scrollY > 1000
+  isVisible.value = window.scrollY > 2200
 }
 
 const scrollToTop = () => {

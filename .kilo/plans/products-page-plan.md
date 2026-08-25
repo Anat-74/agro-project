@@ -18,13 +18,5 @@
 
 - **Диалог фильтров**: поведение/позиционирование на мобильном — перерабатывается отдельно.
 - **Breadcrumbs на других страницах** (about/services/contacts/blog/news): добавить поле `breadcrumbs` (свой фон) в каждый контент-тип и подключить `UBreadcrumbs`.
-- **Свой фон breadcrumbs** (webp/avif от пользователя): сейчас временные Hero-изображения (webp 456 / avif 442).
 - **Статический JSON-LD** (`ItemList`/`WebSite`) — отдельная задача.
 - **Прод**: деплой + **перезапуск приложения в Plesk вручную** (deploy.mjs не перезапускает).
-
-## Технические заметки ⚠️
-
-- **Build-скрипт**: `nuxt build` (рабочий). `nuxi cleanup && nuxi prepare && nuxt build` **НЕ использовать** — зависает на Plesk.
-- **Прод** обновляется после сборки **только после перезапуска приложения** в Plesk.
-- **Strapi**: создан компонент `layout.breadcrumbs` (вложенный `background.background-image`); поле `breadcrumbs` в `global` (опубликовано).
-- **Модули** `nuxt-spyglass`/`@nuxtjs/mcp-toolkit` билду не мешают (оставляем).
