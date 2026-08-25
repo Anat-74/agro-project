@@ -116,7 +116,13 @@ useSeoMeta({
 </script>
 
 <template>
-  <div class="products-page">
+  <section class="products-page" aria-labelledby="products-page-title">
+    <!-- Скрытый H1: на странице нет видимого главного заголовка,
+         но у section обязан быть заголовок (паттерн страниц каталога) -->
+    <h1 id="products-page-title" class="visually-hidden">
+      {{ t.seoTitle }}
+    </h1>
+
     <!-- Хлебные крошки: переиспользуемый компонент, фон из Strapi (webp + avif) -->
     <UBreadcrumbs
       :items="[{ label: t.breadcrumbsCurrent }]"
@@ -142,14 +148,16 @@ useSeoMeta({
 
         <div class="top-bar__right">
           <div class="top-bar__sort">
-            <label class="visually-hidden" for="top-bar-sort">
-              {{ t.sortLabel }}
-            </label>
-            <select id="top-bar-sort" v-model="sort" class="top-bar__select">
-              <option value="name:asc">{{ t.sortName }}</option>
-              <option value="price:asc">{{ t.sortPriceAsc }}</option>
-              <option value="price:desc">{{ t.sortPriceDesc }}</option>
-            </select>
+            <USelect
+              v-model="sort"
+              class="top-bar__select"
+              :label="t.sortLabel"
+              :options="[
+                { value: 'name:asc', label: t.sortName },
+                { value: 'price:asc', label: t.sortPriceAsc },
+                { value: 'price:desc', label: t.sortPriceDesc },
+              ]"
+            />
           </div>
           <span class="top-bar__results">
             {{ t.resultsCount.replace("{count}", String(resultsCount)) }}
@@ -197,7 +205,7 @@ useSeoMeta({
         </section>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <style lang="scss" scoped>
@@ -215,18 +223,21 @@ useSeoMeta({
   &__content {
     flex: 1;
     min-width: 0;
+    // Блок карточек — контейнер: сетка адаптируется к ширине самого блока
+    // (закрыт диалог / мобильный), а не к вьюпорту
+    @include containerParent(cards, inline-size);
   }
 
   &__card-list {
     display: grid;
     justify-items: center;
-    row-gap: toEm(32);
-    @include gridCards;
-    @include adaptiveValue("column-gap", 64, 5);
+    row-gap: toEm(24);
+    @include gridCards(fit, toRem(180), 1fr);
+    @include adaptiveValue("column-gap", 40, 5);
   }
 
   &__item {
-    @include adaptiveValue("height", 395, 320);
+    @include adaptiveValue("height", 280, 220);
   }
 
   &__pagination {
@@ -243,6 +254,13 @@ useSeoMeta({
 
   &__loader {
     translate: 0;
+  }
+}
+
+// Узкий блок карточек (мобильный / при закрытом диалоге) — 2 карточки в ряд
+@container cards (max-width: 34.375rem) {
+  .products-page__card-list {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -303,36 +321,6 @@ useSeoMeta({
     gap: toRem(8);
   }
 
-  &__select {
-    appearance: none;
-    background-color: transparent;
-    border: none;
-    padding: toRem(4) toRem(24) toRem(4) toRem(8);
-    font-size: toEm(14);
-    font-weight: 500;
-    color: var(--color);
-    cursor: pointer;
-    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23666' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right toRem(4) center;
-    background-size: toRem(12) toRem(8);
-    outline: none;
-    min-width: toRem(80);
-
-    @include hover {
-      color: var(--success-color);
-    }
-
-    &:focus {
-      color: var(--success-color);
-    }
-
-    option {
-      font-weight: 400;
-      color: var(--color);
-    }
-  }
-
   &__results {
     font-size: toEm(14);
     color: var(--gray-color);
@@ -354,13 +342,6 @@ useSeoMeta({
       min-width: 0;
     }
 
-    &__select {
-      width: auto;
-      min-width: 0;
-      padding-block: toRem(4);
-      white-space: nowrap;
-    }
-
     &__results {
       flex-basis: 100%;
       text-align: end;
@@ -380,10 +361,6 @@ useSeoMeta({
     }
 
     &__sort {
-      width: 100%;
-    }
-
-    &__select {
       width: 100%;
     }
 

@@ -79,6 +79,7 @@ const characteristics = computed(() => {
       <div class="product-card__content" @click="toggleVisibleLink">
         <UImage
           v-if="product.image?.length"
+          type="product"
           class="product-card__image"
           :src="product.image[0]?.url"
           :alt="product.name"
@@ -201,6 +202,11 @@ const characteristics = computed(() => {
   position: relative;
   border-radius: toEm(6);
   perspective: toRem(500);
+  // Карточка — контейнер: внутренняя вёрстка адаптируется к своей ширине
+  // (@container), т.к. переиспользуется в разных контекстах (featured ~220px,
+  // сетка товаров ~180-250px, корзина ~160px).
+  // Имя `product` — чтобы UImage применял свои @container product (max-width).
+  container: card product / inline-size;
 
   &_rotate-active {
     z-index: 150;
@@ -503,5 +509,25 @@ const characteristics = computed(() => {
     }
   }
 
+}
+
+// Компактные карточки (узкий контейнер, напр. сетка товаров ~180px):
+// уплотняем внутреннюю вёрстку по ширине самой карточки, а не вьюпорта.
+// Ширину изображения НЕ задаём — ей управляет UImage (type="product" + @container product).
+@container card (max-width: 210px) {
+  .product-card__front,
+  .product-card__back {
+    padding-block: toEm(8);
+  }
+
+  .product-card__top-items {
+    padding-inline: toEm(8);
+    padding-block-end: toEm(8);
+  }
+
+  .product-card__title {
+    font-size: toEm(14);
+    padding-block-end: toEm(8);
+  }
 }
 </style>
