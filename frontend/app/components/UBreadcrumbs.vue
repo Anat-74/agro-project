@@ -60,6 +60,8 @@ const hasBackground = computed(() =>
   height: toEm(110);
   display: grid;
   align-items: center;
+  // Отступ вниз от блока крошек
+  margin-block-end: toEm(25);
 
   &__container {
     // Ширина 100% + box-sizing:border-box перебивают глобальный
@@ -85,13 +87,14 @@ const hasBackground = computed(() =>
     display: flex;
     align-items: center;
     gap: toRem(8);
-    font-size: toEm(14);
+    // +4px к прежнему размеру (было 14)
+    font-size: toEm(18);
 
     // Разделитель «>»
     &:not(:last-child)::after {
       content: ">";
       color: var(--gray-color);
-      font-size: toEm(13);
+      font-size: toEm(17);
       font-weight: 300;
     }
   }
@@ -99,7 +102,6 @@ const hasBackground = computed(() =>
   &__link {
     color: var(--gray-color);
     text-decoration: none;
-    font-size: toEm(14);
     transition: color var(--transition-duration);
 
     @include hover {
@@ -110,7 +112,6 @@ const hasBackground = computed(() =>
   &__current {
     color: var(--color);
     font-weight: 600;
-    font-size: toEm(14);
   }
 
   // ==== Адаптив ====
@@ -118,16 +119,11 @@ const hasBackground = computed(() =>
     height: toEm(50);
 
     &__item {
-      font-size: toEm(13);
+      font-size: toEm(17);
 
       &:not(:last-child)::after {
-        font-size: toEm(12);
+        font-size: toEm(16);
       }
-    }
-
-    &__link,
-    &__current {
-      font-size: toEm(13);
     }
   }
 
@@ -139,16 +135,11 @@ const hasBackground = computed(() =>
     }
 
     &__item {
-      font-size: toEm(12);
+      font-size: toEm(16);
 
       &:not(:last-child)::after {
-        font-size: toEm(11);
+        font-size: toEm(15);
       }
-    }
-
-    &__link,
-    &__current {
-      font-size: toEm(12);
     }
   }
 }

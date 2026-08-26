@@ -303,7 +303,10 @@ useSeoMeta({
     color: var(--light-color);
     border: none;
     cursor: pointer;
-    padding: toRem(8) toRem(12);
+    // Высота = высоте select (30px), вертикальные паддинги убраны
+    height: toRem(30);
+    box-sizing: border-box;
+    padding: 0 toRem(12);
     border-radius: toRem(8);
     font-size: toEm(16);
     font-weight: 500;
@@ -322,6 +325,11 @@ useSeoMeta({
     }
   }
 
+  // Select на 6px уже дефолтного (в USelect toEm(154))
+  &__select :deep(.select) {
+    width: toEm(147);
+  }
+
   &__right {
     display: flex;
     align-items: center;
@@ -335,12 +343,16 @@ useSeoMeta({
   }
 
   &__results {
+    // Высота = высоте select (30px), вертикальные паддинги убраны
+    display: inline-flex;
+    align-items: center;
+    height: toRem(30);
+    box-sizing: border-box;
     font-size: toEm(14);
     color: var(--gray-color);
     white-space: nowrap;
     // Чип с бордером «втиснение» (паттерн BannerLayouts: тёмная линия + светлый блик)
     padding-inline: toRem(6);
-    padding-block: toRem(4);
     border-radius: toRem(6);
     border: toRem(1) solid rgba(0, 0, 0, 0.25);
     box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);

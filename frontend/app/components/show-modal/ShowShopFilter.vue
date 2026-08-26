@@ -87,7 +87,11 @@ const onDetailsToggle = (key: "categories" | "price" | "tags", e: Event) => {
 }
 
 // ===== Товары со скидкой (для списка «Sale Products») =====
-const { data: saleData } = useCachedAsyncData(
+// Блок нужен только на desktop: на mobile данные из Strapi НЕ запрашиваем
+// (display:none всё равно тянул бы данные). server:false + immediate:false —
+// без авто-запроса; запрос только после того, как ширина стала > mobile.
+const { width } = useViewport()
+const { data: saleData, refresh } = useCachedAsyncData(
   `shop-sale-${currentLocale.value}`,
   () => find("products", {
     filters: { isDiscount: { $eq: true }, locale: { $eq: currentLocale.value } },
@@ -99,8 +103,12 @@ const { data: saleData } = useCachedAsyncData(
     sort: ["price:asc"],
     pagination: { page: 1, pageSize: 5 },
   } as any),
-  { ttl: 600_000 },
+  { ttl: 600_000, server: false, immediate: false },
 )
+
+watch(width, (w) => {
+  if (w > 767.98) refresh()
+})
 
 const saleProducts = computed(() => (saleData.value?.data as Product[] | undefined) ?? [])
 
@@ -271,12 +279,24 @@ const onRangeChange = (range: [number, number]) => {
 .show-shop-filter {
   display: flex;
   flex-shrink: 0;
+  // Клип по ширине колонки: при exit-анимации диалог уезжает влево
+  // (translate -100%) и обрезается у края колонки, а не вылезает за страницу
+  overflow: hidden;
+  // Схлопывание колонки откладываем на время exit-анимации диалога:
+  // иначе :not(:has([open])) → display:none срабатывает мгновенно
+  // и анимация закрытия не видна (паттерн картин/корзины — display с задержкой).
+  // width тоже держим: иначе при снятии [open] ширина из :has исчезает,
+  // родитель растягивается и диалог (width:100%) раздувается во время exit
+  transition:
+    display 0s var(--transition-duration) allow-discrete,
+    width 0s var(--transition-duration);
 
   // Сайдбар в потоке только пока диалог открыт. Закрытый — полностью убираем
   // из потока, чтобы не оставалась пустая колонка фиксированной ширины
   // (flex-gap в products__body тоже схлопывается вместе с ним).
   &:has(.show-shop-filter__dialog[open]) {
-    @include adaptiveValue("width", 300, 200);
+    // Ширина диалога (на 20px уже исходных 300/200)
+    @include adaptiveValue("width", 280, 180);
   }
 
   &:not(:has(.show-shop-filter__dialog[open])) {
@@ -289,6 +309,10 @@ const onRangeChange = (range: [number, number]) => {
     position: static;
     flex: 1;
     width: 100%;
+    // display: block ВСЕГДА (перебивает UA dialog:not([open]){display:none}):
+    // иначе при снятии [open] диалог мгновенно display:none и exit-анимация
+    // (translate/opacity) умирает — видна только первая половина
+    display: block;
     border: none;
     padding: 0;
     margin: 0;
@@ -301,13 +325,11 @@ const onRangeChange = (range: [number, number]) => {
     opacity: 0;
     transition:
       translate var(--transition-duration),
-      opacity var(--transition-duration),
-      display var(--transition-duration) allow-discrete;
+      opacity var(--transition-duration);
 
     &[open] {
       translate: 0;
       opacity: 1;
-      display: block;
     }
 
     @starting-style {
@@ -328,9 +350,12 @@ const onRangeChange = (range: [number, number]) => {
   &__section {
     margin-block-end: toRem(24);
     padding-block-end: toRem(24);
-    // Разделитель «втиснение» (паттерн BannerLayouts: тёмная линия + светлый блик)
-    border-bottom: toRem(1) solid rgba(0, 0, 0, 0.25);
-    box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+    // Разделитель «втиснение» (паттерн BannerLayouts): тёмная линия снизу +
+    // светлый блик прямо под ней — вид вдавленной канавки
+    border-bottom: toRem(1) solid rgba(0, 0, 0, 0.3);
+    box-shadow:
+      inset 0 toRem(-1) 0 rgba(0, 0, 0, 0.08),
+      0 toRem(1) 0 rgba(255, 255, 255, 0.6);
 
     &:last-child {
       border-bottom: none;
@@ -343,7 +368,8 @@ const onRangeChange = (range: [number, number]) => {
   // ==== Details-секции (паттерн ShowHamburger: grid 0fr→1fr + шеврон) ====
   &__details {
     svg {
-      font-size: toEm(22);
+      // Меньше текста summary (toEm(16)=1em давало размер текста)
+      font-size: toEm(14);
       transition: rotate var(--transition-duration);
     }
 
@@ -358,13 +384,14 @@ const onRangeChange = (range: [number, number]) => {
     align-items: center;
     gap: toRem(8);
     cursor: pointer;
-    padding: toEm(4);
-    font-weight: 600;
-    font-size: toEm(22);
+    // Без рамки/outline/фона — просто название + иконка
+    padding: 0;
+    // На 4px меньше, чем было (toEm(22)) и тоньше (500)
+    font-weight: 500;
+    font-size: toEm(18);
     color: var(--primary-color);
-    outline: toRem(2) var(--whitesmoke-color) inset;
-    border-radius: toRem(4);
-    background-color: var(--light-color-transparent);
+    // Отступ снизу от summary ~8px
+    margin-block-end: toRem(8);
     // Нативный маркер details скрываем (своя иконка)
     list-style: none;
 
@@ -379,7 +406,10 @@ const onRangeChange = (range: [number, number]) => {
 
   &__content {
     display: grid;
-    grid-template-rows: 0fr;
+    // minmax(0, ...) фиксирует минимум трека в 0: иначе auto-минимум (контент)
+    // тянет трек до полной высоты и 0fr не схлопывается — особенно внутри
+    // <details>, где закрытое состояние не сворачивает содержимое
+    grid-template-rows: minmax(0, 0fr);
     transition: grid-template-rows 0.3s;
 
     > * {
@@ -389,11 +419,7 @@ const onRangeChange = (range: [number, number]) => {
   }
 
   &__details[open] .shop-filters__content {
-    grid-template-rows: 1fr;
-  }
-
-  &__summary-title {
-    font-weight: 600;
+    grid-template-rows: minmax(0, 1fr);
   }
 
   &__section-title {
@@ -437,6 +463,13 @@ const onRangeChange = (range: [number, number]) => {
   }
 
   // ==== Цена (двойной ползунок — трек/ручки в UInput range-dual) ====
+  &__price {
+    // Ручки (16px) выступают за трек (4px) на 6-8px. content имеет overflow:hidden
+    // (для grid-сворачивания details) — без паддингов ручки обрезаются
+    padding-inline: toRem(8);
+    padding-block-end: toRem(6);
+  }
+
   &__price-values {
     display: flex;
     align-items: center;
@@ -519,12 +552,19 @@ const onRangeChange = (range: [number, number]) => {
     // Родитель-контейнер: карточки адаптируются к ширине сайдбара,
     // а не к вьюпорту (см. @container sale ниже)
     @include containerParent(sale, inline-size);
+
+    // Блок не нужен на mobile: данные туда уже не подтягиваются,
+    // display:none — страховка на случай resize desktop→mobile
+    @media (max-width: $mobile) {
+      display: none;
+    }
   }
 
   &__sale-title {
-    margin: 0 0 toRem(16) 0;
-    font-weight: 600;
-    font-size: toEm(22);
+    // Стиль как у summary details: шрифт 18, вес 500, отступ вниз 8px
+    margin: 0 0 toRem(8) 0;
+    font-weight: 500;
+    font-size: toEm(18);
     color: var(--primary-color);
   }
 
