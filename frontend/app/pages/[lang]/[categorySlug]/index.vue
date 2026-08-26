@@ -58,7 +58,11 @@ const { data, pending, error, refresh } = useCachedAsyncData(
       } as any),
       find("products", {
         filters: {
-          category: { slug: { $eq: categorySlug } },
+          // Товар может лежать напрямую в категории или в её подкатегории
+          $or: [
+            { category: { slug: { $eq: categorySlug } } },
+            { subcategory: { category: { slug: { $eq: categorySlug } } } },
+          ],
           locale: { $eq: currentLocale.value },
         },
         fields: ["id"],

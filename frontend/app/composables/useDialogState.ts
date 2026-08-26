@@ -2,6 +2,7 @@ import { ref, onMounted, onUnmounted } from "vue"
 
 export interface UseDialogOptions {
   useShowMethod?: boolean; // Если true, используем show() вместо showModal()
+  initialOpen?: boolean;   // Начальное состояние isOpen (для диалогов, открытых по умолчанию при SSR)
 }
 
 // Глобальное состояние для хранения isOpen по ID
@@ -23,7 +24,7 @@ export const useDialog = (
   dialogElement?: Ref<HTMLDialogElement | null>,
   options: UseDialogOptions = {},
 ): UseDialogReturn => {
-  const { useShowMethod = false } = options;
+  const { useShowMethod = false, initialOpen = false } = options;
 
   // Если dialogElement не передан, возвращаем только isOpen
   if (!dialogElement) {
@@ -39,7 +40,7 @@ export const useDialog = (
   }
 
   // Если dialogElement передан, регистрируем диалог
-  const isOpen = isOpenMap.has(id) ? isOpenMap.get(id)! : ref(false);
+  const isOpen = isOpenMap.has(id) ? isOpenMap.get(id)! : ref(Boolean(initialOpen));
   isOpenMap.set(id, isOpen);
   dialogElementMap.set(id, dialogElement);
   optionsMap.set(id, { useShowMethod });

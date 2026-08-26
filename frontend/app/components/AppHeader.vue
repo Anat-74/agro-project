@@ -28,7 +28,11 @@ let currentY = 0
 function update() {
   ticking = false
 
-  if (window.innerWidth > 1024) {
+  // Скрытие нижней навигации — только на мобильных широнах.
+  // Граница совпадает с CSS $tablet (1023.98px): sticky-шапка применяется
+  // при max-width: 1023.98, поэтому здесь порог 1023 (иначе на 1024px
+  // навигация скрывалась, а sticky уже не работал).
+  if (window.innerWidth > 1023) {
     isNavHidden.value = false
     lastScrollY = currentY
     return

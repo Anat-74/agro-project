@@ -20,3 +20,108 @@
 - **Breadcrumbs на других страницах** (about/services/contacts/blog/news): добавить поле `breadcrumbs` (свой фон) в каждый контент-тип и подключить `UBreadcrumbs`.
 - **Статический JSON-LD** (`ItemList`/`WebSite`) — отдельная задача.
 - **Прод**: деплой + **перезапуск приложения в Plesk вручную** (deploy.mjs не перезапускает).
+
+---
+
+## Диалог фильтров — details-секции (решения 08.26)
+
+**Файлы:** `frontend/app/pages/[lang]/products/index.vue` (кнопка, top-bar), `frontend/app/components/show-modal/ShowShopFilter.vue` (секции).
+
+1. **Кнопка «Фильтр»** (top-bar): фон `--green-color`, текст и иконка — `--light-color`; hover — затемнение (colorMix). Убрать верхний бордер на всю ширину под кнопкой (`.top-bar` → `border-bottom`).
+2. **Три секции** (категории / цена / теги) → обернуть в `<details open>` + `<summary>`:
+   - summary: название слева + иконка `mingcute:down-line` справа (**шеврон**, как в ShowHamburger), анимация `rotate` при open/close; контент — `grid-template-rows: 0fr→1fr` (паттерн ShowHamburger, ничего нового).
+   - font-size summary: `toEm(22)` (как ShowHamburger).
+   - Заголовки секций: «Все категории» (`categoriesTitle`), «Цена» (`priceTitle`), «Популярные теги» (`tagsTitle`) — существующие ключи локали.
+   - Название + иконка — **под бордером вверху секции** (текущие бордеры секций сохраняем).
+   - **Открытое состояние реактивно**: `ref(true)` + `:open` на каждом details (переживает ре-рендер при смене фильтров; статичный `open` переоткрывал бы секции).
+3. **Семантика/a11y**: у `<section>` заголовок обязателен, `<summary>` его не заменяет → оставляем `visually-hidden` h2 + `aria-labelledby`; `<summary>` добавляет видимый заголовок (дубль текста допустим).
+4. **Последние две секции** (баннер с изображением, товары со скидкой) — **без details**, как есть.
+5. **Все details открыты** изначально.
+
+> ✅ **Реализовано 08.26:** кнопка зелёная (`--green-color`, текст/иконка `--light-color`, hover через colorMix), бордер top-bar убран; 3 details-секции (категории/цена/теги) со summary + `mingcute:down-line` (rotate −90°), контент `grid 0fr→1fr`, `:open` реактивно + **синхронизация по `@toggle`** (иначе ре-рендер переоткрывал секции); баннер и акции без details.
+
+---
+
+## Диалог фильтров — доработки (решения 08.26, 2-я итерация)
+
+6. **Заголовок секции «Товары со скидкой»** (`saleTitle`): сделать **видимым** h2 со стилем summary (тот же `toEm(22)`, вес 600, `--primary-color`); класс `shop-filters__sale-title` вместо `visually-hidden`. Баннер-секцию не трогаем.
+7. **Бордеры секций — эффект «втиснение»** (паттерн `BannerLayouts.vue:61-62, 69-79`): тёмная линия + светлый блик снизу, вместо `1px solid var(--border-color)`:
+   ```scss
+   .shop-filters__section {
+     border-bottom: toRem(1) solid rgba(0, 0, 0, 0.25);
+     box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+   }
+   ```
+8. **Радио «Все товары»** — первый пункт списка категорий, `value=""` (совпадает с `category = ref("")`, отмечен по умолчанию):
+   ```html
+   <li class="shop-filters__category">
+     <UInput type="radio" name="shop-category" value="" :model-value="category"
+             :label="t.allProducts"
+             @update:model-value="emit('update:category', $event)" />
+   </li>
+   ```
+   Новый ключ локали: `allProducts` — ru «Все товары», be «Усе тавары».
+9. **Фикс фильтрации подкатегорий** (баг: выбор «Зелень» не показывает товары её подкатегорий). Причина: у товара `category` и `subcategory` — независимые связи, товары подкатегорий часто имеют `category: null`. Решение — `$or` в `products/index.vue:60-61`:
+   ```js
+   if (category.value) {
+     filters.$or = [
+       { category: { slug: { $eq: category.value } } },
+       { subcategory: { category: { slug: { $eq: category.value } } } },
+     ]
+   }
+   ```
+   Тот же `$or` применить на странице категории (`[lang]/[categorySlug]/index.vue:61`) для консистентности.
+10. **Счётчики категорий** (`categoryCount`, `ShowShopFilter.vue:62`): сейчас считают только `cat.products` (прямые товары) → числа занижены. Добавить `subcategories.products` (id) в populate категорий и считать сумму:
+    ```js
+    const categoryCount = (cat) =>
+      (cat.products?.length ?? 0) +
+      (cat.subcategories?.reduce((n, s) => n + (s.products?.length ?? 0), 0) ?? 0)
+    ```
+11. **Секция Цена**: числа стоимости выше над инпутом на 5px:
+    ```scss
+    .shop-filters__price-values { margin-block-end: toRem(5); }
+    ```
+12. **Секция «Акционные товары»**: переиспользовать **`DiscountProduct`** (не `SaleProductSection` — у него маркетинг-блок `hot-sale`, абсолютный заголовок и scroll-анимация, не подходящие сайдбару). Родитель секции — `@include containerParent(sale, inline-size)`; через `@container sale` + `:deep(.discount-card)` задать компактную (узкую) раскладку карточек. Видимый заголовок секции (п.6) остаётся. Данные — текущие `saleProducts` (`Product[]`), `DiscountProduct` принимает `product: Product` напрямую.
+
+> ✅ **Реализовано 08.26:** видимый заголовок «Товары со скидкой» (toEm(22)); бордеры «втиснение» (`rgba(0,0,0,.25)` + блик); радио «Все товары» (`allProducts`); `$or`-фильтр (продукт в категории или в её подкатегории) на странице продуктов и категории; `categoryCount` считает товары подкатегорий (populate `subcategories.products`); цена +5px над инпутом; секция акций = `DiscountProduct` + `containerParent(sale)` + `@container`-компактная раскладка. Проверено в браузере (1280/375): «Зелень» → 3 товара включая «Петрушка Обычная», счётчик (3), toggle+ре-рендер сохраняют закрытую секцию, скролла нет.
+
+### Фон Breadcrumbs не на всю ширину (фикс UBackground, 08.26)
+
+**Причина:** `.app-bg` получает класс `bgfx-press` **безусловно** (`UBackground.vue:55-57`: `BG_EFFECTS = ["press","zoom","focus"]`, `bgEffectIndex = ref(0)`) → `transform: scale(0.95)` + `filter: brightness(0.7)` (`UBackground.vue:392-394`). Фон по CSS `inset:0` занимает всю ширину `nav`, но scale(0.95) ужимает его (зазоры ~25px на 1034, ~47px на 1920). Затрагивает все фоны (крошки, страницы, hero) — заодно затемняет на 30%.
+
+**Фикс:** эффекты по умолчанию «нет», включаются только по тапу:
+```ts
+const BG_EFFECTS = ["none", "press", "zoom", "focus"] as const
+// bgEffectClass: для "none" класс не добавляем ("")
+```
+Побочно: `.breadcrumbs__container` — `width:100%` + `box-sizing: content-box` + padding даёт лёгкое переполнение (1049 > 1019) → `box-sizing: border-box` или убрать `width: 100%`.
+
+> ✅ **Реализовано 08.26:** `UBackground.vue` — `BG_EFFECTS` с `"none"` по умолчанию, `bgEffectClass` возвращает `""` для none. `UBreadcrumbs.vue` — `width:100% + box-sizing:border-box` (убрать ширину нельзя — контейнер схлопывается и центрируется, крошки должны быть слева).
+
+### Top-bar на мобильном — одна строка (фикс 08.26)
+
+**Проверено в браузере (375px):** кнопка 94px + select ~96px + результаты ~66px = ~282px < 351px доступных → **влезают в одну строку**. Ломают строку:
+- `.top-bar__results { flex-basis: 100% }` (`products/index.vue:349-352`) → счётчик падает на новую строку;
+- `.top-bar__right { flex-direction: column }` на `$mobileSmall` (359-368) → блок складывается в колонку;
+- фиксированная ширина select `toEm(112)` на mobile (`USelect.vue:115`) — текст «Сначала дешевле» обрезается.
+
+**Фикс:**
+1. `.top-bar__right` на mobile: остаётся **row**, `align-items: center`; убрать `flex-direction: column` на mobileSmall.
+2. `.top-bar__results`: убрать `flex-basis: 100%`, `white-space: nowrap`.
+3. `.top-bar__sort`: не давать select сжиматься ниже контента; select на mobile — ширина, вмещающая самую длинную опцию (через `:deep(.select)` в контексте top-bar: `toEm(150)` или `min-width: fit-content`). На очень узких (320px) — допустим wrap как fallback.
+
+> ✅ **Реализовано 08.26:** в одну строку; gap ужат 12→8, чип 8→6 (иначе 375px не влезает в 336px контейнера); select на mobile `toRem(145)` (текст «Сначала дешевле» 118px + паддинги + picker-icon; `max-content` на нативном select не работает — ставим фикс. ширину).
+
+### Счётчик «Найдено: N» — бордер «втиснение»
+`.top-bar__results` — чип с recessed-бордером (паттерн BannerLayouts):
+```scss
+.top-bar__results {
+  white-space: nowrap;
+  padding-inline: toRem(10);
+  padding-block: toRem(4);
+  border-radius: toRem(6);
+  border: toRem(1) solid rgba(0, 0, 0, 0.25);
+  box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+  background-color: var(--light-color);
+}
+```

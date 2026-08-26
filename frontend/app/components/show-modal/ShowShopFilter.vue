@@ -26,16 +26,19 @@ const emit = defineEmits<{
   "update:tags": [v: string[]]
 }>()
 
-// Диалог сайдбара фильтров: show() (не модальный), как ShowHamburger
+// Диалог сайдбара фильтров: show() (не модальный), как ShowHamburger.
+// initialOpen: true — SSR сразу отдаёт <dialog open>, без флеша после гидратации
+// (см. session-handoff, замечание 5, вариант А).
 const dialogElement = useTemplateRef<HTMLDialogElement>("dialog-shop-filter");
 const { open, close, isOpen } = useDialog("shopFilterDialog", dialogElement, {
   useShowMethod: true,
-});
-
-// Изначально открыт при переходе на страницу (show() — клиентский API)
-watch(dialogElement, (el) => {
-  if (el) open?.()
+  initialOpen: true,
 })
+
+// Сайдбар открыт по умолчанию на каждом заходе на страницу: useDialog хранит
+// isOpen в глобальном Map, который переживает размонтирование при SPA-навигации,
+// поэтому принудительно сбрасываем состояние на «открыто» (как делал старый watch).
+isOpen.value = true
 
 // Управление диалогом из страницы (кнопка «Фильтр» в top-bar)
 const toggle = () => {
@@ -50,13 +53,38 @@ const { data: categoriesData } = useCachedAsyncData(
   () => find("categories", {
     filters: { locale: { $eq: currentLocale.value } },
     fields: ["id", "name", "slug"],
-    populate: { products: { fields: ["id"] } },
+    populate: {
+      products: { fields: ["id"] },
+      // Товары подкатегорий тоже считаем: у товара category может быть null,
+      // а категория достижима только через subcategory.category
+      subcategories: {
+        fields: ["id", "name", "slug"],
+        populate: { products: { fields: ["id"] } },
+      },
+    },
   } as any),
   { ttl: 600_000 },
 )
 
 const categories = computed(() => (categoriesData.value?.data as Category[] | undefined) ?? [])
-const categoryCount = (cat: Category) => cat.products?.length ?? 0
+const categoryCount = (cat: Category) =>
+  (cat.products?.length ?? 0) +
+  (cat.subcategories?.reduce((n, s) => n + (s.products?.length ?? 0), 0) ?? 0)
+
+// ===== Открытое состояние details-секций (реактивно — переживает ре-рендер) =====
+const categoriesOpen = ref(true)
+const priceOpen = ref(true)
+const tagsOpen = ref(true)
+
+// Клик по summary переключает НАТИВНЫЙ атрибут details (open), Vue об этом
+// не знает: без синхронизации следующий ре-рендер принудительно вернёт секцию
+// в состояние ref (переоткроет закрытую). Синхронизируем ref по событию toggle.
+const onDetailsToggle = (key: "categories" | "price" | "tags", e: Event) => {
+  const opened = (e.currentTarget as HTMLDetailsElement).open
+  if (key === "categories") categoriesOpen.value = opened
+  else if (key === "price") priceOpen.value = opened
+  else tagsOpen.value = opened
+}
 
 // ===== Товары со скидкой (для списка «Sale Products») =====
 const { data: saleData } = useCachedAsyncData(
@@ -92,7 +120,7 @@ const onRangeChange = (range: [number, number]) => {
 
 <template>
   <div class="show-shop-filter">
-    <dialog id="dialogShopFilter" ref="dialog-shop-filter" class="show-shop-filter__dialog">
+    <dialog id="dialogShopFilter" ref="dialog-shop-filter" class="show-shop-filter__dialog" :aria-label="t.filterTitle" :open="isOpen">
       <aside class="shop-filters">
             <!-- Категории: скрытый заголовок (у section обязан быть) -->
             <section
@@ -102,20 +130,39 @@ const onRangeChange = (range: [number, number]) => {
               <h2 id="shop-filters-categories-title" class="visually-hidden">
                 {{ t.categoriesTitle }}
               </h2>
-              <ul class="shop-filters__category-list">
-                <li v-for="cat in categories" :key="cat.slug" class="shop-filters__category">
-                  <UInput
-                    class="shop-filters__category-input"
-                    type="radio"
-                    name="shop-category"
-                    :value="cat.slug"
-                    :model-value="category"
-                    :label="cat.name"
-                    @update:model-value="emit('update:category', $event)"
-                  />
-                  <span class="shop-filters__category-count">({{ categoryCount(cat) }})</span>
-                </li>
-              </ul>
+              <details class="shop-filters__details" :open="categoriesOpen" @toggle="onDetailsToggle('categories', $event)">
+                <summary class="shop-filters__summary">
+                  <span class="shop-filters__summary-title">{{ t.categoriesTitle }}</span>
+                  <Icon name="mingcute:down-line" />
+                </summary>
+                <div class="shop-filters__content">
+                  <ul class="shop-filters__category-list">
+                    <li class="shop-filters__category">
+                      <UInput
+                        class="shop-filters__category-input"
+                        type="radio"
+                        name="shop-category"
+                        value=""
+                        :model-value="category"
+                        :label="t.allProducts"
+                        @update:model-value="emit('update:category', $event)"
+                      />
+                    </li>
+                    <li v-for="cat in categories" :key="cat.slug" class="shop-filters__category">
+                      <UInput
+                        class="shop-filters__category-input"
+                        type="radio"
+                        name="shop-category"
+                        :value="cat.slug"
+                        :model-value="category"
+                        :label="cat.name"
+                        @update:model-value="emit('update:category', $event)"
+                      />
+                      <span class="shop-filters__category-count">({{ categoryCount(cat) }})</span>
+                    </li>
+                  </ul>
+                </div>
+              </details>
             </section>
 
             <!-- Цена (двойной ползунок — UInput range-dual) -->
@@ -126,20 +173,28 @@ const onRangeChange = (range: [number, number]) => {
               <h2 id="shop-filters-price-title" class="visually-hidden">
                 {{ t.priceTitle }}
               </h2>
-              <div class="shop-filters__price">
-                  <div class="shop-filters__price-values">
-                  <span class="shop-filters__price-value">{{ formatPrice(localMin) }}</span>
-                  <span class="shop-filters__price-separator">—</span>
-                  <span class="shop-filters__price-value">{{ formatPrice(localMax) }}</span>
+              <details class="shop-filters__details" :open="priceOpen" @toggle="onDetailsToggle('price', $event)">
+                <summary class="shop-filters__summary">
+                  <span class="shop-filters__summary-title">{{ t.priceTitle }}</span>
+                  <Icon name="mingcute:down-line" />
+                </summary>
+                <div class="shop-filters__content">
+                  <div class="shop-filters__price">
+                    <div class="shop-filters__price-values">
+                      <span class="shop-filters__price-value">{{ formatPrice(localMin) }}</span>
+                      <span class="shop-filters__price-separator">—</span>
+                      <span class="shop-filters__price-value">{{ formatPrice(localMax) }}</span>
+                    </div>
+                    <UInput
+                      type="range-dual"
+                      :min="0"
+                      :max="PRICE_MAX"
+                      :model-value="[localMin, localMax]"
+                      @update:model-value="onRangeChange"
+                    />
+                  </div>
                 </div>
-                <UInput
-                  type="range-dual"
-                  :min="0"
-                  :max="PRICE_MAX"
-                  :model-value="[localMin, localMax]"
-                  @update:model-value="onRangeChange"
-                />
-              </div>
+              </details>
             </section>
 
             <!-- Популярные теги (UInput checkbox-пилюли, модель — массив) -->
@@ -150,18 +205,26 @@ const onRangeChange = (range: [number, number]) => {
               <h2 id="shop-filters-tags-title" class="visually-hidden">
                 {{ t.tagsTitle }}
               </h2>
-              <ul class="shop-filters__tags">
-                <li v-for="tag in t.tags" :key="tag" class="shop-filters__tag-item">
-                  <UInput
-                    type="checkbox"
-                    pill
-                    :value="tag"
-                    :model-value="tags"
-                    :label="tag"
-                    @update:model-value="emit('update:tags', $event)"
-                  />
-                </li>
-              </ul>
+              <details class="shop-filters__details" :open="tagsOpen" @toggle="onDetailsToggle('tags', $event)">
+                <summary class="shop-filters__summary">
+                  <span class="shop-filters__summary-title">{{ t.tagsTitle }}</span>
+                  <Icon name="mingcute:down-line" />
+                </summary>
+                <div class="shop-filters__content">
+                  <ul class="shop-filters__tags">
+                    <li v-for="tag in t.tags" :key="tag" class="shop-filters__tag-item">
+                      <UInput
+                        type="checkbox"
+                        pill
+                        :value="tag"
+                        :model-value="tags"
+                        :label="tag"
+                        @update:model-value="emit('update:tags', $event)"
+                      />
+                    </li>
+                  </ul>
+                </div>
+              </details>
             </section>
 
             <!-- Баннер «Скидка 79%» (изображение Bannar.jpg) -->
@@ -181,35 +244,22 @@ const onRangeChange = (range: [number, number]) => {
               </div>
             </section>
 
-            <!-- Товары со скидкой -->
+            <!-- Товары со скидкой (без details — переиспользуем DiscountProduct) -->
             <section
               v-if="saleProducts.length"
-              class="shop-filters__section"
+              class="shop-filters__section shop-filters__sale-section"
               aria-labelledby="shop-filters-sale-title"
             >
-              <h2 id="shop-filters-sale-title" class="visually-hidden">
+              <h2 id="shop-filters-sale-title" class="shop-filters__sale-title">
                 {{ t.saleTitle }}
               </h2>
               <ul class="shop-filters__sale-list">
-                <li
-                  v-for="prod in saleProducts"
+                <DiscountProduct
+                  v-for="(prod, index) in saleProducts"
                   :key="prod.documentId"
-                  class="shop-filters__sale-item"
-                >
-                  <div class="shop-filters__sale-thumb">
-                    <UImage
-                      v-if="prod.mainImage?.url || prod.image?.length"
-                      class="shop-filters__sale-image"
-                      type="product"
-                      :src="prod.mainImage?.url || prod.image?.[0]?.url"
-                      :alt="prod.name"
-                      width="44"
-                      height="44"
-                    />
-                  </div>
-                  <span class="shop-filters__sale-name">{{ prod.name }}</span>
-                  <span class="shop-filters__sale-price">{{ formatPrice(prod.price) }}</span>
-                </li>
+                  :product="prod"
+                  :index="index"
+                />
               </ul>
             </section>
           </aside>
@@ -219,9 +269,19 @@ const onRangeChange = (range: [number, number]) => {
 
 <style lang="scss" scoped>
 .show-shop-filter {
-  flex-shrink: 0;
   display: flex;
-  @include adaptiveValue("width", 300, 200);
+  flex-shrink: 0;
+
+  // Сайдбар в потоке только пока диалог открыт. Закрытый — полностью убираем
+  // из потока, чтобы не оставалась пустая колонка фиксированной ширины
+  // (flex-gap в products__body тоже схлопывается вместе с ним).
+  &:has(.show-shop-filter__dialog[open]) {
+    @include adaptiveValue("width", 300, 200);
+  }
+
+  &:not(:has(.show-shop-filter__dialog[open])) {
+    display: none;
+  }
 
   // ===== Диалог сайдбара (без телепорта — в потоке страницы) =====
   &__dialog {
@@ -268,13 +328,72 @@ const onRangeChange = (range: [number, number]) => {
   &__section {
     margin-block-end: toRem(24);
     padding-block-end: toRem(24);
-    border-bottom: toRem(1) solid var(--border-color);
+    // Разделитель «втиснение» (паттерн BannerLayouts: тёмная линия + светлый блик)
+    border-bottom: toRem(1) solid rgba(0, 0, 0, 0.25);
+    box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
 
     &:last-child {
       border-bottom: none;
+      box-shadow: none;
       margin-block-end: 0;
       padding-block-end: 0;
     }
+  }
+
+  // ==== Details-секции (паттерн ShowHamburger: grid 0fr→1fr + шеврон) ====
+  &__details {
+    svg {
+      font-size: toEm(22);
+      transition: rotate var(--transition-duration);
+    }
+
+    &[open] .shop-filters__summary svg {
+      rotate: -90deg;
+    }
+  }
+
+  &__summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: toRem(8);
+    cursor: pointer;
+    padding: toEm(4);
+    font-weight: 600;
+    font-size: toEm(22);
+    color: var(--primary-color);
+    outline: toRem(2) var(--whitesmoke-color) inset;
+    border-radius: toRem(4);
+    background-color: var(--light-color-transparent);
+    // Нативный маркер details скрываем (своя иконка)
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    @include hover {
+      color: var(--warning-color);
+    }
+  }
+
+  &__content {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s;
+
+    > * {
+      overflow: hidden;
+      min-height: 0;
+    }
+  }
+
+  &__details[open] .shop-filters__content {
+    grid-template-rows: 1fr;
+  }
+
+  &__summary-title {
+    font-weight: 600;
   }
 
   &__section-title {
@@ -324,6 +443,8 @@ const onRangeChange = (range: [number, number]) => {
     gap: toRem(8);
     font-size: toEm(15);
     color: var(--color);
+    // Числа стоимости — над инпутом на 5px
+    margin-block-end: toRem(5);
   }
 
   &__price-separator {
@@ -393,55 +514,40 @@ const onRangeChange = (range: [number, number]) => {
     }
   }
 
-  // ==== Товары со скидкой ====
+  // ==== Товары со скидкой (DiscountProduct; контейнер для container-query) ====
+  &__sale-section {
+    // Родитель-контейнер: карточки адаптируются к ширине сайдбара,
+    // а не к вьюпорту (см. @container sale ниже)
+    @include containerParent(sale, inline-size);
+  }
+
+  &__sale-title {
+    margin: 0 0 toRem(16) 0;
+    font-weight: 600;
+    font-size: toEm(22);
+    color: var(--primary-color);
+  }
+
   &__sale-list {
     list-style: none;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
+    display: grid;
     gap: toRem(12);
   }
 
-  &__sale-thumb {
-    flex-shrink: 0;
-    width: toRem(44);
-    height: toRem(44);
-    border-radius: toRem(4);
-    overflow: hidden;
-    // Узкий product-контейнер — UImage применяет @container product (миниатюра ≤ 16rem)
-    @include containerParent(product, inline-size);
-  }
-
-  &__sale-image {
-   width: 100%;
-   height: 100%;
-  }
-
-  &__sale-item {
-    display: flex;
-    align-items: center;
-    gap: toRem(8);
-    font-size: toEm(14);
-    color: var(--color);
-    padding-block: toRem(4);
-    cursor: pointer;
-    transition: color var(--transition-duration);
-
-    @include hover {
-      color: var(--success-color);
+  // В узком сайдбаре DiscountProduct принудительно переводим в компактную
+  // раскладку (как у него в @media (max-width: toEm(540))) — иначе карточка
+  // рендерится в широкой 3-колоночной сетке по ширине вьюпорта.
+  @container sale (max-width: 26rem) {
+    .shop-filters__sale-list :deep(.discount-card) {
+      grid-template-columns: repeat(2, auto);
+      row-gap: toEm(8);
+      grid-template-areas:
+        "link show"
+        "title add"
+        "price add";
     }
-  }
-
-  &__sale-name {
-    font-weight: 400;
-    flex: 1;
-    min-width: 0;
-  }
-
-  &__sale-price {
-    color: var(--success-color);
-    font-weight: 600;
   }
 
   // ==== Адаптив ====

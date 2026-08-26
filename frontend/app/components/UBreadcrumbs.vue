@@ -62,7 +62,13 @@ const hasBackground = computed(() =>
   align-items: center;
 
   &__container {
+    // Ширина 100% + box-sizing:border-box перебивают глобальный
+    // [class*="__container"] (content-box + padding): иначе паддинги прибавлялись
+    // к 100% → контейнер переполнял вьюпорт (горизонтальный скролл).
+    // Без width:100% контейнер схлопывался до контента и центрировался — крошки
+    // должны оставаться слева, выровненные по контенту контейнера.
     width: 100%;
+    box-sizing: border-box;
   }
 
   &__list {

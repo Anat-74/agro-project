@@ -46,14 +46,20 @@ const isHovered = ref(false)
 
 const isDynamic = computed(() => !!(props.backgroundOptions && props.backgroundOptions.length > 0))
 
-// ===== Эффекты фона (управление — кнопка в попапе выбора фона) =====
+// Эффекты фона (управление — кнопка в попапе выбора фона) =====
 const { currentLocale } = useLocale()
 const effectT = computed(() => effectTranslations[currentLocale.value])
 
-const BG_EFFECTS = ["press", "zoom", "focus"] as const
+// Эффект по умолчанию — "none": bgfx-класс не добавляем, иначе scale(0.95)+
+// brightness(0.7) (bgfx-press) применялись ко ВСЕМ фонам (breadcrumbs, страницы),
+// ужимая фон на 5% и затемняя на 30% (баг: фон крошек был не на всю ширину).
+const BG_EFFECTS = ["none", "press", "zoom", "focus"] as const
 
 const bgEffectIndex = ref(0)
-const bgEffectClass = computed(() => `bgfx-${BG_EFFECTS[bgEffectIndex.value]}`)
+const bgEffectClass = computed(() => {
+  const effect = BG_EFFECTS[bgEffectIndex.value]
+  return effect === "none" ? "" : `bgfx-${effect}`
+})
 const effectName = computed(() => effectT.value.effectNames[BG_EFFECTS[bgEffectIndex.value]])
 
 const cycleBgEffect = () => {

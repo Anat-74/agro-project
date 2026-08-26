@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { shopFiltersTranslations } from '~/locales/shopFilters'
+import { visuallyHiddenTranslations } from '~/locales/visuallyHidden'
 import ShowShopFilter from '~/components/show-modal/ShowShopFilter.vue'
 
 const { find } = useStrapi();
 const { currentLocale } = useLocale();
 const route = useRoute();
 const t = computed(() => shopFiltersTranslations[currentLocale.value])
+const vh = computed(() => visuallyHiddenTranslations[currentLocale.value])
 
 const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopFilter")
 
@@ -56,7 +58,14 @@ const { data: productsData, pending, refresh } = useCachedAsyncData(
   productsKey,
   async () => {
     const filters: any = { locale: { $eq: currentLocale.value } }
-    if (category.value) filters.category = { slug: { $eq: category.value } }
+    // Товар может лежать напрямую в категории (category) или в её подкатегории
+    // (subcategory.category при category=null) — ищем по обоим путям
+    if (category.value) {
+      filters.$or = [
+        { category: { slug: { $eq: category.value } } },
+        { subcategory: { category: { slug: { $eq: category.value } } } },
+      ]
+    }
     if (priceMin.value > 0 || priceMax.value < 2000) {
       filters.price = {}
       if (priceMin.value > 0) filters.price.$gte = priceMin.value
@@ -139,6 +148,7 @@ useSeoMeta({
             variant="plain"
             :aria-label="t.filterTitle"
             :aria-expanded="shopFilterRef?.isOpen"
+            aria-controls="dialogShopFilter"
             @click="shopFilterRef?.toggle()"
           >
             <Icon name="mingcute:filter-line" />
@@ -180,7 +190,7 @@ useSeoMeta({
         />
 
         <!-- Список карточек товаров + пагинация -->
-        <div class="products-page__content" aria-label="Products">
+        <div class="products-page__content" role="region" :aria-label="vh.productsListLabel">
           <ULoader v-show="pending" class="products-page__loader loader" />
           <ul v-if="products.length" class="products-page__card-list">
             <ProductCard
@@ -275,7 +285,8 @@ useSeoMeta({
   flex-wrap: wrap;
   gap: toRem(12);
   padding-block-end: toRem(18);
-  border-bottom: toRem(1) solid var(--border-color);
+  // Верхний бордер под кнопкой убран: секции сайдбара сами разделяются
+  // бордером «втиснение» (см. ShowShopFilter)
   margin-block-end: toRem(24);
 
   &__left {
@@ -287,25 +298,27 @@ useSeoMeta({
     display: inline-flex;
     align-items: center;
     gap: toRem(8);
-    background: none;
+    // Зелёный фон + светлый текст/иконка (кнопка открытия диалога)
+    background-color: var(--green-color);
+    color: var(--light-color);
     border: none;
     cursor: pointer;
     padding: toRem(8) toRem(12);
     border-radius: toRem(8);
     font-size: toEm(16);
     font-weight: 500;
-    color: var(--green-color);
     transition: background-color var(--transition-duration);
 
     svg {
-      color: var(--green-color);
+      color: var(--light-color);
       flex-shrink: 0;
       width: toRem(20);
       height: toRem(20);
     }
 
     @include hover {
-      background-color: var(--whitesmoke-color);
+      // Тёмно-зелёный при наведении (colorMix от зелёного к тёмному)
+      background-color: color-mix(in srgb, var(--green-color) 85%, var(--dark-color));
     }
   }
 
@@ -325,16 +338,26 @@ useSeoMeta({
     font-size: toEm(14);
     color: var(--gray-color);
     white-space: nowrap;
+    // Чип с бордером «втиснение» (паттерн BannerLayouts: тёмная линия + светлый блик)
+    padding-inline: toRem(6);
+    padding-block: toRem(4);
+    border-radius: toRem(6);
+    border: toRem(1) solid rgba(0, 0, 0, 0.25);
+    box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+    background-color: var(--light-color);
   }
 
   // ==== Адаптив ====
   @media (max-width: $mobile) {
-    // Кнопка + select в одну строку (space-between), количество — отдельной строкой
+    // Все три элемента (кнопка | select | счётчик) — в одну строку, по центру.
+    // Отступы ужаты (12→8), иначе на 375px строка не влезает в 336px контейнера.
+    gap: toRem(8);
+
     &__right {
       flex: 1;
       justify-content: flex-end;
-      flex-wrap: wrap;
-      gap: toRem(12);
+      align-items: center;
+      gap: toRem(8);
     }
 
     &__sort {
@@ -342,8 +365,14 @@ useSeoMeta({
       min-width: 0;
     }
 
+    // На mobile USelect узкий (toEm(112)) — текст «Сначала дешевле» (118px) вылезал
+    // за пределы (appearance: base-select). 145px = текст + паддинги + picker-icon
+    &__select :deep(.select) {
+      width: toRem(145);
+      max-width: 100%;
+    }
+
     &__results {
-      flex-basis: 100%;
       text-align: end;
       font-size: toEm(13);
     }
@@ -355,13 +384,8 @@ useSeoMeta({
 
   @media (max-width: $mobileSmall) {
     &__right {
-      flex-direction: column;
-      align-items: stretch;
+      align-items: center;
       gap: toRem(8);
-    }
-
-    &__sort {
-      width: 100%;
     }
 
     &__results {
