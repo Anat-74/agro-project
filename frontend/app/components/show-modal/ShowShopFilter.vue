@@ -40,6 +40,19 @@ const { open, close, isOpen } = useDialog("shopFilterDialog", dialogElement, {
 // поэтому принудительно сбрасываем состояние на «открыто» (как делал старый watch).
 isOpen.value = true
 
+// Вариант A: оверлей начинается ниже top-bar (его bottom замеряем в px).
+// onMounted — для дефолтного открытия (mobile); watch — для повторного открытия
+// после скролла (body-lock фиксирует страницу в текущей позиции, top-bar мог уехать).
+const syncFilterOverlayTop = () => {
+  const topbar = document.querySelector<HTMLElement>(".top-bar")
+  const bottom = topbar?.getBoundingClientRect().bottom
+  document.documentElement.style.setProperty("--filter-overlay-top", `${bottom ?? 287}px`)
+}
+onMounted(syncFilterOverlayTop)
+watch(isOpen, (v) => {
+  if (v) syncFilterOverlayTop()
+})
+
 // Управление диалогом из страницы (кнопка «Фильтр» в top-bar)
 const toggle = () => {
   if (isOpen.value) close?.()
@@ -87,9 +100,11 @@ const onDetailsToggle = (key: "categories" | "price" | "tags", e: Event) => {
 }
 
 // ===== Товары со скидкой (для списка «Sale Products») =====
-// server: false — клиентский запрос (не нужен для SSR/SEO); диалог на mobile
-// теперь полноширинный, блок акций показываем на всех ширинах
-const { data: saleData } = useCachedAsyncData(
+// Блок нужен только на desktop: на mobile данные из Strapi НЕ запрашиваем
+// (display:none всё равно тянул бы данные). server:false + immediate:false —
+// без авто-запроса; запрос только после того, как ширина стала > mobile.
+const { width } = useViewport()
+const { data: saleData, refresh } = useCachedAsyncData(
   `shop-sale-${currentLocale.value}`,
   () => find("products", {
     filters: { isDiscount: { $eq: true }, locale: { $eq: currentLocale.value } },
@@ -101,8 +116,12 @@ const { data: saleData } = useCachedAsyncData(
     sort: ["price:asc"],
     pagination: { page: 1, pageSize: 5 },
   } as any),
-  { ttl: 600_000, server: false },
+  { ttl: 600_000, server: false, immediate: false },
 )
+
+watch(width, (w) => {
+  if (w > 767.98) refresh()
+})
 
 const saleProducts = computed(() => (saleData.value?.data as Product[] | undefined) ?? [])
 
@@ -304,15 +323,17 @@ const onRangeChange = (range: [number, number]) => {
     display: none;
   }
 
-  // Mobile (≤768): полноэкранный оверлей 100dvh (fixed) — накрывает вьюпорт,
-  // карточки товаров недоступны/не скроллятся. Контент фильтров скроллится
-  // внутри (.shop-filters height:100% + overflow-y:auto). top-bar выше (z-index 6).
+  // Mobile (≤768): оверлей от top-bar до низа вьюпорта (Вариант A).
+  // top: var(--filter-overlay-top) — замеренный JS bottom top-bar: шапка и
+  // top-bar остаются доступными ВЫШЕ, фильтры не перекрываются, карточки
+  // товаров накрыты (низ вьюпорта). z-index 9999 — как у оверлея ShowHamburger.
   @media (max-width: $mobile) {
     position: fixed;
-    inset: 0;
+    top: var(--filter-overlay-top, toRem(287));
+    inset-inline: 0;
+    bottom: 0;
     width: 100dvw;
-    height: 100dvh;
-    z-index: 5;
+    z-index: 9999;
   }
 
   // ===== Диалог сайдбара (без телепорта — в потоке страницы) =====
@@ -569,6 +590,12 @@ const onRangeChange = (range: [number, number]) => {
     // Родитель-контейнер: карточки адаптируются к ширине сайдбара,
     // а не к вьюпорту (см. @container sale ниже)
     @include containerParent(sale, inline-size);
+
+    // Блок не нужен на mobile: данные туда уже не подтягиваются,
+    // display:none — страховка на случай resize desktop→mobile
+    @media (max-width: $mobile) {
+      display: none;
+    }
   }
 
   &__sale-title {
