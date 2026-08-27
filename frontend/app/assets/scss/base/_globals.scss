@@ -35,7 +35,8 @@ body {
 // ShowHamburger (он открыт по умолчанию, но на мобильном внутри display:none):
 // иначе body:has(...) матчил его [open] → overflow:hidden блокировал скролл
 // всего сайта на мобильном. Mobile-диалог (оверлей, телепорт в body) матчится.
-// .show-shop-filter__dialog — полноэкранный оверлей фильтров на mobile.
+// .show-shop-filter__dialog — полноэкранный fixed-оверлей фильтров на mobile:
+// карточки товаров под ним недоступны (страница не скроллится).
 body:has(
   .dialog-hamburger[open]:not(.hidden-tablet .dialog-hamburger),
   .show-shop-filter__dialog[open],

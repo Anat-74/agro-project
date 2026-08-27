@@ -294,9 +294,9 @@ const onRangeChange = (range: [number, number]) => {
     // Ширина диалога — единый источник --filter-width (styles.scss)
     width: var(--filter-width);
 
-    // Mobile (≤768): на всю ширину контента (перебивает --filter-width)
+    // Mobile (≤768): полноэкранный оверлей — ширина перебивает --filter-width
     @media (max-width: $mobile) {
-      width: 100%;
+      width: 100dvw;
     }
   }
 
@@ -304,14 +304,14 @@ const onRangeChange = (range: [number, number]) => {
     display: none;
   }
 
-  // Mobile (≤768): полноширинный оверлей ПОД top-bar (якорь .products-page__body).
-  // Диалог в своём положении (под top-bar) — его НЕ перекрывает. Ширина на всю
-  // ширину, высота — по контенту. Body-lock при открытии (см. _globals.scss).
+  // Mobile (≤768): полноэкранный оверлей 100dvh (fixed) — накрывает вьюпорт,
+  // карточки товаров недоступны/не скроллятся. Контент фильтров скроллится
+  // внутри (.shop-filters height:100% + overflow-y:auto). top-bar выше (z-index 6).
   @media (max-width: $mobile) {
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline: 0;
-    width: 100%;
+    position: fixed;
+    inset: 0;
+    width: 100dvw;
+    height: 100dvh;
     z-index: 5;
   }
 
@@ -339,8 +339,10 @@ const onRangeChange = (range: [number, number]) => {
       translate var(--transition-duration),
       opacity var(--transition-duration);
 
-    // Mobile (≤768): фон как в ShowHamburger — прозрачный + blur
+    // Mobile (≤768): фон как в ShowHamburger — прозрачный + blur;
+    // height:100% — чтобы .shop-filters (height:100%) резолвился и скроллился
     @media (max-width: $mobile) {
+      height: 100%;
       backdrop-filter: blur(22px);
     }
 
@@ -602,13 +604,13 @@ const onRangeChange = (range: [number, number]) => {
   // ==== Адаптив ====
   @media (max-width: $mobile) {
     width: 100%;
-    padding-block-end: toRem(30);
-    // Внутренний скролл — как .dialog-hamburger__items в ShowHamburger:
-    // контент фильтров скроллится, если выше видимой области (body-lock)
+    // Заполняет fixed-оверлей (100dvh): скролл внутри вьюпорта, низ не обрезается
+    height: 100%;
+    // Внутренний скролл — как .dialog-hamburger__items в ShowHamburger
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--success-color) var(--whitesmoke-color);
-    max-height: 100dvh;
+    padding-block-end: toRem(30);
 
     &__tags {
       gap: toRem(6);

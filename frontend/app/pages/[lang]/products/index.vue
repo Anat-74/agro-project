@@ -300,6 +300,10 @@ useSeoMeta({
   // Верхний бордер под кнопкой убран: секции сайдбара сами разделяются
   // бордером «втиснение» (см. ShowShopFilter)
   margin-block-end: toRem(24);
+  // Выше mobile-оверлея фильтров (ShowShopFilter position:fixed z-index:5) —
+  // кнопка «Фильтр» остаётся доступной при открытом полноэкранном окне
+  position: relative;
+  z-index: 6;
 
   &__left {
     display: flex;
