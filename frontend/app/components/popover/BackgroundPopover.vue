@@ -29,6 +29,10 @@ const { currentLocale } = useLocale()
 const backgroundT = computed(() => backgroundTranslations[currentLocale.value])
 const effectT = computed(() => effectTranslations[currentLocale.value])
 
+// Открытый диалог фильтров (страница товаров) — на mobile скрываем кнопку-триггер,
+// чтобы не мешала полноэкранному оверлею фильтров
+const { isOpen: filterDialogOpen } = useDialog("shopFilterDialog")
+
 const sizeOptions = computed(() => [
   { value: "cover", label: backgroundT.value.sizeCover, icon: "🖼️" },
   { value: "contain", label: backgroundT.value.sizeContain, icon: "🔲" },
@@ -103,7 +107,7 @@ watch(isOpen, (open) => {
   <div class="background-popover">
     <UButton
       class="background-popover__trigger"
-      :class="{ 'background-popover__trigger_hidden': isOpen }"
+      :class="{ 'background-popover__trigger_hidden': isOpen, 'background-popover__trigger_hidden-filter': filterDialogOpen }"
       icon="mingcute:palette-line"
       :aria-label="backgroundT.ariaLabelTrigger"
       variant="palette"
@@ -212,6 +216,15 @@ watch(isOpen, (open) => {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
+  }
+
+  // Открытый диалог фильтров (mobile) — триггер не нужен
+  &_hidden-filter {
+    @media (max-width: $mobile) {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
   }
 }
 

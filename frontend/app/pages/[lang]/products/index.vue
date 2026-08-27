@@ -125,7 +125,11 @@ useSeoMeta({
 </script>
 
 <template>
-  <section class="products-page" aria-labelledby="products-page-title">
+  <section
+    class="products-page"
+    :class="{ 'products-page_filter-open': shopFilterRef?.isOpen }"
+    aria-labelledby="products-page-title"
+  >
     <!-- Скрытый H1: на странице нет видимого главного заголовка,
          но у section обязан быть заголовок (паттерн страниц каталога) -->
     <h1 id="products-page-title" class="visually-hidden">
@@ -230,6 +234,31 @@ useSeoMeta({
 
 <style lang="scss" scoped>
 .products-page {
+  // Открытый диалог фильтров на mobile (CSS-only, без замеров): страница —
+  // колонка высотой во вьюпорт, breadcrumbs + top-bar в потоке, body (flex:1)
+  // заполняет остаток, а оверлей (ShowShopFilter absolute inset:0) ложится на body.
+  // При любой высоте breadcrumbs/top-bar flex сам подстроит область — надёжно.
+  &_filter-open {
+    @media (max-width: $mobile) {
+      height: 100dvh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+
+      .products-page__container {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .products-page__body {
+        flex: 1;
+        min-height: 0;
+      }
+    }
+  }
+
   &__body {
     display: flex;
     gap: toRem(30);

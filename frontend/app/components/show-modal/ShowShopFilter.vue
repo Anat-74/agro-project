@@ -40,19 +40,6 @@ const { open, close, isOpen } = useDialog("shopFilterDialog", dialogElement, {
 // поэтому принудительно сбрасываем состояние на «открыто» (как делал старый watch).
 isOpen.value = true
 
-// Вариант A: оверлей начинается ниже top-bar (его bottom замеряем в px).
-// onMounted — для дефолтного открытия (mobile); watch — для повторного открытия
-// после скролла (body-lock фиксирует страницу в текущей позиции, top-bar мог уехать).
-const syncFilterOverlayTop = () => {
-  const topbar = document.querySelector<HTMLElement>(".top-bar")
-  const bottom = topbar?.getBoundingClientRect().bottom
-  document.documentElement.style.setProperty("--filter-overlay-top", `${bottom ?? 287}px`)
-}
-onMounted(syncFilterOverlayTop)
-watch(isOpen, (v) => {
-  if (v) syncFilterOverlayTop()
-})
-
 // Управление диалогом из страницы (кнопка «Фильтр» в top-bar)
 const toggle = () => {
   if (isOpen.value) close?.()
@@ -313,9 +300,9 @@ const onRangeChange = (range: [number, number]) => {
     // Ширина диалога — единый источник --filter-width (styles.scss)
     width: var(--filter-width);
 
-    // Mobile (≤768): полноэкранный оверлей — ширина перебивает --filter-width
+    // Mobile (≤768): ширина области body (перебивает --filter-width)
     @media (max-width: $mobile) {
-      width: 100dvw;
+      width: 100%;
     }
   }
 
@@ -323,16 +310,12 @@ const onRangeChange = (range: [number, number]) => {
     display: none;
   }
 
-  // Mobile (≤768): оверлей от top-bar до низа вьюпорта (Вариант A).
-  // top: var(--filter-overlay-top) — замеренный JS bottom top-bar: шапка и
-  // top-bar остаются доступными ВЫШЕ, фильтры не перекрываются, карточки
-  // товаров накрыты (низ вьюпорта). z-index 9999 — как у оверлея ShowHamburger.
+  // Mobile (≤768): оверлей заполняет .products-page__body (absolute inset:0).
+  // body — flex-область под top-bar (см. products/index.vue .products-page_filter-open):
+  // flex сам подстраивается под любую высоту breadcrumbs/top-bar — без замеров.
   @media (max-width: $mobile) {
-    position: fixed;
-    top: var(--filter-overlay-top, toRem(287));
-    inset-inline: 0;
-    bottom: 0;
-    width: 100dvw;
+    position: absolute;
+    inset: 0;
     z-index: 9999;
   }
 

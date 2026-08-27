@@ -13,6 +13,10 @@ interface Props {
 
 const props = defineProps<Props>()
 
+// Открытый диалог фильтров (страница товаров) — на mobile прячем шапку,
+// чтобы не занимала место и не мешала полноэкранному оверлею фильтров
+const { isOpen: filterDialogOpen } = useDialog("shopFilterDialog")
+
 // Ссылка на «Блог» берётся из Strapi-навигации (label локализуется в CMS),
 // рендерится отдельно от меню «Ещё»
 const blogLink = computed(() =>
@@ -78,7 +82,7 @@ function openPreview(product: Product) {
 </script>
 
 <template>
-  <header :class="['header']">
+  <header :class="['header', { 'header_filter-open': filterDialogOpen }]">
     <BannerLayouts
       v-if="global"
       :banner-text="global?.header?.bannerText"
@@ -167,6 +171,21 @@ function openPreview(product: Product) {
    // top = минус высота баннера (60 планшет / 40 мобилка) — при скролле скрывается
    // ТОЛЬКО баннер, container-top остаётся полностью видимым
    @include adaptiveValue("top", -60, -40);
+  }
+
+  // Открытый диалог фильтров на mobile — шапка плавно уезжает вверх
+  // и освобождает место (breadcrumbs/top-bar не трогаем)
+  @media (max-width: $mobile) {
+    interpolate-size: allow-keywords;
+    transition:
+      height var(--transition-duration),
+      transform var(--transition-duration);
+
+    &_filter-open {
+      height: 0;
+      overflow: hidden;
+      transform: translateY(-100%);
+    }
   }
 
   &__container-top {
