@@ -87,11 +87,9 @@ const onDetailsToggle = (key: "categories" | "price" | "tags", e: Event) => {
 }
 
 // ===== Товары со скидкой (для списка «Sale Products») =====
-// Блок нужен только на desktop: на mobile данные из Strapi НЕ запрашиваем
-// (display:none всё равно тянул бы данные). server:false + immediate:false —
-// без авто-запроса; запрос только после того, как ширина стала > mobile.
-const { width } = useViewport()
-const { data: saleData, refresh } = useCachedAsyncData(
+// server: false — клиентский запрос (не нужен для SSR/SEO); диалог на mobile
+// теперь полноширинный, блок акций показываем на всех ширинах
+const { data: saleData } = useCachedAsyncData(
   `shop-sale-${currentLocale.value}`,
   () => find("products", {
     filters: { isDiscount: { $eq: true }, locale: { $eq: currentLocale.value } },
@@ -103,12 +101,8 @@ const { data: saleData, refresh } = useCachedAsyncData(
     sort: ["price:asc"],
     pagination: { page: 1, pageSize: 5 },
   } as any),
-  { ttl: 600_000, server: false, immediate: false },
+  { ttl: 600_000, server: false },
 )
-
-watch(width, (w) => {
-  if (w > 767.98) refresh()
-})
 
 const saleProducts = computed(() => (saleData.value?.data as Product[] | undefined) ?? [])
 
@@ -300,9 +294,9 @@ const onRangeChange = (range: [number, number]) => {
     // Ширина диалога — единый источник --filter-width (styles.scss)
     width: var(--filter-width);
 
-    // Mobile (≤768): максимум половина экрана — справа видна часть товаров
+    // Mobile (≤768): на всю ширину контента (перебивает --filter-width)
     @media (max-width: $mobile) {
-      width: min(50vw, var(--filter-width));
+      width: 100%;
     }
   }
 
@@ -310,12 +304,14 @@ const onRangeChange = (range: [number, number]) => {
     display: none;
   }
 
-  // Mobile (≤768): диалог НЕ влияет на лэйаут — оверлей поверх контента
-  // (якорь — .products-page__body, position:relative). Открыт по умолчанию.
+  // Mobile (≤768): полноширинный оверлей ПОД top-bar (якорь .products-page__body).
+  // Диалог в своём положении (под top-bar) — его НЕ перекрывает. Ширина на всю
+  // ширину, высота — по контенту. Body-lock при открытии (см. _globals.scss).
   @media (max-width: $mobile) {
     position: absolute;
     inset-block-start: 0;
-    inset-inline-start: 0;
+    inset-inline: 0;
+    width: 100%;
     z-index: 5;
   }
 
@@ -571,12 +567,6 @@ const onRangeChange = (range: [number, number]) => {
     // Родитель-контейнер: карточки адаптируются к ширине сайдбара,
     // а не к вьюпорту (см. @container sale ниже)
     @include containerParent(sale, inline-size);
-
-    // Блок не нужен на mobile: данные туда уже не подтягиваются,
-    // display:none — страховка на случай resize desktop→mobile
-    @media (max-width: $mobile) {
-      display: none;
-    }
   }
 
   &__sale-title {
@@ -613,6 +603,12 @@ const onRangeChange = (range: [number, number]) => {
   @media (max-width: $mobile) {
     width: 100%;
     padding-block-end: toRem(30);
+    // Внутренний скролл — как .dialog-hamburger__items в ShowHamburger:
+    // контент фильтров скроллится, если выше видимой области (body-lock)
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--success-color) var(--whitesmoke-color);
+    max-height: 100dvh;
 
     &__tags {
       gap: toRem(6);

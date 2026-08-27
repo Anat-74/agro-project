@@ -112,7 +112,23 @@ export default defineNuxtConfig({
     },
     workbox: {
       globPatterns: ["**/*.{js,css,html,png,svg,ico}"],
-      navigateFallback: "/ru",
+      // Навигация — NetworkFirst: сначала сеть (свежий HTML сразу после деплоя),
+      // при офлайне — последняя закэшированная версия. navigateFallback убран:
+      // иначе его NavigationRoute перехватывал бы навигации раньше runtime-роута.
+      runtimeCaching: [
+        {
+          urlPattern: ({ request }) => request.mode === "navigate",
+          handler: "NetworkFirst",
+          options: {
+            cacheName: "pages",
+            networkTimeoutSeconds: 3,
+            expiration: {
+              maxEntries: 50,
+              maxAgeSeconds: 3600,
+            },
+          },
+        },
+      ],
     },
     client: {
       installPrompt: true,

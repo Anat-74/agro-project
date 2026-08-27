@@ -155,9 +155,11 @@ const BG_EFFECTS = ["none", "press", "zoom", "focus"] as const
 
 **Mobile (≤$mobile):**
 - Диалог **открыт по умолчанию** (как на desktop) — суть страницы в фильтрах.
-- Ширина — **максимум 50% экрана**; пользователь видит часть товаров.
-- Позиция — **поверх контента** (оверлей, не влияет на лэйаут), как mobile-оверлей ShowHamburger.
+- **Полноширинный оверлей ПОД top-bar** (якорь `.products-page__body`): `position: absolute; inset-block-start: 0; inset-inline: 0; width: 100%` — top-bar НЕ перекрывает (диалог в своём положении под ним). Высота — **по контенту** (не 100dvh).
+- **Body-lock** на mobile: в `_globals.scss` `body:has(...)` добавлен `.show-shop-filter__dialog[open]` → `overflow: hidden` при открытии (разблокируется при закрытии).
 - Фон диалога = ShowHamburger: `background-color: transparent; backdrop-filter: blur(22px)`.
+- top-bar `z-index` НЕ нужен (диалог под ним).
+- **Внутренний скролл** `.shop-filters` на mobile — как `.dialog-hamburger__items` в ShowHamburger: `overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--success-color) var(--whitesmoke-color); max-height: 100dvh` (контент скроллится, если выше видимой области; body-lock остаётся).
 
 **Кнопка «Фильтр» — состояние по положению окна:**
 - Окно **открыто** → иконка плавно меняется на крестик (`mingcute:close-line`), цвет кнопки → `--danger-color`.
