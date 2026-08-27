@@ -8,6 +8,8 @@ const { currentLocale } = useLocale();
 const route = useRoute();
 const t = computed(() => shopFiltersTranslations[currentLocale.value])
 const vh = computed(() => visuallyHiddenTranslations[currentLocale.value])
+// Desktop-панель каталога: при открытой — карточки сдвигаются, крошки/top-bar в блюре
+const { isCatalogOpen } = useCatalogPanel();
 
 const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopFilter")
 
@@ -125,7 +127,11 @@ useSeoMeta({
 </script>
 
 <template>
-  <section class="products-page" aria-labelledby="products-page-title">
+  <section
+    class="products-page"
+    :class="{ 'products-page_catalog-open': isCatalogOpen }"
+    aria-labelledby="products-page-title"
+  >
     <!-- Скрытый H1: на странице нет видимого главного заголовка,
          но у section обязан быть заголовок (паттерн страниц каталога) -->
     <h1 id="products-page-title" class="visually-hidden">
@@ -190,7 +196,12 @@ useSeoMeta({
         />
 
         <!-- Список карточек товаров + пагинация -->
-        <div class="products-page__content" role="region" :aria-label="vh.productsListLabel">
+        <div
+          class="products-page__content"
+          :class="{ 'products-page__content_catalog-open': isCatalogOpen }"
+          role="region"
+          :aria-label="vh.productsListLabel"
+        >
           <ULoader v-show="pending" class="products-page__loader loader" />
           <ul v-if="products.length" class="products-page__card-list">
             <ProductCard
@@ -220,6 +231,20 @@ useSeoMeta({
 
 <style lang="scss" scoped>
 .products-page {
+  // Открытая desktop-панель каталога: карточки уступают место (сдвиг вправо),
+  // крошки и top-bar уходят в блюр (перекрываются панелью — намеренно)
+  &_catalog-open {
+    :deep(.breadcrumbs),
+    :deep(.top-bar) {
+      filter: blur(toRem(3));
+      transition: filter var(--transition-duration);
+    }
+
+    .products-page__content {
+      margin-inline-start: var(--catalog-width);
+    }
+  }
+
   &__body {
     display: flex;
     gap: toRem(30);
@@ -236,6 +261,8 @@ useSeoMeta({
     // Блок карточек — контейнер: сетка адаптируется к ширине самого блока
     // (закрыт диалог / мобильный), а не к вьюпорту
     @include containerParent(cards, inline-size);
+    // Плавный сдвиг при открытии/закрытии панели каталога
+    transition: margin-inline-start var(--transition-duration);
   }
 
   &__card-list {

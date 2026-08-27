@@ -43,6 +43,8 @@
 - `open()`/`close()` работают с **локальным** `dialogElement` (переданным в вызов), а не с глобальным `dialogElementMap` (map оставляем только для id-only читателей `isOpen`).
 - Тест `useDialog.spec.ts` — дополнить случаем «два элемента, один id».
 
+> ✅ **Реализовано 08.26:** шаг 1 и 2 — проп `dialog-id` (desktop/mobile), ключи разведены, `open/close` на локальном ref (`dialogElementMap`/`optionsMap` удалены). Проверено: desktop-кнопка открывает СВОЮ панель (раньше — скрытый mobile-диалог).
+
 ### Шаг 3. Breakpoint > `$mobile`
 - Dropdown-ветка диалога (`@media (min-width: $mobile)`, 320→235, под кнопкой) — **уже соответствует** новому разбиению: применяется на всех экранах >768 (включая прежний tablet-диапазон 768–1024 — теперь это desktop-режим, без телепорта).
 - Full-screen оверлей — базовые стили (≤768); телепорт в `<body>` — **только** `isMobile = width <= 768`.
@@ -74,10 +76,19 @@
 - Класс-модификатор на первом блоке страницы: `margin-inline-start: var(--catalog-width)` + `transition`.
 - `isCatalogOpen` из `useDialog("hamburgerCatalogDesktop")` (id-only).
 
+> ✅ **Реализовано 08.26:** `useCatalogPanel.ts` (id-only чтение `hamburgerCatalogDesktop`); применено на главной — `.hero-slider_catalog-open { margin-inline-start: var(--catalog-width) }` (выше `$tablet`). Открытие → hero вправо, закрытие → влево (плавно, проверено: 306→0). **Продуктовая страница (простой вариант):** карточки `.products-page__content` сдвигаются на `--catalog-width`, breadcrumbs и top-bar уходят в блюр (blur 3px) — они и фильтр-сайдбар намеренно перекрываются панелью. Проверено: открыто → карточки x=615, закрыто → x=309, блюр включается/снимается.
+
 ### Шаг 8. a11y
 ```scss
 .dialog-hamburger { &:not([open]) { display: none; } }
 ```
+
+> ✅ **Реализовано 08.26 (шаги 3–8):**
+> - **Шаг 3:** телепорт — только `isMobile (≤768)`; `:disabled="!isMobile || isDesktopInstance"` (desktop-инстанс не телепортируется — иначе после телепорта в body открытая панель видна на mobile).
+> - **Шаг 4:** `anchor-name: --hamburger-menu` на `.hamburger-menu`; на диалоге (desktop-ветка) `position-anchor + position-area: bottom span-right + margin-block-start: 22px + inset: auto`. Проверено: панель x=15, w=306 — ровно под кнопкой (кнопка x=15, w=306).
+> - **Шаг 5:** `--catalog-width` в `:root` (styles.scss), `width: var(--catalog-width)` у кнопки и панели, сдвиг контента — `var(--catalog-width)`.
+> - **Шаг 6:** SSR-open — `initialOpen: isDesktopInstance` + `:open="isOpen"` + сброс при SPA-ремонтировании; на mobile desktop-диалог закрыт/скрыт (родитель `hidden-tablet`).
+> - **Шаг 8:** `&:not([open]) { display: none }` + задержка display (exit-анимация видна, затем панель уходит из a11y-дерева).
 
 ---
 
@@ -97,10 +108,20 @@
 - Рендер в подкатегории: `<UImage>` 32×32 слева (как у товаров), `v-if` на наличие (fallback — без картинки).
 - **Данные:** подкатегории локально в статусе draft; заполнить `image` на проде через Content API (токен `ai-assistant`).
 
+> ✅ **Реализовано 08.26 (шаги 9–10):** активные ссылки по `route.path` (категория в summary — `_is-active`, подкатегории/товары — `accordion__product-link_is-active`, цвет `--danger-color` + вес 700, включая секцию «Акция»); изображения подкатегорий — populate `subcategories.image` + `<UImage>` 32×32. Проверено на `/ru/zelen`: активна «Зелень», «Петрушка» (подкатегория) с картинкой.
+
 ---
 
 ## Escape (записан ранее, style-guide §13)
 Реализация Escape для `show()`-диалогов (слушатель на `document` с guard по `isOpen`) — уже в `1778783966963-style-guide.md`.
+
+---
+
+## SSR/SEO для панели каталога (реализовано 08.26)
+- **Категории** (`categoryKey`): `server: false` убран → данные на сервере (SSR) + в payload, гидратация без повторного запроса.
+- **ClientOnly убран** — диалог рендерится в SSR: проверено `curl /ru` — в HTML присутствуют `dialog-hamburger-desktop` и все категории (Бобовые, Зелень, Корнеплоды, Овощи, Орехи, Фрукты, Ягоды, Петрушка).
+- **Акции** (`cart-discount-${locale}`, общий кэш с корзиной) — оставлены `server: false` (не нужны для SEO, продукты индексируются своими страницами); подгружаются на клиенте (проверено: 8 ссылок).
+- Desktop/mobile поведение не сломалось: панель открыта по умолчанию + сдвиг hero, mobile-оверлей по тапу; новых ошибок гидратации нет (прежний mismatch — pre-existing).
 
 ---
 

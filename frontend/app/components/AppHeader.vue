@@ -113,6 +113,7 @@ function openPreview(product: Product) {
           v-if="global"
           class="header__hamburger"
           visibility-class="hidden-tablet"
+          dialog-id="hamburgerCatalogDesktop"
           :phones="global.phones"
           :footer="global.footer"
           :socials="global.socials"
@@ -140,6 +141,7 @@ function openPreview(product: Product) {
           v-if="global"
           class="header__hamburger"
           visibility-class="visible-tablet"
+          dialog-id="hamburgerDialog"
           :phones="global.phones"
           :footer="global.footer"
           :socials="global.socials"
@@ -252,6 +254,11 @@ function openPreview(product: Product) {
     column-gap: toRem(12);
     padding-block: toRem(6);
     @include adaptiveValue("height", 64, 44);
+    // Клип по горизонтали (без скролл-контейнера): на узких широнах мобильный
+    // каталог (150px, justify-self:end) вылезал за правый край → горизонтальный
+    // скролл. overflow-x:clip НЕ режет по вертикали (desktop-панель каталога
+    // выпадает вниз и остаётся видимой)
+    overflow-x: clip;
 
     // Десктоп: каталог (первый в DOM, слева) | навигация (1fr).
     // MoreMenu/Блог скрыты visible-tablet, навигация видна (hidden-tablet)

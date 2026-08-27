@@ -2,6 +2,8 @@
 import { VISIBILITY_KEY } from "#shared/utils/visibility";
 const { currentLocale } = useLocale();
 const { isContacts } = inject<VisibilityState>(VISIBILITY_KEY)!;
+// Сдвиг hero при открытой desktop-панели каталога (ShowHamburger)
+const { isCatalogOpen } = useCatalogPanel();
 
 interface Props {
   slides: HeroSlide[];
@@ -16,7 +18,7 @@ const { slides, heroGrids } = props;
 
 <template>
   <section 
-  :class="['hero-slider', { 'hero-slider_is-visible': isContacts }, { 'hero-slider_is-margin': heroGrids?.[3]?.isVisible===false}]" 
+  :class="['hero-slider', { 'hero-slider_is-visible': isContacts }, { 'hero-slider_is-margin': heroGrids?.[3]?.isVisible===false}, { 'hero-slider_catalog-open': isCatalogOpen }]" 
   aria-labelledby="hero"
   >
     <USlider
@@ -100,10 +102,22 @@ const { slides, heroGrids } = props;
       margin-block-end: toEm(42);
     }
 
-      &_is-visible {
-         transition: filter var(--transition-duration);
-         filter: grayscale(90%);
-   }
+    &_is-visible {
+       transition: filter var(--transition-duration);
+       filter: grayscale(90%);
+    }
+  }
+
+  // Открытая desktop-панель каталога — hero уступает место (сдвиг вправо).
+  // Выше $tablet: на mobile панель-оверлей, сдвиг не нужен
+  @media (min-width: $tablet) {
+    transition:
+      filter var(--transition-duration),
+      margin-inline-start var(--transition-duration);
+
+    &_catalog-open {
+      margin-inline-start: var(--catalog-width);
+    }
   }
 
   &__slider {

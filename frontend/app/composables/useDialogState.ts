@@ -7,10 +7,6 @@ export interface UseDialogOptions {
 
 // Глобальное состояние для хранения isOpen по ID
 const isOpenMap = new Map<string, Ref<boolean>>();
-// Глобальное состояние для хранения dialogElement по ID
-const dialogElementMap = new Map<string, Ref<HTMLDialogElement | null>>();
-// Глобальное состояние для хранения options по ID
-const optionsMap = new Map<string, UseDialogOptions>();
 
 // Универсальный возвращаемый тип
 interface UseDialogReturn {
@@ -42,68 +38,71 @@ export const useDialog = (
   // Если dialogElement передан, регистрируем диалог
   const isOpen = isOpenMap.has(id) ? isOpenMap.get(id)! : ref(Boolean(initialOpen));
   isOpenMap.set(id, isOpen);
-  dialogElementMap.set(id, dialogElement);
-  optionsMap.set(id, { useShowMethod });
+
+  // ВАЖНО: open()/close() работают с ЛОКАЛЬНЫМ dialogElement этого вызова,
+  // а не с глобальным реестром. Раньше (dialogElementMap по id) при двух
+  // инстансах с одним id (ShowHamburger desktop/mobile) последний зарегистрированный
+  // элемент перезаписывал первый — desktop-кнопка открывала скрытый mobile-диалог.
+  const getElement = () => dialogElement.value;
 
   const open = () => {
-    const storedElement = dialogElementMap.get(id)?.value;
-    const storedOptions = optionsMap.get(id);
-
-    if (storedElement) {
-      if (storedOptions?.useShowMethod) {
-        storedElement.show();
+    const el = getElement();
+    if (el) {
+      if (useShowMethod) {
+        el.show();
       } else {
-        storedElement.showModal();
+        el.showModal();
       }
     }
     isOpen.value = true;
   };
 
   const close = () => {
-    const storedElement = dialogElementMap.get(id)?.value;
-    if (storedElement) {
-      storedElement.close?.();
-    }
+    const el = getElement();
+    el?.close?.();
     isOpen.value = false;
   };
 
   // Обработчик клика на бэкдроп - только для showModal()
   const closeOnBackdropClick = (e: MouseEvent) => {
-    const storedElement = dialogElementMap.get(id)?.value;
-    if (!storedElement) return;
-    if (e.target === storedElement) {
+    const el = getElement();
+    if (!el) return;
+    if (e.target === el) {
       close();
     }
   };
 
   // Обработчик Escape - для show() (show() не обрабатывает Escape нативно)
   const closeOnEscape = (e: KeyboardEvent) => {
-    if (e.key === "Escape") {
-      close();
-    }
+    if (e.key !== "Escape") return;
+    // Guard по isOpen: Escape закрывает только открытый диалог
+    if (isOpen.value) close();
   };
 
   // Добавление обработчика событий
   onMounted(() => {
-    const storedElement = dialogElementMap.get(id)?.value;
-    if (!storedElement) return;
+    const el = getElement();
+    if (!el) return;
 
     if (useShowMethod) {
-      storedElement.addEventListener("keydown", closeOnEscape);
+      // Для show() слушатель на document в capture-фазе: фокус не передаётся
+      // внутрь диалога, поэтому keydown на самом элементе ловил Escape только
+      // при фокусе внутри. document ловит Escape откуда угодно.
+      document.addEventListener("keydown", closeOnEscape, true);
     } else {
-      storedElement.addEventListener("click", closeOnBackdropClick);
+      el.addEventListener("click", closeOnBackdropClick);
     }
   });
 
   // Удаление обработчика при размонтировании
   onUnmounted(() => {
-    const storedElement = dialogElementMap.get(id)?.value;
-    if (!storedElement) return;
+    const el = getElement();
+    if (!el) return;
 
     if (useShowMethod) {
-      storedElement.removeEventListener("keydown", closeOnEscape);
+      document.removeEventListener("keydown", closeOnEscape, true);
     } else {
-      storedElement.removeEventListener("click", closeOnBackdropClick);
+      el.removeEventListener("click", closeOnBackdropClick);
     }
   });
 

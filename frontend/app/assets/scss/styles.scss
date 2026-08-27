@@ -20,6 +20,9 @@
     whitesmoke 67%,
     transparent
   );
+  // Единый источник ширины панели каталога (ShowHamburger) и сдвига контента:
+  // заполняется миксином adaptiveValue (переменная как свойство)
+  @include adaptiveValue("--catalog-width", 320, 235);
 }
  
 // Светлая тема (на основе цветов из Figma)

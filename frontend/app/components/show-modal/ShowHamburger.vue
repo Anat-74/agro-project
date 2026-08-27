@@ -17,23 +17,50 @@ interface Props {
   // Утилита видимости (hidden-tablet / visible-tablet) — применяется на корень,
   // т.к. у fragment-компонента атрибуты из родителя не наследуются
   visibilityClass?: string;
+  // Уникальный id диалога: desktop-инстанс «hamburgerCatalogDesktop»,
+  // mobile-инстанс «hamburgerDialog». Разводит состояния двух инстансов —
+  // иначе (один id) последний зарегистрированный элемент перехватывал
+  // open()/close() у обоих (баг: desktop-кнопка открывала скрытый mobile-диалог).
+  dialogId?: string;
 }
 
 const props = defineProps<Props>();
 
 const dialogElement = useTemplateRef<HTMLDialogElement>("dialog-hamburger");
 
-// Создаем отдельное состояние для изначальной видимости
-const { open, close, isOpen } = useDialog("hamburgerDialog", dialogElement, {
+// Ключ состояния: desktop-панель каталога (hamburgerCatalogDesktop) открыта по
+// умолчанию, mobile-оверлей (hamburgerDialog) закрыт до тапа. Градации (HeroGrids,
+// USocials) слушают hamburgerDialog — desktop-панель их не затемняет.
+const dialogKey = computed(() => props.dialogId || "hamburgerDialog")
+const isDesktopInstance = computed(() => dialogKey.value === "hamburgerCatalogDesktop")
+
+const { open, close, isOpen } = useDialog(dialogKey.value, dialogElement, {
   useShowMethod: true,
-});
+  initialOpen: isDesktopInstance.value, // desktop-панель — открыта по умолчанию (SSR)
+})
+
+// Desktop-панель открыта при каждом заходе на страницу: useDialog хранит isOpen
+// в глобальном Map, переживающем размонтирование при SPA-навигации
+if (isDesktopInstance.value) {
+  isOpen.value = true
+}
+
+// DOM-ид диалога уникален для каждого инстанса (в документе id не дублируются)
+const dialogElementId = computed(() =>
+  isDesktopInstance.value ? "dialog-hamburger-desktop" : "dialog-hamburger-mobile",
+)
 
 const { width } = useViewport()
-const isTablet = computed(() => width.value <= 1024)
+// Телепорт — только на mobile (≤768). Выше (desktop) диалог в потоке/под кнопкой
+const isMobile = computed(() => width.value <= 767.98)
 
 const { currentLocale } = useLocale();
+const route = useRoute();
 const config = useRuntimeConfig();
 const { getProductLink } = useProductLink();
+
+// Активные ссылки аккордеона — по текущему маршруту
+const isActive = (path: string) => route.path === path
 
 const categoryKey = computed(() => `category-dialog-${currentLocale.value}`)
 
@@ -49,7 +76,11 @@ const {
       filters: { locale: { $eq: currentLocale.value } },
       populate: {
         image: { fields: ["alternativeText", "url"] },
-        subcategories: { fields: ["name", "slug"] },
+        subcategories: {
+          fields: ["name", "slug"],
+          // Изображение подкатегории — слева от названия (как у категорий/товаров)
+          populate: { image: { fields: ["alternativeText", "url"] } },
+        },
         products: {
           fields: ["name", "slug"],
           populate: {
@@ -65,7 +96,9 @@ const {
     } as any)
     return response.data || []
   },
-  { watch: [categoryKey], server: false, ttl: 600_000 }
+  // SSR: каталог рендерится на сервере (SEO) — server: true (по умолчанию),
+  // данные уходят в payload и гидратируются без повторного запроса
+  { watch: [categoryKey], ttl: 600_000 }
 )
 
 // Акционные товары — общий кэш с корзиной (ShowModalCartDialog): один ключ,
@@ -113,7 +146,7 @@ const openHamburger = () => {
 </script>
 
 <template>
-  <!-- Единый корень: ShowHamburger — fragment, иначе ClientOnly/Teleport диалога
+  <!-- Единый корень: ShowHamburger — fragment, иначе Teleport диалога
        добавляет в grid container-bottom лишний элемент и ломает размещение каталога -->
   <div class="hamburger" :class="props.visibilityClass">
   <div :class="['hamburger-menu']">
@@ -135,9 +168,18 @@ const openHamburger = () => {
       >{{ showHamburgerT.title }}
     </span>
   </div>
-  <ClientOnly>
-    <Teleport to="body" :disabled="!isTablet">
-      <dialog id="dialogHamburger" ref="dialog-hamburger" class="dialog-hamburger">
+  <!-- Без ClientOnly: диалог рендерится в SSR (каталог индексируется).
+       desktop-инстанс не телепортируется: на mobile его скрывает родитель
+       (hidden-tablet → display:none), иначе после телепорта в body открытая
+       панель каталога была бы видна на мобильном -->
+  <Teleport to="body" :disabled="!isMobile || isDesktopInstance">
+      <dialog
+        :id="dialogElementId"
+        ref="dialog-hamburger"
+        class="dialog-hamburger"
+        :open="isOpen"
+        :aria-label="showHamburgerT.title"
+      >
     <ULoader v-show="pending" />
     <h2 class="visually-hidden">
       {{ visuallyHiddenT.showModalMenuTitle }}
@@ -157,63 +199,97 @@ const openHamburger = () => {
          <li v-for="cat in category" :key="cat.documentId" class="accordion__item">
           
             <details name="faq" class="accordion__details">
-            <summary class="accordion__summary">
-              <UImage
-                v-if="cat.image?.url"
-                :src="cat.image?.url"
-                alt=""
-                class="accordion__product-image"
-                width="44"
-                height="32"
-                type="icon"
-              />
-              <h3 class="accordion__product-title">{{ cat.name }}</h3>
-              <Icon name="mingcute:down-line" />
-            </summary>
-          </details>
-
-          <div class="accordion__content">
-            <ul class="accordion__product-list">
-              <li
-                v-for="sub in cat.subcategories"
-                 :key="sub.documentId"
-                class="accordion__product-item"
-              >
-                <NuxtLink
-                  class="accordion__product-link"
-                  :to="`/${currentLocale}/${cat.slug}/${sub.slug}`"
-                  @click="close?.()"
-                  >
-                  {{ sub.name }}
-                </NuxtLink>
-              </li>
-              <!-- Отображение продуктов, принадлежащих напрямую категории -->
-              <li
-                v-for="prod in cat.products"
-                 :key="prod.documentId"
-                class="accordion__product-item"
-              >
-                <NuxtLink
-                  class="accordion__product-link"
-                  :to="getProductLink(prod)"
-                  @click="close?.()"
+              <summary class="accordion__summary">
+                <UImage
+                  v-if="cat.image?.url"
+                  :src="cat.image?.url"
+                  alt=""
+                  class="accordion__product-image"
+                  width="44"
+                  height="32"
+                  type="icon"
+                />
+                <h3
+                  :class="[
+                    'accordion__product-title',
+                    {
+                      'accordion__product-title_is-active': isActive(
+                        `/${currentLocale}/${cat.slug}`,
+                      ),
+                    },
+                  ]"
                 >
-                  <UImage
-                    v-if="prod.mainImage?.url || prod.image?.length"
-                    :src="prod.mainImage?.url || prod.image?.[0]?.url"
-                    alt=""
-                    class="accordion__product-image-link"
-                    width="32"
-                    height="32"
-                    type="icon"
-                  />
-                  <h4 class="accordion__product-sub-title">{{ prod.name }}</h4>
-                </NuxtLink>
-              </li>
-            </ul>
-          </div>
-        </li>
-      </ul>
+                  {{ cat.name }}
+                </h3>
+                <Icon name="mingcute:down-line" />
+              </summary>
+            </details>
+
+            <div class="accordion__content">
+              <ul class="accordion__product-list">
+                <li
+                  v-for="sub in cat.subcategories"
+                  :key="sub.documentId"
+                  class="accordion__product-item"
+                >
+                  <NuxtLink
+                    :class="[
+                      'accordion__product-link',
+                      {
+                        'accordion__product-link_is-active': isActive(
+                          `/${currentLocale}/${cat.slug}/${sub.slug}`,
+                        ),
+                      },
+                    ]"
+                    :to="`/${currentLocale}/${cat.slug}/${sub.slug}`"
+                    @click="close?.()"
+                  >
+                    <UImage
+                      v-if="sub.image?.url"
+                      :src="sub.image?.url"
+                      alt=""
+                      class="accordion__product-image-link"
+                      width="32"
+                      height="32"
+                      type="icon"
+                    />
+                    <h4 class="accordion__product-sub-title">{{ sub.name }}</h4>
+                  </NuxtLink>
+                </li>
+                <!-- Отображение продуктов, принадлежащих напрямую категории -->
+                <li
+                  v-for="prod in cat.products"
+                  :key="prod.documentId"
+                  class="accordion__product-item"
+                >
+                  <NuxtLink
+                    :class="[
+                      'accordion__product-link',
+                      {
+                        'accordion__product-link_is-active': isActive(
+                          getProductLink(prod),
+                        ),
+                      },
+                    ]"
+                    :to="getProductLink(prod)"
+                    @click="close?.()"
+                  >
+                    <UImage
+                      v-if="prod.mainImage?.url || prod.image?.length"
+                      :src="prod.mainImage?.url || prod.image?.[0]?.url"
+                      alt=""
+                      class="accordion__product-image-link"
+                      width="32"
+                      height="32"
+                      type="icon"
+                    />
+                    <h4 class="accordion__product-sub-title">{{ prod.name }}</h4>
+                  </NuxtLink>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
       <div
         v-else-if="category && !category.length"
         class="dialog-hamburger__empty"
@@ -251,7 +327,11 @@ const openHamburger = () => {
                class="accordion__product-item"
             >
               <NuxtLink
-                class="accordion__product-link accordion__product-link_is-discount"
+                :class="[
+                  'accordion__product-link',
+                  'accordion__product-link_is-discount',
+                  { 'accordion__product-link_is-active': isActive(getProductLink(prod)) },
+                ]"
                 :to="getProductLink(prod)"
                 @click="close?.()"
               >
@@ -305,7 +385,6 @@ const openHamburger = () => {
     </div>
     </dialog>
     </Teleport>
-  </ClientOnly>
   </div>
 </template>
 
@@ -315,6 +394,8 @@ const openHamburger = () => {
 }
 
 .hamburger-menu {
+  // Якорь для диалога (desktop): панель позиционируется строго под кнопкой
+  anchor-name: --hamburger-menu;
   // Стили самой кнопки (высота/радиус/цвет) — в UButton variant="hamburger"
   height: 100%;
   display: grid;
@@ -325,7 +406,8 @@ const openHamburger = () => {
   border-right: toEm(9) solid var(--bg);
   background-color: var(--whitesmoke-color);
   border-radius: toRem(6);   // фон закруглён (все углы)
-  @include adaptiveValue("width", 320, 235);
+  // Единый источник ширины панели/кнопки — --catalog-width (styles.scss)
+  width: var(--catalog-width);
 
   // Tablet и ниже: мобильный экземпляр (в DOM последним).
   // justify-self: end задаёт AppHeader (:deep) — раньше жил здесь и применялся поздно
@@ -358,20 +440,35 @@ const openHamburger = () => {
   margin: 0;
   background-color: transparent;
   backdrop-filter: blur(22px);
-  transition: translate var(--transition-duration);
+  // display с задержкой: при закрытии панель видима на время exit-анимации
+  // (translate/scale), затем display:none убирает её из accessibility-дерева
+  // (иначе закрытый диалог остаётся в a11y-дереве)
+  transition:
+    translate var(--transition-duration),
+    display 0s var(--transition-duration) allow-discrete;
+
+  &:not([open]) {
+    display: none;
+  }
 
   @media (min-width:$mobile) {
     height: toEm(632);
     scale: 0;
     translate: 0;
-    top: calc(100% + toRem(22));
-    left: toRem(15);
+    // Якорное позиционирование — панель строго под кнопкой (anchor-name
+    // на .hamburger-menu), левый край по левому краю кнопки, зазор 22px
+    position-anchor: --hamburger-menu;
+    position-area: bottom span-right;
+    margin-block-start: toRem(22);
+    inset: auto;
     border-radius: toEm(4);
     border-width: 0 toEm(3) toEm(3) toEm(3);
     border-style: solid;
     border-color: var(--border-color-transparent);
-    transition: scale 0.1s linear;
-    @include adaptiveValue("width", 320, 235);
+    width: var(--catalog-width);
+    transition:
+      scale 0.1s linear,
+      display 0s var(--transition-duration) allow-discrete;
   }
 
   &[open] {
@@ -570,6 +667,12 @@ const openHamburger = () => {
       column-gap: toEm(4);
     }
 
+    // Активная ссылка (текущий маршрут) — выделена цветом
+    &_is-active {
+      color: var(--danger-color);
+      font-weight: 700;
+    }
+
     @include hover {
       color: var(--gray-color);
       text-decoration: underline;
@@ -578,6 +681,12 @@ const openHamburger = () => {
 
   &__product-sub-title {
     font-weight: 800;
+  }
+
+  &__product-title {
+    &_is-active {
+      color: var(--danger-color);
+    }
   }
 }
 
