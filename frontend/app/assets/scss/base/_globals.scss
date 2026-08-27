@@ -30,7 +30,16 @@ body {
 //! DIALOG-RELATED STYLES
 // ===================================================================
 
-body:has(.dialog-hamburger[open], .chat-assistant__modal[open], .cart-dialog[open]) {
+// Body-lock на мобильном при открытом диалоге.
+// :not(.hidden-tablet .dialog-hamburger) исключает СКРЫТЫЙ desktop-инстанс
+// ShowHamburger (он открыт по умолчанию, но на мобильном внутри display:none):
+// иначе body:has(...) матчил его [open] → overflow:hidden блокировал скролл
+// всего сайта на мобильном. Mobile-диалог (оверлей, телепорт в body) матчится.
+body:has(
+  .dialog-hamburger[open]:not(.hidden-tablet .dialog-hamburger),
+  .chat-assistant__modal[open],
+  .cart-dialog[open]
+) {
   @media (max-width: c.$mobile) {
     overflow: hidden;
   }
