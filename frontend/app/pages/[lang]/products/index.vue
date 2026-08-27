@@ -145,13 +145,23 @@ useSeoMeta({
         <div class="top-bar__left">
           <UButton
             class="top-bar__filter-btn"
+            :class="{ 'top-bar__filter-btn_is-open': shopFilterRef?.isOpen }"
             variant="plain"
             :aria-label="t.filterTitle"
             :aria-expanded="shopFilterRef?.isOpen"
             aria-controls="dialogShopFilter"
             @click="shopFilterRef?.toggle()"
           >
-            <Icon name="mingcute:filter-line" />
+            <span class="top-bar__filter-icon">
+              <Transition name="filter-icon" mode="out-in">
+                <Icon
+                  v-if="shopFilterRef?.isOpen"
+                  key="close"
+                  name="mingcute:close-line"
+                />
+                <Icon v-else key="filter" name="mingcute:filter-line" />
+              </Transition>
+            </span>
             <span>{{ t.filterTitle }}</span>
           </UButton>
         </div>
@@ -224,6 +234,8 @@ useSeoMeta({
     display: flex;
     gap: toRem(30);
     align-items: stretch;
+    // Якорь для mobile-оверлея сайдбара фильтров (ShowShopFilter position:absolute)
+    position: relative;
 
     @media (max-width: $mobile) {
       flex-direction: column;
@@ -298,7 +310,8 @@ useSeoMeta({
     display: inline-flex;
     align-items: center;
     gap: toRem(8);
-    // Зелёный фон + светлый текст/иконка (кнопка открытия диалога)
+    // Зелёный фон + светлый текст/иконка (кнопка открытия диалога);
+    // при открытом окне — danger-цвет (см. &_is-open)
     background-color: var(--green-color);
     color: var(--light-color);
     border: none;
@@ -319,9 +332,42 @@ useSeoMeta({
       height: toRem(20);
     }
 
-    @include hover {
-      // Тёмно-зелёный при наведении (colorMix от зелёного к тёмному)
-      background-color: color-mix(in srgb, var(--green-color) 85%, var(--dark-color));
+    // Окно фильтров открыто → danger-цвет
+    &_is-open {
+      background-color: var(--danger-color);
+
+      @include hover {
+        background-color: color-mix(in srgb, var(--danger-color) 85%, var(--dark-color));
+      }
+    }
+
+    &:not(&_is-open) {
+      @include hover {
+        // Тёмно-зелёный при наведении (colorMix от зелёного к тёмному)
+        background-color: color-mix(in srgb, var(--green-color) 85%, var(--dark-color));
+      }
+    }
+  }
+
+  // Плавная смена иконки (filter ↔ close) — crossfade + поворот
+  &__filter-icon {
+    display: inline-flex;
+
+    .filter-icon-enter-active,
+    .filter-icon-leave-active {
+      transition:
+        opacity var(--transition-duration),
+        transform var(--transition-duration);
+    }
+
+    .filter-icon-enter-from {
+      opacity: 0;
+      transform: rotate(-90deg) scale(0.5);
+    }
+
+    .filter-icon-leave-to {
+      opacity: 0;
+      transform: rotate(90deg) scale(0.5);
     }
   }
 

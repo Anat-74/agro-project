@@ -141,3 +141,39 @@ const BG_EFFECTS = ["none", "press", "zoom", "focus"] as const
   background-color: var(--light-color);
 }
 ```
+
+---
+
+### Страница товаров — сдвиг карточек + mobile-оверлей (решение 08.27)
+
+**Desktop (>$mobile):**
+- Диалог фильтров в потоке слева, открыт по умолчанию (как сейчас).
+- Открыт → карточки справа от диалога.
+- Закрыт → карточки сдвигаются влево на ширину диалога (структурно через flex) и заполняют контейнер, центрированный во вьюпорте.
+- **Breadcrumbs / top-bar — НЕ трогаем** (без сдвига и блюра).
+- Ширина сдвига = адаптивная ширина сайдбара (280→180); ввести `--filter-width` (не путать с `--catalog-width`).
+
+**Mobile (≤$mobile):**
+- Диалог **открыт по умолчанию** (как на desktop) — суть страницы в фильтрах.
+- Ширина — **максимум 50% экрана**; пользователь видит часть товаров.
+- Позиция — **поверх контента** (оверлей, не влияет на лэйаут), как mobile-оверлей ShowHamburger.
+- Фон диалога = ShowHamburger: `background-color: transparent; backdrop-filter: blur(22px)`.
+
+**Кнопка «Фильтр» — состояние по положению окна:**
+- Окно **открыто** → иконка плавно меняется на крестик (`mingcute:close-line`), цвет кнопки → `--danger-color`.
+- Окно **закрыто** → иконка `mingcute:filter-line` (текущая), цвет → зелёный (`--green-color`).
+- Плавность: `transition: background-color` на кнопке + смена иконки через `<Transition>` (opacity/rotate).
+- Привязка к `shopFilterRef?.isOpen`.
+
+**Details-анимация (копия ShowHamburger, без нововведений):**
+- Структура: content — **сосед `<details>`** (`[open] + .content`), а не внутри.
+- `grid-template-rows: 0fr→1fr` + `transition: grid-template-rows 0.3s` + item `overflow: hidden`.
+
+> ✅ Утверждено 08.27: mobile-диалог открыт по умолчанию (полширины, оверлей); центрирование = контейнер 1420 + flex-заполнение; вводим `--filter-width`; кнопка — иконка/цвет по состоянию окна.
+
+> ✅ **Реализовано 08.27:**
+> - `--filter-width` (280→180) в `:root`; `.show-shop-filter:has([open]) { width: var(--filter-width) }`.
+> - **Mobile (≤768):** сайдбар `position:absolute` (якорь `.products-page__body` position:relative), `width: min(50vw, var(--filter-width))`, `backdrop-filter: blur(22px)` на диалоге — оверлей, контент на всю ширину сзади.
+> - **Кнопка «Фильтр»:** `_is-open` → `--danger-color` + иконка `mingcute:close-line`; закрыта → зелёная + `mingcute:filter-line`; плавно (`transition: background-color` + `<Transition name="filter-icon" mode="out-in">` с поворотом/opacity). Привязка к `shopFilterRef?.isOpen`.
+> - **Details-анимация:** точная копия ShowHamburger — content вынесен в СЛУЖЕБНЫЙ сосед `<details>`, `[open] + .content { grid-template-rows: 1fr }`, base `0fr`, `> * { overflow: hidden }` (убраны minmax/min-height).
+> - Проверено (1280/390): desktop сайдбар в потоке (264px), карточки справа, кнопка danger↔green + иконки меняются; mobile оверлей 185px (полэкрана), blur(22px), контент сзади, toggle убирает, body не заблокирован, details 13→6px плавно; скролла нет; новых ошибок нет.

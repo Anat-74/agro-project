@@ -143,34 +143,36 @@ const onRangeChange = (range: [number, number]) => {
                   <span class="shop-filters__summary-title">{{ t.categoriesTitle }}</span>
                   <Icon name="mingcute:down-line" />
                 </summary>
-                <div class="shop-filters__content">
-                  <ul class="shop-filters__category-list">
-                    <li class="shop-filters__category">
-                      <UInput
-                        class="shop-filters__category-input"
-                        type="radio"
-                        name="shop-category"
-                        value=""
-                        :model-value="category"
-                        :label="t.allProducts"
-                        @update:model-value="emit('update:category', $event)"
-                      />
-                    </li>
-                    <li v-for="cat in categories" :key="cat.slug" class="shop-filters__category">
-                      <UInput
-                        class="shop-filters__category-input"
-                        type="radio"
-                        name="shop-category"
-                        :value="cat.slug"
-                        :model-value="category"
-                        :label="cat.name"
-                        @update:model-value="emit('update:category', $event)"
-                      />
-                      <span class="shop-filters__category-count">({{ categoryCount(cat) }})</span>
-                    </li>
-                  </ul>
-                </div>
               </details>
+              <!-- Контент — СЛУЖЕБНЫЙ сосед details (паттерн ShowHamburger):
+                   анимация [open] + .content через grid-template-rows 0fr→1fr -->
+              <div class="shop-filters__content">
+                <ul class="shop-filters__category-list">
+                  <li class="shop-filters__category">
+                    <UInput
+                      class="shop-filters__category-input"
+                      type="radio"
+                      name="shop-category"
+                      value=""
+                      :model-value="category"
+                      :label="t.allProducts"
+                      @update:model-value="emit('update:category', $event)"
+                    />
+                  </li>
+                  <li v-for="cat in categories" :key="cat.slug" class="shop-filters__category">
+                    <UInput
+                      class="shop-filters__category-input"
+                      type="radio"
+                      name="shop-category"
+                      :value="cat.slug"
+                      :model-value="category"
+                      :label="cat.name"
+                      @update:model-value="emit('update:category', $event)"
+                    />
+                    <span class="shop-filters__category-count">({{ categoryCount(cat) }})</span>
+                  </li>
+                </ul>
+              </div>
             </section>
 
             <!-- Цена (двойной ползунок — UInput range-dual) -->
@@ -186,23 +188,23 @@ const onRangeChange = (range: [number, number]) => {
                   <span class="shop-filters__summary-title">{{ t.priceTitle }}</span>
                   <Icon name="mingcute:down-line" />
                 </summary>
-                <div class="shop-filters__content">
-                  <div class="shop-filters__price">
-                    <div class="shop-filters__price-values">
-                      <span class="shop-filters__price-value">{{ formatPrice(localMin) }}</span>
-                      <span class="shop-filters__price-separator">—</span>
-                      <span class="shop-filters__price-value">{{ formatPrice(localMax) }}</span>
-                    </div>
-                    <UInput
-                      type="range-dual"
-                      :min="0"
-                      :max="PRICE_MAX"
-                      :model-value="[localMin, localMax]"
-                      @update:model-value="onRangeChange"
-                    />
-                  </div>
-                </div>
               </details>
+              <div class="shop-filters__content">
+                <div class="shop-filters__price">
+                  <div class="shop-filters__price-values">
+                    <span class="shop-filters__price-value">{{ formatPrice(localMin) }}</span>
+                    <span class="shop-filters__price-separator">—</span>
+                    <span class="shop-filters__price-value">{{ formatPrice(localMax) }}</span>
+                  </div>
+                  <UInput
+                    type="range-dual"
+                    :min="0"
+                    :max="PRICE_MAX"
+                    :model-value="[localMin, localMax]"
+                    @update:model-value="onRangeChange"
+                  />
+                </div>
+              </div>
             </section>
 
             <!-- Популярные теги (UInput checkbox-пилюли, модель — массив) -->
@@ -218,8 +220,9 @@ const onRangeChange = (range: [number, number]) => {
                   <span class="shop-filters__summary-title">{{ t.tagsTitle }}</span>
                   <Icon name="mingcute:down-line" />
                 </summary>
-                <div class="shop-filters__content">
-                  <ul class="shop-filters__tags">
+              </details>
+              <div class="shop-filters__content">
+                <ul class="shop-filters__tags">
                     <li v-for="tag in t.tags" :key="tag" class="shop-filters__tag-item">
                       <UInput
                         type="checkbox"
@@ -232,7 +235,6 @@ const onRangeChange = (range: [number, number]) => {
                     </li>
                   </ul>
                 </div>
-              </details>
             </section>
 
             <!-- Баннер «Скидка 79%» (изображение Bannar.jpg) -->
@@ -295,12 +297,26 @@ const onRangeChange = (range: [number, number]) => {
   // из потока, чтобы не оставалась пустая колонка фиксированной ширины
   // (flex-gap в products__body тоже схлопывается вместе с ним).
   &:has(.show-shop-filter__dialog[open]) {
-    // Ширина диалога (на 20px уже исходных 300/200)
-    @include adaptiveValue("width", 280, 180);
+    // Ширина диалога — единый источник --filter-width (styles.scss)
+    width: var(--filter-width);
+
+    // Mobile (≤768): максимум половина экрана — справа видна часть товаров
+    @media (max-width: $mobile) {
+      width: min(50vw, var(--filter-width));
+    }
   }
 
   &:not(:has(.show-shop-filter__dialog[open])) {
     display: none;
+  }
+
+  // Mobile (≤768): диалог НЕ влияет на лэйаут — оверлей поверх контента
+  // (якорь — .products-page__body, position:relative). Открыт по умолчанию.
+  @media (max-width: $mobile) {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    z-index: 5;
   }
 
   // ===== Диалог сайдбара (без телепорта — в потоке страницы) =====
@@ -326,6 +342,11 @@ const onRangeChange = (range: [number, number]) => {
     transition:
       translate var(--transition-duration),
       opacity var(--transition-duration);
+
+    // Mobile (≤768): фон как в ShowHamburger — прозрачный + blur
+    @media (max-width: $mobile) {
+      backdrop-filter: blur(22px);
+    }
 
     &[open] {
       translate: 0;
@@ -404,22 +425,20 @@ const onRangeChange = (range: [number, number]) => {
     }
   }
 
+  // Анимация details — точная копия ShowHamburger (content — сосед <details>):
+  // [open] + .content через grid-template-rows 0fr→1fr
+  &__details[open] + &__content {
+    grid-template-rows: 1fr;
+  }
+
   &__content {
     display: grid;
-    // minmax(0, ...) фиксирует минимум трека в 0: иначе auto-минимум (контент)
-    // тянет трек до полной высоты и 0fr не схлопывается — особенно внутри
-    // <details>, где закрытое состояние не сворачивает содержимое
-    grid-template-rows: minmax(0, 0fr);
+    grid-template-rows: 0fr;
     transition: grid-template-rows 0.3s;
 
     > * {
       overflow: hidden;
-      min-height: 0;
     }
-  }
-
-  &__details[open] .shop-filters__content {
-    grid-template-rows: minmax(0, 1fr);
   }
 
   &__section-title {
