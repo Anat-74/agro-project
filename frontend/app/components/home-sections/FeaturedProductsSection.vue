@@ -130,9 +130,9 @@ v-if="featuredProd?.[0]?.products?.length"
    }
 
    &__item {
-      max-width: toRem(220);
+      // max-width: toRem(220);
       transition: all .5s;
-      @include adaptiveValue("height", 350, 300);
+      // @include adaptiveValue("height", 350, 80);
 
       @media ($tablet <= width <= toEm(1250)){
          &:last-child {

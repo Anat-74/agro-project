@@ -106,8 +106,13 @@ watch(isOpen, (open) => {
 <template>
   <div class="background-popover">
     <UButton
-      class="background-popover__trigger"
-      :class="{ 'background-popover__trigger_hidden': isOpen, 'background-popover__trigger_hidden-filter': filterDialogOpen }"
+      :class="[
+        'background-popover__trigger',
+        {
+          'background-popover__trigger_hidden': isOpen,
+          'background-popover__trigger_hidden-filter': filterDialogOpen,
+        },
+      ]"
       icon="mingcute:palette-line"
       :aria-label="backgroundT.ariaLabelTrigger"
       variant="palette"

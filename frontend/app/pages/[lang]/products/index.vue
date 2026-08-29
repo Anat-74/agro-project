@@ -11,6 +11,10 @@ const vh = computed(() => visuallyHiddenTranslations[currentLocale.value])
 
 const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopFilter")
 
+// Глобальное состояние диалога фильтров — для класса на странице (как в AppHeader/
+// BackgroundPopover). Template ref (shopFilterRef) нужен только кнопке: toggle/aria.
+const { isOpen: filterDialogOpen } = useDialog("shopFilterDialog")
+
 // ===== Состояние фильтров (сайдбар + сортировка) =====
 const category = ref("");
 const sort = ref("name:asc");
@@ -126,8 +130,7 @@ useSeoMeta({
 
 <template>
   <section
-    class="products-page"
-    :class="{ 'products-page_filter-open': shopFilterRef?.isOpen }"
+    :class="['products-page', { 'products-page_filter-open': filterDialogOpen }]"
     aria-labelledby="products-page-title"
   >
     <!-- Скрытый H1: на странице нет видимого главного заголовка,

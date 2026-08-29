@@ -202,11 +202,9 @@ const characteristics = computed(() => {
   position: relative;
   border-radius: toEm(6);
   perspective: toRem(500);
-  // Карточка — контейнер: внутренняя вёрстка адаптируется к своей ширине
-  // (@container), т.к. переиспользуется в разных контекстах (featured ~220px,
-  // сетка товаров ~180-250px, корзина ~160px).
-  // Имя `product` — чтобы UImage применял свои @container product (max-width).
-  container: card product / inline-size;
+  max-width: toRem(220);
+  @include adaptiveValue("height", 320, 280);
+  @include containerParent(card product, inline-size);
 
   &_rotate-active {
     z-index: 150;
@@ -268,7 +266,7 @@ const characteristics = computed(() => {
           color: var(--success-color);
           background-color: var(--light-color);
           transition:
-            margin-block-start 0.4s,
+            margin-block-start 0.3s,
             color var(--transition-duration);
         }
       }
@@ -408,14 +406,14 @@ const characteristics = computed(() => {
     padding-block-end: toEm(12);
     transition:
       color var(--transition-duration),
-      margin-block-start 0.4s;
+      margin-block-start var(--transition-duration);
 
     &_is-visible {
       margin-block-start: toEm(-15);
       color: var(--success-color);
       background-color: var(--light-color);
       transition:
-        margin-block-start 0.4s,
+        margin-block-start var(--transition-duration),
         color var(--transition-duration);
     }
   }
@@ -480,6 +478,7 @@ const characteristics = computed(() => {
 
   &:deep(.product-card__characteristics) {
     width: 100%;
+
     .product-characteristics {
       &__title {
         display: none;
@@ -517,7 +516,7 @@ const characteristics = computed(() => {
 @container card (max-width: 210px) {
   .product-card__front,
   .product-card__back {
-    padding-block: toEm(8);
+    padding-block: toEm(4);
   }
 
   .product-card__top-items {

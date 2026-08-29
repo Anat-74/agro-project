@@ -198,7 +198,7 @@ const finalSrc = computed(() => {
 
   &_product {
     width: 100%;
-    max-width: toEm(200);
+   //  max-width: toEm(110);
     aspect-ratio: 4 / 3;
 
     .app-image__img {
@@ -208,27 +208,27 @@ const finalSrc = computed(() => {
       border-radius: toRem(8);
     }
 
-    // Все container queries — здесь, в компоненте.
-    // Контейнер `product` задаётся на обёртке места использования (containerParent).
-    // Узкий контейнер (миниатюры, напр. товары со скидкой) — изображение компактное
-    @container product (max-width: 16rem) {
-      max-width: toEm(150);
+    //===========================================================================================================
+    // Все container queries — здесь, в компоненте
+   //===========================================================================================================
+   @container product (max-width: 256px) {
+      max-width: toEm(180);
     }
 
-    @container product (min-width: 20rem) {
+    @container product (min-width: 320px) {
       max-width: toEm(220);
     }
 
-    @container product (min-width: 28rem) {
+    @container product (min-width: 448px) {
       max-width: toEm(260);
     }
 
-    @container product (min-width: 40rem) {
+    @container product (min-width: 640px) {
       max-width: toEm(290);
     }
 
-    // Миниатюры — свой узкий контейнер product-thumb (обёртка галереи)
-    @container product-thumb (min-width: 5rem) {
+    // Миниатюры — контейнер product-thumb (пагинация слайдера)
+    @container product-thumb (min-width: 80px) {
       max-width: toEm(80);
     }
   }

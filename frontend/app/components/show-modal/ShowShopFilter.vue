@@ -288,10 +288,12 @@ const onRangeChange = (range: [number, number]) => {
   // иначе :not(:has([open])) → display:none срабатывает мгновенно
   // и анимация закрытия не видна (паттерн картин/корзины — display с задержкой).
   // width тоже держим: иначе при снятии [open] ширина из :has исчезает,
-  // родитель растягивается и диалог (width:100%) раздувается во время exit
+  // родитель растягивается и диалог (width:100%) раздувается во время exit.
+  // Ширина АНИМИРУЕТСЯ (width var(...), а не 0s+задержка): на desktop карточки
+  // сдвигаются синхронно со слайдом диалога (без задержки)
   transition:
     display 0s var(--transition-duration) allow-discrete,
-    width 0s var(--transition-duration);
+    width var(--transition-duration);
 
   // Сайдбар в потоке только пока диалог открыт. Закрытый — полностью убираем
   // из потока, чтобы не оставалась пустая колонка фиксированной ширины
@@ -308,6 +310,11 @@ const onRangeChange = (range: [number, number]) => {
 
   &:not(:has(.show-shop-filter__dialog[open])) {
     display: none;
+    // desktop: явный 0 для плавного схлопывания (transition: width выше);
+    // mobile — не трогаем ширину (полноэкранный оверлей)
+    @media (min-width: $mobile) {
+      width: 0;
+    }
   }
 
   // Mobile (≤768): оверлей заполняет .products-page__body (absolute inset:0).
@@ -335,17 +342,19 @@ const onRangeChange = (range: [number, number]) => {
     background: transparent;
     max-width: none;
 
-    // Анимация (паттерн корзинного диалога, зеркально): при открытии выезжает
-    // справа (translate 0), при закрытии уезжает влево (translate -100%)
+    // Анимация: desktop — слева направо (translate -100%); mobile — снизу вверх
+    // (translate 0 100%): диалог въезжает, когда шапка исчезает и освобождается
+    // вертикальное место. Синхронно (одинаковый transition-duration со скрытием шапки).
     translate: -100%;
     opacity: 0;
     transition:
       translate var(--transition-duration),
       opacity var(--transition-duration);
 
-    // Mobile (≤768): фон как в ShowHamburger — прозрачный + blur;
+    // Mobile (≤768): вход снизу; фон как в ShowHamburger — прозрачный + blur;
     // height:100% — чтобы .shop-filters (height:100%) резолвился и скроллился
     @media (max-width: $mobile) {
+      translate: 0 100%;
       height: 100%;
       backdrop-filter: blur(22px);
     }
@@ -359,6 +368,10 @@ const onRangeChange = (range: [number, number]) => {
       &[open] {
         translate: -100%;
         opacity: 0;
+
+        @media (max-width: $mobile) {
+          translate: 0 100%;
+        }
       }
     }
   }
