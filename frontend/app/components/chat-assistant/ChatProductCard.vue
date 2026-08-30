@@ -146,10 +146,10 @@ const handleAddToCart = () => {
     font: inherit;
     cursor: pointer;
     border-radius: toRem(8);
-    // Контейнер `product` — тот же, на который опираются container queries
-    // в UImage.vue (@container product), чтобы изображение адаптировалось
+    // Контейнер `productImage` — тот же, на который опираются container queries
+    // в UImage.vue (@container productImage), чтобы изображение адаптировалось
     // от ширины контейнера (max-width 200px).
-    @include containerParent(product, inline-size);
+    @include containerParent(productImage, inline-size);
 
     @include hover {
       scale: 1.02;

@@ -209,26 +209,28 @@ const finalSrc = computed(() => {
     }
 
     //===========================================================================================================
-    // Все container queries — здесь, в компоненте
+    // Все container queries — здесь, в компоненте.
+    // Имя контейнера productImage — читается: контейнер адаптирует ИЗОБРАЖЕНИЕ.
+    // Брейкпоинты в px (были rem: 16rem=256px, 20rem=320px и т.д.)
    //===========================================================================================================
-   @container product (max-width: 256px) {
+   @container productImage (max-width: 256px) {
       max-width: toEm(180);
     }
 
-    @container product (min-width: 320px) {
+    @container productImage (min-width: 320px) {
       max-width: toEm(220);
     }
 
-    @container product (min-width: 448px) {
+    @container productImage (min-width: 448px) {
       max-width: toEm(260);
     }
 
-    @container product (min-width: 640px) {
+    @container productImage (min-width: 640px) {
       max-width: toEm(290);
     }
 
-    // Миниатюры — контейнер product-thumb (пагинация слайдера)
-    @container product-thumb (min-width: 80px) {
+    // Миниатюры — контейнер productThumbImage (пагинация слайдера)
+    @container productThumbImage (min-width: 80px) {
       max-width: toEm(80);
     }
   }

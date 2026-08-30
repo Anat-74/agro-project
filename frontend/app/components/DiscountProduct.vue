@@ -147,9 +147,9 @@ const visibleImagesCount = computed(() => {
   &__link {
     grid-area: link;
     // Явная ширина: container-type отключает влияние контента на размер,
-    // а контейнер `product` нужен для адаптива изображения (@container product в UImage).
+    // а контейнер `productImage` нужен для адаптива изображения (@container productImage в UImage).
     width: toEm(100);
-    @include containerParent(product, inline-size);
+    @include containerParent(productImage, inline-size);
   }
 
   &__title {

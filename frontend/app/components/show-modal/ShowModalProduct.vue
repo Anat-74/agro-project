@@ -376,7 +376,7 @@ const handleAddToCart = () => {
 
   &__gallery {
     min-width: 0;
-    @include containerParent(product, inline-size);
+    @include containerParent(productImage, inline-size);
 
     // Блок главного изображения: фон убран, вместо него — рамка со скруглением.
     // Само изображение уже закруглено UImage (type="product").

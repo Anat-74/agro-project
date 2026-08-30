@@ -204,7 +204,7 @@ const characteristics = computed(() => {
   perspective: toRem(500);
   max-width: toRem(220);
   @include adaptiveValue("height", 320, 280);
-  @include containerParent(card product, inline-size);
+  @include containerParent(card productImage, inline-size);
 
   &_rotate-active {
     z-index: 150;

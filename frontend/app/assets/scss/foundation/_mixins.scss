@@ -32,44 +32,59 @@
   }
 }
 
-//* Миксин для адаптивного свойства с плавным изменением в зависимости от ширины контейнера
+//* Миксин для адаптивного свойства, плавно изменяющегося от ШИРИНЫ КОНТЕЙНЕРА.
+//  Аналог adaptiveValue, но единица cqw (1% ширины контейнера) вместо vw.
+//  Точная линейная интерполяция: при ширине контейнера $containerFrom → $startSize,
+//  при $containerTo → $minSize (как adaptiveValue привязан к вьюпорту).
+//  Раньше был эвристический $percent*cqw — без привязки к точкам (неточный).
 @mixin containerAdaptive(
   $property,
   // CSS свойство
-  $maxSize,
-  // Макс. значение в toRem
+  $startSize,
+  // Значение при ширине контейнера $containerFrom (в toRem)
   $minSize,
-  // Мин. значение в toRem
-  $percent: 2.5,
-  // Процент роста
-  $unit: "cqw" // Единица по умолчанию cqw!
+  // Значение при ширине контейнера $containerTo (в toRem)
+  $containerFrom: s.$containerWidth,
+  // Ширина контейнера, где value = $startSize
+  $containerTo: s.$minWidth,
+  // Ширина контейнера, где value = $minSize
+  $unit: "cqw" // Единица: cqw/cqh/cqi/cqb
 ) {
-  // Fallback для браузеров без поддержки Container Queries
-  @if ($unit == "cqw" or $unit == "cqh" or $unit == "cqi" or $unit == "cqb") {
-    $fallback-unit: "vh"; // значение по умолчанию
-    @if $unit == "cqw" or $unit == "cqi" {
-      $fallback-unit: "vw";
-    }
-    #{$property}: clamp(
-      #{f.toRem($minSize)},
-      #{$percent + 1}#{$fallback-unit} + #{f.toRem($minSize)},
-      #{f.toRem($maxSize)}
-    );
-  } @else {
-    #{$property}: clamp(
-      #{f.toRem($minSize)},
-      #{$percent}#{$unit} + #{f.toRem($minSize)},
-      #{f.toRem($maxSize)}
-    );
+  @if ($startSize==0) {
+    $startSize: 0.0001;
+  }
+  @if ($minSize==0) {
+    $minSize: 0.00001;
   }
 
-  // Современная реализация с Container Queries
-  @supports (width: 1cqw) {
-    #{$property}: clamp(
-      #{f.toRem($minSize)},
-      #{$percent}#{$unit} + #{f.toRem($minSize)},
-      #{f.toRem($maxSize)}
-    );
+  // Линейная интерполяция: slope + yIntersection (как в adaptiveValue)
+  $slope: math.div($startSize - $minSize, $containerFrom - $containerTo);
+  $yIntersection: -$containerTo * $slope + $minSize;
+  @if ($yIntersection==0) {
+    $yIntersection: 0.0001;
+  }
+
+  // Fallback (без поддержки CQ): та же кривая, но по вьюпорту (приближённо)
+  // Юнит «приклеиваем» через интерполяцию: #{$slope * 100}vw (без пробела)
+  $flyFallback: #{"calc(" f.toRem($yIntersection) " + " #{$slope * 100}vw ")"};
+  $propertyFallback: clamp(f.toRem($minSize), $flyFallback, f.toRem($startSize));
+  @if ($minSize > $startSize) {
+    $propertyFallback: clamp(f.toRem($startSize), $flyFallback, f.toRem($minSize));
+  }
+
+  // Основное значение — от ширины контейнера (cqw/cqh/cqi/cqb)
+  $fly: #{"calc(" f.toRem($yIntersection) " + " #{$slope * 100}#{$unit} ")"};
+  $propertyValue: clamp(f.toRem($minSize), $fly, f.toRem($startSize));
+  @if ($minSize > $startSize) {
+    $propertyValue: clamp(f.toRem($startSize), $fly, f.toRem($minSize));
+  }
+
+  #{$property}: $propertyFallback;
+
+  // Проверка поддержки: "1" + $unit = "1cqw" (без пробела)
+  $oneUnit: "1" + $unit;
+  @supports (width: #{$oneUnit}) {
+    #{$property}: $propertyValue;
   }
 }
 

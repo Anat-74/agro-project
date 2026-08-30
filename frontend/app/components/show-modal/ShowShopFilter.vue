@@ -35,10 +35,16 @@ const { open, close, isOpen } = useDialog("shopFilterDialog", dialogElement, {
   initialOpen: true,
 })
 
-// Сайдбар открыт по умолчанию на каждом заходе на страницу: useDialog хранит
-// isOpen в глобальном Map, который переживает размонтирование при SPA-навигации,
+// Сайдбар открыт по умолчанию на desktop при каждом заходе на страницу: useDialog
+// хранит isOpen в глобальном Map, который переживает размонтирование при SPA-навигации,
 // поэтому принудительно сбрасываем состояние на «открыто» (как делал старый watch).
+// На mobile (≤768) — диалог ЗАКРЫТ по умолчанию (открывается по кнопке «Фильтр»):
+// SSR не знает ширину, поэтому открыт (десктоп-дефолт), а после маунта закрываем.
+const { width } = useViewport()
 isOpen.value = true
+onMounted(() => {
+  if (width.value <= 767.98) close?.()
+})
 
 // Управление диалогом из страницы (кнопка «Фильтр» в top-bar)
 const toggle = () => {
@@ -90,7 +96,6 @@ const onDetailsToggle = (key: "categories" | "price" | "tags", e: Event) => {
 // Блок нужен только на desktop: на mobile данные из Strapi НЕ запрашиваем
 // (display:none всё равно тянул бы данные). server:false + immediate:false —
 // без авто-запроса; запрос только после того, как ширина стала > mobile.
-const { width } = useViewport()
 const { data: saleData, refresh } = useCachedAsyncData(
   `shop-sale-${currentLocale.value}`,
   () => find("products", {
@@ -342,19 +347,20 @@ const onRangeChange = (range: [number, number]) => {
     background: transparent;
     max-width: none;
 
-    // Анимация: desktop — слева направо (translate -100%); mobile — снизу вверх
-    // (translate 0 100%): диалог въезжает, когда шапка исчезает и освобождается
-    // вертикальное место. Синхронно (одинаковый transition-duration со скрытием шапки).
+    // Анимация: desktop — слева направо (translate -100%). Mobile — БЕЗ
+    // translate (только opacity): translate:0 100% ломал скролл — при открытии
+    // документ прокручивался вниз к хвосту преобразованного элемента.
     translate: -100%;
     opacity: 0;
     transition:
       translate var(--transition-duration),
       opacity var(--transition-duration);
 
-    // Mobile (≤768): вход снизу; фон как в ShowHamburger — прозрачный + blur;
-    // height:100% — чтобы .shop-filters (height:100%) резолвился и скроллился
+    // Mobile (≤768): без движения (translate 0), только фейд; фон как в
+    // ShowHamburger — прозрачный + blur; height:100% — чтобы .shop-filters
+    // (height:100%) резолвился и скроллился
     @media (max-width: $mobile) {
-      translate: 0 100%;
+      translate: 0;
       height: 100%;
       backdrop-filter: blur(22px);
     }
@@ -370,7 +376,7 @@ const onRangeChange = (range: [number, number]) => {
         opacity: 0;
 
         @media (max-width: $mobile) {
-          translate: 0 100%;
+          translate: 0;
         }
       }
     }

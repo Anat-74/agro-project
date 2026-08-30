@@ -13,7 +13,13 @@ const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopF
 
 // Глобальное состояние диалога фильтров — для класса на странице (как в AppHeader/
 // BackgroundPopover). Template ref (shopFilterRef) нужен только кнопке: toggle/aria.
-const { isOpen: filterDialogOpen } = useDialog("shopFilterDialog")
+const { isOpen: filterDialogOpen, close: closeFilterDialog } = useDialog("shopFilterDialog")
+
+// При уходе со страницы (например, клик «Главное» в breadcrumbs) закрываем диалог:
+// иначе body-lock остаётся на целевой странице и блокирует её скролл
+onBeforeRouteLeave(() => {
+  closeFilterDialog?.()
+})
 
 // ===== Состояние фильтров (сайдбар + сортировка) =====
 const category = ref("");

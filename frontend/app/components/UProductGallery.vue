@@ -78,9 +78,9 @@ const sliderActive = computed<number>(() => {
   flex-direction: row;
   align-items: center;   // миниатюры по центру по вертикали (не прижаты к верху)
   gap: toRem(16);
-  // Контейнер `product`: на него опираются @container product в UImage.vue,
+  // Контейнер `productImage`: на него опираются @container productImage в UImage.vue,
   // чтобы изображения слайдов адаптировались от ширины галереи.
-  @include containerParent(product, inline-size);
+  @include containerParent(productImage, inline-size);
 
   // Блок главного изображения: фон убран, вместо него — рамка со скруглением
   // (само изображение закруглено UImage).
