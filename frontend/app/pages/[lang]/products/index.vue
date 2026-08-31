@@ -13,12 +13,13 @@ const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopF
 
 // Глобальное состояние диалога фильтров — для класса на странице (как в AppHeader/
 // BackgroundPopover). Template ref (shopFilterRef) нужен только кнопке: toggle/aria.
-const { isOpen: filterDialogOpen, close: closeFilterDialog } = useDialog("shopFilterDialog")
+const { isOpen: filterDialogOpen } = useDialog("shopFilterDialog")
 
 // При уходе со страницы (например, клик «Главное» в breadcrumbs) закрываем диалог:
-// иначе body-lock остаётся на целевой странице и блокирует её скролл
+// иначе isOpen остаётся true (глобальный Map) и шапка на главной скрыта.
+// close берём из template ref: id-only useDialog возвращает только isOpen.
 onBeforeRouteLeave(() => {
-  closeFilterDialog?.()
+  shopFilterRef.value?.close?.()
 })
 
 // ===== Состояние фильтров (сайдбар + сортировка) =====
@@ -243,28 +244,36 @@ useSeoMeta({
 
 <style lang="scss" scoped>
 .products-page {
-  // Открытый диалог фильтров на mobile (CSS-only, без замеров): страница —
-  // колонка высотой во вьюпорт, breadcrumbs + top-bar в потоке, body (flex:1)
-  // заполняет остаток, а оверлей (ShowShopFilter absolute inset:0) ложится на body.
-  // При любой высоте breadcrumbs/top-bar flex сам подстроит область — надёжно.
+  // Mobile: flex-колонка ВСЕГДА (при закрытом диалоге auto-высота = обычный поток).
+  // display:flex не «перещёлкивается» при открытии — плавно анимируется только
+  // height (см. &_filter-open ниже). При любой высоте breadcrumbs/top-bar flex
+  // сам подстроит область — без JS-замеров.
+  @media (max-width: $mobile) {
+    interpolate-size: allow-keywords;
+    transition: height var(--transition-duration);
+
+    display: flex;
+    flex-direction: column;
+
+    .products-page__container {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .products-page__body {
+      flex: 1;
+      min-height: 0;
+    }
+  }
+
+  // Открытый диалог: страница плавно схлопывается до высоты вьюпорта
+  // (height анимируется), карточки под оверлеем, body (flex:1) заполняет остаток
   &_filter-open {
     @media (max-width: $mobile) {
       height: 100dvh;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
-
-      .products-page__container {
-        flex: 1;
-        min-height: 0;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .products-page__body {
-        flex: 1;
-        min-height: 0;
-      }
     }
   }
 
