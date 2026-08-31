@@ -1,12 +1,9 @@
-import { ref, onMounted, onUnmounted } from "vue"
+import { onMounted, onUnmounted } from "vue"
 
 export interface UseDialogOptions {
   useShowMethod?: boolean; // Если true, используем show() вместо showModal()
   initialOpen?: boolean;   // Начальное состояние isOpen (для диалогов, открытых по умолчанию при SSR)
 }
-
-// Глобальное состояние для хранения isOpen по ID
-const isOpenMap = new Map<string, Ref<boolean>>();
 
 // Универсальный возвращаемый тип
 interface UseDialogReturn {
@@ -22,22 +19,16 @@ export const useDialog = (
 ): UseDialogReturn => {
   const { useShowMethod = false, initialOpen = false } = options;
 
+  // SSR-safe общее состояние по id: useState — на СЕРВЕРЕ состояние per-request
+  // (module-Map протекал между запросами: после SSR /ru/products isOpen оставался
+  // true и главная рендерилась со скрытой шапкой), на КЛИЕНТЕ — единое,
+  // передаётся через payload.
+  const isOpen = useState<boolean>(`dialog-${id}`, () => Boolean(initialOpen));
+
   // Если dialogElement не передан, возвращаем только isOpen
   if (!dialogElement) {
-    // Если состояние для этого ID уже существует, возвращаем его
-    if (isOpenMap.has(id)) {
-      return { isOpen: isOpenMap.get(id)! };
-    }
-
-    // Иначе создаем новое состояние
-    const isOpen = ref(false);
-    isOpenMap.set(id, isOpen);
     return { isOpen };
   }
-
-  // Если dialogElement передан, регистрируем диалог
-  const isOpen = isOpenMap.has(id) ? isOpenMap.get(id)! : ref(Boolean(initialOpen));
-  isOpenMap.set(id, isOpen);
 
   // ВАЖНО: open()/close() работают с ЛОКАЛЬНЫМ dialogElement этого вызова,
   // а не с глобальным реестром. Раньше (dialogElementMap по id) при двух
