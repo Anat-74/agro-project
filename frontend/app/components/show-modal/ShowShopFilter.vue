@@ -316,19 +316,39 @@ const onRangeChange = (range: [number, number]) => {
   &:not(:has(.show-shop-filter__dialog[open])) {
     display: none;
     // desktop: явный 0 для плавного схлопывания (transition: width выше);
-    // mobile — не трогаем ширину (полноэкранный оверлей)
+    // mobile — НЕ трогаем ширину (полноэкранный оверлей)
     @media (min-width: $mobile) {
       width: 0;
     }
   }
 
-  // Mobile (≤768): оверлей заполняет .products-page__body (absolute inset:0).
-  // body — flex-область под top-bar (см. products/index.vue .products-page_filter-open):
-  // flex сам подстраивается под любую высоту breadcrumbs/top-bar — без замеров.
+  // Mobile (≤768): оверлей всегда в потоке — display НЕ перещёлкивается
+  // (источник дёрганья). Скрытие через opacity/visibility/pointer-events:
+  // visibility: hidden после transition (как display с задержкой), но без скачка.
   @media (max-width: $mobile) {
     position: absolute;
     inset: 0;
     z-index: 9999;
+
+    transition: opacity var(--transition-duration);
+
+    &:has(.show-shop-filter__dialog[open]) {
+      width: 100%;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    &:not(:has(.show-shop-filter__dialog[open])) {
+      display: flex;
+      width: 100%;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition:
+        opacity var(--transition-duration),
+        visibility 0s var(--transition-duration) allow-discrete;
+    }
   }
 
   // ===== Диалог сайдбара (без телепорта — в потоке страницы) =====
@@ -356,11 +376,13 @@ const onRangeChange = (range: [number, number]) => {
       translate var(--transition-duration),
       opacity var(--transition-duration);
 
-    // Mobile (≤768): без движения (translate 0), только фейд; фон как в
+    // Mobile (≤768): без движения (translate 0); фейд делает САЙДБАР
+    // (opacity/visibility), поэтому у диалога opacity всегда 1. Фон как в
     // ShowHamburger — прозрачный + blur; height:100% — чтобы .shop-filters
     // (height:100%) резолвился и скроллился
     @media (max-width: $mobile) {
       translate: 0;
+      opacity: 1;
       height: 100%;
       backdrop-filter: blur(22px);
     }

@@ -245,13 +245,10 @@ useSeoMeta({
 <style lang="scss" scoped>
 .products-page {
   // Mobile: flex-колонка ВСЕГДА (при закрытом диалоге auto-высота = обычный поток).
-  // display:flex не «перещёлкивается» при открытии — плавно анимируется только
-  // height (см. &_filter-open ниже). При любой высоте breadcrumbs/top-bar flex
-  // сам подстроит область — без JS-замеров.
+  // display:flex не «перещёлкивается» при открытии. Высота страницы НЕ анимируется
+  // (кламп мгновенный): анимация height + height шапки вместе давали overshoot —
+  // верх диалога уезжал выше (y=98), потом «отскакивал» в y=119.
   @media (max-width: $mobile) {
-    interpolate-size: allow-keywords;
-    transition: height var(--transition-duration);
-
     display: flex;
     flex-direction: column;
 
@@ -268,8 +265,8 @@ useSeoMeta({
     }
   }
 
-  // Открытый диалог: страница плавно схлопывается до высоты вьюпорта
-  // (height анимируется), карточки под оверлеем, body (flex:1) заполняет остаток
+  // Открытый диалог: страница схлопывается до высоты вьюпорта (мгновенно,
+  // плавность даёт шапка + фейд диалога), карточки под оверлеем
   &_filter-open {
     @media (max-width: $mobile) {
       height: 100dvh;
