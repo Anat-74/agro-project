@@ -322,11 +322,14 @@ const onRangeChange = (range: [number, number]) => {
     }
   }
 
-  // Mobile (≤768): оверлей всегда в потоке — display НЕ перещёлкивается
-  // (источник дёрганья). Скрытие через opacity/visibility/pointer-events:
-  // visibility: hidden после transition (как display с задержкой), но без скачка.
+  // Mobile (≤768): оверлей на ВЕСЬ вьюпорт (position:fixed, а не absolute) —
+  // перекрывает и шапку, и контент. display НЕ перещёлкивается (источник
+  // дёрганья). Скрытие через opacity/visibility/pointer-events: visibility:
+  // hidden после transition (как display с задержкой), но без скачка.
+  // Благодаря fixed страница НЕ меняет высоту при открытии/закрытии — контент
+  // под оверлеем раскрывается только фейдом (без мгновенного клампа).
   @media (max-width: $mobile) {
-    position: absolute;
+    position: fixed;
     inset: 0;
     z-index: 9999;
 

@@ -265,14 +265,10 @@ useSeoMeta({
     }
   }
 
-  // Открытый диалог: страница схлопывается до высоты вьюпорта (мгновенно,
-  // плавность даёт шапка + фейд диалога), карточки под оверлеем
-  &_filter-open {
-    @media (max-width: $mobile) {
-      height: 100dvh;
-      overflow: hidden;
-    }
-  }
+  // Оверлей фильтров на mobile — position:fixed (весь вьюпорт), поэтому кламп
+  // высоты страницы НЕ нужен: страница не меняет высоту, и контент под
+  // оверлеем раскрывается плавно (только фейдом). Скролл запирает
+  // body:has(...) в _globals.scss.
 
   &__body {
     display: flex;
@@ -344,10 +340,10 @@ useSeoMeta({
   // Верхний бордер под кнопкой убран: секции сайдбара сами разделяются
   // бордером «втиснение» (см. ShowShopFilter)
   margin-block-end: toRem(24);
-  // Выше mobile-оверлея фильтров (ShowShopFilter position:fixed z-index:5) —
+  // Выше mobile-оверлея фильтров (ShowShopFilter position:fixed z-index:9999) —
   // кнопка «Фильтр» остаётся доступной при открытом полноэкранном окне
   position: relative;
-  z-index: 6;
+  z-index: 10000;
 
   &__left {
     display: flex;

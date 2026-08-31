@@ -174,7 +174,9 @@ function openPreview(product: Product) {
   }
 
   // Открытый диалог фильтров на mobile — шапка плавно уезжает вверх
-  // и освобождает место (breadcrumbs/top-bar не трогаем)
+  // и освобождает место (breadcrumbs/top-bar не трогаем).
+  // interpolate-size (Chromium 129+) — ОСНОВА: плавная анимация height auto→0
+  // (тот же механизм, что в попапе меню).
   @media (max-width: $mobile) {
     interpolate-size: allow-keywords;
     transition:
@@ -185,6 +187,21 @@ function openPreview(product: Product) {
       height: 0;
       overflow: hidden;
       transform: translateY(-100%);
+    }
+  }
+
+  // Фоллбэк для браузеров БЕЗ interpolate-size (Safari/Firefox): height auto→0
+  // там не анимируется (мгновенный прыжок). Вместо высоты шапка уезжает ТОЛЬКО
+  // transform'ом — оверлей фильтров position:fixed перекрывает весь вьюпорт,
+  // поэтому освобождать место через layout не требуется.
+  @supports not (interpolate-size: allow-keywords) {
+    @media (max-width: $mobile) {
+      transition: transform var(--transition-duration);
+
+      &_filter-open {
+        height: auto;
+        overflow: visible;
+      }
     }
   }
 
