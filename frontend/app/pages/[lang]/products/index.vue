@@ -265,10 +265,23 @@ useSeoMeta({
     }
   }
 
-  // Оверлей фильтров на mobile — position:fixed (весь вьюпорт), поэтому кламп
-  // высоты страницы НЕ нужен: страница не меняет высоту, и контент под
-  // оверлеем раскрывается плавно (только фейдом). Скролл запирает
-  // body:has(...) в _globals.scss.
+  // Открытый диалог фильтров (mobile). Анимация высоты — ТОЛЬКО при закрытии:
+  // transition живёт в ЗАКРЫТОМ состоянии, а в _filter-open стоит transition:none.
+  // При открытии кламп мгновенный (height 100dvh — без overshoot, который давала
+  // одновременная анимация двух высот), при закрытии страница ПЛАВНО раскрывается
+  // (auto↔100dvh через interpolate-size) — контент появляется постепенно,
+  // без мгновенного «прыжка». Без interpolate-size (Safari/Firefox) — мгновенный
+  // кламп/анкламп (фоллбэк, как было раньше).
+  @media (max-width: $mobile) {
+    interpolate-size: allow-keywords;
+    transition: height var(--transition-duration-fast);
+
+    &_filter-open {
+      height: 100dvh;
+      overflow: hidden;
+      transition: none;
+    }
+  }
 
   &__body {
     display: flex;
@@ -340,10 +353,10 @@ useSeoMeta({
   // Верхний бордер под кнопкой убран: секции сайдбара сами разделяются
   // бордером «втиснение» (см. ShowShopFilter)
   margin-block-end: toRem(24);
-  // Выше mobile-оверлея фильтров (ShowShopFilter position:fixed z-index:9999) —
+  // Выше mobile-оверлея фильтров (ShowShopFilter position:absolute z-index:9999) —
   // кнопка «Фильтр» остаётся доступной при открытом полноэкранном окне
   position: relative;
-  z-index: 10000;
+  z-index: 6;
 
   &__left {
     display: flex;

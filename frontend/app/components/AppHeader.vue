@@ -180,8 +180,8 @@ function openPreview(product: Product) {
   @media (max-width: $mobile) {
     interpolate-size: allow-keywords;
     transition:
-      height var(--transition-duration),
-      transform var(--transition-duration);
+      height var(--transition-duration-fast),
+      transform var(--transition-duration-fast);
 
     &_filter-open {
       height: 0;
@@ -196,7 +196,7 @@ function openPreview(product: Product) {
   // поэтому освобождать место через layout не требуется.
   @supports not (interpolate-size: allow-keywords) {
     @media (max-width: $mobile) {
-      transition: transform var(--transition-duration);
+      transition: transform var(--transition-duration-fast);
 
       &_filter-open {
         height: auto;

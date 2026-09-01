@@ -297,8 +297,8 @@ const onRangeChange = (range: [number, number]) => {
   // Ширина АНИМИРУЕТСЯ (width var(...), а не 0s+задержка): на desktop карточки
   // сдвигаются синхронно со слайдом диалога (без задержки)
   transition:
-    display 0s var(--transition-duration) allow-discrete,
-    width var(--transition-duration);
+    display 0s var(--transition-duration-fast) allow-discrete,
+    width var(--transition-duration-fast);
 
   // Сайдбар в потоке только пока диалог открыт. Закрытый — полностью убираем
   // из потока, чтобы не оставалась пустая колонка фиксированной ширины
@@ -322,18 +322,17 @@ const onRangeChange = (range: [number, number]) => {
     }
   }
 
-  // Mobile (≤768): оверлей на ВЕСЬ вьюпорт (position:fixed, а не absolute) —
-  // перекрывает и шапку, и контент. display НЕ перещёлкивается (источник
-  // дёрганья). Скрытие через opacity/visibility/pointer-events: visibility:
-  // hidden после transition (как display с задержкой), но без скачка.
-  // Благодаря fixed страница НЕ меняет высоту при открытии/закрытии — контент
-  // под оверлеем раскрывается только фейдом (без мгновенного клампа).
+  // Mobile (≤768): оверлей всегда в потоке (position:absolute, якорь —
+  // .products-page__body). breadcrumbs/top-bar остаются ВЫШЕ оверлея, поэтому
+  // шапка должна схлопываться (освобождает место). display НЕ перещёлкивается
+  // (источник дёрганья). Скрытие через opacity/visibility/pointer-events:
+  // visibility: hidden после transition (как display с задержкой), но без скачка.
   @media (max-width: $mobile) {
-    position: fixed;
+    position: absolute;
     inset: 0;
     z-index: 9999;
 
-    transition: opacity var(--transition-duration);
+    transition: opacity var(--transition-duration-fast);
 
     &:has(.show-shop-filter__dialog[open]) {
       width: 100%;
@@ -349,8 +348,8 @@ const onRangeChange = (range: [number, number]) => {
       visibility: hidden;
       pointer-events: none;
       transition:
-        opacity var(--transition-duration),
-        visibility 0s var(--transition-duration) allow-discrete;
+        opacity var(--transition-duration-fast),
+        visibility 0s var(--transition-duration-fast) allow-discrete;
     }
   }
 
@@ -376,8 +375,8 @@ const onRangeChange = (range: [number, number]) => {
     translate: -100%;
     opacity: 0;
     transition:
-      translate var(--transition-duration),
-      opacity var(--transition-duration);
+      translate var(--transition-duration-fast),
+      opacity var(--transition-duration-fast);
 
     // Mobile (≤768): без движения (translate 0); фейд делает САЙДБАР
     // (opacity/visibility), поэтому у диалога opacity всегда 1. Фон как в

@@ -32,6 +32,7 @@
 :root,
 .light-mode {
   --transition-duration: 0.2s ease; // Длительность переходов
+  --transition-duration-fast: 0.15s ease; // Ускоренная длительность (оверлеи, диалоги)
   --bg-brightness: hsl(0, 0%, calc(var(--brightness, 50) * 1%)); // Яркость фона
   --color-mix-color: rgba(0, 0, 0, 0.35); // Затемнитель для colorMix
   // Основные цвета
@@ -103,6 +104,7 @@
 // контраст (AA), палитра приведена к контрастно-корректной светлой.
 .custom-mode {
   --transition-duration: 0.2s ease;
+  --transition-duration-fast: 0.15s ease;
   --bg-brightness: hsl(0, 0%, calc(var(--brightness, 50) * 1%)); // Яркость фона
   --color-mix-color: rgba(0, 0, 0, 0.35); // Затемнитель для colorMix
   // Основные цвета
