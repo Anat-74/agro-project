@@ -309,15 +309,15 @@ useSeoMeta({
     // Высота карточки на странице продуктов — через container queries:
     // контейнер cards объявлен на .products-page__content (предок карточек),
     // адаптив идёт по ширине БЛОКА карточек, а не вьюпорта (паттерн UImage).
-    // Значения на ~25% выше прежних (замерено 270/245/223 → 340/305/280).
-    height: 340px;
+    // Значения −10% от предыдущих (340/305/280 → 305/275/250).
+    height: 305px;
 
     @container cards (max-width: 800px) {
-      height: 305px;
+      height: 275px;
     }
 
     @container cards (max-width: 480px) {
-      height: 280px;
+      height: 250px;
     }
   }
 
@@ -434,9 +434,11 @@ useSeoMeta({
     }
   }
 
-  // Select на 6px уже дефолтного (в USelect toEm(154))
+  // Select на 13px уже дефолтного (в USelect toEm(154)); шрифт — стандартный
+  // (наследуемый), не «Neucha» как у дефолтного select
   &__select :deep(.select) {
-    width: toEm(147);
+    width: toEm(141);
+    font-family: inherit;
   }
 
   &__right {
@@ -489,9 +491,9 @@ useSeoMeta({
     }
 
     // На mobile USelect узкий (toEm(112)) — текст «Сначала дешевле» (118px) вылезал
-    // за пределы (appearance: base-select). 145px = текст + паддинги + picker-icon
+    // за пределы (appearance: base-select). 139px = текст + паддинги + picker-icon
     &__select :deep(.select) {
-      width: toRem(145);
+      width: toRem(139);
       max-width: 100%;
     }
 

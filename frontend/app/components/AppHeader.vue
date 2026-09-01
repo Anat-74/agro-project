@@ -175,18 +175,16 @@ function openPreview(product: Product) {
 
   // Открытый диалог фильтров на mobile — шапка плавно уезжает вверх
   // и освобождает место (breadcrumbs/top-bar не трогаем).
-  // interpolate-size (Chromium 129+) — ОСНОВА: плавная анимация height auto→0
-  // (тот же механизм, что в попапе меню).
+  // interpolate-size (Chromium 129+) — ОСНОВА: плавная анимация height auto→0.
+  // transform УБРАН из основной ветки: двойная анимация (height + translateY)
+  // давала немонотонный визуальный «прыжок» шапки (top 0→-38→0) → дёрганье.
   @media (max-width: $mobile) {
     interpolate-size: allow-keywords;
-    transition:
-      height var(--transition-duration-fast),
-      transform var(--transition-duration-fast);
+    transition: height var(--transition-duration-fast);
 
     &_filter-open {
       height: 0;
       overflow: hidden;
-      transform: translateY(-100%);
     }
   }
 
@@ -201,6 +199,7 @@ function openPreview(product: Product) {
       &_filter-open {
         height: auto;
         overflow: visible;
+        transform: translateY(-100%);
       }
     }
   }

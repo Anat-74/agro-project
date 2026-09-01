@@ -196,11 +196,6 @@ const onRangeChange = (range: [number, number]) => {
               </details>
               <div class="shop-filters__content">
                 <div class="shop-filters__price">
-                  <div class="shop-filters__price-values">
-                    <span class="shop-filters__price-value">{{ formatPrice(localMin) }}</span>
-                    <span class="shop-filters__price-separator">—</span>
-                    <span class="shop-filters__price-value">{{ formatPrice(localMax) }}</span>
-                  </div>
                   <UInput
                     type="range-dual"
                     :min="0"
@@ -208,6 +203,11 @@ const onRangeChange = (range: [number, number]) => {
                     :model-value="[localMin, localMax]"
                     @update:model-value="onRangeChange"
                   />
+                  <div class="shop-filters__price-values">
+                    <span class="shop-filters__price-value">{{ formatPrice(localMin) }}</span>
+                    <span class="shop-filters__price-separator">—</span>
+                    <span class="shop-filters__price-value">{{ formatPrice(localMax) }}</span>
+                  </div>
                 </div>
               </div>
             </section>
@@ -431,6 +431,21 @@ const onRangeChange = (range: [number, number]) => {
     }
   }
 
+  // Первая секция («Все категории»): на mobile — такой же бордер «втиснение»
+  // сверху, как снизу, и такой же отступ от верха (32px = margin summary 8 +
+  // padding 24 снизу) — при закрытом details название по центру между бордерами.
+  &__section:first-of-type {
+    @media (max-width: $mobile) {
+      padding-block-start: toRem(32);
+      border-top: toRem(1) solid rgba(0, 0, 0, 0.3);
+      box-shadow:
+        inset 0 toRem(1) 0 rgba(0, 0, 0, 0.08),
+        0 toRem(-1) 0 rgba(255, 255, 255, 0.6),
+        inset 0 toRem(-1) 0 rgba(0, 0, 0, 0.08),
+        0 toRem(1) 0 rgba(255, 255, 255, 0.6);
+    }
+  }
+
   // ==== Details-секции (паттерн ShowHamburger: grid 0fr→1fr + шеврон) ====
   &__details {
     svg {
@@ -540,8 +555,8 @@ const onRangeChange = (range: [number, number]) => {
     gap: toRem(8);
     font-size: toEm(15);
     color: var(--color);
-    // Числа стоимости — над инпутом на 5px
-    margin-block-end: toRem(5);
+    // Числа стоимости — ПОД инпутом: отступ от инпута, снизу отступ не нужен
+    margin-block-start: toRem(5);
   }
 
   &__price-separator {
