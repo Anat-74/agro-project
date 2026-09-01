@@ -205,14 +205,27 @@ const characteristics = computed(() => {
   max-width: toRem(220);
   @include adaptiveValue("height", 320, 280);
   @include containerParent(card productImage, inline-size);
+  // Плавная реакция 3D-кнопки: scale (transform) + margin-block (сдвиг нижнего
+  // ряда). Сохраняем глобальные li:hover-переходы (opacity/filter/shadow/color).
+  transition:
+    scale var(--transition-duration-fast),
+    margin-block var(--transition-duration-fast),
+    opacity 0.4s,
+    filter 0.4s,
+    box-shadow 0.4s,
+    color 0.4s;
 
   &_rotate-active {
     z-index: 150;
     scale: 1.1;
     transform-origin: center;
+    // Нижний отступ плавно «отодвигает» следующий ряд карточек: grid-трек растёт
+    // (маржа учитывается в размере ряда), компенсируя нижнюю половину scale-роста
+    // (~17px на карточке 340px высотой), — нижний ряд реагирует с анимацией.
+    margin-block-end: toEm(22);
 
     @media (max-width: $tablet) {
-      margin-block: calc(1 * toEm(16));
+      margin-block-start: toEm(16);
     }
   }
 
