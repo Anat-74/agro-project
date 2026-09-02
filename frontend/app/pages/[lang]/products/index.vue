@@ -240,7 +240,6 @@ useSeoMeta({
             <ProductCard
               v-for="(prod, index) in products"
               :key="prod.documentId"
-              class="products-page__item"
               :product="prod"
               :index="index"
             />
@@ -324,10 +323,9 @@ useSeoMeta({
   &__content {
     flex: 1;
     min-width: 0;
-    // Блок карточек — контейнер: сетка адаптируется к ширине самого блока
-    // (закрыт диалог / мобильный), а не к вьюпорту. Имя БЕЗ __container:
-    // констрейнт несёт container-body (flex-ребёнок зоны, авто-маржа схлопнула бы)
-    @include containerParent(cards, inline-size);
+    // Контейнер cards перенесён на сам список (.products-page__card-list): li —
+    // потомки ul, поэтому карточка стилизует свою высоту через @container cards
+    // из ProductCard.vue (паттерн UImage, только «список объявляет — карточка реагирует»)
   }
 
   &__card-list {
@@ -336,22 +334,11 @@ useSeoMeta({
     row-gap: toEm(24);
     @include gridCards(fit, toRem(180), 1fr);
     @include adaptiveValue("column-gap", 40, 5);
-  }
-
-  &__item {
-    // Высота карточки на странице продуктов — через container queries:
-    // контейнер cards объявлен на .products-page__content (предок карточек),
-    // адаптив идёт по ширине БЛОКА карточек, а не вьюпорта (паттерн UImage).
-    // Значения −10% от предыдущих (340/305/280 → 305/275/250).
-    height: 305px;
-
-    @container cards (max-width: 800px) {
-      height: 275px;
-    }
-
-    @container cards (max-width: 480px) {
-      height: 250px;
-    }
+    // Контейнер cards — НА самом списке. Ширина ul задаётся родителем (block-грид),
+    // поэтому container-type не схлопывает его (в отличие от flex-ленты Featured).
+    // auto-fit с min 180px на узкой зоне (<2×180) дал бы 1 колонку — 2 колонки
+    // на телефонах задаёт медиа-запрос ниже (self-query на ul невозможен).
+    @include containerParent(cards, inline-size);
   }
 
   &__pagination {
@@ -371,8 +358,10 @@ useSeoMeta({
   }
 }
 
-// Узкий блок карточек (мобильный / при закрытом диалоге) — 2 карточки в ряд
-@container cards (max-width: 34.375rem) {
+// Телефоны: 2 карточки в ряд. Медиа-запрос вместо @container cards — контейнер
+// теперь на самом ul, а ul не может стилизовать сам себя (self-query не работает).
+// На широком блоке 2+ колонки даёт сам auto-fit (gridCards fit, min 180px).
+@media (max-width: $mobileSmall) {
   .products-page__card-list {
     grid-template-columns: repeat(2, 1fr);
   }

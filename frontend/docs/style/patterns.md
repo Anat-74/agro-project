@@ -123,21 +123,23 @@ const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopF
 ```scss
 // ProductCard.vue — карточка = контейнер с двумя именами
 .product-card {
-  @include containerParent(card product, inline-size);
-  // card  — свои @container card (max-width: 210px)
-  // product — UImage внутри применит свои @container product (max-width: 256px)
+  @include containerParent(card productImage, inline-size);
+  // card         — свои @container card (max-width: 210px) → front/back
+  // productImage — UImage внутри применит свои @container productImage
 }
 ```
 
 ```scss
-// products/index.vue — зона карточек = контейнер cards.
-// Имя БЕЗ __container: констрейнт 1420 несёт container-body (иначе flex-ребёнок
-// схлопывался бы авто-маржей [class*="__container"])
-.products-page__content {
-  flex: 1; min-width: 0;
+// products/index.vue — контейнер cards на САМОМ списке (ul).
+// ul — block-грид: ширина от родителя, поэтому container-type его не схлопывает
+// (в отличие от flex-ленты, ширина которой от контента).
+.products-page__card-list {
   @include containerParent(cards, inline-size);
 }
-@container cards (max-width: 34.375rem) {
+// Высоту карточки (li) задаёт сам ProductCard.vue через containerAdaptive,
+// реагируя на ширину этого контейнера (cqw → ближайший контейнер-предок = ul).
+// «2 колонки» на телефонах — медиа-запросом (self-query на ul невозможен):
+@media (max-width: $mobileSmall) {
   .products-page__card-list { grid-template-columns: repeat(2, 1fr); }
 }
 ```

@@ -203,7 +203,7 @@ const characteristics = computed(() => {
   border-radius: toEm(6);
   perspective: toRem(500);
   max-width: toRem(220);
-  @include adaptiveValue("height", 320, 280);
+  @include containerAdaptive("height", 320, 250, 1000, 360);
   @include containerParent(card productImage, inline-size);
   // Плавная реакция 3D-кнопки: scale (transform) + margin-block (сдвиг нижнего
   // ряда). Сохраняем глобальные li:hover-переходы (opacity/filter/shadow/color).

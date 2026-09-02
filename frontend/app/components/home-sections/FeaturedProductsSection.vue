@@ -127,6 +127,10 @@ v-if="featuredProd?.[0]?.products?.length"
       align-items: center;
       justify-content: space-between;
       column-gap: toEm(12);
+      // ВАЖНО: НЕ делать этот flex-список контейнером (container-type: inline-size
+      // ломает его — лента ширится по контенту, containment запрещает это).
+      // Высота карточки в Featured — через containerAdaptive из ProductCard.vue
+      // (без контейнера-предка → фоллбэк на вьюпорт).
    }
 
    &__item {
