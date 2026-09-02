@@ -173,34 +173,15 @@ function openPreview(product: Product) {
    @include adaptiveValue("top", -60, -40);
   }
 
-  // Открытый диалог фильтров на mobile — шапка плавно уезжает вверх
-  // и освобождает место (breadcrumbs/top-bar не трогаем).
-  // interpolate-size (Chromium 129+) — ОСНОВА: плавная анимация height auto→0.
-  // transform УБРАН из основной ветки: двойная анимация (height + translateY)
-  // давала немонотонный визуальный «прыжок» шапки (top 0→-38→0) → дёрганье.
+  // Открытый диалог фильтров на mobile — JS-вариант (см. plan.md §3):
+  // шапка уезжает ТОЛЬКО transform'ом (translateY -100%, GPU), высота НЕ меняется
+  // (нет layout-рефлоу). Страницу поднимает .products-page через --header-h (JS).
+  // transform работает во всех браузерах — interpolate-size/@supports не нужны.
   @media (max-width: $mobile) {
-    interpolate-size: allow-keywords;
-    transition: height var(--transition-duration-fast);
+    transition: transform var(--transition-duration-fast);
 
     &_filter-open {
-      height: 0;
-      overflow: hidden;
-    }
-  }
-
-  // Фоллбэк для браузеров БЕЗ interpolate-size (Safari/Firefox): height auto→0
-  // там не анимируется (мгновенный прыжок). Вместо высоты шапка уезжает ТОЛЬКО
-  // transform'ом — оверлей фильтров position:fixed перекрывает весь вьюпорт,
-  // поэтому освобождать место через layout не требуется.
-  @supports not (interpolate-size: allow-keywords) {
-    @media (max-width: $mobile) {
-      transition: transform var(--transition-duration-fast);
-
-      &_filter-open {
-        height: auto;
-        overflow: visible;
-        transform: translateY(-100%);
-      }
+      transform: translateY(-100%);
     }
   }
 

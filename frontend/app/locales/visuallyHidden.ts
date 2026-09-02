@@ -9,6 +9,7 @@ export const visuallyHiddenTranslations: Record<LocaleCode, {
    showModalMenuTitle: string
    heroGridsTitle: string
    productPageHeader: string
+   productsPageHeader: string
    productsListLabel: string
 
 }> = {
@@ -23,6 +24,7 @@ export const visuallyHiddenTranslations: Record<LocaleCode, {
       sectionContactsTitle: "Секция с контактами компании",
       heroGridsTitle: "Раздел с нашими преимуществами",
       productPageHeader: "Шапка страницы товара",
+      productsPageHeader: "Шапка страницы продуктов",
       productsListLabel: "Список товаров"
    },
    be: {
@@ -36,6 +38,7 @@ export const visuallyHiddenTranslations: Record<LocaleCode, {
       sectionContactsTitle: "Секцыя з кантактамі кампаніі",
       heroGridsTitle: "Раздзел з нашымі перавагамі",
       productPageHeader: "Шапка старонкі тавару",
+      productsPageHeader: "Шапка старонкі прадуктаў",
       productsListLabel: "Спіс тавараў"
    }
 }

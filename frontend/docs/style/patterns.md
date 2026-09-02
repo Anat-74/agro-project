@@ -73,15 +73,17 @@ const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopF
 // products/index.vue — страница становится колонкой высотой во вьюпорт:
 // breadcrumbs + top-bar в потоке, body (flex:1) заполняет остаток
 .products-page {
-  &_filter-open {
-    @media (max-width: $mobile) {
-      height: 100dvh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+  // Мобильный flex: зона контента (container-body) заполняет клампнутый вьюпорт
+  @media (max-width: $mobile) {
+    display: flex;
+    flex-direction: column;
 
-      .products-page__container { flex: 1; min-height: 0; display: flex; flex-direction: column; }
-      .products-page__body      { flex: 1; min-height: 0; }
+    .products-page__header { flex-shrink: 0; }
+    // __container-body — flex-ребёнок колонки → авто-маржу [class*="__container"]
+    // нейтрализуем (вьюпорт < 1420, центрировать нечего)
+    .products-page__container-body {
+      flex: 1; min-height: 0;
+      margin-inline: 0;
     }
   }
 }
@@ -128,8 +130,11 @@ const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopF
 ```
 
 ```scss
-// products/index.vue — сетка карточек = контейнер cards
+// products/index.vue — зона карточек = контейнер cards.
+// Имя БЕЗ __container: констрейнт 1420 несёт container-body (иначе flex-ребёнок
+// схлопывался бы авто-маржей [class*="__container"])
 .products-page__content {
+  flex: 1; min-width: 0;
   @include containerParent(cards, inline-size);
 }
 @container cards (max-width: 34.375rem) {

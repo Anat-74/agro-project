@@ -64,20 +64,29 @@ const getPageLink = (newPage: number) => {
   justify-content: center;
   padding-block-start: toEm(25);
 
-&__number {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: toEm(27);
-  height: toEm(24);
-  border-radius: toEm(6);
-  transition: all var(--transition-duration);
+  &__number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: toEm(27);
+    height: toEm(24);
+    border-radius: toEm(6);
+    transition: all var(--transition-duration);
 
-  &_active {
-    background-color: var(--warning-color);
-   color: var(--light-color);
-   font-weight: 600;
-  }
+    // Глобальный .router-link-active (pointer-events:none, cursor:default) ставится
+    // на ВСЕ номера пагинации: Vue Router считает «активной» любую ссылку с тем же
+    // path, а у пагинации различается только query (?page=N). Текущая страница —
+    // это <span> (не ссылка), поэтому ссылки-номера всегда должны быть кликабельны.
+    &:not(.pagination__number_active) {
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    &_active {
+      background-color: var(--warning-color);
+      color: var(--light-color);
+      font-weight: 600;
+    }
 
   @include hover {
    &:not(.pagination__number_active) {

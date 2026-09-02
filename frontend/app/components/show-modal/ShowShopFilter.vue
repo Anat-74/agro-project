@@ -323,7 +323,7 @@ const onRangeChange = (range: [number, number]) => {
   }
 
   // Mobile (≤768): оверлей всегда в потоке (position:absolute, якорь —
-  // .products-page__body). breadcrumbs/top-bar остаются ВЫШЕ оверлея, поэтому
+  // .products-page__container-body). breadcrumbs/top-bar остаются ВЫШЕ оверлея, поэтому
   // шапка должна схлопываться (освобождает место). display НЕ перещёлкивается
   // (источник дёрганья). Скрытие через opacity/visibility/pointer-events:
   // visibility: hidden после transition (как display с задержкой), но без скачка.

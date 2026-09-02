@@ -22,6 +22,28 @@ onBeforeRouteLeave(() => {
   shopFilterRef.value?.close?.()
 })
 
+// JS-вариант анимации (plan.md §3): при ОТКРЫТИИ фильтра меряем фактическую
+// высоту глобальной шапки (.header, offsetHeight — реальный layout, без margin,
+// не учитывает transform) и кладём её в CSS-переменную --header-h на :root.
+// .products-page поднимается на эту высоту transform'ом (GPU), шапка уезжает
+// translateY(-100%) — движение без layout-переходов (плавно на телефоне).
+watch(
+  filterDialogOpen,
+  (open) => {
+    // document есть только на клиенте (SSR-рендер без него)
+    if (!import.meta.client) return
+    const header = document.querySelector<HTMLElement>(".header")
+    if (!header) return
+    // setProperty до того, как класс products-page_filter-open применится
+    // в render (flush 'pre' — до обновления компонента)
+    document.documentElement.style.setProperty(
+      "--header-h",
+      `${open ? header.offsetHeight : 0}px`,
+    )
+  },
+  { immediate: true },
+)
+
 // ===== Состояние фильтров (сайдбар + сортировка) =====
 const category = ref("");
 const sort = ref("name:asc");
@@ -146,75 +168,73 @@ useSeoMeta({
       {{ t.seoTitle }}
     </h1>
 
-    <!-- Хлебные крошки: переиспользуемый компонент, фон из Strapi (webp + avif) -->
-    <UBreadcrumbs
-      :items="[{ label: t.breadcrumbsCurrent }]"
-      :background="breadcrumbsBackground"
-    />
+    <!-- Шапка страницы: хлебные крошки (вне контейнера) + панель фильтра/сортировки -->
+    <header class="products-page__header" :aria-label="vh.productsPageHeader">
+      <UBreadcrumbs
+        :items="[{ label: t.breadcrumbsCurrent }]"
+        :background="breadcrumbsBackground"
+      />
 
-    <!-- Основной контейнер: top-bar + контент -->
-    <div class="products-page__container">
-      <!-- Верхний блок: кнопка-диалог + сортировка + количество -->
-      <div class="top-bar">
-        <div class="top-bar__left">
-          <UButton
-            class="top-bar__filter-btn"
-            :class="{ 'top-bar__filter-btn_is-open': shopFilterRef?.isOpen }"
-            variant="plain"
-            :aria-label="t.filterTitle"
-            :aria-expanded="shopFilterRef?.isOpen"
-            aria-controls="dialogShopFilter"
-            @click="shopFilterRef?.toggle()"
-          >
-            <span class="top-bar__filter-icon">
-              <Transition name="filter-icon" mode="out-in">
-                <Icon
-                  v-if="shopFilterRef?.isOpen"
-                  key="close"
-                  name="mingcute:close-line"
-                />
-                <Icon v-else key="filter" name="mingcute:filter-line" />
-              </Transition>
-            </span>
-            <span>{{ t.filterTitle }}</span>
-          </UButton>
-        </div>
-
-        <div class="top-bar__right">
-          <div class="top-bar__sort">
-            <USelect
-              v-model="sort"
-              class="top-bar__select"
-              :label="t.sortLabel"
-              :options="[
-                { value: 'name:asc', label: t.sortName },
-                { value: 'price:asc', label: t.sortPriceAsc },
-                { value: 'price:desc', label: t.sortPriceDesc },
-              ]"
-            />
-          </div>
-          <span class="top-bar__results">
-            {{ t.resultsCount.replace("{count}", String(resultsCount)) }}
+      <!-- Панель (бывший top-bar): имя __container даёт автоматический констрейнт
+           1420 (конвенция _utils.scss [class*="__container"]). Элементы — сразу,
+           без лишних обёрток -->
+      <div class="products-page__container-top">
+        <UButton
+          class="products-page__filter-btn"
+          :class="{ 'products-page__filter-btn_is-open': shopFilterRef?.isOpen }"
+          variant="plain"
+          :aria-label="t.filterTitle"
+          :aria-expanded="shopFilterRef?.isOpen"
+          aria-controls="dialogShopFilter"
+          @click="shopFilterRef?.toggle()"
+        >
+          <span class="products-page__filter-icon">
+            <Transition name="filter-icon" mode="out-in">
+              <Icon
+                v-if="shopFilterRef?.isOpen"
+                key="close"
+                name="mingcute:close-line"
+              />
+              <Icon v-else key="filter" name="mingcute:filter-line" />
+            </Transition>
           </span>
-        </div>
-      </div>
-
-      <div class="products-page__body">
-        <!-- Сайдбар фильтров: диалог изначально открыт, кнопка «Фильтр» в top-bar -->
-        <ShowShopFilter
-          ref="shopFilter"
-          :category="category"
-          :price-min="priceMin"
-          :price-max="priceMax"
-          :tags="tags"
-          @update:category="category = $event"
-          @update:price-min="priceMin = $event"
-          @update:price-max="priceMax = $event"
-          @update:tags="tags = $event"
+          <span>{{ t.filterTitle }}</span>
+        </UButton>
+        <USelect
+          v-model="sort"
+          class="products-page__select"
+          :label="t.sortLabel"
+          :options="[
+            { value: 'name:asc', label: t.sortName },
+            { value: 'price:asc', label: t.sortPriceAsc },
+            { value: 'price:desc', label: t.sortPriceDesc },
+          ]"
         />
+        <span class="products-page__results">
+          {{ t.resultsCount.replace("{count}", String(resultsCount)) }}
+        </span>
+      </div>
+    </header>
 
-        <!-- Список карточек товаров + пагинация -->
-        <div class="products-page__content" role="region" :aria-label="vh.productsListLabel">
+    <!-- Контент-зона: имя __container даёт констрейнт 1420 + центрирование (desktop).
+         Внутри flex-раскладка: сайдбар фильтров + карточки -->
+    <div class="products-page__container-body">
+      <!-- Сайдбар фильтров: диалог изначально открыт, кнопка «Фильтр» в панели -->
+      <ShowShopFilter
+        ref="shopFilter"
+        :category="category"
+        :price-min="priceMin"
+        :price-max="priceMax"
+        :tags="tags"
+        @update:category="category = $event"
+        @update:price-min="priceMin = $event"
+        @update:price-max="priceMax = $event"
+        @update:tags="tags = $event"
+      />
+
+      <!-- Список карточек товаров + пагинация. __content — контейнер карточек
+           (cards CQ); констрейнт 1420 несёт container-body -->
+      <div class="products-page__content" role="region" :aria-label="vh.productsListLabel">
           <ULoader v-show="pending" class="products-page__loader loader" />
           <ul v-if="products.length" class="products-page__card-list">
             <ProductCard
@@ -238,7 +258,6 @@ useSeoMeta({
           />
         </div>
       </div>
-    </div>
   </section>
 </template>
 
@@ -252,37 +271,50 @@ useSeoMeta({
     display: flex;
     flex-direction: column;
 
-    .products-page__container {
-      flex: 1;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
+    // Шапка страницы (крошки + панель) — auto-высота
+    .products-page__header {
+      flex-shrink: 0;
     }
 
-    .products-page__body {
+    // Контент (container-body) — занимает оставшееся место (flex:1). Авто-маржу
+    // глобального [class*="__container"] нейтрализуем: на mobile это flex-ребёнок
+    // колонки — авто-маржа схлопнула бы его (вьюпорт < 1420, центрировать нечего)
+    .products-page__container-body {
       flex: 1;
       min-height: 0;
+      margin-inline: 0;
     }
   }
 
-  // Открытый диалог фильтров (mobile). Кламп/анкламп страницы — МГНОВЕННЫЙ
-  // в обе стороны (вариант А): при открытии/закрытии анимируется ТОЛЬКО высота
-  // шапки (единственный layout-переход). Одновременная анимация двух высот
-  // (шапка + страница) давала двойной reflow → «дёрганье» карточек на телефоне.
-  // Контент ниже раскрывается разом, но за фейдом оверлея — практически незаметно.
+  // Открытый диалог фильтров (mobile) — JS-вариант (plan.md §3):
+  // страница ПОДНИМАЕТСЯ на высоту шапки через transform (GPU), а не через
+  // layout (шапка тоже уезжает transform'ом). Ни одного height-перехода по
+  // кадрам → без reflow/дёрганья. --header-h мерит JS (watcher на открытие).
+  // Кламп height:100dvh — скролл-лок + размер оверлея (1 reflow в момент открытия).
+  // transition живёт в БАЗОВОМ mobile-состоянии: анимируются и открытие, и закрытие
   @media (max-width: $mobile) {
+    transition: transform var(--transition-duration-fast);
+
     &_filter-open {
       height: 100dvh;
       overflow: hidden;
+      transform: translateY(calc(-1 * var(--header-h, 0px)));
     }
   }
 
-  &__body {
+  &__header {
+    // Крошки + панель: констрейнт даёт вложенный __container (см. ниже)
+  }
+
+  &__container-body {
     display: flex;
     gap: toRem(30);
     align-items: stretch;
     // Якорь для mobile-оверлея сайдбара фильтров (ShowShopFilter position:absolute)
     position: relative;
+    // Имя __container → глобальный [class*="__container"]: max-width 1420 + центр
+    // + боковые паддинги. На desktop это БЛОК-ребёнок section → центрирование
+    // работает. На mobile — flex-ребёнок колонки (margin-inline нейтрализован выше).
 
     @media (max-width: $mobile) {
       flex-direction: column;
@@ -293,7 +325,8 @@ useSeoMeta({
     flex: 1;
     min-width: 0;
     // Блок карточек — контейнер: сетка адаптируется к ширине самого блока
-    // (закрыт диалог / мобильный), а не к вьюпорту
+    // (закрыт диалог / мобильный), а не к вьюпорту. Имя БЕЗ __container:
+    // констрейнт несёт container-body (flex-ребёнок зоны, авто-маржа схлопнула бы)
     @include containerParent(cards, inline-size);
   }
 
@@ -348,25 +381,31 @@ useSeoMeta({
 // ===== Хлебные крошки =====
 // (стили вынесены в переиспользуемый компонент Breadcrumbs.vue)
 
-// ===== Верхний блок (top-bar) =====
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: toRem(12);
-  padding-block-end: toRem(18);
-  // Верхний бордер под кнопкой убран: секции сайдбара сами разделяются
-  // бордером «втиснение» (см. ShowShopFilter)
-  margin-block-end: toRem(24);
-  // Выше mobile-оверлея фильтров (ShowShopFilter position:absolute z-index:9999) —
-  // кнопка «Фильтр» остаётся доступной при открытом полноэкранном окне
-  position: relative;
-  z-index: 6;
-
-  &__left {
+// ===== Панель фильтра/сортировки (бывший top-bar) =====
+// Элементы плоские (BEM, один уровень). __container-top — имя содержит __container,
+// поэтому _utils.scss [class*="__container"] автоматически даёт констрейнт 1420 +
+// центрирование + паддинги. Обёртки убраны: select прижат вправо через
+// margin-inline-start:auto (без __right/__left/__sort).
+.products-page {
+  &__container-top {
     display: flex;
     align-items: center;
+    gap: toRem(24);
+    flex-wrap: wrap;
+    padding-block-end: toRem(18);
+    margin-block-end: toRem(24);
+    // Выше mobile-оверлея фильтров (ShowShopFilter position:absolute z-index:9999) —
+    // кнопка «Фильтр» остаётся доступной при открытом полноэкранном окне
+    position: relative;
+    z-index: 6;
+
+    // ==== Адаптив ====
+    @media (max-width: $mobile) {
+      // Отступ от панели до диалога фильтров — 10px (было 24px)
+      margin-block-end: toRem(10);
+      // Отступы ужаты (24→8), иначе на 375px строка не влезает в контейнер
+      gap: toRem(8);
+    }
   }
 
   &__filter-btn {
@@ -410,6 +449,10 @@ useSeoMeta({
         background-color: color-mix(in srgb, var(--green-color) 85%, var(--dark-color));
       }
     }
+
+    @media (max-width: $mobile) {
+      font-size: toEm(15);
+    }
   }
 
   // Плавная смена иконки (filter ↔ close) — crossfade + поворот
@@ -434,23 +477,26 @@ useSeoMeta({
     }
   }
 
-  // Select на 13px уже дефолтного (в USelect toEm(154)); шрифт — стандартный
-  // (наследуемый), не «Neucha» как у дефолтного select
-  &__select :deep(.select) {
-    width: toEm(141);
-    font-family: inherit;
-  }
+  // Select: прижат вправо (margin-inline-start:auto — замена обёртки __right),
+  // shrink разрешён (flex: 0 1 auto); шрифт стандартный (не «Neucha» как у дефолта)
+  &__select {
+    flex: 0 1 auto;
+    min-width: 0;
+    margin-inline-start: auto;
 
-  &__right {
-    display: flex;
-    align-items: center;
-    gap: toRem(24);
-  }
+    :deep(.select) {
+      width: toEm(141);
+      font-family: inherit;
+    }
 
-  &__sort {
-    display: flex;
-    align-items: center;
-    gap: toRem(8);
+    // На mobile USelect узкий (toEm(112)) — текст «Сначала дешевле» (118px) вылезал
+    // за пределы (appearance: base-select). 139px = текст + паддинги + picker-icon
+    @media (max-width: $mobile) {
+      :deep(.select) {
+        width: toRem(139);
+        max-width: 100%;
+      }
+    }
   }
 
   &__results {
@@ -468,53 +514,10 @@ useSeoMeta({
     border: toRem(1) solid rgba(0, 0, 0, 0.25);
     box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
     background-color: var(--light-color);
-  }
 
-  // ==== Адаптив ====
-  @media (max-width: $mobile) {
-    // Отступ от top-bar до диалога фильтров — 10px (было 24px)
-    margin-block-end: toRem(10);
-    // Все три элемента (кнопка | select | счётчик) — в одну строку, по центру.
-    // Отступы ужаты (12→8), иначе на 375px строка не влезает в 336px контейнера.
-    gap: toRem(8);
-
-    &__right {
-      flex: 1;
-      justify-content: flex-end;
-      align-items: center;
-      gap: toRem(8);
-    }
-
-    &__sort {
-      flex: 0 1 auto;
-      min-width: 0;
-    }
-
-    // На mobile USelect узкий (toEm(112)) — текст «Сначала дешевле» (118px) вылезал
-    // за пределы (appearance: base-select). 139px = текст + паддинги + picker-icon
-    &__select :deep(.select) {
-      width: toRem(139);
-      max-width: 100%;
-    }
-
-    &__results {
+    @media (max-width: $mobile) {
       text-align: end;
       font-size: toEm(13);
-    }
-
-    &__filter-btn {
-      font-size: toEm(15);
-    }
-  }
-
-  @media (max-width: $mobileSmall) {
-    &__right {
-      align-items: center;
-      gap: toRem(8);
-    }
-
-    &__results {
-      text-align: end;
     }
   }
 }
