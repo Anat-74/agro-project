@@ -39,7 +39,7 @@ const isOpen = useState<boolean>(`dialog-${id}`, () => Boolean(initialOpen));
 
 ## 3. Страница продуктов: анимация открытия/закрытия фильтра через `transform` (JS-вариант) + aria-label header
 
-**Статус:** спланировано 02.09.2026, **не реализовано**. Реализация — только в не пиковые часы, после одобрения.
+**Статус:** реализовано (коммит `75401a4`, 02.09.2026).
 
 ### 3.1. Проблема
 
@@ -95,3 +95,72 @@ watch(filterDialogOpen, (open) => {
 - ru: «Шапка страницы продуктов»
 - be: «Шапка старонкі прадуктаў»
 - В шаблоне: `:aria-label="vh.productsPageHeader"` (или в `Locales`-переменную страницы `t.*`, по конвенции используемой на странице).
+
+---
+
+## 4. Страница продуктов: убрать обёртку `.products-page__content` (пагинация из потока)
+
+**Статус:** спланировано 02.09.2026, не реализовано.
+
+**Идея:** `.products-page__content` — единственная оставшаяся обёртка вокруг `ul`. Она группирует loader + `ul` + empty + `UPagination` в «колонку результатов». В flex-ряду `container-body` (`[сайдбар | результаты]`) обёртка нужна, чтобы эти 4 элемента складывались в столбик.
+
+**Лаконичное решение — выдернуть пагинацию из потока** (она последний элемент — удобно позиционировать; опционально anchor positioning):
+
+```
+container-body (position: relative — якорь; flex row на desktop)
+  ShowShopFilter            ← сайдбар
+  ul.products-page__card-list   ← flex:1 (результаты), grid   [v-if products]
+  div.products-page__empty      ← flex:1                      [v-else]
+  ULoader                       ← absolute (оверлей)           [v-show pending]
+  UPagination                   ← absolute, низ/right          [v-if pageCount > 1]
+```
+
+**Что учесть при реализации:**
+- `ul` и `empty` взаимоисключающие (v-if / v-else-if) → каждый может быть `flex: 1`.
+- loader — absolute-оверлей поверх результатов.
+- пагинация absolute (bottom/right или anchor: `anchor-name` на ul + `position-area`/`position-anchor`) — нужен «запас» высоты (bottom-padding зоны или margin на ul), чтобы не перекрывала последний ряд карточек.
+- `role="region"` + aria-label (сейчас на `__content`) перенести (на ul или зону).
+- Проверить mobile (container-body column) и desktop (row).
+
+---
+
+## 5. Конвенции адаптива: range-медиазапросы, toEm, containerAdaptive
+
+**Статус:** конвенции, зафиксировано 02.09.2026.
+
+### 5.1. Range-медиазапросы (Media Queries Level 4) — синтаксис проекта
+
+Проверка двух границ одной строкой вместо `@media (min-width: A) and (max-width: B)`:
+
+```scss
+// от $mobileSmall (480) до $tablet (1024) включительно
+@media ($mobileSmall <= width <= $tablet) { ... }
+
+// эквивалент «>=$mobileSmall и <=$tablet» через «больше-равно» (тоже валидно):
+@media ($tablet >= width >= $mobileSmall) { ... }
+```
+
+- Значения берутся переменными из `_settings.scss` (`$mobile`, `$mobileSmall`, `$tablet` — уже в `toEm`).
+- Поддержка: Chrome 104+, Firefox 102+, Safari 16.4+.
+- Пример в проекте: `@media ($tablet <= width <= toEm(1250))` (FeaturedProductsSection).
+
+### 5.2. «Три кита» адаптива + toEm
+
+Адаптив строится на: **container queries** (блок-ширина) + **clamp** (непрерывность) + **media queries** (вьюпорт-брейкпоинты). Все значения/брейкпоинты — через `toEm()`/`toRem()` (без «голых» px).
+
+### 5.3. Миксин `containerAdaptive` (обновлённый, используется)
+
+```scss
+@mixin containerAdaptive(
+  $property,          // CSS-свойство
+  $startSize,         // значение при ширине контейнера $containerFrom
+  $minSize,           // значение при ширине контейнера $containerTo
+  $containerFrom,     // точка контейнера, где value = $startSize
+  $containerTo,       // точка контейнера, где value = $minSize
+  $unit: "cqw"        // контейнерная единица
+)
+```
+
+- Генерирует `clamp(min, calc(yIntercept + slope·cqw), max)` — **непрерывная** интерполяция по ширине контейнера (в отличие от дискретных `@container` брейкпоинтов).
+- Fallback без CQ — та же кривая по `vw` (`@supports not (width: 1cqw)`).
+- Использование: высота карточки в `ProductCard.vue` — `containerAdaptive("height", 320, 250, 1000, 360)`; реагирует на ближайший контейнер-предок (`cards` на `ul`) либо на вьюпорт, если контейнера нет.

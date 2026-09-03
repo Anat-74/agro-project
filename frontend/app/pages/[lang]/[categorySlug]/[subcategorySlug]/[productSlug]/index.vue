@@ -133,7 +133,7 @@ const handleAddToCart = (product: Product) => {
 
 <template>
   <div>
-    <ULoader v-if="pending" class="loader" />
+    <ULoader v-if="pending" />
     <section
       v-if="product"
       aria-labelledby="product-description"

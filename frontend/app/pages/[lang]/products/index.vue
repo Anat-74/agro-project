@@ -87,7 +87,7 @@ const PAGE_SIZE = 12;
 const productsKey = () =>
   `shop-products-${currentLocale.value}-${category.value}-${sort.value}-${priceMin.value}-${priceMax.value}-${tags.value.join(",")}-${page.value}`
 
-const { data: productsData, pending, refresh } = useCachedAsyncData(
+const { data: productsData, status } = useCachedAsyncData(
   productsKey,
   async () => {
     const filters: any = { locale: { $eq: currentLocale.value } }
@@ -118,18 +118,23 @@ const products = computed(() => productsData.value?.data ?? [])
 const pageCount = computed(() => productsData.value?.meta?.pagination?.pageCount || 1)
 const resultsCount = computed(() => productsData.value?.meta?.pagination?.total ?? 0)
 
-// Смена фильтров/сортировки — сброс на первую страницу и перезагрузка
+// Лоадер только когда ДАННЫХ ещё нет (первая загрузка): при повторных запросах
+// (смена фильтра/страницы) старые данные остаются — контент не «мигает».
+const isLoading = computed(
+  () => (status.value === "idle" || status.value === "pending") && !products.value.length,
+)
+
+// Смена фильтров/сортировки — сброс на первую страницу. Сам запрос перезапускает
+// РЕАКТИВНЫЙ КЛЮЧ productsKey (docs/nuxt-async-data.md §2) — refresh() не нужен.
 watch([category, sort, priceMin, priceMax, tags], () => {
   page.value = 1
-  refresh()
 })
 
-// Пагинация из query-параметра
+// Пагинация из query-параметра: смена page меняет ключ → авто-запрос
 watch(
   () => route.query.page,
   (newPage) => {
     page.value = newPage ? +newPage : 1
-    refresh()
   },
 )
 
@@ -180,8 +185,10 @@ useSeoMeta({
            без лишних обёрток -->
       <div class="products-page__container-top">
         <UButton
-          class="products-page__filter-btn"
-          :class="{ 'products-page__filter-btn_is-open': shopFilterRef?.isOpen }"
+          :class="[
+            'products-page__filter-btn',
+            { 'products-page__filter-btn_is-open': shopFilterRef?.isOpen },
+          ]"
           variant="plain"
           :aria-label="t.filterTitle"
           :aria-expanded="shopFilterRef?.isOpen"
@@ -232,31 +239,41 @@ useSeoMeta({
         @update:tags="tags = $event"
       />
 
-      <!-- Список карточек товаров + пагинация. __content — контейнер карточек
-           (cards CQ); констрейнт 1420 несёт container-body -->
-      <div class="products-page__content" role="region" :aria-label="vh.productsListLabel">
-          <ULoader v-show="pending" class="products-page__loader loader" />
-          <ul v-if="products.length" class="products-page__card-list">
-            <ProductCard
-              v-for="(prod, index) in products"
-              :key="prod.documentId"
-              :product="prod"
-              :index="index"
-            />
-          </ul>
-          <div v-else-if="!pending" class="products-page__empty">
-            {{ t.noResults }}
-          </div>
+      <!-- Лоадер — самопозиционирующийся (fixed, центр вьюпорта): ставим просто
+           в разметке, родительских стилей не нужно -->
+      <ULoader v-show="isLoading" />
 
-          <UPagination
-            v-if="pageCount > 1"
-            class="products-page__pagination"
-            :page="page"
-            :page-count="pageCount"
-            :route-name="route.name?.toString() || ''"
-          />
-        </div>
-      </div>
+      <!-- Список карточек: flex:1 (колонка результатов) + grid + контейнер cards.
+           aria-label именует список (обёртка __content удалена) -->
+      <ul
+        v-if="products.length"
+        class="products-page__card-list"
+        :aria-label="vh.productsListLabel"
+      >
+        <ProductCard
+          v-for="(prod, index) in products"
+          :key="prod.documentId"
+          :product="prod"
+          :index="index"
+        />
+      </ul>
+
+      <!-- Пусто — <span> с display:block: короткое сообщение без сильной смысловой
+           нагрузки (не параграф прозы); div не используем (для нас div = wrapper) -->
+      <span v-else-if="status === 'success'" class="products-page__empty">
+        {{ t.noResults }}
+      </span>
+
+      <!-- Пагинация — вне потока (absolute), у низа контент-зоны: последний элемент
+           удобно позиционировать; якорь — container-body (position: relative) -->
+      <UPagination
+        v-if="pageCount > 1"
+        class="products-page__pagination"
+        :page="page"
+        :page-count="pageCount"
+        :route-name="route.name?.toString() || ''"
+      />
+    </div>
   </section>
 </template>
 
@@ -320,41 +337,51 @@ useSeoMeta({
     }
   }
 
-  &__content {
+  &__card-list {
+    // Колонка результатов в flex-зоне (desktop: после сайдбара; mobile: во всю ширину)
     flex: 1;
     min-width: 0;
-    // Контейнер cards перенесён на сам список (.products-page__card-list): li —
-    // потомки ul, поэтому карточка стилизует свою высоту через @container cards
-    // из ProductCard.vue (паттерн UImage, только «список объявляет — карточка реагирует»)
-  }
-
-  &__card-list {
     display: grid;
     justify-items: center;
     row-gap: toEm(24);
     @include gridCards(fit, toRem(180), 1fr);
     @include adaptiveValue("column-gap", 40, 5);
-    // Контейнер cards — НА самом списке. Ширина ul задаётся родителем (block-грид),
+    // Контейнер cards — НА самом списке. Ширина ul задаётся родителем (flex/block),
     // поэтому container-type не схлопывает его (в отличие от flex-ленты Featured).
     // auto-fit с min 180px на узкой зоне (<2×180) дал бы 1 колонку — 2 колонки
     // на телефонах задаёт медиа-запрос ниже (self-query на ul невозможен).
     @include containerParent(cards, inline-size);
+    // Запас под флоатящую пагинацию (absolute) — она не занимает место в потоке,
+    // поэтому последний ряд карточек не должен ложиться под неё
+    padding-block-end: toRem(64);
   }
 
   &__pagination {
-    justify-self: end;
-    margin-block-start: toRem(24);
+    // Пагинация ВНЕ потока (absolute, якорь — container-body). Прижата к правому
+    // нижнему краю зоны: правый край зоны совпадает с правым краем колонки карточек
+    // и в закрытом, и в открытом состоянии сайдбара (центровка по всей зоне
+    // смещалась бы на ширину сайдбара).
+    position: absolute;
+    bottom: 0;
+    right: 0;
   }
 
   &__empty {
+    // Состояние «ничего не найдено» — занимает колонку результатов (как ul).
+    // span + display:block: лёгкое сообщение без смысловой нагрузки (не div/не p)
+    flex: 1;
+    min-width: 0;
+    display: block;
     text-align: center;
-    padding: toEm(20);
+    padding-block: toEm(40);
     font-size: toEm(18);
     color: var(--gray-color);
-  }
 
-  &__loader {
-    translate: 0;
+    // Desktop (flex-row): не растягиваться по высоте под сайдбар
+    // (на mobile колонка сама даёт полную ширину)
+    @media (min-width: $mobile) {
+      align-self: flex-start;
+    }
   }
 }
 

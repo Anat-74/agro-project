@@ -112,7 +112,6 @@ const handleAddToCart = (product: Product) => {
   <div>
    <ULoader
 v-if="pending"
-     class="loader"
    />
    <section 
    v-if="product"

@@ -8,33 +8,29 @@
  
  <style lang="scss" scoped>
  .loader {
-   display: block;
-   margin: auto;
-   position: relative;
+   // Самодостаточный лоадер: ВСЕГДА вне потока и по центру вьюпорта
+   // (чуть выше геометрического центра — top 40%). Родителю НЕ нужны стили:
+   // достаточно поставить <ULoader v-if/v-show="…" /> в любом месте разметки.
+   position: fixed;
+   top: 40%;
+   left: 50%;
+   translate: -50% -50%;
+   z-index: 1000;
    width: toRem(80);
    height: toRem(80);
 
    span {
-   display: inline-block;
-   position: absolute;
-    z-index: 9999;
-   left: 8px;
-   width: 16px;
-   background-color: var(--sky-blue);
-   animation: loader-animate 1.2s cubic-bezier(0, .5, .5, 1) infinite;
+     display: inline-block;
+     position: absolute;
+     left: toRem(8);
+     width: toRem(16);
+     height: toRem(64);
+     background-color: var(--sky-blue);
+     animation: loader-animate 1.2s cubic-bezier(0, .5, .5, 1) infinite;
    }
-   span:nth-child(1) {
-   left: toRem(8);
-   animation-delay: -.24s;
-   }
- span:nth-child(2) {
-   left: toRem(32);
-   animation-delay: -.12s;
-   }
- span:nth-child(3) {
-   left: toRem(56);
-   animation-delay: 0;
-   }
+   span:nth-child(1) { left: toRem(8);  animation-delay: -.24s; }
+   span:nth-child(2) { left: toRem(32); animation-delay: -.12s; }
+   span:nth-child(3) { left: toRem(56); animation-delay: 0; }
  }
 
  @keyframes loader-animate {
@@ -48,4 +44,3 @@
    }
  }
  </style>
- 

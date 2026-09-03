@@ -166,7 +166,7 @@ const handleAddToCart = (product: Product) => {
 
 <template>
   <div>
-  <ULoader v-if="pending" class="loader" />
+  <ULoader v-if="pending" />
   <section
     v-else
     class="subcategory-products"

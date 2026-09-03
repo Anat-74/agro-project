@@ -125,7 +125,7 @@ watchEffect(() => {
 
 <template>
   <div>
-  <ULoader v-show="isLoading" class="loader" />
+  <ULoader v-show="isLoading" />
   <section
     v-show="!isLoading"
     class="products-section"
