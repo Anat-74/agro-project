@@ -494,7 +494,8 @@ useSeoMeta({
   }
 
   // Select: прижат вправо (margin-inline-start:auto — замена обёртки __right),
-  // shrink разрешён (flex: 0 1 auto); шрифт стандартный (не «Neucha» как у дефолта)
+  // shrink разрешён (flex: 0 1 auto); шрифт стандартный (не «Neucha» как у дефолта).
+  // Эффект «углубления» (inset-тень) убран — перенесён на счётчик результатов.
   &__select {
     flex: 0 1 auto;
     min-width: 0;
@@ -503,6 +504,7 @@ useSeoMeta({
     :deep(.select) {
       width: toEm(141);
       font-family: inherit;
+      box-shadow: none;
     }
 
     // На mobile USelect узкий (toEm(112)) — текст «Сначала дешевле» (118px) вылезал
@@ -524,11 +526,14 @@ useSeoMeta({
     font-size: toEm(14);
     color: var(--gray-color);
     white-space: nowrap;
-    // Чип с бордером «втиснение» (паттерн BannerLayouts: тёмная линия + светлый блик)
+    // Чип-счётчик с эффектом «углубления» (раньше был у select): тёмная inset-тень
+    // сверху + светлый блик снизу (вдавленный вид)
     padding-inline: toRem(6);
     border-radius: toRem(6);
     border: toRem(1) solid rgba(0, 0, 0, 0.25);
-    box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+    box-shadow:
+      inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
+      0 toRem(1) 0 rgba(255, 255, 255, 0.4);
     background-color: var(--light-color);
 
     @media (max-width: $mobile) {
