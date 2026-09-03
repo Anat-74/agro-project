@@ -27,24 +27,17 @@ const emit = defineEmits<{
 }>()
 
 // Диалог сайдбара фильтров: show() (не модальный), как ShowHamburger.
-// initialOpen: true — SSR сразу отдаёт <dialog open>, без флеша после гидратации
-// (см. session-handoff, замечание 5, вариант А).
+// initialOpen: false — на входе диалог ЗАКРЫТ (SSR тоже): нет «флипа» контента
+// на mobile. На desktop панель открывает СТРАНИЦА после загрузки товаров
+// (O2, plan.md §1: watcher на status === 'success' в products/index.vue).
 const dialogElement = useTemplateRef<HTMLDialogElement>("dialog-shop-filter");
 const { open, close, isOpen } = useDialog("shopFilterDialog", dialogElement, {
   useShowMethod: true,
-  initialOpen: true,
+  initialOpen: false,
 })
 
-// Сайдбар открыт по умолчанию на desktop при каждом заходе на страницу: useDialog
-// хранит isOpen в глобальном Map, который переживает размонтирование при SPA-навигации,
-// поэтому принудительно сбрасываем состояние на «открыто» (как делал старый watch).
-// На mobile (≤768) — диалог ЗАКРЫТ по умолчанию (открывается по кнопке «Фильтр»):
-// SSR не знает ширину, поэтому открыт (десктоп-дефолт), а после маунта закрываем.
+// width нужен для sale-секции (запрос только на desktop) и кнопки-логики
 const { width } = useViewport()
-isOpen.value = true
-onMounted(() => {
-  if (width.value <= 767.98) close?.()
-})
 
 // Управление диалогом из страницы (кнопка «Фильтр» в top-bar)
 const toggle = () => {

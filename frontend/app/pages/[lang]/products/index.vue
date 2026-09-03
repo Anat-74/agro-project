@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { shopFiltersTranslations } from '~/locales/shopFilters'
+import { productFilterTranslations } from '~/locales/productFilter'
 import { visuallyHiddenTranslations } from '~/locales/visuallyHidden'
 import ShowShopFilter from '~/components/show-modal/ShowShopFilter.vue'
 
@@ -7,6 +8,7 @@ const { find } = useStrapi();
 const { currentLocale } = useLocale();
 const route = useRoute();
 const t = computed(() => shopFiltersTranslations[currentLocale.value])
+const pf = computed(() => productFilterTranslations[currentLocale.value])
 const vh = computed(() => visuallyHiddenTranslations[currentLocale.value])
 
 const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopFilter")
@@ -138,6 +140,27 @@ watch(
   },
 )
 
+// После загрузки новой порции (клик по пагинации/смена фильтра) — скролл к началу,
+// чтобы не листать вручную от низа страницы
+watch(status, (s) => {
+  if (s === "success" && import.meta.client) window.scrollTo(0, 0)
+})
+
+// O2 (plan.md §1): панель фильтров на desktop открывается ПОСЛЕ загрузки товаров
+// (status === 'success') — при входе и на SSR панель закрыта, поэтому нет «флипа»
+// контента (mobile больше не «закрывает диалог после маунта»). Открываем ОДИН раз.
+const { width } = useViewport()
+let filterDialogOpened = false
+const openFilterDialogOnce = () => {
+  if (filterDialogOpened || !import.meta.client) return
+  if (status.value === "success" && width.value > 767.98 && shopFilterRef.value) {
+    filterDialogOpened = true
+    shopFilterRef.value.open?.()
+  }
+}
+onMounted(openFilterDialogOnce)
+watch(status, openFilterDialogOnce)
+
 // SEO — страница «все товары» не имеет контент-типа в Strapi, поэтому мета
 // статическая локализованная (паттерн подкатегории адаптирован). ogImage — фон
 // breadcrumbs из Strapi. StructuredData не добавляем (нет источника данных).
@@ -212,9 +235,9 @@ useSeoMeta({
           class="products-page__select"
           :label="t.sortLabel"
           :options="[
-            { value: 'name:asc', label: t.sortName },
-            { value: 'price:asc', label: t.sortPriceAsc },
-            { value: 'price:desc', label: t.sortPriceDesc },
+            { value: 'name:asc', label: pf.optionName },
+            { value: 'price:asc', label: pf.optionPrice },
+            { value: 'price:desc', label: pf.optionPriceDesc },
           ]"
         />
         <span class="products-page__results">
@@ -319,7 +342,15 @@ useSeoMeta({
   }
 
   &__header {
-    // Крошки + панель: констрейнт даёт вложенный __container (см. ниже)
+    // Крошки + панель. Sticky-эксперимент (mobile): продуктовый header липнет ПОД
+    // шапкой сайта (её прилипший низ ~125px на 390×800), контент скролится под ним.
+    // Фон — фон страницы, чтобы контент не просвечивал в зазорах между блоками.
+    @media (max-width: $mobile) {
+      position: sticky;
+      top: toRem(125);
+      z-index: 10;
+      background-color: var(--bg);
+    }
   }
 
   &__container-body {
@@ -358,12 +389,10 @@ useSeoMeta({
 
   &__pagination {
     // Пагинация ВНЕ потока (absolute, якорь — container-body). Прижата к правому
-    // нижнему краю зоны: правый край зоны совпадает с правым краем колонки карточек
-    // и в закрытом, и в открытом состоянии сайдбара (центровка по всей зоне
-    // смещалась бы на ширину сайдбара).
+    // нижнему краю зоны с отступами: 12px от низа, 8px от правого края.
     position: absolute;
-    bottom: 0;
-    right: 0;
+    bottom: toRem(12);
+    right: toRem(8);
   }
 
   &__empty {
@@ -408,7 +437,11 @@ useSeoMeta({
     align-items: center;
     gap: toRem(24);
     flex-wrap: wrap;
-    padding-block-end: toRem(18);
+    // B2 — панель-подложка: мягкий фон объединяет три контроля (бордеры по краям
+    // идут от глобального [class*="__container"] → боковые паддинги контейнера)
+    background-color: var(--bg-product);
+    border-radius: toRem(12);
+    padding-block: toRem(10);
     margin-block-end: toRem(24);
     // Выше mobile-оверлея фильтров (ShowShopFilter position:absolute z-index:9999) —
     // кнопка «Фильтр» остаётся доступной при открытом полноэкранном окне
@@ -421,6 +454,7 @@ useSeoMeta({
       margin-block-end: toRem(10);
       // Отступы ужаты (24→8), иначе на 375px строка не влезает в контейнер
       gap: toRem(8);
+      padding-block: toRem(8);
     }
   }
 
@@ -432,13 +466,14 @@ useSeoMeta({
     // при открытом окне — danger-цвет (см. &_is-open)
     background-color: var(--green-color);
     color: var(--light-color);
-    border: none;
+    // A — единый «хром» с select/results: одинаковая рамка и радиус
+    border: toRem(1) solid var(--border-color);
     cursor: pointer;
     // Высота = высоте select (30px), вертикальные паддинги убраны
     height: toRem(30);
     box-sizing: border-box;
     padding: 0 toRem(12);
-    border-radius: toRem(8);
+    border-radius: toRem(6);
     font-size: toEm(16);
     font-weight: 500;
     transition: background-color var(--transition-duration);
@@ -494,31 +529,30 @@ useSeoMeta({
   }
 
   // Select: прижат вправо (margin-inline-start:auto — замена обёртки __right),
-  // shrink разрешён (flex: 0 1 auto); шрифт стандартный (не «Neucha» как у дефолта).
-  // Эффект «углубления» (inset-тень) убран — перенесён на счётчик результатов.
+  // shrink разрешён (flex: 0 1 auto); шрифт стандартный; без inset-тени.
+  // Короткие подписи («А --> Я» и т.п.) — ширина меньше прежней.
   &__select {
     flex: 0 1 auto;
     min-width: 0;
     margin-inline-start: auto;
 
     :deep(.select) {
-      width: toEm(141);
+      width: toEm(120);
       font-family: inherit;
       box-shadow: none;
     }
 
-    // На mobile USelect узкий (toEm(112)) — текст «Сначала дешевле» (118px) вылезал
-    // за пределы (appearance: base-select). 139px = текст + паддинги + picker-icon
     @media (max-width: $mobile) {
       :deep(.select) {
-        width: toRem(139);
+        width: toRem(120);
         max-width: 100%;
       }
     }
   }
 
   &__results {
-    // Высота = высоте select (30px), вертикальные паддинги убраны
+    // Высота = высоте select (30px). A — единый «хром»: та же рамка и радиус,
+    // что у select/кнопки; эффект «втиснения»/inset убран
     display: inline-flex;
     align-items: center;
     height: toRem(30);
@@ -526,14 +560,9 @@ useSeoMeta({
     font-size: toEm(14);
     color: var(--gray-color);
     white-space: nowrap;
-    // Чип-счётчик с эффектом «углубления» (раньше был у select): тёмная inset-тень
-    // сверху + светлый блик снизу (вдавленный вид)
-    padding-inline: toRem(6);
+    padding-inline: toRem(10);
     border-radius: toRem(6);
-    border: toRem(1) solid rgba(0, 0, 0, 0.25);
-    box-shadow:
-      inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
-      0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+    border: toRem(1) solid var(--border-color);
     background-color: var(--light-color);
 
     @media (max-width: $mobile) {
