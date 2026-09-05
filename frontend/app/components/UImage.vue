@@ -191,9 +191,22 @@ const finalSrc = computed(() => {
   }
 
   &_hero {
-   @media (max-width:$tablet){
+    // В grid-колонке слайда hero картинка может ужиматься (без overflow)
+    min-width: 0;
+
+    // Картинка следует за шириной своей колонки (width:100%) и сжимается первой,
+    // но не больше дизайн-ширины 742. Кап — em (toEm): «резиновая» типографика
+    // body (style guide §6) — при font-size 16 это 742px, к tablet кап мягко
+    // уменьшается вместе со шрифтом. height:auto сохраняет пропорции исходника.
+    .app-image__img {
+      width: 100%;
+      max-width: toEm(742);
+      height: auto;
+    }
+
+    @media (max-width:$tablet){
       max-width: toRem(540);
-   }
+    }
   }
 
   &_product {

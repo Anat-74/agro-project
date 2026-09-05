@@ -28,22 +28,41 @@ const props = defineProps<Props>();
 
 const dialogElement = useTemplateRef<HTMLDialogElement>("dialog-hamburger");
 
+const { currentLocale } = useLocale();
+const route = useRoute();
+
+// Desktop-панель каталога открыта по умолчанию ТОЛЬКО на главной странице.
+// На внутренних страницах она стартует закрытой: иначе панель (высота ~632px,
+// z-index 9999) перекрывала верхний левый угол контента — например, на
+// /ru/products кнопка «Фильтр» оказывалась ПОД панелью и её нельзя было нажать.
+// Главная: путь "/" (дефолтная локаль, 0 сегментов) или "/{locale}" (1 сегмент).
+const isHomePage = computed(() => route.path.split("/").filter(Boolean).length <= 1)
+
 // Ключ состояния: desktop-панель каталога (hamburgerCatalogDesktop) открыта по
-// умолчанию, mobile-оверлей (hamburgerDialog) закрыт до тапа. Градации (HeroGrids,
-// USocials) слушают hamburgerDialog — desktop-панель их не затемняет.
+// умолчанию на главной, mobile-оверлей (hamburgerDialog) закрыт до тапа.
+// Градации (HeroGrids, USocials) слушают hamburgerDialog — desktop-панель их
+// не затемняет.
 const dialogKey = computed(() => props.dialogId || "hamburgerDialog")
 const isDesktopInstance = computed(() => dialogKey.value === "hamburgerCatalogDesktop")
 
 const { open, close, isOpen } = useDialog(dialogKey.value, dialogElement, {
   useShowMethod: true,
-  initialOpen: isDesktopInstance.value, // desktop-панель — открыта по умолчанию (SSR)
+  initialOpen: isDesktopInstance.value && isHomePage.value, // desktop: открыт на главной (SSR-стабильно)
 })
 
-// Desktop-панель открыта при каждом заходе на страницу: useDialog хранит isOpen
-// в глобальном Map, переживающем размонтирование при SPA-навигации
-if (isDesktopInstance.value) {
-  isOpen.value = true
-}
+// Состояние диалога глобально (useState) и переживает SPA-навигацию БЕЗ
+// перемонтирования AppHeader, поэтому при смене маршрута синхронизируем вручную:
+// на главной — панель открыта, на любой другой странице — закрыта.
+// (Ранее блок «if (isDesktopInstance) isOpen = true» открывал панель на КАЖДОЙ
+// странице — из-за этого фильтр на products был недоступен.)
+watch(isHomePage, (home) => {
+  if (!isDesktopInstance.value) return
+  if (home) {
+    if (!isOpen.value) open?.()
+  } else if (isOpen.value) {
+    close?.()
+  }
+}, { immediate: true })
 
 // DOM-ид диалога уникален для каждого инстанса (в документе id не дублируются)
 const dialogElementId = computed(() =>
@@ -51,11 +70,40 @@ const dialogElementId = computed(() =>
 )
 
 const { width } = useViewport()
-// Телепорт — только на mobile (≤768). Выше (desktop) диалог в потоке/под кнопкой
-const isMobile = computed(() => width.value <= 767.98)
+// Телепорт — только на mobile (≤768). Выше (desktop) диалог в потоке/под кнопкой.
+// Гейт на viewportReady: до onMounted (SSR и ПЕРВАЯ гидратация) isMobile === false,
+// поэтому и сервер, и клиент рендерят диалог ОДИНАКОВО — в месте установки, без
+// телепорта. Раньше isMobile считался от width=0 (0 ≤ 767 → true) ещё на сервере:
+// SSR телепортил dialog в body, а на клиенте после реального замера ширины
+// телепорт отключался → Vue гонял dialog туда-обратно (hydration mismatch
+// «expected on client: dialog» + moveTeleport insertBefore на /ru/products).
+// Теперь телепорт включается только ПОСЛЕ монтирования, когда ширина известна.
+const viewportReady = ref(false)
+onMounted(() => {
+  viewportReady.value = true
+})
+const isMobile = computed(() => viewportReady.value && width.value <= 767.98)
 
-const { currentLocale } = useLocale();
-const route = useRoute();
+// Desktop-панель на главной должна «упираться» в НИЗ полосы hero-grids
+// (полоса висит внизу hero-секции и меняет высоту вместе со слайдером) —
+// фиксированной высоты toEm(632) недостаточно. Замеряем расстояние от верха
+// панели до низа полосы и пишем в --catalog-h (паттерн --header-h, products).
+// На страницах без .hero-grids — CSS-фолбэк toEm(632) в свойстве height.
+useMeasureToVar("--catalog-h", {
+  enabled: () => isDesktopInstance.value,
+  active: isOpen,
+  observe: () => document.querySelector(".hero-slider"),
+  measure: () => {
+    const dlg = dialogElement.value
+    const grids = document.querySelector(".hero-grids")
+    if (!dlg || !grids) return null
+    const dlgRect = dlg.getBoundingClientRect()
+    if (dlgRect.height === 0) return null
+    const bottom = grids.getBoundingClientRect().bottom
+    return `${Math.max(0, Math.round(bottom - dlgRect.top))}px`
+  },
+})
+
 const config = useRuntimeConfig();
 const { getProductLink } = useProductLink();
 
@@ -148,7 +196,7 @@ const openHamburger = () => {
 <template>
   <!-- Единый корень: ShowHamburger — fragment, иначе Teleport диалога
        добавляет в grid container-bottom лишний элемент и ломает размещение каталога -->
-  <div class="hamburger" :class="props.visibilityClass">
+  <div class="hamburger" :class="[props.visibilityClass, { hamburger_desktop: isDesktopInstance }]">
   <div :class="['hamburger-menu']">
     <UButton
       :is-open="isOpen"
@@ -391,6 +439,9 @@ const openHamburger = () => {
 <style lang="scss" scoped>
 .hamburger {
   height: 100%;   // корень-обёртка — единый grid-элемент
+  // Родитель для desktop-диалога (он не телепортируется): диалог позиционируется
+  // absolute с top: calc(100% + 22px) — строго ПОД кнопкой (план.md §1.2).
+  position: relative;
 }
 
 .hamburger-menu {
@@ -452,15 +503,29 @@ const openHamburger = () => {
   }
 
   @media (min-width:$mobile) {
-    height: toEm(632);
+    // Высота до НИЗА полосы hero-grids (--catalog-h, JS-замер, план.md §1.3).
+    // Фолбэк toEm(632) — для страниц без .hero-grids (каталог открыт вне главной).
+    height: var(--catalog-h, toEm(632));
     scale: 0;
     translate: 0;
-    // Якорное позиционирование — панель строго под кнопкой (anchor-name
-    // на .hamburger-menu), левый край по левому краю кнопки, зазор 22px
-    position-anchor: --hamburger-menu;
-    position-area: bottom span-right;
-    margin-block-start: toRem(22);
+    // Панель строго под кнопкой, без наложения на неё: .hamburger — position:relative,
+    // диалог absolute, верх = низ обёртки кнопки + зазор 22px.
+    // Раньше: position-anchor/position-area + inset:auto — inset:auto сбрасывал
+    // вычисленные position-area инсеты, диалог оставался в static-position
+    // (верх обёртки) + margin-block-start:22 → накрывал кнопку ~на половину
+    // (низ кнопки 208px, верх диалога 167px). Проверено замером.
+    position: absolute;
+    // Сброс инсетов мобильной базы (inset: 0) — ОБЯЗАТЕЛЬНО до top/inset-inline:
+    // shorthand inset, идущий после top, сбросил бы его в auto (top:auto →
+    // диалог оставался в static-position и накрывал кнопку).
     inset: auto;
+    // Горизонталь: desktop-инстанс — левый край по левому краю кнопки
+    // (.hamburger_desktop ниже). mobile-инстанс на планшете (769–1023, кнопка
+    // 150px справа) — раскрытие ВЛЕВО от кнопки (правый край по правому краю).
+    inset-inline: 0 auto;
+    // Вертикаль: низ обёртки кнопки + зазор 22px (после inset:auto!)
+    top: calc(100% + toRem(22));
+    margin: 0;
     border-radius: toEm(4);
     border-width: 0 toEm(3) toEm(3) toEm(3);
     border-style: solid;
@@ -479,6 +544,12 @@ const openHamburger = () => {
       scale: 1;
       transition: scale 0.1s linear;
     }
+  }
+
+  // Tablet-инстанс (кнопка 150px справа в шапке): панель шире кнопки, её левый
+  // край по inset-inline:0 вылез бы за правый край экрана — раскрываем влево.
+  .hamburger:not(.hamburger_desktop) & {
+    inset-inline: auto 0;
   }
 
   &__items {

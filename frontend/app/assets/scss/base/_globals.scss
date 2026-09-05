@@ -93,11 +93,10 @@ section {
 // ===================================================================
 
 h1 {
-
   font-family: $font-family-cursive;
   font-style: italic;
   color: var(--warning-color);
-  @include m.adaptiveValue("font-size", 36, 28);
+  @include m.adaptiveValue("font-size", 58, 24);
 
   @container style(--locale: be) {
     font-family: $font-family-content;

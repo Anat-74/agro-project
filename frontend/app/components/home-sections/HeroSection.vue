@@ -2,8 +2,64 @@
 import { VISIBILITY_KEY } from "#shared/utils/visibility";
 const { currentLocale } = useLocale();
 const { isContacts } = inject<VisibilityState>(VISIBILITY_KEY)!;
-// Сдвиг hero при открытой desktop-панели каталога (ShowHamburger)
+// Сдвиг слайдера при открытой desktop-панели каталога (ShowHamburger)
 const { isCatalogOpen } = useCatalogPanel();
+
+// ===== Двухфазный GPU-сдвиг слайдера (вариант B, docs/style/patterns.md) =====
+// Layout-класс (width/margin/колонки) НЕ привязан к isCatalogOpen напрямую:
+// при открытии он применяется мгновенно, а движение ведёт transform (GPU).
+const layoutOpen = ref(isCatalogOpen.value)
+
+const SLIDER_SHIFT_CLASS = "hero-slider__slider_catalog-shifted"
+const SLIDER_NO_ANIM_CLASS = "hero-slider__slider_no-transition"
+
+const getSlider = () =>
+  document.querySelector<HTMLElement>(".hero-slider__slider")
+
+const setShifted = (shifted: boolean) =>
+  getSlider()?.classList.toggle(SLIDER_SHIFT_CLASS, shifted)
+
+const applyClosed = () => {
+  // Сброс позы + снятие layout-класса (раскладка в полную ширину).
+  // transition отключён — ОДИН reflow в момент вызова, без перевёрстки в кадрах.
+  const slider = getSlider()
+  if (!slider) return
+  slider.classList.add(SLIDER_NO_ANIM_CLASS)
+  setShifted(false)
+  layoutOpen.value = false
+  slider.classList.remove(SLIDER_NO_ANIM_CLASS)
+}
+
+watch(isCatalogOpen, (open, wasOpen) => {
+  if (!import.meta.client) return
+  if (open && !wasOpen) {
+    // === Открытие: layout → финал МГНОВЕННО, стартовая GPU-поза «под панелью»,
+    // затем transform: -shift → 0 (движение на GPU, без перевёрстки текста) ===
+    layoutOpen.value = true
+    nextTick(() => {
+      const s = getSlider()
+      if (!s) return
+      s.classList.add(SLIDER_NO_ANIM_CLASS)
+      setShifted(true)
+      void s.offsetWidth // принудительный reflow: layout и поза в одном состоянии
+      s.classList.remove(SLIDER_NO_ANIM_CLASS)
+      setShifted(false) // transition transform: -shift → 0 (GPU)
+    })
+  } else if (!open && wasOpen) {
+    // === Закрытие: расширяемся в полную ширину СРАЗУ (панель ещё открыта и
+    // перекрывает левую часть — перевёрстка происходит «под ней», один reflow).
+    // Затем панель закрывается сама (scale, GPU). НЕТ «выстрела» в конце
+    // закрытия, из-за которого контент дёргался ПОСЛЕ закрытия.
+    applyClosed()
+  }
+})
+
+onUnmounted(() => {
+  const slider = getSlider()
+  if (slider) {
+    slider.classList.remove(SLIDER_NO_ANIM_CLASS, SLIDER_SHIFT_CLASS)
+  }
+})
 
 interface Props {
   slides: HeroSlide[];
@@ -18,7 +74,7 @@ const { slides, heroGrids } = props;
 
 <template>
   <section 
-  :class="['hero-slider', { 'hero-slider_is-visible': isContacts }, { 'hero-slider_is-margin': heroGrids?.[3]?.isVisible===false}, { 'hero-slider_catalog-open': isCatalogOpen }]" 
+  :class="['hero-slider', { 'hero-slider_is-visible': isContacts }, { 'hero-slider_is-margin': heroGrids?.[3]?.isVisible===false}]" 
   aria-labelledby="hero"
   >
     <USlider
@@ -26,6 +82,7 @@ const { slides, heroGrids } = props;
       :class="[
         'hero-slider__slider',
         { 'hero-slider__slider_is-visible': isContacts },
+        { 'hero-slider__slider_catalog-open': layoutOpen },
       ]"
       :slides="slides"
       variant="hero"
@@ -108,24 +165,57 @@ const { slides, heroGrids } = props;
     }
   }
 
-  // Открытая desktop-панель каталога — hero уступает место (сдвиг вправо).
-  // Выше $tablet: на mobile панель-оверлей, сдвиг не нужен
-  @media (min-width: $tablet) {
-    transition:
-      filter var(--transition-duration),
-      margin-inline-start var(--transition-duration);
-
-    &_catalog-open {
-      margin-inline-start: var(--catalog-width);
-    }
-  }
-
+  // Открытая desktop-панель каталога — сдвигается ТОЛЬКО слайдер
+  // (.hero-slider__slider_catalog-open): секция остаётся на всю ширину,
+  // т.к. к ней привязана полоса hero-grids (absolute, вне потока) — она
+  // не должна уезжать (план.md §1.2-1.3).
+  // Сдвиг — на --catalog-shift (styles.scss: геометрия контейнера шапки +
+  // ширина панели + зазор) = «правый край панели + зазор» на любой ширине.
   &__slider {
-   transition: background-color .4s;
-   &_is-visible {
-      transition: background-color var(--transition-duration);
+    // Двухфазный GPU-сдвиг (вариант B): layout (width/margin/колонки) применяется
+    // МГНОВЕННО (без transition), движение — только transform (GPU, нижний слой).
+    // Промежуточная поза &_catalog-shifted = «сдвинут влево, под панель».
+    transition:
+      background-color .4s,
+      transform var(--transition-duration-fast),
+      filter var(--transition-duration);
+
+    // Сброс анимации для «мгновенных» фаз (переключение layout/позы без перехода)
+    &_no-transition {
+      transition: none !important;
+    }
+
+    // GPU-поза «под панелью»: старт открытия / финиш закрытия (translateX, не layout)
+    &_catalog-shifted {
+      transform: translateX(calc(-1 * var(--catalog-shift)));
+    }
+
+    &_is-visible {
       filter: blur(9px);
-   }
+    }
+
+    // Открытая desktop-панель каталога — финальная РАСКЛАДКА слайдера
+    // (без transition; анимацию ведёт transform, см. выше). USlider задаёт
+    // .slider { width:100% } — margin поверх НЕ сужает ширину, поэтому width
+    // переопределяем: контент занимает оставшееся место.
+    &_catalog-open {
+      width: calc(100% - var(--catalog-shift));
+      margin-inline-start: var(--catalog-shift);
+    }
+
+    // Каталог открыт → слайд узкий (сдвиг отдал часть ширины). В базовой раскладке
+    // USlider колонка картинки — auto (max-content ~742px), текст получал остаток
+    // и «раздавливался» до 48–62px. Переключаем слайд на «сжимаемые» пропорции:
+    // обе колонки minmax(0, fr) — картинка уменьшается первой (width:100% +
+    // max-width в UImage), тексту всегда достаётся доля. Закрыто (полная ширина) —
+    // базовые auto/1fr из USlider, картинка в натуральную ширину.
+    &_catalog-open {
+      :deep(.slider__slide) {
+        grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+
+        > * { min-width: 0; }
+      }
+    }
   }
 
   &__text-content {
@@ -159,7 +249,6 @@ const { slides, heroGrids } = props;
 
   &__title {
     margin-block-end: toEm(4);
-    @include adaptiveValue("font-size", 62, 28);
 
     @media (max-width: $tablet) {
       text-align: center;

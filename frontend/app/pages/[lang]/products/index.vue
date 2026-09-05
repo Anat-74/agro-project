@@ -29,22 +29,18 @@ onBeforeRouteLeave(() => {
 // не учитывает transform) и кладём её в CSS-переменную --header-h на :root.
 // .products-page поднимается на эту высоту transform'ом (GPU), шапка уезжает
 // translateY(-100%) — движение без layout-переходов (плавно на телефоне).
-watch(
-  filterDialogOpen,
-  (open) => {
-    // document есть только на клиенте (SSR-рендер без него)
-    if (!import.meta.client) return
+// Единый композабл-паттерн «JS-замер → CSS-переменная» (useMeasureToVar):
+// пересчёт при открытии (rAF после layout) + ResizeObserver на .header.
+useMeasureToVar("--header-h", {
+  enabled: () => filterDialogOpen.value,
+  active: filterDialogOpen,
+  observe: () => document.querySelector(".header"),
+  measure: () => {
     const header = document.querySelector<HTMLElement>(".header")
-    if (!header) return
-    // setProperty до того, как класс products-page_filter-open применится
-    // в render (flush 'pre' — до обновления компонента)
-    document.documentElement.style.setProperty(
-      "--header-h",
-      `${open ? header.offsetHeight : 0}px`,
-    )
+    if (!header) return null
+    return `${header.offsetHeight}px`
   },
-  { immediate: true },
-)
+})
 
 // ===== Состояние фильтров (сайдбар + сортировка) =====
 const category = ref("");
@@ -267,7 +263,7 @@ useSeoMeta({
       <ULoader v-show="isLoading" />
 
       <!-- Список карточек: flex:1 (колонка результатов) + grid + контейнер cards.
-           aria-label именует список (обёртка __content удалена) -->
+           aria-label именует список -->
       <ul
         v-if="products.length"
         class="products-page__card-list"
@@ -347,7 +343,7 @@ useSeoMeta({
     // Фон — фон страницы, чтобы контент не просвечивал в зазорах между блоками.
     @media (max-width: $mobile) {
       position: sticky;
-      top: toRem(125);
+      // top: toRem(125);
       z-index: 10;
       background-color: var(--bg);
     }

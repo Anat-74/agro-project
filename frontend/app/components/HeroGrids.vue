@@ -5,6 +5,10 @@ const { currentLocale } = useLocale();
 const t = computed(() => visuallyHiddenTranslations[currentLocale.value]);
 const { isContacts } = inject<VisibilityState>(VISIBILITY_KEY)!;
 const { isOpen } = useDialog("hamburgerDialog");
+// Полоса grid тоже приглушается при открытой desktop-панели каталога: диалог
+// (высотой до низа полосы) перекрывает её левую часть, и полоса читается как
+// «фон» за панелью (паттерн is-visible — лёгкий blur 4px, см. ниже в стилях).
+const { isOpen: isCatalogOpen } = useDialog("hamburgerCatalogDesktop");
 
 interface Props {
   grids: HeroGrid[];
@@ -20,7 +24,7 @@ const { grids } = defineProps<Props>();
   <ul
     :class="[
       'hero-grids hero-grids__container',
-      { 'hero-grids_is-visible': isContacts || isOpen },
+      { 'hero-grids_is-visible': isContacts || isOpen || isCatalogOpen },
     ]"
   >
     <li
