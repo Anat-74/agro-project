@@ -594,11 +594,12 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   }
 
   // ==== Цена (двойной ползунок — трек/ручки в UInput range-dual) ====
+  // Вертикальный/горизонтальный запас под ручки теперь ВНУТРИ трека (UInput),
+  // поэтому у блока цены паддингов нет. Иначе: padding-block-end с content-box
+  // оставлял 6px-«хвост», в который помещалась линия слайдера (4px) — секция
+  // не схлопывалась полностью, а верх ручки резался overflow:hidden.
   &__price {
-    // Ручки (16px) выступают за трек (4px) на 6-8px. content имеет overflow:hidden
-    // (для grid-сворачивания details) — без паддингов ручки обрезаются
-    padding-inline: toRem(8);
-    padding-block-end: toRem(6);
+    padding: 0;
   }
 
   &__price-values {

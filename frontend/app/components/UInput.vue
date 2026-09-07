@@ -480,8 +480,17 @@ const onRangeDualTrackClick = (e: MouseEvent) => {
   // ===== Двойной ползунок (range-dual) =====
   &__range-dual-track {
     position: relative;
+    // content-box обязателен: глобально box-sizing:border-box, а при height:4 +
+    // padding-block 8×2 content схлопнулся бы в 0 и линия (background-clip:
+    // content-box) не рисовалась. content-box → content 4px, линия по центру 20px.
+    box-sizing: content-box;
     height: toRem(4);
-    padding-inline: toRem(10); // место под ручку ВНУТРИ трека (не обрезается)
+    // Воздух под ручку (20px) ВНУТРИ трека: content 4px + padding 8px×2 = 20px,
+    // линия по центру. Так ручка целиком помещается в треке и не режется
+    // overflow:hidden у прародителя (details-коллапс), и при закрытии секции
+    // трек схлопывается в 0 (нет призрачного паддинга на блоке цены).
+    padding-block: toRem(8);
+    padding-inline: toRem(10);
     background: var(--border-color);
     background-clip: content-box; // линия только во внутренней «рабочей» зоне
     border-radius: toRem(2);
