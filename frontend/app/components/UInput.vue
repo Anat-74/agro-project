@@ -71,6 +71,27 @@ const onRangeMaxInput = (e: Event) => {
   const v = Number((e.target as HTMLInputElement).value)
   model.value = [Math.min(v, modelTuple.value[0]), v]
 }
+
+// Клик по треку — перемещение БЛИЖАЙШЕЙ ручки (как в одинарном range у colorMode).
+// Инпуты range-dual имеют pointer-events:none (иначе верхний перехватывал бы оба),
+// поэтому клик ловим на самой обёртке-треке: считаем % от offsetX → значение и
+// двигаем ту ручку, что ближе, с сохранением min ≤ max.
+const rangeDualTrack = useTemplateRef<HTMLElement>("rangeDualTrack")
+const onRangeDualTrackClick = (e: MouseEvent) => {
+  const track = rangeDualTrack.value
+  if (!track) return
+  const rect = track.getBoundingClientRect()
+  const ratio = (e.clientX - rect.left) / rect.width
+  const raw = min + ratio * (max - min)
+  const value = Math.min(max, Math.max(min, Math.round(raw / step) * step))
+  const curMin = modelTuple.value[0]
+  const curMax = modelTuple.value[1]
+  if (Math.abs(value - curMin) <= Math.abs(value - curMax)) {
+    model.value = [Math.min(value, curMax), curMax]
+  } else {
+    model.value = [curMin, Math.max(value, curMin)]
+  }
+}
 </script>
 
 <template>
@@ -148,7 +169,7 @@ const onRangeMaxInput = (e: Event) => {
     </div>
 
     <!-- Двойной ползунок (диапазон): модель — кортеж [min, max] -->
-    <div v-else-if="type === 'range-dual'" class="u-input__range-dual-track">
+    <div v-else-if="type === 'range-dual'" ref="rangeDualTrack" class="u-input__range-dual-track" @click="onRangeDualTrackClick">
       <div
         class="u-input__range-dual-fill"
         :style="{ left: `${minPct}%`, right: `${maxPct}%` }"
@@ -450,6 +471,12 @@ const onRangeMaxInput = (e: Event) => {
     height: toRem(4);
     background: var(--border-color);
     border-radius: toRem(2);
+    // Рабочая ширина = ширине контейнера минус радиус ручки (16px + 2px бордер
+    // => 10px) с каждой стороны. Иначе ручка при 0%/100% центрируется на самом
+    // краю трека и наполовину уходит за границу — её обрезает
+    // overflow:hidden у родителя (shop-filters__content). Из-за этого же заливка
+    // и ручки не совпадают по краям.
+    margin-inline: toRem(10);
   }
 
   &__range-dual-fill {

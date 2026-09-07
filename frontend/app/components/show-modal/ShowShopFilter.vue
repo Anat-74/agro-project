@@ -122,6 +122,17 @@ const onRangeChange = (range: [number, number]) => {
   emit("update:priceMax", range[1])
 }
 
+// Ввод диапазона руками (input type=number). Коммит по @change (blur/Enter),
+// кламп в [0, PRICE_MAX] и min ≤ max; ползунок подхватывает через
+// :model-value="[localMin, localMax]" → onRangeChange.
+const clampPrice = (v: number) => Math.min(PRICE_MAX, Math.max(0, Math.round(v || 0)))
+const onPriceInput = (key: "min" | "max", e: Event) => {
+  const raw = Number((e.target as HTMLInputElement).value)
+  if (Number.isNaN(raw)) return
+  if (key === "min") onRangeChange([clampPrice(Math.min(raw, localMax.value)), localMax.value])
+  else onRangeChange([localMin.value, clampPrice(Math.max(raw, localMin.value))])
+}
+
 </script>
 
 <template>
@@ -197,9 +208,29 @@ const onRangeChange = (range: [number, number]) => {
                     @update:model-value="onRangeChange"
                   />
                   <div class="shop-filters__price-values">
-                    <span class="shop-filters__price-value">{{ formatPrice(localMin) }}</span>
+                    <input
+                      class="shop-filters__price-value-input"
+                      type="number"
+                      :min="0"
+                      :max="PRICE_MAX"
+                      step="1"
+                      :value="localMin"
+                      aria-label="Минимальная цена"
+                      @input="onPriceInput('min', $event)"
+                      @change="onPriceInput('min', $event)"
+                    />
                     <span class="shop-filters__price-separator">—</span>
-                    <span class="shop-filters__price-value">{{ formatPrice(localMax) }}</span>
+                    <input
+                      class="shop-filters__price-value-input"
+                      type="number"
+                      :min="0"
+                      :max="PRICE_MAX"
+                      step="1"
+                      :value="localMax"
+                      aria-label="Максимальная цена"
+                      @input="onPriceInput('max', $event)"
+                      @change="onPriceInput('max', $event)"
+                    />
                   </div>
                 </div>
               </div>
@@ -346,6 +377,26 @@ const onRangeChange = (range: [number, number]) => {
     }
   }
 
+  // Desktop/планшет: панель НЕ растягиваем по вертикали. Список фильтров
+  // длинный (категории+цена+теги+акционный блок с картинками ~1700px) —
+  // если он остаётся «самым высоким» flex-элементом, container-body тянется
+  // к его высоте, а ul (карточки, flex:1) принудительно надувается (grid-ряды
+  // 518px при карточке 305px → большие пустоты между рядами).
+  // Решение: панель вьюпорт-высоты + внутренний скролл (после «Акционных
+  // товаров» список скроллится внутри диалога). Высота задана ЯВНО (не через
+  // max-height по 100% родителя — из-за областей это давало 0).
+  @media (min-width: $mobile) {
+    align-self: flex-start;
+    position: sticky;
+    top: toRem(12);
+    height: calc(100dvh - toRem(24));
+
+    &__dialog {
+      height: 100%;
+      overflow-y: auto;
+    }
+  }
+
   // ===== Диалог сайдбара (без телепорта — в потоке страницы) =====
   &__dialog {
     // show() диалог по умолчанию absolute по центру — возвращаем в поток
@@ -380,6 +431,10 @@ const onRangeChange = (range: [number, number]) => {
       opacity: 1;
       height: 100%;
       backdrop-filter: blur(22px);
+      // Блюр не анимируем: @starting-style задаёт диалогу стартовый opacity:0 —
+      // иначе при открытии блюр фейдится (opacity 0→1). На mobile фейд делает
+      // сайдбар, диалог (в т.ч. его blur) появляется сразу.
+      transition: none;
     }
 
     &[open] {
@@ -550,6 +605,28 @@ const onRangeChange = (range: [number, number]) => {
     color: var(--color);
     // Числа стоимости — ПОД инпутом: отступ от инпута, снизу отступ не нужен
     margin-block-start: toRem(5);
+  }
+
+  // Инпуты диапазона цены (user может ввести диапазон руками)
+  &__price-value-input {
+    width: toEm(72);
+    padding: toEm(2) toEm(6);
+    border: toRem(1) solid var(--border-color);
+    border-radius: toRem(4);
+    color: var(--color);
+    background-color: var(--bg);
+    text-align: center;
+    font-size: toEm(14);
+    // Скрыть «стрелочки» number в некоторых браузерах (аккуратно, только webkit)
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    &[type="number"] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
   }
 
   &__price-separator {

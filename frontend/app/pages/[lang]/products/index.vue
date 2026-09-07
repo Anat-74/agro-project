@@ -342,7 +342,7 @@ useSeoMeta({
     // шапкой сайта (её прилипший низ ~125px на 390×800), контент скролится под ним.
     // Фон — фон страницы, чтобы контент не просвечивал в зазорах между блоками.
     @media (max-width: $mobile) {
-      position: sticky;
+      // position: sticky;
       // top: toRem(125);
       z-index: 10;
       background-color: var(--bg);
@@ -358,6 +358,15 @@ useSeoMeta({
     // Имя __container → глобальный [class*="__container"]: max-width 1420 + центр
     // + боковые паддинги. На desktop это БЛОК-ребёнок section → центрирование
     // работает. На mobile — flex-ребёнок колонки (margin-inline нейтрализован выше).
+
+    // Desktop/планшет: НЕ растягиваем детей по высоте. Иначе ul (карточки, flex:1)
+    // принудительно тянулся к высоте самого высокого flex-элемента — длинного
+    // сайдбара фильтров (~1700px), и grid-ряды «надувались» до 518px при карточке
+    // 305px → большие пустоты между рядами. С align-items:start каждый держит свою
+    // натуральную высоту (ряды всегда 305px). Кап/скролл сайдбара — в ShowShopFilter.
+    @media (min-width: $mobile) {
+      align-items: flex-start;
+    }
 
     @media (max-width: $mobile) {
       flex-direction: column;
