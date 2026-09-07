@@ -96,7 +96,7 @@ export const useProductsFilters = (
     // Скролл — ВСЕГДА (и при пагинации через URL-навигацию, и при сбросе фильтра).
     // pushQuery — только если изменение не пришло из URL (иначе эхо-loop).
     if (!applyingUrl) pushQuery()
-    window.scrollTo({ top: 0, behavior: "instant" })
+    window.scrollTo({ top: 0, behavior: "smooth" })
   })
 
   // Внешние изменения (back/forward, прямой переход по ссылке) — перечитать refs
