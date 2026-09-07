@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { shopFiltersTranslations } from '~/locales/shopFilters'
+import { productFilterTranslations } from '~/locales/productFilter'
 import { buttonTranslations } from '~/locales/button'
 
 const { find } = useStrapi();
 const { currentLocale } = useLocale();
 const t = computed(() => shopFiltersTranslations[currentLocale.value])
+const pf = computed(() => productFilterTranslations[currentLocale.value])
 const bt = computed(() => buttonTranslations[currentLocale.value])
 
 interface Props {
@@ -12,6 +14,7 @@ interface Props {
   priceMin?: number
   priceMax?: number
   tags?: string[]
+  sort?: string
   // Блок фильтров (тулбар), за уходом которого следим для плавающей кнопки
   observeTarget?: string
 }
@@ -21,6 +24,7 @@ const props = withDefaults(defineProps<Props>(), {
   priceMin: 0,
   priceMax: 2000,
   tags: () => [],
+  sort: "name:asc",
   observeTarget: ".products-page__container-top",
 })
 
@@ -29,6 +33,7 @@ const emit = defineEmits<{
   "update:priceMin": [v: number]
   "update:priceMax": [v: number]
   "update:tags": [v: string[]]
+  "update:sort": [v: string]
 }>()
 
 // Диалог сайдбара фильтров: show() (не модальный), как ShowHamburger.
@@ -175,15 +180,32 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   <div class="show-shop-filter">
     <dialog id="dialogShopFilter" ref="dialog-shop-filter" class="show-shop-filter__dialog" :aria-label="t.filterTitle" :open="isOpen">
       <aside class="shop-filters">
-            <!-- Кнопка закрытия (mobile): теперь оверлей position:fixed покрывает
-                 вьюпорт включая тулбар, поэтому закрытие — изнутри панели (как у
-                 корзины/каталога). На desktop скрыта (рейл закрывается кнопкой в
-                 тулбаре). -->
+            <!-- Кнопка закрытия (mobile): оверлей position:fixed покрывает вьюпорт
+                 включая тулбар, поэтому закрытие — изнутри панели (как у
+                 корзины/каталога). Иконка обязательна: variant="close" не рендерит
+                 её сам. На desktop скрыта (рейл закрывается кнопкой в тулбаре). -->
             <UButton
               class="shop-filters__close"
               variant="close"
               :aria-label="bt.ariaLabelDialogClosed"
               @click="close?.()"
+            >
+              <Icon name="mingcute:close-line" />
+            </UButton>
+
+            <!-- Сортировка (mobile): оверлей накрывает тулбар, поэтому USelect
+                 продублирован в диалоге (скрыт на desktop — там сортировка в
+                 тулбаре). Связан с тем же `sort`, что и на странице. -->
+            <USelect
+              class="shop-filters__sort"
+              :model-value="sort"
+              :label="t.sortLabel"
+              :options="[
+                { value: 'name:asc', label: pf.optionName },
+                { value: 'price:asc', label: pf.optionPrice },
+                { value: 'price:desc', label: pf.optionPriceDesc },
+              ]"
+              @update:model-value="emit('update:sort', $event)"
             />
             <!-- Категории: скрытый заголовок (у section обязан быть) -->
             <section
@@ -529,13 +551,30 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   flex-shrink: 0;
   color: var(--color);
 
-  // Кнопка закрытия (mobile): скрыта на desktop (там закрывает кнопка в тулбаре)
+  // Кнопка закрытия (mobile): скрыта на desktop (там закрывает кнопка в тулбаре).
+  // На mobile — position:fixed top-right: оверлей fixed, а кнопка всегда сверху
+  // (не «уезжает» при внутреннем скролле панели).
   &__close {
     display: none;
 
     @media (max-width: $mobile) {
       display: inline-flex;
-      margin-block-end: toRem(12);
+      position: fixed;
+      top: toRem(12);
+      right: toRem(12);
+      z-index: 10000;
+      // Иконка тёмная на светлой панели (перебиваем --light-color из variant=close)
+      color: var(--color);
+    }
+  }
+
+  // Сортировка (mobile): скрыта на desktop (там USelect в тулбаре)
+  &__sort {
+    display: none;
+
+    @media (max-width: $mobile) {
+      display: block;
+      margin-block-end: toRem(16);
     }
   }
 

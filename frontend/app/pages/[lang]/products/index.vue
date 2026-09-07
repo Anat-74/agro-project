@@ -13,33 +13,15 @@ const vh = computed(() => visuallyHiddenTranslations[currentLocale.value])
 
 const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopFilter")
 
-// Глобальное состояние диалога фильтров — для класса на странице (как в AppHeader/
-// BackgroundPopover). Template ref (shopFilterRef) нужен только кнопке: toggle/aria.
-const { isOpen: filterDialogOpen } = useDialog("shopFilterDialog")
+// Глобальное состояние диалога фильтров. Template ref (shopFilterRef) нужен
+// кнопке-тумблеру и O2-открытию: toggle/open/aria. Класс на странице для
+// «подъёма» контента больше не нужен (вариант C: fixed-оверлей + body-lock
+// сохраняют скролл, механика --header-h удалена).
 
 // При уходе со страницы (например, клик «Главное» в breadcrumbs) закрываем диалог:
-// иначе isOpen остаётся true (глобальный Map) и шапка на главной скрыта.
-// close берём из template ref: id-only useDialog возвращает только isOpen.
+// иначе isOpen остаётся true (глобальный Map).
 onBeforeRouteLeave(() => {
   shopFilterRef.value?.close?.()
-})
-
-// JS-вариант анимации (plan.md §3): при ОТКРЫТИИ фильтра меряем фактическую
-// высоту глобальной шапки (.header, offsetHeight — реальный layout, без margin,
-// не учитывает transform) и кладём её в CSS-переменную --header-h на :root.
-// .products-page поднимается на эту высоту transform'ом (GPU), шапка уезжает
-// translateY(-100%) — движение без layout-переходов (плавно на телефоне).
-// Единый композабл-паттерн «JS-замер → CSS-переменная» (useMeasureToVar):
-// пересчёт при открытии (rAF после layout) + ResizeObserver на .header.
-useMeasureToVar("--header-h", {
-  enabled: () => filterDialogOpen.value,
-  active: filterDialogOpen,
-  observe: () => document.querySelector(".header"),
-  measure: () => {
-    const header = document.querySelector<HTMLElement>(".header")
-    if (!header) return null
-    return `${header.offsetHeight}px`
-  },
 })
 
 // ===== Состояние фильтров (сайдбар + сортировка) — единый источник: URL =====
@@ -170,7 +152,7 @@ useSeoMeta({
 
 <template>
   <section
-    :class="['products-page', { 'products-page_filter-open': filterDialogOpen }]"
+    class="products-page"
     aria-labelledby="products-page-title"
   >
     <!-- Скрытый H1: на странице нет видимого главного заголовка,
@@ -239,10 +221,12 @@ useSeoMeta({
         :price-min="priceMin"
         :price-max="priceMax"
         :tags="tags"
+        :sort="sort"
         @update:category="category = $event"
         @update:price-min="priceMin = $event"
         @update:price-max="priceMax = $event"
         @update:tags="tags = $event"
+        @update:sort="sort = $event"
       />
 
       <!-- Лоадер — самопозиционирующийся (fixed, центр вьюпорта): ставим просто
@@ -524,6 +508,11 @@ useSeoMeta({
       width: toEm(120);
       font-family: inherit;
       box-shadow: none;
+    }
+
+    // На mobile сортировка перенесена в диалог фильтров (оверлей накрывает тулбар)
+    @media (max-width: $mobile) {
+      display: none;
     }
 
     @media (max-width: $mobile) {
