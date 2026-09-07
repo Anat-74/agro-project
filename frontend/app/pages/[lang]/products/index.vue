@@ -308,21 +308,13 @@ useSeoMeta({
     }
   }
 
-  // Открытый диалог фильтров (mobile) — JS-вариант (plan.md §3):
-  // страница ПОДНИМАЕТСЯ на высоту шапки через transform (GPU), а не через
-  // layout (шапка тоже уезжает transform'ом). Ни одного height-перехода по
-  // кадрам → без reflow/дёрганья. --header-h мерит JS (watcher на открытие).
-  // Кламп height:100dvh — скролл-лок + размер оверлея (1 reflow в момент открытия).
-  // transition живёт в БАЗОВОМ mobile-состоянии: анимируются и открытие, и закрытие
-  @media (max-width: $mobile) {
-    transition: transform var(--transition-duration-fast);
-
-    &_filter-open {
-      height: 100dvh;
-      overflow: hidden;
-      transform: translateY(calc(-1 * var(--header-h, 0px)));
-    }
-  }
+  // Открытый диалог фильтров (mobile) — JS-вариант (plan.md §3) больше не
+  // «схлопывает» страницу. Раньше блок &_filter-open задавал height:100dvh +
+  // overflow:hidden + translateY(-header-h): высота документа менялась →
+  // window.scrollY сбрасывался в 0 (при открытии/закрытии «уезжал» экран).
+  // Теперь оверлей фильтра — position:fixed (ShowShopFilter), фон блокируется
+  // body-lock'ом (overflow:hidden в _globals), который НЕ меняет высоту → скролл
+  // сохраняется (как у модального диалога корзины).
 
   &__header {
     // Крошки + панель. Sticky-эксперимент (mobile): продуктовый header липнет ПОД

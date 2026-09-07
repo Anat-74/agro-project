@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { shopFiltersTranslations } from '~/locales/shopFilters'
+import { buttonTranslations } from '~/locales/button'
 
 const { find } = useStrapi();
 const { currentLocale } = useLocale();
 const t = computed(() => shopFiltersTranslations[currentLocale.value])
+const bt = computed(() => buttonTranslations[currentLocale.value])
 
 interface Props {
   category?: string
@@ -173,6 +175,16 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   <div class="show-shop-filter">
     <dialog id="dialogShopFilter" ref="dialog-shop-filter" class="show-shop-filter__dialog" :aria-label="t.filterTitle" :open="isOpen">
       <aside class="shop-filters">
+            <!-- Кнопка закрытия (mobile): теперь оверлей position:fixed покрывает
+                 вьюпорт включая тулбар, поэтому закрытие — изнутри панели (как у
+                 корзины/каталога). На desktop скрыта (рейл закрывается кнопкой в
+                 тулбаре). -->
+            <UButton
+              class="shop-filters__close"
+              variant="close"
+              :aria-label="bt.ariaLabelDialogClosed"
+              @click="close?.()"
+            />
             <!-- Категории: скрытый заголовок (у section обязан быть) -->
             <section
               class="shop-filters__section"
@@ -400,13 +412,15 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     }
   }
 
-  // Mobile (≤768): оверлей всегда в потоке (position:absolute, якорь —
-  // .products-page__container-body). breadcrumbs/top-bar остаются ВЫШЕ оверлея, поэтому
-  // шапка должна схлопываться (освобождает место). display НЕ перещёлкивается
-  // (источник дёрганья). Скрытие через opacity/visibility/pointer-events:
-  // visibility: hidden после transition (как display с задержкой), но без скачка.
+  // Mobile (≤768): оверлей — position:fixed (на весь вьюпорт). Раньше был
+  // position:absolute, заякоренный в container-body, а страница «схлопывалась»
+  // (height:100dvh) — это сбрасывало window.scrollY в 0 (экран «уезжал»).
+  // fixed + body-lock (body:has(...){overflow:hidden} в _globals — НЕ меняет
+  // высоту) → высота документа сохраняется → скролл не сбрасывается, как у
+  // модального диалога корзины. display НЕ перещёлкивается (источник дёрганья).
+  // Скрытие через opacity/visibility/pointer-events.
   @media (max-width: $mobile) {
-    position: absolute;
+    position: fixed;
     inset: 0;
     z-index: 9999;
 
@@ -514,6 +528,16 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   width: 100%;
   flex-shrink: 0;
   color: var(--color);
+
+  // Кнопка закрытия (mobile): скрыта на desktop (там закрывает кнопка в тулбаре)
+  &__close {
+    display: none;
+
+    @media (max-width: $mobile) {
+      display: inline-flex;
+      margin-block-end: toRem(12);
+    }
+  }
 
   &__section {
     margin-block-end: toRem(24);
