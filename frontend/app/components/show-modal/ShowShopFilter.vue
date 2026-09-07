@@ -10,6 +10,8 @@ interface Props {
   priceMin?: number
   priceMax?: number
   tags?: string[]
+  // Блок фильтров (тулбар), за уходом которого следим для плавающей кнопки
+  observeTarget?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -17,6 +19,7 @@ const props = withDefaults(defineProps<Props>(), {
   priceMin: 0,
   priceMax: 2000,
   tags: () => [],
+  observeTarget: ".products-page__container-top",
 })
 
 const emit = defineEmits<{
@@ -45,6 +48,37 @@ const toggle = () => {
   else open?.()
 }
 defineExpose({ open, close, isOpen, toggle })
+
+// ===== Плавающая кнопка «Фильтр» (mobile) — самодостаточность компонента =====
+// Компонент сам управляет открытием и умеет показывать свою кнопку-плавашку,
+// когда "родной" блок фильтров ушёл за верх при скролле. Появляется/исчезает
+// плавно (GPU: opacity/transform), скрыта при открытом диалоге (оверлей).
+// viewportReady: ширина на SSR неизвестна (0 → 0<=767 = true) — гейтим, чтобы
+// плавашка не рендерилась на сервере/desktop (иначе SSR-флип).
+const viewportReady = ref(false)
+const isMobile = computed(() => viewportReady.value && width.value <= 767.98)
+const toolbarGone = ref(false)
+const floatVisible = computed(
+  () => isMobile.value && !isOpen.value && toolbarGone.value,
+)
+
+let observer: IntersectionObserver | undefined
+onMounted(() => {
+  if (!import.meta.client) return
+  viewportReady.value = true
+  if (!isMobile.value) return
+  const el = document.querySelector(props.observeTarget)
+  if (!el) return
+  observer = new IntersectionObserver(
+    ([entry]) => {
+      // Блок ушёл за верх (не пересекает вьюпорт) → показываем плавашку
+      toolbarGone.value = !entry.isIntersecting
+    },
+    { threshold: 0 },
+  )
+  observer.observe(el)
+})
+onUnmounted(() => observer?.disconnect())
 
 // ===== Категории (с количеством товаров) =====
 const { data: categoriesData } = useCachedAsyncData(
@@ -303,6 +337,26 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
             </section>
           </aside>
     </dialog>
+
+    <!-- Плавающая кнопка «Фильтр» (mobile): появляется, когда блок фильтров
+         ушёл за верх, исчезает при возврате/при открытом диалоге. Телепорт в
+         body — чтобы position:fixed не ломался о transform-предка, и только на
+         клиенте (v-if=isMobile на SSR false → без SSR-флипа). -->
+    <Teleport to="body">
+      <button
+        v-if="isMobile"
+        type="button"
+        class="show-shop-filter__float"
+        :class="{ 'show-shop-filter__float_visible': floatVisible }"
+        :aria-label="t.filterTitle"
+        :aria-expanded="isOpen"
+        aria-controls="dialogShopFilter"
+        @click="toggle"
+      >
+        <Icon name="mingcute:filter-line" />
+        <span>{{ t.filterTitle }}</span>
+      </button>
+    </Teleport>
   </div>
 </template>
 
@@ -763,6 +817,55 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
       min-height: toRem(100);
       padding: toRem(18) toRem(16);
     }
+  }
+}
+
+// ===== Плавающая кнопка «Фильтр» (mobile, самодостаточность компонента) =====
+// Top-level (не вложено в .show-shop-filter): кнопка телепортируется в body,
+// поэтому селектор `.show-shop-filter .show-shop-filter__float` не совпадал бы.
+.show-shop-filter__float {
+  position: fixed;
+  left: toRem(16);
+  bottom: toRem(16);
+  z-index: 9998; // ниже оверлея диалога (9999) — при открытом окне скрыта
+  display: inline-flex;
+  align-items: center;
+  gap: toRem(8);
+  height: toRem(44);
+  padding: 0 toRem(18);
+  background-color: var(--green-color);
+  color: var(--light-color);
+  border: toRem(1) solid var(--border-color);
+  border-radius: toRem(22);
+  font-size: toEm(15);
+  font-weight: 600;
+  box-shadow: 0 toRem(4) toRem(18) rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  // Скрыта по умолчанию (появляется ._visible) — только GPU-свойства
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(toRem(12));
+  transition:
+    opacity var(--transition-duration),
+    transform var(--transition-duration),
+    visibility 0s var(--transition-duration) allow-discrete;
+
+  svg {
+    color: var(--light-color);
+    width: toRem(18);
+    height: toRem(18);
+    flex-shrink: 0;
+  }
+
+  &_visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition:
+      opacity var(--transition-duration),
+      transform var(--transition-duration);
   }
 }
 </style>
