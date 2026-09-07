@@ -42,12 +42,16 @@ useMeasureToVar("--header-h", {
   },
 })
 
-// ===== Состояние фильтров (сайдбар + сортировка) =====
-const category = ref("");
-const sort = ref("name:asc");
-const priceMin = ref(0);
-const priceMax = ref(2000);
-const tags = ref<string[]>([]);
+// ===== Состояние фильтров (сайдбар + сортировка) — единый источник: URL =====
+const router = useRouter();
+const {
+  category,
+  sort,
+  priceMin,
+  priceMax,
+  tags,
+  page,
+} = useProductsFilters(route, router);
 
 // ===== Хлебные крошки: фон из global.breadcrumbs (background.background-image) =====
 const { data: globalData } = useCachedAsyncData(
@@ -79,7 +83,6 @@ const breadcrumbsBackground = computed(() => {
 })
 
 // ===== Товары: все продукты с фильтрами/сортировкой/пагинацией =====
-const page = ref(route.query.page ? +route.query.page : 1);
 const PAGE_SIZE = 12;
 
 const productsKey = () =>
@@ -122,25 +125,9 @@ const isLoading = computed(
   () => (status.value === "idle" || status.value === "pending") && !products.value.length,
 )
 
-// Смена фильтров/сортировки — сброс на первую страницу. Сам запрос перезапускает
-// РЕАКТИВНЫЙ КЛЮЧ productsKey (docs/nuxt-async-data.md §2) — refresh() не нужен.
-watch([category, sort, priceMin, priceMax, tags], () => {
-  page.value = 1
-})
-
-// Пагинация из query-параметра: смена page меняет ключ → авто-запрос
-watch(
-  () => route.query.page,
-  (newPage) => {
-    page.value = newPage ? +newPage : 1
-  },
-)
-
-// После загрузки новой порции (клик по пагинации/смена фильтра) — скролл к началу,
-// чтобы не листать вручную от низа страницы
-watch(status, (s) => {
-  if (s === "success" && import.meta.client) window.scrollTo(0, 0)
-})
+// Смена фильтров/сортировки/пагинации (включая сброс page=1) уже обрабатывается
+// в useProductsFilters (единый источник — URL, router.replace). Здесь остаётся
+// только O2-открытие панели после успешной загрузки.
 
 // O2 (plan.md §1): панель фильтров на desktop открывается ПОСЛЕ загрузки товаров
 // (status === 'success') — при входе и на SSR панель закрыта, поэтому нет «флипа»
