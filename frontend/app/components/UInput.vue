@@ -61,6 +61,11 @@ const modelTuple = computed<[number, number]>(() => {
 })
 const minPct = computed(() => ((modelTuple.value[0] - min) / (max - min)) * 100)
 const maxPct = computed(() => 100 - ((modelTuple.value[1] - min) / (max - min)) * 100)
+// Ручка (16px + 2px бордер = 20px, радиус 10px) должна помещаться в треке:
+// позиционируем её внутри «рабочей» зоны (ширина контейнера минус 2×радиус),
+// чтобы 0%/100% совпадали с центрами ручек и не обрезались overflow:hidden
+// родителя. Радиус дублируем константой (px) для CSS-вычислений заливки.
+const THUMB_R = 10
 
 // Ручки не пересекаются: min не может стать больше max (и наоборот)
 const onRangeMinInput = (e: Event) => {
@@ -81,7 +86,11 @@ const onRangeDualTrackClick = (e: MouseEvent) => {
   const track = rangeDualTrack.value
   if (!track) return
   const rect = track.getBoundingClientRect()
-  const ratio = (e.clientX - rect.left) / rect.width
+  // Ручки ездят по «рабочей» зоне (внутри отступа = радиус ручки), поэтому
+  // и клик-позицию считаем от неё — иначе клик у края даёт неверное значение.
+  const innerLeft = rect.left + THUMB_R
+  const innerWidth = rect.width - THUMB_R * 2
+  const ratio = (e.clientX - innerLeft) / innerWidth
   const raw = min + ratio * (max - min)
   const value = Math.min(max, Math.max(min, Math.round(raw / step) * step))
   const curMin = modelTuple.value[0]
@@ -172,7 +181,10 @@ const onRangeDualTrackClick = (e: MouseEvent) => {
     <div v-else-if="type === 'range-dual'" ref="rangeDualTrack" class="u-input__range-dual-track" @click="onRangeDualTrackClick">
       <div
         class="u-input__range-dual-fill"
-        :style="{ left: `${minPct}%`, right: `${maxPct}%` }"
+        :style="{
+          left: `calc(${THUMB_R}px + (100% - ${THUMB_R * 2}px) * ${minPct} / 100)`,
+          right: `calc(${THUMB_R}px + (100% - ${THUMB_R * 2}px) * ${maxPct} / 100)`,
+        }"
       />
       <input
         type="range"
@@ -469,14 +481,10 @@ const onRangeDualTrackClick = (e: MouseEvent) => {
   &__range-dual-track {
     position: relative;
     height: toRem(4);
+    padding-inline: toRem(10); // место под ручку ВНУТРИ трека (не обрезается)
     background: var(--border-color);
+    background-clip: content-box; // линия только во внутренней «рабочей» зоне
     border-radius: toRem(2);
-    // Рабочая ширина = ширине контейнера минус радиус ручки (16px + 2px бордер
-    // => 10px) с каждой стороны. Иначе ручка при 0%/100% центрируется на самом
-    // краю трека и наполовину уходит за границу — её обрезает
-    // overflow:hidden у родителя (shop-filters__content). Из-за этого же заливка
-    // и ручки не совпадают по краям.
-    margin-inline: toRem(10);
   }
 
   &__range-dual-fill {
@@ -490,7 +498,8 @@ const onRangeDualTrackClick = (e: MouseEvent) => {
   &__range-dual-input {
     position: absolute;
     top: 50%;
-    width: 100%;
+    left: toRem(10); // инпуты = рабочая зона (внутри padding трека)
+    right: toRem(10);
     height: toRem(4);
     appearance: none;
     background: transparent;

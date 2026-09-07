@@ -545,6 +545,10 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     transition: grid-template-rows 0.3s;
 
     > * {
+      // min-height:0 обязателен: без него grid-ряд 0fr не может схлопнуться
+      // ниже min-content ребёнка — у цены это линия слайдера (4px), поэтому
+      // при закрытии details ползунок оставался виден, а числа обрезались.
+      min-height: 0;
       overflow: hidden;
     }
   }
@@ -603,8 +607,8 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     gap: toRem(8);
     font-size: toEm(15);
     color: var(--color);
-    // Числа стоимости — ПОД инпутом: отступ от инпута, снизу отступ не нужен
-    margin-block-start: toRem(5);
+    // Числа стоимости — ПОД инпутом с отступом от ползунка (было 5px — прижато)
+    margin-block-start: toRem(12);
   }
 
   // Инпуты диапазона цены (user может ввести диапазон руками)
