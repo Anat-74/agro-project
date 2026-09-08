@@ -206,15 +206,30 @@ const { slides, heroGrids } = props;
     // наш calc → слайдер оставался 100% и вылезал за правый край контейнера.
     &.hero-slider__slider_catalog-open {
       @media (min-width: $tablet) {
-        width: calc(100% - var(--catalog-shift));
-        margin-inline-start: var(--catalog-shift);
-        // №4: right-край слайдера упирается в __container, а не в вьюпорт.
-        // Ширина 100% − shift тянет до правого края ЭКРАНА (на широких контент
-        // вылезал за __container: r1890 при контейнере r1678), т.к. слайд
-        // центрировался внутри переполненного слайдера. Ограничиваем по правому
-        // краю ограничивающего контейнера (—container-edge + $containerWidth 1450):
-        // при vw ≤ 1450 — толще не нужно, при vw > 1450 max-width срезает лишнее.
-        max-width: calc(var(--container-edge) + 1450px - var(--catalog-shift));
+        // ФОНОВОЕ изображение (.app-bg) — position:absolute; inset:0 → привязано
+        // к КОРНЮ .hero-slider__slider (position:relative), а не к __container.
+        // Раньше сдвиг (width/margin) применялся к корню → сжимались и фон, и
+        // контент (фон переставал быть full-bleed и упирался в __container).
+        // Теперь корень остаётся ВСЕГДА width:100% (фон на весь экран), а сдвиг
+        // переносим на внутренний __container контента (.slider__container):
+        // он in-flow, фон (absolute к корню) при его сдвиге не перемещается.
+        // КОРЕНЬ НЕ ТРОГАЕМ — только __container контента.
+
+        :deep(.slider__container) {
+          // Фон (.app-bg) привязан к корню и остаётся full-bleed; сдвиг — только
+          // контент. У .slider__container применимо глобальное [class*="__container"]
+          // (box-sizing:content-box + padding-inline + margin-inline:auto), поэтому
+          // для точной геометрии переключаем на border-box и задаём margin явно.
+          box-sizing: border-box;
+          margin-inline-start: var(--catalog-shift);
+          margin-inline-end: 0;
+          // Ширина = правый край ограничивающего контейнера минус сдвиг.
+          // Правый край контейнера = min(--container-edge + 1450, 100% секции):
+          // на широких — граница __container (1450 от левого края контейнера),
+          // на vw < 1450 контейнер full-bleed (не 1450) → берём 100% вьюпорта.
+          // Так контент не вылезает за правый край __container и нет overflow.
+          width: calc(min(var(--container-edge) + 1450px, 100%) - var(--catalog-shift));
+        }
 
         // Каталог открыт → слайд узкий (сдвиг отдал часть ширины). В базовой
         // раскладке USlider колонка картинки — auto (max-content ~742px), текст
