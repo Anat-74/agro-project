@@ -442,14 +442,23 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   // модального диалога корзины. display НЕ перещёлкивается (источник дёрганья).
   // Скрытие через opacity/visibility/pointer-events.
   @media (max-width: $mobile) {
+    // Левая панель ~75% ширины (drawer): оверлей position:fixed, прижат влево.
+    // Справа остаётся видимая страница (контент поднимается на --header-h,
+    // шапка скрыта). fixed + body-lock (body:has(...) overflow:hidden — не меняет
+    // высоту) → скролл не сбрасывается, как в модальном диалоге корзины.
     position: fixed;
-    inset: 0;
+    inset: 0 auto 0 0;   // слева, во всю высоту
+    width: toRem(340);
+    max-width: 75%;
+    min-width: toRem(280);
     z-index: 9999;
 
     transition: opacity var(--transition-duration-fast);
 
     &:has(.show-shop-filter__dialog[open]) {
-      width: 100%;
+      width: toRem(340);
+      max-width: 75%;
+      min-width: toRem(280);
       opacity: 1;
       visibility: visible;
       pointer-events: auto;
@@ -457,7 +466,6 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
 
     &:not(:has(.show-shop-filter__dialog[open])) {
       display: flex;
-      width: 100%;
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
@@ -552,14 +560,14 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   color: var(--color);
 
   // Кнопка закрытия (mobile): скрыта на desktop (там закрывает кнопка в тулбаре).
-  // На mobile — position:fixed top-right: оверлей fixed, а кнопка всегда сверху
-  // (не «уезжает» при внутреннем скролле панели).
+  // На mobile — absolute внутри панели (оверлей fixed → absolute считается от него),
+  // top-right панели, всегда поверх (не уезжает при внутреннем скролле).
   &__close {
     display: none;
 
     @media (max-width: $mobile) {
       display: inline-flex;
-      position: fixed;
+      position: absolute;
       top: toRem(12);
       right: toRem(12);
       z-index: 10000;

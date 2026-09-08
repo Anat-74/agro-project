@@ -13,6 +13,11 @@ interface Props {
 
 const props = defineProps<Props>()
 
+// Открытый диалог фильтров (страница товаров) — на mobile прячем шапку сайта:
+// диалог ~75% ширины слева, контент поднимается на --header-h, поэтому шапку
+// убираем (transform: translateY(-100%), высота не меняется → скролл сохраняется)
+const { isOpen: filterDialogOpen } = useDialog("shopFilterDialog")
+
 // Ссылка на «Блог» берётся из Strapi-навигации (label локализуется в CMS),
 // рендерится отдельно от меню «Ещё»
 const blogLink = computed(() =>
@@ -78,7 +83,7 @@ function openPreview(product: Product) {
 </script>
 
 <template>
-  <header class="header">
+  <header :class="['header', { 'header_filter-open': filterDialogOpen }]">
     <BannerLayouts
       v-if="global"
       :banner-text="global?.header?.bannerText"
@@ -245,6 +250,16 @@ function openPreview(product: Product) {
     translate: 0 toRem(3);
   }
 
+  // Открытый диалог фильтров (mobile): шапка уезжает transform'ом (translateY -100%),
+  // высота не меняется → layout-рефлоу нет, скролл сохраняется.
+  @media (max-width: $mobile) {
+    transition: transform var(--transition-duration-fast);
+
+    &_filter-open {
+      transform: translateY(-100%);
+    }
+  }
+
   &__container-bottom {
     display: grid;
     // Mobile-first: базовая сетка = мобильная (MoreMenu | блог | каталог).
@@ -265,7 +280,7 @@ function openPreview(product: Product) {
     @media (min-width: $tablet) {
       grid-template-columns: auto 1fr;
       padding-block: 0;
-    }
+  }
 
     // Каталог в правый угол мобильной колонки (1fr) — корень .hamburger теперь единый grid-элемент
     :deep(.hamburger) {

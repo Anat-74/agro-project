@@ -13,10 +13,24 @@ const vh = computed(() => visuallyHiddenTranslations[currentLocale.value])
 
 const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopFilter")
 
-// Глобальное состояние диалога фильтров. Template ref (shopFilterRef) нужен
-// кнопке-тумблеру и O2-открытию: toggle/open/aria. Класс на странице для
-// «подъёма» контента больше не нужен (вариант C: fixed-оверлей + body-lock
-// сохраняют скролл, механика --header-h удалена).
+// Глобальное состояние диалога фильтров — нужен классу на странице
+// (products-page_filter-open для подъёма контента на место скрытой шапки).
+const { isOpen: filterDialogOpen } = useDialog("shopFilterDialog")
+
+// Подъём контента на освободившееся место после скрытия шапки (менее 100% оверлей):
+// --header-h меряем JS (useMeasureToVar) и используем в .products-page_filter-open
+// transform: translateY(-header-h). Только transform — высота документа НЕ меняется,
+// поэтому scrollY не сбрасывается (скролл-нейтральность сохраняется).
+useMeasureToVar("--header-h", {
+  enabled: () => filterDialogOpen.value,
+  active: filterDialogOpen,
+  observe: () => document.querySelector(".header"),
+  measure: () => {
+    const header = document.querySelector<HTMLElement>(".header")
+    if (!header) return null
+    return `${header.offsetHeight}px`
+  },
+})
 
 // При уходе со страницы (например, клик «Главное» в breadcrumbs) закрываем диалог:
 // иначе isOpen остаётся true (глобальный Map).
@@ -152,7 +166,7 @@ useSeoMeta({
 
 <template>
   <section
-    class="products-page"
+    :class="['products-page', { 'products-page_filter-open': filterDialogOpen }]"
     aria-labelledby="products-page-title"
   >
     <!-- Скрытый H1: на странице нет видимого главного заголовка,
@@ -292,13 +306,17 @@ useSeoMeta({
     }
   }
 
-  // Открытый диалог фильтров (mobile) — JS-вариант (plan.md §3) больше не
-  // «схлопывает» страницу. Раньше блок &_filter-open задавал height:100dvh +
-  // overflow:hidden + translateY(-header-h): высота документа менялась →
-  // window.scrollY сбрасывался в 0 (при открытии/закрытии «уезжал» экран).
-  // Теперь оверлей фильтра — position:fixed (ShowShopFilter), фон блокируется
-  // body-lock'ом (overflow:hidden в _globals), который НЕ меняет высоту → скролл
-  // сохраняется (как у модального диалога корзины).
+  // Подъём контента при открытом диалоге фильтров (mobile) — JS-вариант:
+  // контент поднимается на высоту скрытой шапки через transform (GPU), чтобы
+  // заполнить освободившееся место (диалог теперь ~75% ширины — левая панель,
+  // справа видна страница). ТОЛЬКО transform — высоту документа не меняет,
+  // поэтому scrollY не сбрасывается (скролл-нейтральность сохраняется).
+  // НЕ используем height:100dvh/overflow:hidden (они и давали сброс скролла).
+  @media (max-width: $mobile) {
+    &_filter-open {
+      transform: translateY(calc(-1 * var(--header-h, 0px)));
+    }
+  }
 
   &__header {
     // Крошки + панель. Sticky-эксперимент (mobile): продуктовый header липнет ПОД
