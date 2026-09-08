@@ -235,10 +235,12 @@ useSeoMeta({
         :price-min="priceMin"
         :price-max="priceMax"
         :tags="tags"
+        :sort="sort"
         @update:category="category = $event"
         @update:price-min="priceMin = $event"
         @update:price-max="priceMax = $event"
         @update:tags="tags = $event"
+        @update:sort="sort = $event"
       />
 
       <!-- Лоадер — самопозиционирующийся (fixed, центр вьюпорта): ставим просто
@@ -311,6 +313,11 @@ useSeoMeta({
   // поэтому scrollY не сбрасывается (скролл-нейтральность сохраняется).
   // НЕ используем height:100dvh/overflow:hidden (они и давали сброс скролла).
   @media (max-width: $mobile) {
+    // Плавный подъём/опускание контента при открытии/закрытии фильтра: иначе
+    // transform применялся МГНОВЕННО (страница «прыгала» на высоту шапки,
+    // пока диалог ещё едет — отсюда «скачок» при открытии).
+    transition: transform var(--transition-duration-fast);
+
     &_filter-open {
       transform: translateY(calc(-1 * var(--header-h, 0px)));
     }
@@ -524,6 +531,11 @@ useSeoMeta({
       width: toEm(120);
       font-family: inherit;
       box-shadow: none;
+    }
+
+    // На mobile сортировка — в диалоге фильтров (шапка панели), в тулбаре скрыта
+    @media (max-width: $mobile) {
+      display: none;
     }
 
     @media (max-width: $mobile) {

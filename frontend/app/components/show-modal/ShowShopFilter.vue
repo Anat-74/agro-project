@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { shopFiltersTranslations } from '~/locales/shopFilters'
+import { productFilterTranslations } from '~/locales/productFilter'
 import { buttonTranslations } from '~/locales/button'
 
 const { find } = useStrapi();
 const { currentLocale } = useLocale();
 const t = computed(() => shopFiltersTranslations[currentLocale.value])
+const pf = computed(() => productFilterTranslations[currentLocale.value])
 const bt = computed(() => buttonTranslations[currentLocale.value])
 
 interface Props {
@@ -12,6 +14,7 @@ interface Props {
   priceMin?: number
   priceMax?: number
   tags?: string[]
+  sort?: string
   // Блок фильтров (тулбар), за уходом которого следим для плавающей кнопки
   observeTarget?: string
 }
@@ -21,6 +24,7 @@ const props = withDefaults(defineProps<Props>(), {
   priceMin: 0,
   priceMax: 2000,
   tags: () => [],
+  sort: "name:asc",
   observeTarget: ".products-page__container-top",
 })
 
@@ -29,6 +33,7 @@ const emit = defineEmits<{
   "update:priceMin": [v: number]
   "update:priceMax": [v: number]
   "update:tags": [v: string[]]
+  "update:sort": [v: string]
 }>()
 
 // Диалог сайдбара фильтров: show() (не модальный), как ShowHamburger.
@@ -183,6 +188,20 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     <Teleport to="body" :disabled="!isMobile">
       <dialog id="dialogShopFilter" ref="dialog-shop-filter" class="show-shop-filter__dialog" :aria-label="t.filterTitle" :open="isOpen">
       <aside class="shop-filters">
+            <!-- Сортировка (mobile) — слева, в шапке диалога (рядом с кнопкой
+                 закрытия справа). USelect связан с тем же `sort`, что и в тулбаре
+                 (на desktop сортировка в тулбаре, здесь — на mobile). -->
+            <USelect
+              class="shop-filters__sort"
+              :model-value="sort"
+              :label="t.sortLabel"
+              :options="[
+                { value: 'name:asc', label: pf.optionName },
+                { value: 'price:asc', label: pf.optionPrice },
+                { value: 'price:desc', label: pf.optionPriceDesc },
+              ]"
+              @update:model-value="emit('update:sort', $event)"
+            />
             <!-- Кнопка закрытия (mobile): переиспользуем вид кнопки из container-top —
                  та же «зелёная таблетка» с иконкой filter ↔ крестик (Transition),
                  привязана к isOpen, aria-expanded. В диалоге она открыта → крестик. -->
@@ -499,6 +518,7 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
       min-width: toRem(280);
       height: 100dvh;
       z-index: 9999;
+      padding-inline: toRem(9); // внутренний отступ справа/слева (кнопка, сортировка)
       backdrop-filter: blur(22px);
       opacity: 1;
       translate: -100%;
@@ -568,6 +588,18 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
         height: toRem(20);
         flex-shrink: 0;
       }
+    }
+  }
+
+  // Сортировка (mobile) — слева в шапке диалога; скрыта на desktop (там USelect в
+  // тулбаре). margin-block-end — отступ до первой секции (не «прилипает» к категории).
+  &__sort {
+    display: none;
+
+    @media (max-width: $mobile) {
+      display: block;
+      width: fit-content;
+      margin-block-end: toRem(12);
     }
   }
 
