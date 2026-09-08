@@ -13,6 +13,9 @@ export interface ProductsFiltersState {
 
 const DEFAULT_SORT = "name:asc"
 const PRICE_MAX = 2000
+// Стартовый минимум цены — «1» (а не 0): при 0 цены-фильтр уходил как «дефолт»
+// и в некоторых сценариях товары терялись. Сделаем старт «1» и посмотрим.
+const PRICE_MIN = 1
 const SORT_WHITELIST = ["name:asc", "price:asc", "price:desc"]
 
 const toInt = (v: unknown, d: number) => {
@@ -36,7 +39,7 @@ export const useProductsFilters = (
 ): ProductsFiltersState => {
   const category = ref("")
   const sort = ref(DEFAULT_SORT)
-  const priceMin = ref(0)
+  const priceMin = ref(PRICE_MIN)
   const priceMax = ref(PRICE_MAX)
   const tags = ref<string[]>([])
   const page = ref(1)
@@ -47,7 +50,7 @@ export const useProductsFilters = (
     const q: Record<string, string | string[]> = {}
     if (category.value) q.category = category.value
     if (sort.value !== DEFAULT_SORT) q.sort = sort.value
-    if (priceMin.value !== 0) q.priceMin = String(priceMin.value)
+    if (priceMin.value !== PRICE_MIN) q.priceMin = String(priceMin.value)
     if (priceMax.value !== PRICE_MAX) q.priceMax = String(priceMax.value)
     if (tags.value.length) q.tags = [...tags.value]
     if (page.value > 1) q.page = String(page.value)
@@ -60,7 +63,7 @@ export const useProductsFilters = (
       typeof q.sort === "string" && SORT_WHITELIST.includes(q.sort)
         ? q.sort
         : DEFAULT_SORT
-    let mn = toPrice(q.priceMin, 0)
+    let mn = toPrice(q.priceMin, PRICE_MIN)
     const mx = toPrice(q.priceMax, PRICE_MAX)
     if (mn > mx) mn = mx
     const tg = Array.isArray(q.tags)
