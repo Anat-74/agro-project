@@ -533,11 +533,6 @@ useSeoMeta({
       box-shadow: none;
     }
 
-    // На mobile сортировка — в диалоге фильтров (шапка панели), в тулбаре скрыта
-    @media (max-width: $mobile) {
-      display: none;
-    }
-
     @media (max-width: $mobile) {
       :deep(.select) {
         width: toRem(120);

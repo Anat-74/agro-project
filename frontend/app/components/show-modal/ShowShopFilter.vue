@@ -77,7 +77,9 @@ onMounted(() => {
   const el = document.querySelector(props.observeTarget)
   if (!el) return
   observer = new IntersectionObserver(
-    ([entry]) => {
+    (entries: IntersectionObserverEntry[]) => {
+      const entry = entries[0]
+      if (!entry) return
       // Блок ушёл за верх (не пересекает вьюпорт) → показываем плавашку
       toolbarGone.value = !entry.isIntersecting
     },
@@ -110,6 +112,13 @@ const categories = computed(() => (categoriesData.value?.data as Category[] | un
 const categoryCount = (cat: Category) =>
   (cat.products?.length ?? 0) +
   (cat.subcategories?.reduce((n, s) => n + (s.products?.length ?? 0), 0) ?? 0)
+
+// Общее количество для «Все товары» — сумма по категориям (товар принадлежит
+// одной категории/подкатегории, поэтому двойной счёт исключён; берётся из уже
+// загруженных категорий, без отдельного запроса).
+const totalProducts = computed(() =>
+  categories.value.reduce((n, cat) => n + categoryCount(cat), 0),
+)
 
 // ===== Открытое состояние details-секций (реактивно — переживает ре-рендер) =====
 const categoriesOpen = ref(true)
@@ -167,6 +176,14 @@ const onRangeChange = (range: [number, number]) => {
 // кламп в [0, PRICE_MAX] и min ≤ max; ползунок подхватывает через
 // :model-value="[localMin, localMax]" → onRangeChange.
 const clampPrice = (v: number) => Math.min(PRICE_MAX, Math.max(0, Math.round(v || 0)))
+
+// Сортировка: USelect через v-model (local-computed прокси) — эмитим update:sort.
+// Так мы не пишем вручную @update:model-value (конфликт Volar camel vs ESLint defis).
+const sortLocal = computed<string>({
+  get: () => props.sort ?? "name:asc",
+  set: (v) => emit("update:sort", v),
+})
+
 const onPriceInput = (key: "min" | "max", e: Event) => {
   const raw = Number((e.target as HTMLInputElement).value)
   if (Number.isNaN(raw)) return
@@ -187,24 +204,20 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
          ShowHamburger: телепортируется только сам dialog, корень — обычный div). -->
     <Teleport to="body" :disabled="!isMobile">
       <dialog id="dialogShopFilter" ref="dialog-shop-filter" class="show-shop-filter__dialog" :aria-label="t.filterTitle" :open="isOpen">
-      <aside class="shop-filters">
-            <!-- Сортировка (mobile) — слева, в шапке диалога (рядом с кнопкой
-                 закрытия справа). USelect связан с тем же `sort`, что и в тулбаре
-                 (на desktop сортировка в тулбаре, здесь — на mobile). -->
+      <!-- Шапка диалога (semantic <header>): сортировка слева + кнопка закрытия
+           справа. Sticky — всегда видна при внутреннем скролле списка фильтров.
+           На desktop скрыта (там сортировка в тулбаре, закрывает кнопка в тулбаре). -->
+      <header class="shop-filters__header">
             <USelect
+              v-model="sortLocal"
               class="shop-filters__sort"
-              :model-value="sort"
               :label="t.sortLabel"
               :options="[
                 { value: 'name:asc', label: pf.optionName },
                 { value: 'price:asc', label: pf.optionPrice },
                 { value: 'price:desc', label: pf.optionPriceDesc },
               ]"
-              @update:model-value="emit('update:sort', $event)"
             />
-            <!-- Кнопка закрытия (mobile): переиспользуем вид кнопки из container-top —
-                 та же «зелёная таблетка» с иконкой filter ↔ крестик (Transition),
-                 привязана к isOpen, aria-expanded. В диалоге она открыта → крестик. -->
             <UButton
               class="shop-filters__close"
               :aria-label="bt.ariaLabelDialogClosed"
@@ -212,14 +225,16 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
               aria-controls="dialogShopFilter"
               @click="close?.()"
             >
-              <span class="products-page__filter-icon">
+              <span class="shop-filters__filter-icon">
                 <Transition name="filter-icon" mode="out-in">
                   <Icon v-if="isOpen" key="close" name="mingcute:close-line" />
                   <Icon v-else key="filter" name="mingcute:filter-line" />
                 </Transition>
               </span>
             </UButton>
+      </header>
 
+      <aside class="shop-filters">
             <!-- Категории: скрытый заголовок (у section обязан быть) -->
             <section
               class="shop-filters__section"
@@ -248,6 +263,7 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
                       :label="t.allProducts"
                       @update:model-value="emit('update:category', $event)"
                     />
+                    <span class="shop-filters__category-count">({{ totalProducts }})</span>
                   </li>
                   <li v-for="cat in categories" :key="cat.slug" class="shop-filters__category">
                     <UInput
@@ -299,7 +315,7 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
                       aria-label="Минимальная цена"
                       @input="onPriceInput('min', $event)"
                       @change="onPriceInput('min', $event)"
-                    />
+                    >
                     <span class="shop-filters__price-separator">—</span>
                     <input
                       class="shop-filters__price-value-input"
@@ -311,7 +327,7 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
                       aria-label="Максимальная цена"
                       @input="onPriceInput('max', $event)"
                       @change="onPriceInput('max', $event)"
-                    />
+                    >
                   </div>
                 </div>
               </div>
@@ -513,8 +529,8 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     @media (max-width: $mobile) {
       position: fixed;
       inset: 0 auto 0 0;   // слева, во всю высоту
-      width: toRem(340);
-      max-width: 75%;
+      width: 50%;
+      // max-width: 50%;
       min-width: toRem(280);
       height: 100dvh;
       z-index: 9999;
@@ -559,73 +575,8 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   flex-shrink: 0;
   color: var(--color);
 
-  // Кнопка закрытия (mobile) — как кнопка в container-top: «зелёная таблетка»
-  // с иконкой filter ↔ крестик (иконка меняется через isOpen). Скрыта на
-  // desktop (там закрывает кнопка в тулбаре). На mobile — absolute top-right
-  // внутри панели (не уезжает при скролле содержимого).
-  &__close {
-    display: none;
-
-    @media (max-width: $mobile) {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      position: absolute;
-      top: toRem(12);
-      right: toRem(12);
-      z-index: 10000;
-      height: toRem(30);
-      padding: 0 toRem(12);
-      background-color: var(--green-color);
-      color: var(--light-color);
-      border: toRem(1) solid var(--border-color);
-      border-radius: toRem(6);
-      cursor: pointer;
-
-      svg {
-        color: var(--light-color);
-        width: toRem(20);
-        height: toRem(20);
-        flex-shrink: 0;
-      }
-    }
-  }
-
-  // Сортировка (mobile) — слева в шапке диалога; скрыта на desktop (там USelect в
-  // тулбаре). margin-block-end — отступ до первой секции (не «прилипает» к категории).
-  &__sort {
-    display: none;
-
-    @media (max-width: $mobile) {
-      display: block;
-      width: fit-content;
-      margin-block-end: toRem(12);
-    }
-  }
-
-  // Иконка filter ↔ крестик (тот же Transition, что у кнопки в container-top)
-  .products-page__filter-icon {
-    display: inline-flex;
-
-    .filter-icon-enter-active,
-    .filter-icon-leave-active {
-      transition:
-        opacity var(--transition-duration),
-        transform var(--transition-duration);
-    }
-
-    .filter-icon-enter-from {
-      opacity: 0;
-      transform: rotate(-90deg) scale(0.5);
-    }
-
-    .filter-icon-leave-to {
-      opacity: 0;
-      transform: rotate(90deg) scale(0.5);
-    }
-  }
-
-  // Сортировка осталась в тулбаре (container-top) — на всех ширинах
+  // Кнопка закрытия и сортировка теперь в .shop-filters__header (см. ниже).
+  // Здесь остаются только сами секции фильтров.
 
   &__section {
     margin-block-end: toRem(24);
@@ -929,6 +880,77 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
       min-height: toRem(100);
       padding: toRem(18) toRem(16);
     }
+  }
+}
+
+// ===== Шапка диалога (semantic <header>): сортировка слева + кнопка закрытия =====
+// Top-level (header — sibling aside, не потомок .shop-filters). Скрыта на desktop
+// (там сортировка в тулбаре, закрывает кнопка в тулбаре). Sticky — всегда видна
+// при внутреннем скролле списка фильтров.
+.shop-filters__header {
+  display: none;
+
+  @media (max-width: $mobile) {
+    position: sticky;
+    top: 0;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: toRem(10);
+    padding: toRem(10) 0 toRem(12);
+    border-bottom: toRem(1) solid rgba(0, 0, 0, 0.08);
+
+    // Сортировка слева
+    .shop-filters__sort {
+      width: fit-content;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    // Кнопка закрытия справа — «зелёная таблетка» как в container-top
+    .shop-filters__close {
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      height: toRem(30);
+      padding: 0 toRem(12);
+      background-color: var(--green-color);
+      color: var(--light-color);
+      border: toRem(1) solid var(--border-color);
+      border-radius: toRem(6);
+      cursor: pointer;
+
+      svg {
+        color: var(--light-color);
+        width: toRem(20);
+        height: toRem(20);
+        flex-shrink: 0;
+      }
+    }
+  }
+}
+
+// Иконка filter ↔ крестик (тот же Transition, что у кнопки в container-top).
+// Top-level: используется в кнопке закрытия (в header диалога, не в .shop-filters).
+.shop-filters__filter-icon {
+  display: inline-flex;
+
+  .filter-icon-enter-active,
+  .filter-icon-leave-active {
+    transition:
+      opacity var(--transition-duration),
+      transform var(--transition-duration);
+  }
+
+  .filter-icon-enter-from {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.5);
+  }
+
+  .filter-icon-leave-to {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.5);
   }
 }
 

@@ -498,7 +498,12 @@ const onRangeDualTrackClick = (e: MouseEvent) => {
 
   &__range-dual-fill {
     position: absolute;
-    height: 100%;
+    // Высота = толщина линии (content трека 4px), а не 100% трека: трек имеет
+    // padding-block 8px под ручки, поэтому 100% дало бы полосу 20px («слишком
+    // широкая»). Центрируем по вертикали.
+    height: toRem(4);
+    top: 50%;
+    transform: translateY(-50%);
     background: var(--success-color);
     border-radius: toRem(2);
     pointer-events: none;
