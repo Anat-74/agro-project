@@ -82,9 +82,19 @@ const onRangeMaxInput = (e: Event) => {
 // поэтому клик ловим на самой обёртке-треке: считаем % от offsetX → значение и
 // двигаем ту ручку, что ближе, с сохранением min ≤ max.
 const rangeDualTrack = useTemplateRef<HTMLElement>("rangeDualTrack")
+// Координата pointerdown на треке: если между down и click мышь сдвинулась — это
+// НЕ клик, а отпускание после ПЕРЕТАСКИВАНИЯ ручки. Иначе по клику ручка
+// пересчитывалась по точке отпускания и «уезжала» от края (напр. min → 60 вместо 0),
+// из-за чего после возврата ползунка товары пропадали ($gte=60 → 0).
+let rangeDownX = -1
+const onRangeDualTrackDown = (e: PointerEvent) => {
+  rangeDownX = e.clientX
+}
 const onRangeDualTrackClick = (e: MouseEvent) => {
   const track = rangeDualTrack.value
   if (!track) return
+  // После перетаскивания ручки срабатывает click в точке отпускания — пропускаем.
+  if (rangeDownX >= 0 && Math.abs(e.clientX - rangeDownX) > 4) return
   const rect = track.getBoundingClientRect()
   // Ручки ездят по «рабочей» зоне (внутри отступа = радиус ручки), поэтому
   // и клик-позицию считаем от неё — иначе клик у края даёт неверное значение.
@@ -178,7 +188,7 @@ const onRangeDualTrackClick = (e: MouseEvent) => {
     </div>
 
     <!-- Двойной ползунок (диапазон): модель — кортеж [min, max] -->
-    <div v-else-if="type === 'range-dual'" ref="rangeDualTrack" class="u-input__range-dual-track" @click="onRangeDualTrackClick">
+    <div v-else-if="type === 'range-dual'" ref="rangeDualTrack" class="u-input__range-dual-track" @pointerdown="onRangeDualTrackDown" @click="onRangeDualTrackClick">
       <div
         class="u-input__range-dual-fill"
         :style="{
