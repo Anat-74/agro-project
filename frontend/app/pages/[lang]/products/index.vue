@@ -235,12 +235,10 @@ useSeoMeta({
         :price-min="priceMin"
         :price-max="priceMax"
         :tags="tags"
-        :sort="sort"
         @update:category="category = $event"
         @update:price-min="priceMin = $event"
         @update:price-max="priceMax = $event"
         @update:tags="tags = $event"
-        @update:sort="sort = $event"
       />
 
       <!-- Лоадер — самопозиционирующийся (fixed, центр вьюпорта): ставим просто
@@ -526,11 +524,6 @@ useSeoMeta({
       width: toEm(120);
       font-family: inherit;
       box-shadow: none;
-    }
-
-    // На mobile сортировка перенесена в диалог фильтров (оверлей накрывает тулбар)
-    @media (max-width: $mobile) {
-      display: none;
     }
 
     @media (max-width: $mobile) {

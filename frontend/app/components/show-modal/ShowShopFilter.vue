@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { shopFiltersTranslations } from '~/locales/shopFilters'
-import { productFilterTranslations } from '~/locales/productFilter'
 import { buttonTranslations } from '~/locales/button'
 
 const { find } = useStrapi();
 const { currentLocale } = useLocale();
 const t = computed(() => shopFiltersTranslations[currentLocale.value])
-const pf = computed(() => productFilterTranslations[currentLocale.value])
 const bt = computed(() => buttonTranslations[currentLocale.value])
 
 interface Props {
@@ -14,7 +12,6 @@ interface Props {
   priceMin?: number
   priceMax?: number
   tags?: string[]
-  sort?: string
   // Блок фильтров (тулбар), за уходом которого следим для плавающей кнопки
   observeTarget?: string
 }
@@ -24,7 +21,6 @@ const props = withDefaults(defineProps<Props>(), {
   priceMin: 0,
   priceMax: 2000,
   tags: () => [],
-  sort: "name:asc",
   observeTarget: ".products-page__container-top",
 })
 
@@ -33,7 +29,6 @@ const emit = defineEmits<{
   "update:priceMin": [v: number]
   "update:priceMax": [v: number]
   "update:tags": [v: string[]]
-  "update:sort": [v: string]
 }>()
 
 // Диалог сайдбара фильтров: show() (не модальный), как ShowHamburger.
@@ -178,35 +173,34 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
 
 <template>
   <div class="show-shop-filter">
-    <dialog id="dialogShopFilter" ref="dialog-shop-filter" class="show-shop-filter__dialog" :aria-label="t.filterTitle" :open="isOpen">
+    <!-- На mobile диалог (drawer) телепортируем в body: иначе он лежит ВНУТРИ
+         .products-page, которая при открытии получает transform (подъём на
+         --header-h) — transform предка «ломает» position:fixed, и окно уезжает/
+         исчезает при скролле. В body position:fixed считается от вьюпорта.
+         На desktop/SSR (isMobile=false) телепорт выключен — диалог остаётся
+         в потоке (рейл) и честно сдвигает карточки (как показано в образце
+         ShowHamburger: телепортируется только сам dialog, корень — обычный div). -->
+    <Teleport to="body" :disabled="!isMobile">
+      <dialog id="dialogShopFilter" ref="dialog-shop-filter" class="show-shop-filter__dialog" :aria-label="t.filterTitle" :open="isOpen">
       <aside class="shop-filters">
-            <!-- Кнопка закрытия (mobile): оверлей position:fixed покрывает вьюпорт
-                 включая тулбар, поэтому закрытие — изнутри панели (как у
-                 корзины/каталога). Иконка обязательна: variant="close" не рендерит
-                 её сам. На desktop скрыта (рейл закрывается кнопкой в тулбаре). -->
+            <!-- Кнопка закрытия (mobile): переиспользуем вид кнопки из container-top —
+                 та же «зелёная таблетка» с иконкой filter ↔ крестик (Transition),
+                 привязана к isOpen, aria-expanded. В диалоге она открыта → крестик. -->
             <UButton
               class="shop-filters__close"
-              variant="close"
               :aria-label="bt.ariaLabelDialogClosed"
+              :aria-expanded="isOpen"
+              aria-controls="dialogShopFilter"
               @click="close?.()"
             >
-              <Icon name="mingcute:close-line" />
+              <span class="products-page__filter-icon">
+                <Transition name="filter-icon" mode="out-in">
+                  <Icon v-if="isOpen" key="close" name="mingcute:close-line" />
+                  <Icon v-else key="filter" name="mingcute:filter-line" />
+                </Transition>
+              </span>
             </UButton>
 
-            <!-- Сортировка (mobile): оверлей накрывает тулбар, поэтому USelect
-                 продублирован в диалоге (скрыт на desktop — там сортировка в
-                 тулбаре). Связан с тем же `sort`, что и на странице. -->
-            <USelect
-              class="shop-filters__sort"
-              :model-value="sort"
-              :label="t.sortLabel"
-              :options="[
-                { value: 'name:asc', label: pf.optionName },
-                { value: 'price:asc', label: pf.optionPrice },
-                { value: 'price:desc', label: pf.optionPriceDesc },
-              ]"
-              @update:model-value="emit('update:sort', $event)"
-            />
             <!-- Категории: скрытый заголовок (у section обязан быть) -->
             <section
               class="shop-filters__section"
@@ -370,7 +364,8 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
               </ul>
             </section>
           </aside>
-    </dialog>
+      </dialog>
+    </Teleport>
 
     <!-- Плавающая кнопка «Фильтр» (mobile): появляется, когда блок фильтров
          ушёл за верх, исчезает при возврате/при открытом диалоге. Телепорт в
@@ -434,45 +429,13 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     }
   }
 
-  // Mobile (≤768): оверлей — position:fixed (на весь вьюпорт). Раньше был
-  // position:absolute, заякоренный в container-body, а страница «схлопывалась»
-  // (height:100dvh) — это сбрасывало window.scrollY в 0 (экран «уезжал»).
-  // fixed + body-lock (body:has(...){overflow:hidden} в _globals — НЕ меняет
-  // высоту) → высота документа сохраняется → скролл не сбрасывается, как у
-  // модального диалога корзины. display НЕ перещёлкивается (источник дёрганья).
-  // Скрытие через opacity/visibility/pointer-events.
+  // Mobile (≤768): корень — просто пустой контейнер. Сам диалог (drawer)
+  // телепортируется в body (<Teleport> в шаблоне), поэтому в потоке панель
+  // на телефоне не нужна. Телепорт в body и решает проблему: раньше корень
+  // был position:fixed ВНУТРИ .products-page (у неё transform при открытии) —
+  // transform предка «ломал» fixed, и окно уезжало/пропадало при скролле.
   @media (max-width: $mobile) {
-    // Левая панель ~75% ширины (drawer): оверлей position:fixed, прижат влево.
-    // Справа остаётся видимая страница (контент поднимается на --header-h,
-    // шапка скрыта). fixed + body-lock (body:has(...) overflow:hidden — не меняет
-    // высоту) → скролл не сбрасывается, как в модальном диалоге корзины.
-    position: fixed;
-    inset: 0 auto 0 0;   // слева, во всю высоту
-    width: toRem(340);
-    max-width: 75%;
-    min-width: toRem(280);
-    z-index: 9999;
-
-    transition: opacity var(--transition-duration-fast);
-
-    &:has(.show-shop-filter__dialog[open]) {
-      width: toRem(340);
-      max-width: 75%;
-      min-width: toRem(280);
-      opacity: 1;
-      visibility: visible;
-      pointer-events: auto;
-    }
-
-    &:not(:has(.show-shop-filter__dialog[open])) {
-      display: flex;
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      transition:
-        opacity var(--transition-duration-fast),
-        visibility 0s var(--transition-duration-fast) allow-discrete;
-    }
+    display: none;
   }
 
   // Desktop/планшет: панель НЕ растягиваем по вертикали. Список фильтров
@@ -495,7 +458,7 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     }
   }
 
-  // ===== Диалог сайдбара (без телепорта — в потоке страницы) =====
+  // ===== Диалог сайдбара (на desktop — в потоке; на mobile — drawer в body) =====
   &__dialog {
     // show() диалог по умолчанию absolute по центру — возвращаем в поток
     position: static;
@@ -510,6 +473,10 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     margin: 0;
     background: transparent;
     max-width: none;
+    // Внутренний вертикальный скролл — НА ВСЕХ ширинах (список фильтров длинный
+    // и там, и там). Ограниченная высота приходит из контекста (desktop — height
+    // 100% от панели; mobile — 100dvh).
+    overflow-y: auto;
 
     // Анимация: desktop — слева направо (translate -100%). Mobile — БЕЗ
     // translate (только opacity): translate:0 100% ломал скролл — при открытии
@@ -520,19 +487,31 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
       translate var(--transition-duration-fast),
       opacity var(--transition-duration-fast);
 
-    // Mobile (≤768): без движения (translate 0); фейд делает САЙДБАР
-    // (opacity/visibility), поэтому у диалога opacity всегда 1. Фон как в
-    // ShowHamburger — прозрачный + blur; height:100% — чтобы .shop-filters
-    // (height:100%) резолвился и скроллился
+    // Mobile (≤768): dialog — это и есть drawer (телепорт в body, см. шаблон).
+    // position:fixed от вьюпорта (не зависит от transform-а страницы). blur
+    // появляется МГНОВЕННО: opacity всегда 1 (нет фейда), открытие — выезд
+    // translate, в закрытом — за экраном + visibility:hidden.
     @media (max-width: $mobile) {
-      translate: 0;
-      opacity: 1;
-      height: 100%;
+      position: fixed;
+      inset: 0 auto 0 0;   // слева, во всю высоту
+      width: toRem(340);
+      max-width: 75%;
+      min-width: toRem(280);
+      height: 100dvh;
+      z-index: 9999;
       backdrop-filter: blur(22px);
-      // Блюр не анимируем: @starting-style задаёт диалогу стартовый opacity:0 —
-      // иначе при открытии блюр фейдится (opacity 0→1). На mobile фейд делает
-      // сайдбар, диалог (в т.ч. его blur) появляется сразу.
-      transition: none;
+      opacity: 1;
+      translate: -100%;
+      visibility: hidden;
+      transition:
+        translate var(--transition-duration-fast),
+        visibility 0s var(--transition-duration-fast) allow-discrete;
+
+      &[open] {
+        visibility: visible;
+        translate: 0;
+        opacity: 1;
+      }
     }
 
     &[open] {
@@ -546,7 +525,8 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
         opacity: 0;
 
         @media (max-width: $mobile) {
-          translate: 0;
+          translate: -100%;
+          opacity: 1;
         }
       }
     }
@@ -559,32 +539,61 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   flex-shrink: 0;
   color: var(--color);
 
-  // Кнопка закрытия (mobile): скрыта на desktop (там закрывает кнопка в тулбаре).
-  // На mobile — absolute внутри панели (оверлей fixed → absolute считается от него),
-  // top-right панели, всегда поверх (не уезжает при внутреннем скролле).
+  // Кнопка закрытия (mobile) — как кнопка в container-top: «зелёная таблетка»
+  // с иконкой filter ↔ крестик (иконка меняется через isOpen). Скрыта на
+  // desktop (там закрывает кнопка в тулбаре). На mobile — absolute top-right
+  // внутри панели (не уезжает при скролле содержимого).
   &__close {
     display: none;
 
     @media (max-width: $mobile) {
       display: inline-flex;
+      align-items: center;
+      justify-content: center;
       position: absolute;
       top: toRem(12);
       right: toRem(12);
       z-index: 10000;
-      // Иконка тёмная на светлой панели (перебиваем --light-color из variant=close)
-      color: var(--color);
+      height: toRem(30);
+      padding: 0 toRem(12);
+      background-color: var(--green-color);
+      color: var(--light-color);
+      border: toRem(1) solid var(--border-color);
+      border-radius: toRem(6);
+      cursor: pointer;
+
+      svg {
+        color: var(--light-color);
+        width: toRem(20);
+        height: toRem(20);
+        flex-shrink: 0;
+      }
     }
   }
 
-  // Сортировка (mobile): скрыта на desktop (там USelect в тулбаре)
-  &__sort {
-    display: none;
+  // Иконка filter ↔ крестик (тот же Transition, что у кнопки в container-top)
+  .products-page__filter-icon {
+    display: inline-flex;
 
-    @media (max-width: $mobile) {
-      display: block;
-      margin-block-end: toRem(16);
+    .filter-icon-enter-active,
+    .filter-icon-leave-active {
+      transition:
+        opacity var(--transition-duration),
+        transform var(--transition-duration);
+    }
+
+    .filter-icon-enter-from {
+      opacity: 0;
+      transform: rotate(-90deg) scale(0.5);
+    }
+
+    .filter-icon-leave-to {
+      opacity: 0;
+      transform: rotate(90deg) scale(0.5);
     }
   }
+
+  // Сортировка осталась в тулбаре (container-top) — на всех ширинах
 
   &__section {
     margin-block-end: toRem(24);
