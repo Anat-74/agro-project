@@ -198,22 +198,30 @@ const { slides, heroGrids } = props;
     // (без transition; анимацию ведёт transform, см. выше). USlider задаёт
     // .slider { width:100% } — margin поверх НЕ сужает ширину, поэтому width
     // переопределяем: контент занимает оставшееся место.
+    // ВАЖНО: всё это только ВЫШЕ tablet (на tablet/mobile каталог — полноэкранный
+    // оверлей, а не сдвиг вправо; иначе ломалась одна колонка/ширина).
     &_catalog-open {
-      width: calc(100% - var(--catalog-shift));
-      margin-inline-start: var(--catalog-shift);
-    }
+      @media (min-width: $tablet) {
+        width: calc(100% - var(--catalog-shift));
+        margin-inline-start: var(--catalog-shift);
 
-    // Каталог открыт → слайд узкий (сдвиг отдал часть ширины). В базовой раскладке
-    // USlider колонка картинки — auto (max-content ~742px), текст получал остаток
-    // и «раздавливался» до 48–62px. Переключаем слайд на «сжимаемые» пропорции:
-    // обе колонки minmax(0, fr) — картинка уменьшается первой (width:100% +
-    // max-width в UImage), тексту всегда достаётся доля. Закрыто (полная ширина) —
-    // базовые auto/1fr из USlider, картинка в натуральную ширину.
-    &_catalog-open {
-      :deep(.slider__slide) {
-        grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+        // Каталог открыт → слайд узкий (сдвиг отдал часть ширины). В базовой
+        // раскладке USlider колонка картинки — auto (max-content ~742px), текст
+        // получал остаток и «раздавливался» до 48–62px. Переключаем слайд на
+        // «сжимаемые» пропорции: обе колонки minmax(0, fr) — картинка уменьшается
+        // первой, тексту достаётся доля. Закрыто (полная ширина) — базовые
+        // auto/1fr из USlider.
+        :deep(.slider__slide) {
+          grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
 
-        > * { min-width: 0; }
+          > * { min-width: 0; }
+
+          // ВАРИАНТ 1 (№4): контент слайда — в пределах __container (1420) и по
+          // центру оставшейся зоны. На широких слайдер (100% − shift) шире 1420 —
+          // без этого текст/кнопка вылезали бы за правую границу __container.
+          max-width: toRem(1420);
+          margin-inline: auto;
+        }
       }
     }
   }
