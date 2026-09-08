@@ -172,17 +172,6 @@ const onRangeChange = (range: [number, number]) => {
   emit("update:priceMax", range[1])
 }
 
-// Держим инпуты в синхроне с ФАКТИЧЕСКИ применённым фильтром (props.priceMin/Max).
-// Иначе при URL-гонке/внешнем изменении инпуты могли показывать 0–2000, а запрос
-// уходил с другим (старым) priceMax → «Найдено 3»/«не найдены» при «0–2000» на экране.
-watch(
-  () => [props.priceMin, props.priceMax],
-  ([mn, mx]) => {
-    localMin.value = mn
-    localMax.value = mx
-  },
-)
-
 // Ввод диапазона руками (input type=number). Коммит по @change (blur/Enter),
 // кламп в [0, PRICE_MAX] и min ≤ max; ползунок подхватывает через
 // :model-value="[localMin, localMax]" → onRangeChange.
