@@ -42,6 +42,9 @@ export const useProductsFilters = (
   const page = ref(1)
 
   let applyingUrl = false
+  // Флаг собственной записи в URL: пока он true, watch(route.query) не перечитывает
+  // URL обратно в refs (защита от гонки при быстрых изменениях фильтров).
+  let ownUpdate = false
 
   const buildQuery = (): Record<string, string | string[]> => {
     const q: Record<string, string | string[]> = {}
@@ -80,7 +83,15 @@ export const useProductsFilters = (
 
   const pushQuery = () => {
     if (!import.meta.client) return
-    router.replace({ query: buildQuery() })
+    // Собственная запись в URL: помечаем ownUpdate, чтобы watch(route.query) НЕ
+    // перечитал URL обратно в refs из-за рассинхрона/гонки. Иначе при быстрых
+    // изменениях (например, цену в 0 → 5 → 0) route.query мог содержать ПРОШЛЫЙ
+    // ?priceMin=5 и applyQuery перезаписал бы priceMin=5 — UI показывает 0, а
+    // фильтр в запросе оставался старым → «товары не найдены».
+    ownUpdate = true
+    router.replace({ query: buildQuery() }).finally(() => {
+      ownUpdate = false
+    })
   }
 
   // Пользователь меняет фильтр (не из URL) → сброс на 1-ю страницу + запись в URL
@@ -99,11 +110,13 @@ export const useProductsFilters = (
     window.scrollTo({ top: 0, behavior: "smooth" })
   })
 
-  // Внешние изменения (back/forward, прямой переход по ссылке) — перечитать refs
+  // Внешние изменения (back/forward, прямой переход по ссылке) — перечитать refs.
+  // Если это НАША запись собственного pushQuery — не перечитываем (иначе гонка).
   watch(
     () => route.query,
     () => {
       if (!import.meta.client) return
+      if (ownUpdate) return
       applyingUrl = true
       applyQuery(route.query)
       nextTick(() => {
