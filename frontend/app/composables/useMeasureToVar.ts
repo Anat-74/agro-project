@@ -13,7 +13,7 @@ export interface UseMeasureToVarOptions {
   // Элемент, за изменениями размера которого следим (ResizeObserver): при
   // ресайзе источника замер пересчитывается автоматически. Если null — только
   // единичный замер на mount + по триггерам.
-  observe?: () => HTMLElement | null | undefined
+  observe?: () => Element | null | undefined
   // Куда писать: documentElement (по умолчанию) или конкретный элемент.
   target?: () => HTMLElement | null | undefined
 }
