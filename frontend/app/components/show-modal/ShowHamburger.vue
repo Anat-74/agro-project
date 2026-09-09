@@ -127,7 +127,22 @@ const {
         subcategories: {
           fields: ["name", "slug"],
           // Изображение подкатегории — слева от названия (как у категорий/товаров)
-          populate: { image: { fields: ["alternativeText", "url"] } },
+          populate: {
+            image: { fields: ["alternativeText", "url"] },
+            // Товары подкатегории — вложенный <details> (план ShowHamburger 08.27):
+            // подкатегория раскрывает СВОИ товары, переход — только по товару
+            products: {
+              fields: ["name", "slug"],
+              populate: {
+                image: { fields: ["alternativeText", "url"] },
+                category: { fields: ["slug"] },
+                subcategory: {
+                  fields: ["slug"],
+                  populate: { category: { fields: ["slug"] } },
+                },
+              },
+            },
+          },
         },
         products: {
           fields: ["name", "slug"],
@@ -281,34 +296,69 @@ const toggleHamburger = () => {
 
             <div class="accordion__content">
               <ul class="accordion__product-list">
+                <!-- Подкатегория — вложенный <details>: клик раскрывает её товары,
+                     НЕ переходит (план ShowHamburger 08.27). Своя группа name
+                     'faq-%cat.slug%' (не общий 'faq'), иначе раскрытие подкатегории
+                     закрывает родительскую категорию (нативная эксклюзивная группа). -->
                 <li
                   v-for="sub in cat.subcategories"
                   :key="sub.documentId"
-                  class="accordion__product-item"
+                  class="accordion__item"
                 >
-                  <NuxtLink
-                    :class="[
-                      'accordion__product-link',
-                      {
-                        'accordion__product-link_is-active': isActive(
-                          `/${currentLocale}/${cat.slug}/${sub.slug}`,
-                        ),
-                      },
-                    ]"
-                    :to="`/${currentLocale}/${cat.slug}/${sub.slug}`"
-                    @click="close?.()"
-                  >
-                    <UImage
-                      v-if="sub.image?.url"
-                      :src="sub.image?.url"
-                      alt=""
-                      class="accordion__product-image-link"
-                      width="32"
-                      height="32"
-                      type="icon"
-                    />
-                    <h4 class="accordion__product-sub-title">{{ sub.name }}</h4>
-                  </NuxtLink>
+                  <details :name="`faq-${cat.slug}`" class="accordion__details">
+                    <summary
+                      :class="[
+                        'accordion__summary',
+                        { 'accordion__summary_is-active': isActive(`/${currentLocale}/${cat.slug}/${sub.slug}`) },
+                      ]"
+                    >
+                      <UImage
+                        v-if="sub.image?.url"
+                        :src="sub.image?.url"
+                        alt=""
+                        class="accordion__product-image"
+                        width="44"
+                        height="32"
+                        type="icon"
+                      />
+                      <h4 class="accordion__product-sub-title">{{ sub.name }}</h4>
+                      <Icon name="mingcute:down-line" />
+                    </summary>
+                  </details>
+
+                  <div class="accordion__content">
+                    <ul class="accordion__product-list">
+                      <li
+                        v-for="subProd in sub.products"
+                        :key="subProd.documentId"
+                        class="accordion__product-item"
+                      >
+                        <NuxtLink
+                          :class="[
+                            'accordion__product-link',
+                            {
+                              'accordion__product-link_is-active': isActive(
+                                getProductLink(subProd),
+                              ),
+                            },
+                          ]"
+                          :to="getProductLink(subProd)"
+                          @click="close?.()"
+                        >
+                          <UImage
+                            v-if="subProd.mainImage?.url || subProd.image?.length"
+                            :src="subProd.mainImage?.url || subProd.image?.[0]?.url"
+                            alt=""
+                            class="accordion__product-image-link"
+                            width="32"
+                            height="32"
+                            type="icon"
+                          />
+                          <h4 class="accordion__product-sub-title">{{ subProd.name }}</h4>
+                        </NuxtLink>
+                      </li>
+                    </ul>
+                  </div>
                 </li>
                 <!-- Отображение продуктов, принадлежащих напрямую категории -->
                 <li
@@ -727,6 +777,32 @@ const toggleHamburger = () => {
       @include hover {
         color: var(--danger-hover);
       }
+    }
+
+    // Подкатегория (вложенный <details>): клик раскрывает её товары, не переходит.
+    // Активна (текущий маршрут) — подсвечена как ссылка/категория.
+    // Шрифт подкатегории — на 1px больше, чем у товаров (план ShowHamburger 08.27).
+    &_is-active {
+      color: var(--danger-color);
+      font-weight: 700;
+
+      svg {
+        color: var(--danger-color);
+      }
+    }
+
+    .accordion__product-sub-title {
+      font-size: toEm(17); // товары — toEm(16), подкатегория +1px
+    }
+  }
+
+  // Содержимое подкатегории: вложенный список товаров. Родительская категория
+  // раскрывается через .accordion__details[open] + .accordion__content; вложенный
+  // аккордеон — та же механика (grid-template-rows 0fr→1fr).
+  &__item .accordion__content {
+    .accordion__product-item {
+      // Вложенные товары смещаем вправо (иерархия), картинка мельче — как в списке
+      padding-inline-start: toEm(12);
     }
   }
 

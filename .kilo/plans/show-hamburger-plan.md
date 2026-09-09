@@ -156,6 +156,50 @@
 
 ---
 
+## Anchor Positioning для desktop-панели (анализ 09.09, в работе)
+
+**Решение (Шаг 4 плана):** нативный Anchor Positioning (`style-guide` §14):
+```scss
+.hamburger-menu { anchor-name: --hamburger-menu; }
+.dialog-hamburger {
+  position-anchor: --hamburger-menu;
+  position-area: bottom span-right;
+  margin-block-start: toRem(22);
+  position-try-fallbacks: flip-block;
+}
+```
+
+**Почему был заменён на absolute (история):** в desktop-ветке стоит `inset: auto` — он нужен, чтобы
+**сбросить mobile-базу `inset: 0`** (базовый `.dialog-hamburger { inset: 0 }`, ~строка 490). Но `inset` —
+shorthand для `top/right/bottom/left`, и он **перезаписывает вычисленные от якоря инсеты** → диалог
+отваливается от якоря, остаётся в static-position, падает наверх и накрывает кнопку
+(верх 167px vs низ кнопки 208px). Поэтому оставлен `position:absolute; top: calc(100% + 22px)`.
+
+**Как обойти (перейти на anchor):**
+1. Убрать в desktop-ветке `inset: auto` (shorthand) — он убивает `position-area`. Вместо него явные
+   свойства + отступ через `margin-block-start` (не `top`, т.к. `top` задаёт якорь):
+   ```scss
+   @media (min-width:$mobile) {
+     position: absolute;
+     position-anchor: --hamburger-menu;
+     position-area: bottom span-right;
+     inset-inline: auto 0;      // горизонталь своей базой; вертикаль — от якоря
+     margin-block-start: toRem(22);
+   }
+   ```
+2. **Якорь на desktop-инстансе.** `.hamburger-menu` у desktop и mobile — разные элементы; общий
+   `anchor-name: --hamburger-menu` (строка 447-449) матчит mobile. Перенести на desktop-кнопку:
+   `.hamburger_desktop .hamburger-menu { anchor-name: --hamburger-menu; }`.
+3. **База `inset:0`** (строка 490) оставляем для mobile — нормально, desktop-ветка его не перебивает
+   shorthand'ом, а якорь сам задаёт top.
+
+**Подводные камни:**
+- **Поддержка:** Anchor — только совр. Chrome/Edge/Safari/FF (Chrome 125+, Safari 17.4+). На старых
+  `position-area` игнорируется → нужен **fallback absolute** (текущий). Anchor — прогрессивное улучшение.
+- **`@supports (anchor-name: --x)`** → anchor, иначе → absolute fallback.
+
+---
+
 ## Формат работы
 - Реализация **строго в не пиковые часы** (7–9, 13–4 МСК). В пиковые — не начинать.
 - Каждый шаг — только после одобрения, после каждого — краткий отчёт.
