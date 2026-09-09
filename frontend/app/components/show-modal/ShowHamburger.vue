@@ -792,7 +792,41 @@ const toggleHamburger = () => {
     }
 
     .accordion__product-sub-title {
-      font-size: toEm(17); // товары — toEm(16), подкатегория +1px
+      font-size: toEm(15); // подкатегория — компактнее категории (см. _summary_is-sub)
+    }
+  }
+
+  // ===== Подкатегория (вложенный <details>): компактнее категории =====
+  // Категория: font 22px, img 44x32, pad 4, summary h≈43, icon 22.
+  // Подкатегория — на 1px меньше шрифт (≈21px), summary на -2px высоты/ширины,
+  // картинка и шеврон меньше. Маркер: name="faq-{slug}" (у категории name="faq").
+  &__details[name^="faq-"] {
+    & > .accordion__summary {
+      // Шрифт названия подкатегории: 1px меньше, чем у категории (22px → 21px).
+      font-size: toEm(21);
+      // Отступ от категории до подкатегории
+      margin-block-start: toEm(2);
+      // Ширина/высота — на 2px меньше, чем у категории (сжимаем padding).
+      padding: toEm(3);
+      // Ширина подкатегории — на 2px меньше категории (категория на всю колонку):
+      // ограничиваем max-width, т.к. summary растягивается на 100% родителя.
+      max-width: calc(100% - toRem(2));
+      // Картинка подкатегории — меньше категории (44x32 → 40x28)
+      .accordion__product-image {
+        // ширина/высота как у продуктов-ссылок (32), но чуть больше для подкатегории
+        width: toRem(40);
+        height: toRem(28);
+      }
+      // Название подкатегории — компактное: subtitle h4 имеет свой line-height,
+      // иначе высота текста больше категории (24 vs 22). Уравниваем.
+      .accordion__product-sub-title {
+        font-weight: 700;
+        line-height: toRem(24); // в px: toEm от контекста font-size 21 искажал lh (27px)
+      }
+      // Шеврон подкатегории — меньше (22 → 19)
+      svg {
+        font-size: toRem(19);
+      }
     }
   }
 
