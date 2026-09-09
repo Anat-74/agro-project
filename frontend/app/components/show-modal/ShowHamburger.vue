@@ -45,7 +45,7 @@ const isHomePage = computed(() => route.path.split("/").filter(Boolean).length <
 const dialogKey = computed(() => props.dialogId || "hamburgerDialog")
 const isDesktopInstance = computed(() => dialogKey.value === "hamburgerCatalogDesktop")
 
-const { open, close, isOpen } = useDialog(dialogKey.value, dialogElement, {
+const { open, close, isOpen, toggle } = useDialog(dialogKey.value, dialogElement, {
   useShowMethod: true,
   initialOpen: isDesktopInstance.value && isHomePage.value, // desktop: открыт на главной (SSR-стабильно)
 })
@@ -186,10 +186,16 @@ const pending = computed(
   () => pendingCategories.value || pendingProducts.value,
 )
 
-const openHamburger = () => {
-  open?.()
-  if (!category.value) executeCategory()
-  if (!product.value) executeProduct()
+// Переключатель диалога из useDialog (открыт→закрыть, закрыт→открыть).
+// При открытии дополнительно догружаем категории/товары (идемпотентно:
+// execute* без повторного запроса, если данные уже загружены).
+const toggleHamburger = () => {
+  const wasOpen = isOpen.value
+  toggle?.()
+  if (!wasOpen) {
+    if (!category.value) executeCategory()
+    if (!product.value) executeProduct()
+  }
 }
 </script>
 
@@ -206,7 +212,7 @@ const openHamburger = () => {
            ? buttonT.ariaLabelDialogClosed
            : buttonT.ariaLabelDialogOpen
       "
-      @click="isOpen ? close?.() : openHamburger()"
+      @click="toggleHamburger"
     />
     <span
       :class="[
@@ -500,6 +506,16 @@ const openHamburger = () => {
 
   &:not([open]) {
     display: none;
+  }
+
+  // Мобильный каталог (≤$mobile): фикс от «прыжка вверх» (план №1).
+  // Раньше диалог был в документном ПОТОКЕ (без position:fixed) — при show()
+  // авто-фокус → scrollIntoView прокручивал документ к верху (scrollY 873→0),
+  // т.к. элемент участвует в прокрутке и прячется через translate:-100%.
+  // position:fixed выносит его из документной прокрутки — scrollIntoView к нему
+  // становится no-op для документа. Как у ShowShopFilter (там fixed был всегда).
+  @media (max-width: $mobile) {
+    position: fixed;
   }
 
   @media (min-width:$mobile) {

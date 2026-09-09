@@ -10,6 +10,7 @@ interface UseDialogReturn {
   open?: () => void;
   close?: () => void;
   isOpen: Ref<boolean>;
+  toggle?: () => void; // Открыть→закрыть, закрыть→открыть (при наличии dialogElement)
 }
 
 export const useDialog = (
@@ -52,6 +53,14 @@ export const useDialog = (
     const el = getElement();
     el?.close?.();
     isOpen.value = false;
+  };
+
+  // Единая логика «переключить состояние»: открыт → закрыть, закрыт → открыть.
+  // Раньше дублировалась в каждом компоненте (ShowShopFilter, ShowHamburger и т.д.).
+  // Использует локальные open/close этого вызова (и связанный dialogElement).
+  const toggle = () => {
+    if (isOpen.value) close();
+    else open();
   };
 
   // Обработчик клика на бэкдроп - только для showModal()
@@ -101,5 +110,6 @@ export const useDialog = (
     open,
     close,
     isOpen,
+    toggle,
   };
 };

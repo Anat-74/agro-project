@@ -41,7 +41,7 @@ const emit = defineEmits<{
 // на mobile. На desktop панель открывает СТРАНИЦА после загрузки товаров
 // (O2, plan.md §1: watcher на status === 'success' в products/index.vue).
 const dialogElement = useTemplateRef<HTMLDialogElement>("dialog-shop-filter");
-const { open, close, isOpen } = useDialog("shopFilterDialog", dialogElement, {
+const { open, close, isOpen, toggle } = useDialog("shopFilterDialog", dialogElement, {
   useShowMethod: true,
   initialOpen: false,
 })
@@ -49,11 +49,8 @@ const { open, close, isOpen } = useDialog("shopFilterDialog", dialogElement, {
 // width нужен для sale-секции (запрос только на desktop) и кнопки-логики
 const { width } = useViewport()
 
-// Управление диалогом из страницы (кнопка «Фильтр» в top-bar)
-const toggle = () => {
-  if (isOpen.value) close?.()
-  else open?.()
-}
+// Управление диалогом из страницы (кнопка «Фильтр» в top-bar):
+// toggle приходит из useDialog (открыт→закрыть, закрыт→открыть).
 defineExpose({ open, close, isOpen, toggle })
 
 // ===== Плавающая кнопка «Фильтр» (mobile) — самодостаточность компонента =====
