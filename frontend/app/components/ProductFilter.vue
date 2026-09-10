@@ -4,6 +4,13 @@ const { currentLocale } = useLocale()
 const t = computed(() => productFilterTranslations[currentLocale.value])
 const route = useRoute()
 const searchStore = useSearchStore()
+
+// header — круглая схлопывающаяся кнопка в шапке сайта (как было);
+// panel — поиск на всю ширину (шапка панели каталога/меню, планшет и ниже)
+interface Props {
+  variant?: 'header' | 'panel'
+}
+const props = withDefaults(defineProps<Props>(), { variant: 'header' })
 const { products, status, hasSearched } = storeToRefs(searchStore)
 
 // Функция для форматирования каждого слова с заглавной буквы
@@ -73,7 +80,8 @@ onUnmounted(() => {
 
 <template>
   <div
-  class="search-body" 
+  class="search-body"
+  :class="`search-body_${props.variant}`"
    role="search"
   >
     <UInput
@@ -156,6 +164,46 @@ onUnmounted(() => {
          &:focus {
             border-radius: toRem(20);
             box-shadow: 0 0 0 toRem(4) var(--focus-ring-color);
+         }
+      }
+
+      :deep(.u-input__label) {
+         display: none;
+      }
+   }
+
+   // Вариант «панель» (шапка каталога/меню, планшет и ниже): поиск всегда
+   // на всю ширину, placeholder виден (в шапке сайта он скрыт — текст в оверлее)
+   &-body_panel {
+      width: 100%;
+      height: toRem(40);
+
+      &:focus-within {
+         width: 100%;
+      }
+
+      :deep(.u-input) {
+         width: 100%;
+         height: 100%;
+      }
+
+      :deep(.u-input__wrapper) {
+         height: 100%;
+      }
+
+      :deep(.u-input__field) {
+         width: 100%;
+         height: 100%;
+         padding-inline-start: toRem(38);
+         border-radius: toRem(20);
+         font-size: toEm(15);
+
+         &::placeholder {
+            color: var(--gray-color);
+         }
+
+         &:focus {
+            border-radius: toRem(20);
          }
       }
 

@@ -3,6 +3,7 @@ import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
 import { discountProductTranslations } from "~/locales/discountProduct";
 import { buttonTranslations } from "~/locales/button";
 import { showHamburgerTranslations } from "~/locales/showHamburger";
+import VoiceInput from "~/components/chat-assistant/VoiceInput.vue";
 
 const visuallyHiddenT = computed(() => visuallyHiddenTranslations[currentLocale.value])
 const discountT = computed(() => discountProductTranslations[currentLocale.value])
@@ -104,8 +105,18 @@ useMeasureToVar("--catalog-h", {
   },
 })
 
-const config = useRuntimeConfig();
 const { getProductLink } = useProductLink();
+
+// Поиск в шапке панели (планшет и ниже): переиспользуем общий стор поиска
+// и оверлей результатов (как в шапке сайта), но поле — всегда на всю ширину.
+const searchStore = useSearchStore();
+
+// Голосовой ввод в поиске: распознанный текст кладём в стор и сразу ищем
+const onVoiceSearch = (text: string) => {
+  if (!text) return;
+  searchStore.filters.name = text;
+  searchStore.executeSearch();
+};
 
 // Активные ссылки аккордеона — по текущему маршруту
 const isActive = (path: string) => route.path === path
@@ -254,48 +265,47 @@ const toggleHamburger = () => {
       {{ visuallyHiddenT.showModalMenuTitle }}
     </h2>
     <div class="dialog-hamburger__items">
-      <div class="dialog-hamburger__top visible-mobile">
-        <ULogo
-          :global="global"
-          :current-locale="currentLocale"
-          :config="config"
-          width="32"
-          height="32"
-        />
-        <UAnimatedText variant="gradient" />
-      </div>
+      <!-- Шапка панели (планшет и ниже): поиск на всю ширину + голосовой ввод.
+           Раньше здесь был блок __top (логотип + анимированный текст) — удалён. -->
+      <header class="dialog-hamburger__header visible-tablet">
+        <div class="dialog-hamburger__search">
+          <ProductFilter variant="panel" class="dialog-hamburger__search-field" />
+          <VoiceInput
+            :disabled="false"
+            :locale="currentLocale"
+            @on-result="onVoiceSearch"
+          />
+        </div>
+      </header>
+
       <ul v-if="category?.length" class="dialog-hamburger__accordion accordion">
          <li v-for="cat in category" :key="cat.documentId" class="accordion__item">
           
-            <details name="faq" class="accordion__details">
-              <summary class="accordion__summary">
-                <UImage
-                  v-if="cat.image?.url"
-                  :src="cat.image?.url"
-                  alt=""
-                  class="accordion__product-image"
-                  width="44"
-                  height="32"
-                  type="icon"
-                />
-                <h3
-                  :class="[
-                    'accordion__product-title',
-                    {
-                      'accordion__product-title_is-active': isActive(
-                        `/${currentLocale}/${cat.slug}`,
-                      ),
-                    },
-                  ]"
-                >
-                  {{ cat.name }}
-                </h3>
-                <Icon name="mingcute:down-line" />
-              </summary>
-            </details>
-
-            <div class="accordion__content">
-              <ul class="accordion__product-list">
+          <UAccordion name="faq" variant="default">
+            <template #header>
+              <UImage
+                v-if="cat.image?.url"
+                :src="cat.image?.url"
+                alt=""
+                class="accordion__product-image"
+                width="44"
+                height="32"
+                type="icon"
+              />
+              <h3
+                :class="[
+                  'accordion__product-title',
+                  {
+                    'accordion__product-title_is-active': isActive(
+                      `/${currentLocale}/${cat.slug}`,
+                    ),
+                  },
+                ]"
+              >
+                {{ cat.name }}
+              </h3>
+            </template>
+            <ul class="accordion__product-list">
                 <!-- Подкатегория — вложенный <details>: клик раскрывает её товары,
                      НЕ переходит (план ShowHamburger 08.27). Своя группа name
                      'faq-%cat.slug%' (не общий 'faq'), иначе раскрытие подкатегории
@@ -305,29 +315,24 @@ const toggleHamburger = () => {
                   :key="sub.documentId"
                   class="accordion__item"
                 >
-                  <details :name="`faq-${cat.slug}`" class="accordion__details">
-                    <summary
-                      :class="[
-                        'accordion__summary',
-                        { 'accordion__summary_is-active': isActive(`/${currentLocale}/${cat.slug}/${sub.slug}`) },
-                      ]"
-                    >
-                      <UImage
-                        v-if="sub.image?.url"
-                        :src="sub.image?.url"
-                        alt=""
-                        class="accordion__product-image"
-                        width="44"
-                        height="32"
-                        type="icon"
-                      />
-                      <h4 class="accordion__product-sub-title">{{ sub.name }}</h4>
-                      <Icon name="mingcute:down-line" />
-                    </summary>
-                  </details>
-
-                  <div class="accordion__content">
-                    <ul class="accordion__product-list">
+                <UAccordion
+                  :name="`faq-${cat.slug}`"
+                  variant="sub"
+                  :active="isActive(`/${currentLocale}/${cat.slug}/${sub.slug}`)"
+                >
+                  <template #header>
+                    <UImage
+                      v-if="sub.image?.url"
+                      :src="sub.image?.url"
+                      alt=""
+                      class="accordion__product-image"
+                      width="44"
+                      height="32"
+                      type="icon"
+                    />
+                    <h4 class="accordion__product-sub-title">{{ sub.name }}</h4>
+                  </template>
+                  <ul class="accordion__product-list">
                       <li
                         v-for="subProd in sub.products"
                         :key="subProd.documentId"
@@ -358,7 +363,7 @@ const toggleHamburger = () => {
                         </NuxtLink>
                       </li>
                     </ul>
-                  </div>
+                </UAccordion>
                 </li>
                 <!-- Отображение продуктов, принадлежащих напрямую категории -->
                 <li
@@ -391,7 +396,7 @@ const toggleHamburger = () => {
                   </NuxtLink>
                 </li>
               </ul>
-            </div>
+          </UAccordion>
           </li>
         </ul>
       <div
@@ -410,8 +415,8 @@ const toggleHamburger = () => {
 
       <div v-if="product?.length" class="accordion">
         
-         <details name="faq" class="accordion__details">
-          <summary class="accordion__summary accordion__summary_is-discount">
+        <UAccordion name="faq" variant="discount">
+          <template #header>
             <Icon
               class="accordion__discount-icon"
               name="mdi:discount-outline"
@@ -419,11 +424,7 @@ const toggleHamburger = () => {
             <h4 class="accordion__product-sub-title">
               {{ discountT.discount }}
             </h4>
-            <Icon name="mingcute:down-line" />
-          </summary>
-        </details>
-
-        <div class="accordion__content">
+          </template>
           <ul class="accordion__product-list">
             <li
               v-for="prod in product"
@@ -452,7 +453,7 @@ const toggleHamburger = () => {
               </NuxtLink>
             </li>
           </ul>
-        </div>
+        </UAccordion>
       </div>
       <div
         v-else-if="product && !product.length"
@@ -478,15 +479,16 @@ const toggleHamburger = () => {
         </div>
       </div>
     </div>
-    <div class="dialog-hamburger__sidebar sidebar visible-mobile">
-      <UButton
-        :is-open="isOpen"
-        variant="hamburger"
-        :aria-label="buttonT.ariaLabelDialogClosed"
-        @click="close?.()"
-      />
-      <USocials :is-open="isOpen" :socials="socials" />
-    </div>
+
+    <!-- Кнопка закрытия — позиционируется абсолютно (правый верхний угол диалога) -->
+    <button
+      type="button"
+      class="dialog-hamburger__close visible-tablet"
+      :aria-label="buttonT.ariaLabelDialogClosed"
+      @click="close?.()"
+    >
+      <Icon name="mingcute:close-line" />
+    </button>
     </dialog>
     </Teleport>
   </div>
@@ -638,17 +640,49 @@ const toggleHamburger = () => {
     }
   }
 
-  &__top {
-    width: 90%;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    padding-inline: toEm(12);
-    padding-block: toEm(2);
-    border-radius: toEm(25);
-    background-color: var(--light-color);
+  // Шапка панели (планшет и ниже): поиск на всю ширину + голосовой ввод.
+  // Пришла на место удалённого блока __top (логотип + анимированный текст).
+  &__header {
+    width: 100%;
+  }
 
-    @media (max-width: $mobileSmall) {
-      width: 100%;
+  &__search {
+    display: flex;
+    align-items: center;
+    column-gap: toEm(8);
+    width: 100%;
+
+    // Поле поиска занимает всё доступное место, кнопка голоса — фиксированная
+    &-field {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+  }
+
+  // Кнопка закрытия — правый верхний угол диалога (вместо удалённого сайдбара)
+  &__close {
+    position: absolute;
+    top: toRem(10);
+    right: toRem(10);
+    z-index: 10;
+    display: grid;
+    place-items: center;
+    width: toRem(40);
+    height: toRem(40);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 toRem(2) toRem(10) rgba(0, 0, 0, 0.15);
+    color: var(--color);
+    cursor: pointer;
+    transition: background var(--transition-duration), scale var(--transition-duration);
+
+    svg {
+      font-size: toRem(22);
+    }
+
+    @include hover {
+      background: var(--bg-secondary);
+      scale: 1.06;
     }
   }
 
@@ -715,187 +749,9 @@ const toggleHamburger = () => {
   }
 }
 
-.accordion {
-  &__details {
-    padding-block: toRem(2);
-
-    svg {
-      font-size: toRem(22);
-    }
-  }
-
-  &__details[open] + &__content {
-    grid-template-rows: 1fr;
-  }
-
-  &__details[open] {
-    .accordion__summary {
-      color: var(--danger-color);
-
-      svg {
-        rotate: -90deg;
-        transition: rotate var(--transition-duration);
-      }
-    }
-  }
-
-  &__details:not([open]) {
-    .accordion__summary {
-      svg {
-        transition: rotate var(--transition-duration);
-      }
-    }
-  }
-
-  &__summary {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    padding: toEm(4);
-    font-weight: 600;
-    font-size: toEm(22);
-    color: var(--primary-color);
-    outline: toRem(2) var(--whitesmoke-color) inset;
-    border-radius: toRem(4);
-    background-color: var(--light-color-transparent);
-
-    @include hover {
-      color: var(--warning-color);
-    }
-
-    &_is-discount {
-      padding-inline: toEm(4);
-      padding-block: toRem(6);
-      outline: toRem(2) var(--light-color) outset;
-      color: var(--danger-color);
-
-      svg {
-        color: var(--green-color);
-      }
-
-      @include hover {
-        color: var(--danger-hover);
-      }
-    }
-
-    // Подкатегория (вложенный <details>): клик раскрывает её товары, не переходит.
-    // Активна (текущий маршрут) — подсвечена как ссылка/категория.
-    // Шрифт подкатегории — на 1px больше, чем у товаров (план ShowHamburger 08.27).
-    &_is-active {
-      color: var(--danger-color);
-      font-weight: 700;
-
-      svg {
-        color: var(--danger-color);
-      }
-    }
-
-    .accordion__product-sub-title {
-      font-size: toEm(15); // подкатегория — компактнее категории (см. _summary_is-sub)
-    }
-  }
-
-  // ===== Подкатегория (вложенный <details>): компактнее категории =====
-  // Категория: font 22px, img 44x32, pad 4, summary h≈43, icon 22.
-  // Подкатегория — на 1px меньше шрифт (≈21px), summary на -2px высоты/ширины,
-  // картинка и шеврон меньше. Маркер: name="faq-{slug}" (у категории name="faq").
-  &__details[name^="faq-"] {
-    & > .accordion__summary {
-      // Шрифт названия подкатегории: 1px меньше, чем у категории (22px → 21px).
-      font-size: toEm(21);
-      // Отступ от категории до подкатегории
-      margin-block-start: toEm(2);
-      // Ширина/высота — на 2px меньше, чем у категории (сжимаем padding).
-      padding: toEm(3);
-      // Ширина подкатегории — на 2px меньше категории (категория на всю колонку):
-      // ограничиваем max-width, т.к. summary растягивается на 100% родителя.
-      max-width: calc(100% - toRem(2));
-      // Картинка подкатегории — меньше категории (44x32 → 40x28)
-      .accordion__product-image {
-        // ширина/высота как у продуктов-ссылок (32), но чуть больше для подкатегории
-        width: toRem(40);
-        height: toRem(28);
-      }
-      // Название подкатегории — компактное: subtitle h4 имеет свой line-height,
-      // иначе высота текста больше категории (24 vs 22). Уравниваем.
-      .accordion__product-sub-title {
-        font-weight: 700;
-        line-height: toRem(24); // в px: toEm от контекста font-size 21 искажал lh (27px)
-      }
-      // Шеврон подкатегории — меньше (22 → 19)
-      svg {
-        font-size: toRem(19);
-      }
-    }
-  }
-
-  // Содержимое подкатегории: вложенный список товаров. Родительская категория
-  // раскрывается через .accordion__details[open] + .accordion__content; вложенный
-  // аккордеон — та же механика (grid-template-rows 0fr→1fr).
-  &__item .accordion__content {
-    .accordion__product-item {
-      // Вложенные товары смещаем вправо (иерархия), картинка мельче — как в списке
-      padding-inline-start: toEm(12);
-    }
-  }
-
-  &__content {
-    display: grid;
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 0.3s;
-  }
-
-  &__product-list {
-    overflow: hidden;
-    color: var(--color);
-  }
-
-  &__product-link {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    justify-items: center;
-    align-items: center;
-    border-radius: toRem(8);
-    padding-block-start: toRem(16);
-    transition: all var(--transition-duration);
-
-    &_is-discount {
-      column-gap: toEm(4);
-    }
-
-    // Активная ссылка (текущий маршрут) — выделена цветом
-    &_is-active {
-      color: var(--danger-color);
-      font-weight: 700;
-    }
-
-    @include hover {
-      color: var(--gray-color);
-      text-decoration: underline;
-    }
-  }
-
-  &__product-sub-title {
-    font-weight: 800;
-  }
-
-  &__product-title {
-    &_is-active {
-      color: var(--danger-color);
-    }
-  }
-}
-
-.sidebar {
-  display: grid;
-  grid-template-rows: repeat(3, auto) 1fr;
-  justify-items: center;
-  row-gap: toEm(18);
-  overflow-y: auto;
-  padding-inline: toEm(4);
-  padding-block: toEm(12);
-  border-left: toEm(2) solid var(--success-color);
-  background-color: var(--secondary-color);
+.sidebar-removed {
+  // Стили аккордеона перенесены в компонент UAccordion (глобально, чтобы
+  // применять их к слот-контенту). Сайдбар удалён — кнопка закрытия
+  // позиционируется абсолютно (.dialog-hamburger__close).
 }
 </style>
