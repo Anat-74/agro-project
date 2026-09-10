@@ -65,6 +65,14 @@ watch(isHomePage, (home) => {
   }
 }, { immediate: true })
 
+// Не фокусировать поле поиска при открытии: иначе на мобильном сразу всплывает
+// виртуальная клавиатура (плохо для UX). Фокусируем сам диалог (tabindex="-1").
+// Только для инстанса ≤$tablet; desktop при загрузке фокус не перехватывает.
+watch(isOpen, (open) => {
+  if (!import.meta.client || !open || isDesktopInstance.value) return
+  nextTick(() => dialogElement.value?.focus())
+})
+
 // DOM-ид диалога уникален для каждого инстанса (в документе id не дублируются)
 const dialogElementId = computed(() =>
   isDesktopInstance.value ? "dialog-hamburger-desktop" : "dialog-hamburger-mobile",
@@ -258,28 +266,40 @@ const toggleHamburger = () => {
         ref="dialog-hamburger"
         class="dialog-hamburger"
         :open="isOpen"
+        tabindex="-1"
+        :autofocus="!isDesktopInstance"
         :aria-label="showHamburgerT.title"
       >
     <ULoader v-show="pending" />
     <h2 class="visually-hidden">
       {{ visuallyHiddenT.showModalMenuTitle }}
     </h2>
-    <div class="dialog-hamburger__items">
-      <!-- Шапка панели (планшет и ниже): поиск на всю ширину + голосовой ввод.
-           Раньше здесь был блок __top (логотип + анимированный текст) — удалён. -->
-      <header class="dialog-hamburger__header visible-tablet">
-        <div class="dialog-hamburger__search">
-          <ProductFilter variant="panel" class="dialog-hamburger__search-field" />
+    <!-- Шапка панели (планшет и ниже): поиск на всю ширину + кнопка закрытия.
+         Вынесена из __items как прямой потомок dialog и позиционируется (position:
+         absolute) — поэтому контейнер dialog больше не нужен display: grid. -->
+    <header class="dialog-hamburger__header visible-tablet">
+      <ProductFilter variant="panel" class="dialog-hamburger__search-field">
+        <template #trailing>
           <VoiceInput
             :disabled="false"
             :locale="currentLocale"
             @on-result="onVoiceSearch"
           />
-        </div>
-      </header>
-
-      <ul v-if="category?.length" class="dialog-hamburger__accordion accordion">
-         <li v-for="cat in category" :key="cat.documentId" class="accordion__item">
+        </template>
+      </ProductFilter>
+      <!-- Кнопка закрытия — ТА ЖЕ переиспользуемая кнопка, что и триггер
+           (UButton variant="hamburger"): при открытии показывает «крестик». -->
+      <UButton
+        class="dialog-hamburger__close"
+        :is-open="isOpen"
+        variant="hamburger"
+        :aria-label="buttonT.ariaLabelDialogClosed"
+        @click="close?.()"
+      />
+    </header>
+    <div class="dialog-hamburger__items">
+      <ul v-if="category?.length" class="dialog-hamburger__accordion">
+         <li v-for="cat in category" :key="cat.documentId">
           
           <UAccordion name="faq" variant="default">
             <template #header>
@@ -413,9 +433,7 @@ const toggleHamburger = () => {
         </UButton>
       </div>
 
-      <div v-if="product?.length" class="accordion">
-        
-        <UAccordion name="faq" variant="discount">
+      <UAccordion v-if="product?.length" name="faq" variant="discount">
           <template #header>
             <Icon
               class="accordion__discount-icon"
@@ -454,7 +472,6 @@ const toggleHamburger = () => {
             </li>
           </ul>
         </UAccordion>
-      </div>
       <div
         v-else-if="product && !product.length"
         class="dialog-hamburger__empty"
@@ -462,33 +479,22 @@ const toggleHamburger = () => {
         {{ showHamburgerT.emptyDiscount }}
       </div>
 
-      <div class="dialog-hamburger__contacts">
-        <div
-          v-for="item in phones"
-          :key="item.documentId || item.id"
-           class="dialog-hamburger__phones"
-        >
-          <Icon v-if="item.isMobile" name="et:phone" />
+      <!-- Контакты — прямо в __items (обёртка __contacts была без стилей) -->
+      <div
+        v-for="item in phones"
+        :key="item.documentId || item.id"
+         class="dialog-hamburger__phones"
+      >
+        <Icon v-if="item.isMobile" name="et:phone" />
 
-          <Icon v-if="!item.isMobile" name="carbon:phone-ip" />
-          <a
-            :href="`tel:${item.phoneNumber.replace(/[^0-9+]/g, '')}`"
-            class="company__link-phones"
-            >{{ formatPhone(item.phoneNumber) }}
-          </a>
-        </div>
+        <Icon v-if="!item.isMobile" name="carbon:phone-ip" />
+        <a
+          :href="`tel:${item.phoneNumber.replace(/[^0-9+]/g, '')}`"
+          class="company__link-phones"
+          >{{ formatPhone(item.phoneNumber) }}
+        </a>
       </div>
     </div>
-
-    <!-- Кнопка закрытия — позиционируется абсолютно (правый верхний угол диалога) -->
-    <button
-      type="button"
-      class="dialog-hamburger__close visible-tablet"
-      :aria-label="buttonT.ariaLabelDialogClosed"
-      @click="close?.()"
-    >
-      <Icon name="mingcute:close-line" />
-    </button>
     </dialog>
     </Teleport>
   </div>
@@ -539,9 +545,12 @@ const toggleHamburger = () => {
 }
 
 .dialog-hamburger {
+  // position: relative — опора для абсолютной __header (в медиа ниже
+  // перекрывается: mobile → fixed, desktop/tablet → absolute).
+  position: relative;
   inset: 0;
-  display: grid;
-  grid-template-columns: 1fr auto;
+  // display НЕ задаём: у <dialog> дефолт block; открытие/закрытие анимируется
+  // через `display` в transition (none ↔ block) + @starting-style.
   z-index: 9999;
   height: 100dvh;
   width: 100dvw;
@@ -593,7 +602,6 @@ const toggleHamburger = () => {
     inset-inline: 0 auto;
     // Вертикаль: низ обёртки кнопки + зазор 22px (после inset:auto!)
     top: calc(100% + toRem(22));
-    margin: 0;
     border-radius: toEm(4);
     border-width: 0 toEm(3) toEm(3) toEm(3);
     border-style: solid;
@@ -614,6 +622,21 @@ const toggleHamburger = () => {
     }
   }
 
+  // Стартовое состояние при ОТКРЫТИИ. Без @starting-style открытие не анимируется:
+  // элемент переходит display:none → grid и сразу получает конечные стили ([open]),
+  // поэтому движение не видно (закрытие же анимируется — display снимается с
+  // задержкой). С @starting-style появление анимируется так же, как закрытие.
+  @starting-style {
+    &[open] {
+      translate: -100%;
+
+      @media (min-width: $mobile) {
+        translate: 0;
+        scale: 0;
+      }
+    }
+  }
+
   // Tablet-инстанс (кнопка 150px справа в шапке): панель шире кнопки, её левый
   // край по inset-inline:0 вылез бы за правый край экрана — раскрываем влево.
   .hamburger:not(.hamburger_desktop) & {
@@ -631,59 +654,55 @@ const toggleHamburger = () => {
     scrollbar-width: thin;
     scrollbar-color: var(--success-color) var(--whitesmoke-color);
 
+    // Планшет и ниже: сверху абсолютная __header (поиск + закрытие) — резервируем
+    // под неё место, чтобы контент не уходил под шапку при скролле.
+    @media (max-width: $tablet) {
+      padding-block-start: toEm(70);
+    }
+
     @media (max-width: $mobile) {
-      justify-items: center;
       align-items: center;
       min-height: 100dvh;
-      // @include adaptiveValue("padding-inline", 299, 12);
-      // @include adaptiveValue("padding-block", 222, 32);
     }
   }
 
-  // Шапка панели (планшет и ниже): поиск на всю ширину + голосовой ввод.
-  // Пришла на место удалённого блока __top (логотип + анимированный текст).
+  // Шапка панели (планшет и ниже) — прямой потомок dialog, позиционируется
+  // абсолютно (потому dialog обходится без display: grid).
   &__header {
-    width: 100%;
-  }
-
-  &__search {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    inset-inline: 0;
     display: flex;
     align-items: center;
     column-gap: toEm(8);
-    width: 100%;
-
-    // Поле поиска занимает всё доступное место, кнопка голоса — фиксированная
-    &-field {
-      flex: 1 1 auto;
-      min-width: 0;
-    }
+    padding-block: toEm(10);
+    padding-inline: toEm(16);
+    // Фон: контент __items скроллится ПОД шапкой — прозрачная бы просвечивала
+    background-color: var(--light-color-transparent);
+    backdrop-filter: blur(6px);
   }
 
-  // Кнопка закрытия — правый верхний угол диалога (вместо удалённого сайдбара)
+  // Поле поиска занимает всё доступное место; кнопка закрытия — фиксированной ширины
+  &__search-field {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  // Кнопка закрытия — та же UButton variant="hamburger", что и триггер
+  // (в flex-строке шапки, поэтому НЕ перекрывает поле поиска). По высоте
+  // равна полю поиска панели (40px).
   &__close {
-    position: absolute;
-    top: toRem(10);
-    right: toRem(10);
-    z-index: 10;
-    display: grid;
-    place-items: center;
-    width: toRem(40);
+    flex: 0 0 auto;
     height: toRem(40);
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.92);
-    box-shadow: 0 toRem(2) toRem(10) rgba(0, 0, 0, 0.15);
-    color: var(--color);
-    cursor: pointer;
-    transition: background var(--transition-duration), scale var(--transition-duration);
+  }
 
-    svg {
-      font-size: toRem(22);
-    }
-
-    @include hover {
-      background: var(--bg-secondary);
-      scale: 1.06;
-    }
+  // Приоритет над .btn_hamburger_is-open { width:100%; padding-inline:0 }
+  // (max-width: $mobile): в flex-шапке кнопка закрытия фиксированная (40px),
+  // иначе её ширина = 0 (линии иконки абсолютные и не дают размер).
+  &__header &__close {
+    width: toRem(40);
+    padding-inline: 0;
   }
 
   &__accordion {
@@ -704,7 +723,6 @@ const toggleHamburger = () => {
   }
 
   &__phones {
-    justify-self: end;
     display: flex;
     align-items: center;
     column-gap: toEm(4);
@@ -731,27 +749,24 @@ const toggleHamburger = () => {
         color: var(--danger-color);
       }
     }
-
-    &__empty {
-      text-align: center;
-      padding: toEm(20);
-      color: var(--gray-color);
-      font-style: italic;
-      @include adaptiveValue("font-size", 14, 12);
-    }
-
-    &__error {
-      text-align: center;
-      padding: toEm(16);
-      color: var(--danger-color);
-      p { margin-block-end: toEm(8); }
-    }
   }
-}
 
-.sidebar-removed {
-  // Стили аккордеона перенесены в компонент UAccordion (глобально, чтобы
-  // применять их к слот-контенту). Сайдбар удалён — кнопка закрытия
-  // позиционируется абсолютно (.dialog-hamburger__close).
+  // Пустое состояние / ошибка. Раньше были вложены в &__phones, поэтому их
+  // селекторы компилировались в .dialog-hamburger__phones__empty/__error и НЕ
+  // совпадали с разметкой (классы .dialog-hamburger__empty / __error).
+  &__empty {
+    text-align: center;
+    padding: toEm(20);
+    color: var(--gray-color);
+    font-style: italic;
+    @include adaptiveValue("font-size", 14, 12);
+  }
+
+  &__error {
+    text-align: center;
+    padding: toEm(16);
+    color: var(--danger-color);
+    p { margin-block-end: toEm(8); }
+  }
 }
 </style>

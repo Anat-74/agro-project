@@ -100,6 +100,10 @@ onUnmounted(() => {
    name="ph:magnifying-glass-light"
    class="search-glass"
    />
+   <!-- Дополнительные элементы внутри поля (например, кнопка голосового ввода) -->
+   <div v-if="$slots.trailing" class="search-trailing">
+      <slot name="trailing" />
+   </div>
    <span 
     v-if="hasSearched && products.length === 0 && status !== 'pending'"
    class="search-no-results">
@@ -195,6 +199,8 @@ onUnmounted(() => {
          width: 100%;
          height: 100%;
          padding-inline-start: toRem(38);
+         // место под слот trailing (кнопка голосового ввода) справа ВНУТРИ поля
+         padding-inline-end: toRem(48);
          border-radius: toRem(20);
          font-size: toEm(15);
 
@@ -210,6 +216,17 @@ onUnmounted(() => {
       :deep(.u-input__label) {
          display: none;
       }
+   }
+
+   // Элементы внутри поля справа (слот trailing)
+   &-trailing {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      right: toRem(6);
+      translate: 0 -50%;
+      display: flex;
+      align-items: center;
    }
 
    &-loader {
