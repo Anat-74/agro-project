@@ -4,6 +4,11 @@ import { $fetch } from "ofetch";
 // DeepSeek API endpoint (OpenAI-compatible)
 const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
 
+// Имя модели — из окружения (DEEPSEEK_MODEL), чтобы переименования модели на
+// стороне DeepSeek не требовали правок кода (достаточно обновить .env / env прода).
+// Фолбэк — актуальное имя V4.1 Flash (deepseek-flash).
+const DEEPSEEK_MODEL = process.env.DEEPSEEK_MODEL || "deepseek-flash";
+
 // Простая функция для поиска товаров через нашу общую функцию
 async function searchProductsTool(
   query?: string,
@@ -323,7 +328,7 @@ ${JSON.stringify(lastSearchResults, null, 2)}
 
     // Формируем запрос к DeepSeek API
     const requestBody: any = {
-      model: "deepseek-v4-flash",
+      model: DEEPSEEK_MODEL,
       messages: [systemPrompt, ...recentHistory],
       temperature: 0.7,
       max_tokens: 500,
@@ -578,7 +583,7 @@ ${JSON.stringify(lastSearchResults, null, 2)}
               Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
             },
             body: JSON.stringify({
-              model: "deepseek-v4-flash",
+              model: DEEPSEEK_MODEL,
               messages: secondRoundMessages,
               temperature: 0.7,
               max_tokens: 500,

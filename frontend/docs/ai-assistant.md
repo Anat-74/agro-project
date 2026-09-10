@@ -26,7 +26,7 @@ AI-ассистент интегрирован в agro-market проект дл�
    - Управление сессиями через cookies
 
 3. **Интеграция с DeepSeek API**:
-   - Модель: `deepseek-chat`
+   - Модель: **`deepseek-flash`** (DeepSeek V4.1 Flash, с 10.09.2026). Имя берётся из env-переменной **`DEEPSEEK_MODEL`** (фолбэк в коде — `deepseek-flash`), поэтому смена имени модели не требует правок кода.
    - OpenAI-совместимый endpoint
    - Поддержка tool calls
    - Контекст: 128K токенов
@@ -40,6 +40,7 @@ AI-ассистент интегрирован в agro-market проект дл�
 3. Добавьте ключ в `.env` файл:
    ```env
    DEEPSEEK_API_KEY=your_api_key_here
+   DEEPSEEK_MODEL=deepseek-flash
    ```
 
 ### 3. Переменные окружения
@@ -49,6 +50,8 @@ AI-ассистент интегрирован в agro-market проект дл�
 ```env
 # DeepSeek API
 DEEPSEEK_API_KEY=your_deepseek_api_key_here
+# Имя модели (V4.1 Flash). Необязательно: без переменной используется фолбэк deepseek-flash.
+DEEPSEEK_MODEL=deepseek-flash
 ```
 
 ## Использование
