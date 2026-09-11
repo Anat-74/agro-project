@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
-import { discountProductTranslations } from "~/locales/discountProduct";
 import { buttonTranslations } from "~/locales/button";
 import { showHamburgerTranslations } from "~/locales/showHamburger";
 import VoiceInput from "~/components/chat-assistant/VoiceInput.vue";
 
 const visuallyHiddenT = computed(() => visuallyHiddenTranslations[currentLocale.value])
-const discountT = computed(() => discountProductTranslations[currentLocale.value])
 const buttonT = computed(() => buttonTranslations[currentLocale.value])
 const showHamburgerT = computed(() => showHamburgerTranslations[currentLocale.value])
 
@@ -183,52 +181,18 @@ const {
   { watch: [categoryKey], ttl: 600_000 }
 )
 
-// Акционные товары — общий кэш с корзиной (ShowModalCartDialog): один ключ,
-// одинаковая форма данных (без fields-ограничения).
-const productKey = computed(() => `cart-discount-${currentLocale.value}`)
+// Блок «Акционные товары» вынесен в будущий слайд «Меню» — в каталоге его нет.
 
-const {
-  data: product,
-  pending: pendingProducts,
-  execute: executeProduct,
-  refresh: refreshProduct,
-  error: productError,
-} = useCachedAsyncData(
-  productKey,
-  async () => {
-    const { find } = useStrapi()
-    const response = await find<Product>("products", {
-      filters: {
-        isDiscount: true,
-        locale: { $eq: currentLocale.value },
-      },
-      pagination: { pageSize: 100 } as PaginationMeta,
-      populate: {
-        image: { fields: ["alternativeText", "url"] },
-        subcategory: {
-          fields: ["name", "slug"],
-          populate: { category: { fields: ["name", "slug"] } },
-        },
-      },
-    } as any)
-    return response.data || []
-  },
-  { watch: [productKey], server: false, ttl: 300_000 }
-)
-
-const pending = computed(
-  () => pendingCategories.value || pendingProducts.value,
-)
+const pending = pendingCategories
 
 // Переключатель диалога из useDialog (открыт→закрыть, закрыт→открыть).
-// При открытии дополнительно догружаем категории/товары (идемпотентно:
-// execute* без повторного запроса, если данные уже загружены).
+// При открытии догружаем категории (идемпотентно: executeCategory без
+// повторного запроса, если данные уже загружены).
 const toggleHamburger = () => {
   const wasOpen = isOpen.value
   toggle?.()
   if (!wasOpen) {
     if (!category.value) executeCategory()
-    if (!product.value) executeProduct()
   }
 }
 </script>
@@ -426,59 +390,6 @@ const toggleHamburger = () => {
         {{ showHamburgerT.emptyCategory }}
       </div>
 
-      <div v-if="productError" class="dialog-hamburger__error">
-        <p>{{ productError.message }}</p>
-        <UButton variant="close" @click="() => refreshProduct()">
-          {{ showHamburgerT.retry }}
-        </UButton>
-      </div>
-
-      <UAccordion v-if="product?.length" name="faq" variant="discount">
-          <template #header>
-            <Icon
-              class="accordion__discount-icon"
-              name="mdi:discount-outline"
-            />
-            <h4 class="accordion__product-sub-title">
-              {{ discountT.discount }}
-            </h4>
-          </template>
-          <ul class="accordion__product-list">
-            <li
-              v-for="prod in product"
-              :key="prod.documentId"
-               class="accordion__product-item"
-            >
-              <NuxtLink
-                :class="[
-                  'accordion__product-link',
-                  'accordion__product-link_is-discount',
-                  { 'accordion__product-link_is-active': isActive(getProductLink(prod)) },
-                ]"
-                :to="getProductLink(prod)"
-                @click="close?.()"
-              >
-                <UImage
-                  v-if="prod.mainImage?.url || prod.image?.length"
-                  :src="prod.mainImage?.url || prod.image?.[0]?.url"
-                  alt=""
-                  class="accordion__product-image-link"
-                  width="32"
-                  height="32"
-                  type="icon"
-                />
-                <h4 class="accordion__product-sub-title">{{ prod.name }}</h4>
-              </NuxtLink>
-            </li>
-          </ul>
-        </UAccordion>
-      <div
-        v-else-if="product && !product.length"
-        class="dialog-hamburger__empty"
-      >
-        {{ showHamburgerT.emptyDiscount }}
-      </div>
-
       <!-- Контакты — прямо в __items (обёртка __contacts была без стилей) -->
       <div
         v-for="item in phones"
@@ -556,6 +467,7 @@ const toggleHamburger = () => {
   width: 100dvw;
   translate: -100%;
   margin: 0;
+  overflow: hidden;   // клип: внутренний скролл обеспечивает __items
   background-color: transparent;
   backdrop-filter: blur(22px);
   // display с задержкой: при закрытии панель видима на время exit-анимации
@@ -647,6 +559,8 @@ const toggleHamburger = () => {
     display: flex;
     flex-direction: column;
     row-gap: toEm(16);
+    // Внутренний скролл: контент ограничен высотой диалога и прокручивается внутри
+    height: 100%;
     padding-inline: toEm(16);
     padding-block-start: toEm(22);
     padding-block-end: toEm(12);
@@ -662,7 +576,6 @@ const toggleHamburger = () => {
 
     @media (max-width: $mobile) {
       align-items: center;
-      min-height: 100dvh;
     }
   }
 
@@ -760,13 +673,6 @@ const toggleHamburger = () => {
     color: var(--gray-color);
     font-style: italic;
     @include adaptiveValue("font-size", 14, 12);
-  }
-
-  &__error {
-    text-align: center;
-    padding: toEm(16);
-    color: var(--danger-color);
-    p { margin-block-end: toEm(8); }
   }
 }
 </style>
