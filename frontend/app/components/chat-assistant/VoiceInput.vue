@@ -4,6 +4,8 @@
 const props = defineProps<{
   disabled: boolean
   locale: string
+  // Прозрачный фон кнопки (для использования внутри поля поиска)
+  transparent?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -23,6 +25,7 @@ const { isListening, isSupported, toggle } = useVoiceInput({
     :is-listening="isListening"
     :icon="isListening ? 'material-symbols:mic-off' : 'material-symbols:mic'"
     :is-disabled="disabled"
+    :transparent="transparent"
     :aria-label="isListening ? 'Остановить запись' : 'Голосовой ввод'"
     @click="toggle"
   />

@@ -19,10 +19,12 @@ interface Props {
   isListening?: boolean
   icon?: string
   type?: "button" | "submit"
+  // Прозрачный фон (для кнопки голоса внутри поля поиска панели каталога)
+  transparent?: boolean
 }
 
 const { variant = "send", isDisabled = false, isListening = false,
-  icon = "", type = "button" } = defineProps<Props>()
+  icon = "", type = "button", transparent = false } = defineProps<Props>()
 
 const emit = defineEmits<{
   click: [e: MouseEvent]
@@ -34,7 +36,10 @@ const emit = defineEmits<{
     :class="[
       'chat-btn',
       `chat-btn_${variant}`,
-      { 'chat-btn_listening': variant === 'voice' && isListening },
+      {
+        'chat-btn_listening': variant === 'voice' && isListening,
+        'chat-btn_transparent': transparent,
+      },
     ]"
     :disabled="isDisabled"
     :type="type"
@@ -104,6 +109,12 @@ const emit = defineEmits<{
       border-color: var(--danger-color);
       animation: pulse 1.5s infinite;
     }
+  }
+
+  // Прозрачный фон (внутри поля поиска). Идёт ПОСЛЕ &_voice, чтобы перебить
+  // его background-color: var(--light-color) при той же специфичности.
+  &_transparent {
+    background-color: transparent;
   }
 
   &_suggestion {

@@ -3,6 +3,7 @@ import { visuallyHiddenTranslations } from "~/locales/visuallyHidden";
 import { buttonTranslations } from "~/locales/button";
 import { showHamburgerTranslations } from "~/locales/showHamburger";
 import VoiceInput from "~/components/chat-assistant/VoiceInput.vue";
+import HamburgerCatalog from "~/components/show-modal/HamburgerCatalog.vue";
 
 const visuallyHiddenT = computed(() => visuallyHiddenTranslations[currentLocale.value])
 const buttonT = computed(() => buttonTranslations[currentLocale.value])
@@ -29,7 +30,6 @@ const dialogElement = useTemplateRef<HTMLDialogElement>("dialog-hamburger");
 
 const { currentLocale } = useLocale();
 const route = useRoute();
-
 // Desktop-панель каталога открыта по умолчанию ТОЛЬКО на главной странице.
 // На внутренних страницах она стартует закрытой: иначе панель (высота ~632px,
 // z-index 9999) перекрывала верхний левый угол контента — например, на
@@ -111,8 +111,6 @@ useMeasureToVar("--catalog-h", {
   },
 })
 
-const { getProductLink } = useProductLink();
-
 // Поиск в шапке панели (планшет и ниже): переиспользуем общий стор поиска
 // и оверлей результатов (как в шапке сайта), но поле — всегда на всю ширину.
 const searchStore = useSearchStore();
@@ -123,9 +121,6 @@ const onVoiceSearch = (text: string) => {
   searchStore.filters.name = text;
   searchStore.executeSearch();
 };
-
-// Активные ссылки аккордеона — по текущему маршруту
-const isActive = (path: string) => route.path === path
 
 const categoryKey = computed(() => `category-dialog-${currentLocale.value}`)
 
@@ -244,11 +239,12 @@ const toggleHamburger = () => {
     <header class="dialog-hamburger__header visible-tablet">
       <ProductFilter variant="panel" class="dialog-hamburger__search-field">
         <template #trailing>
-          <VoiceInput
-            :disabled="false"
-            :locale="currentLocale"
-            @on-result="onVoiceSearch"
-          />
+            <VoiceInput
+              transparent
+              :disabled="false"
+              :locale="currentLocale"
+              @on-result="onVoiceSearch"
+            />
         </template>
       </ProductFilter>
       <!-- Кнопка закрытия — ТА ЖЕ переиспользуемая кнопка, что и триггер
@@ -262,133 +258,8 @@ const toggleHamburger = () => {
       />
     </header>
     <div class="dialog-hamburger__items">
-      <ul v-if="category?.length" class="dialog-hamburger__accordion">
-         <li v-for="cat in category" :key="cat.documentId">
-          
-          <UAccordion name="faq" variant="default">
-            <template #header>
-              <UImage
-                v-if="cat.image?.url"
-                :src="cat.image?.url"
-                alt=""
-                class="accordion__product-image"
-                width="44"
-                height="32"
-                type="icon"
-              />
-              <h3
-                :class="[
-                  'accordion__product-title',
-                  {
-                    'accordion__product-title_is-active': isActive(
-                      `/${currentLocale}/${cat.slug}`,
-                    ),
-                  },
-                ]"
-              >
-                {{ cat.name }}
-              </h3>
-            </template>
-            <ul class="accordion__product-list">
-                <!-- Подкатегория — вложенный <details>: клик раскрывает её товары,
-                     НЕ переходит (план ShowHamburger 08.27). Своя группа name
-                     'faq-%cat.slug%' (не общий 'faq'), иначе раскрытие подкатегории
-                     закрывает родительскую категорию (нативная эксклюзивная группа). -->
-                <li
-                  v-for="sub in cat.subcategories"
-                  :key="sub.documentId"
-                  class="accordion__item"
-                >
-                <UAccordion
-                  :name="`faq-${cat.slug}`"
-                  variant="sub"
-                  :active="isActive(`/${currentLocale}/${cat.slug}/${sub.slug}`)"
-                >
-                  <template #header>
-                    <UImage
-                      v-if="sub.image?.url"
-                      :src="sub.image?.url"
-                      alt=""
-                      class="accordion__product-image"
-                      width="44"
-                      height="32"
-                      type="icon"
-                    />
-                    <h4 class="accordion__product-sub-title">{{ sub.name }}</h4>
-                  </template>
-                  <ul class="accordion__product-list">
-                      <li
-                        v-for="subProd in sub.products"
-                        :key="subProd.documentId"
-                        class="accordion__product-item"
-                      >
-                        <NuxtLink
-                          :class="[
-                            'accordion__product-link',
-                            {
-                              'accordion__product-link_is-active': isActive(
-                                getProductLink(subProd),
-                              ),
-                            },
-                          ]"
-                          :to="getProductLink(subProd)"
-                          @click="close?.()"
-                        >
-                          <UImage
-                            v-if="subProd.mainImage?.url || subProd.image?.length"
-                            :src="subProd.mainImage?.url || subProd.image?.[0]?.url"
-                            alt=""
-                            class="accordion__product-image-link"
-                            width="32"
-                            height="32"
-                            type="icon"
-                          />
-                          <h4 class="accordion__product-sub-title">{{ subProd.name }}</h4>
-                        </NuxtLink>
-                      </li>
-                    </ul>
-                </UAccordion>
-                </li>
-                <!-- Отображение продуктов, принадлежащих напрямую категории -->
-                <li
-                  v-for="prod in cat.products"
-                  :key="prod.documentId"
-                  class="accordion__product-item"
-                >
-                  <NuxtLink
-                    :class="[
-                      'accordion__product-link',
-                      {
-                        'accordion__product-link_is-active': isActive(
-                          getProductLink(prod),
-                        ),
-                      },
-                    ]"
-                    :to="getProductLink(prod)"
-                    @click="close?.()"
-                  >
-                    <UImage
-                      v-if="prod.mainImage?.url || prod.image?.length"
-                      :src="prod.mainImage?.url || prod.image?.[0]?.url"
-                      alt=""
-                      class="accordion__product-image-link"
-                      width="32"
-                      height="32"
-                      type="icon"
-                    />
-                    <h4 class="accordion__product-sub-title">{{ prod.name }}</h4>
-                  </NuxtLink>
-                </li>
-              </ul>
-          </UAccordion>
-          </li>
-        </ul>
-      <div
-        v-else-if="category && !category.length"
-        class="dialog-hamburger__empty"
-      >
-        {{ showHamburgerT.emptyCategory }}
-      </div>
+      <!-- Каталог (категории/подкатегории/товары) — отдельный компонент -->
+      <HamburgerCatalog :category="category" @navigate="close?.()" />
 
       <!-- Контакты — прямо в __items (обёртка __contacts была без стилей) -->
       <div
@@ -618,23 +489,6 @@ const toggleHamburger = () => {
     padding-inline: 0;
   }
 
-  &__accordion {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    row-gap: toEm(16);
-
-    @media (min-width: $mobile) {
-      justify-content: start;
-      padding-block-end: toRem(22);
-    }
-
-    @media ($mobileSmall <= width <= $mobile) {
-      width: 70%;
-    }
-  }
-
   &__phones {
     display: flex;
     align-items: center;
@@ -662,17 +516,6 @@ const toggleHamburger = () => {
         color: var(--danger-color);
       }
     }
-  }
-
-  // Пустое состояние / ошибка. Раньше были вложены в &__phones, поэтому их
-  // селекторы компилировались в .dialog-hamburger__phones__empty/__error и НЕ
-  // совпадали с разметкой (классы .dialog-hamburger__empty / __error).
-  &__empty {
-    text-align: center;
-    padding: toEm(20);
-    color: var(--gray-color);
-    font-style: italic;
-    @include adaptiveValue("font-size", 14, 12);
   }
 }
 </style>
