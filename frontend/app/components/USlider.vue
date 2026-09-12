@@ -21,6 +21,11 @@ const props = withDefaults(defineProps<Props>(), {
 const container = useTemplateRef("container");
 const active = ref(1);
 
+// Внешним потребителям (напр. кастомная пагинация-табы) нужно знать активный
+// слайд, в т.ч. при свайпе (scroll-snap меняет active внутри).
+const emit = defineEmits<{ "update:active": [value: number] }>();
+watch(active, (v) => emit("update:active", v));
+
 let rafId: number;
 // Пока идёт программный плавный скролл (клик по пагинации), не пересчитываем
 // активный слайд: scroll-события во время анимации возвращали бы active обратно

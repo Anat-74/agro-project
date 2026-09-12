@@ -4,6 +4,7 @@ import { buttonTranslations } from "~/locales/button";
 import { showHamburgerTranslations } from "~/locales/showHamburger";
 import VoiceInput from "~/components/chat-assistant/VoiceInput.vue";
 import HamburgerCatalog from "~/components/show-modal/HamburgerCatalog.vue";
+import HamburgerMenu from "~/components/show-modal/HamburgerMenu.vue";
 
 const visuallyHiddenT = computed(() => visuallyHiddenTranslations[currentLocale.value])
 const buttonT = computed(() => buttonTranslations[currentLocale.value])
@@ -122,6 +123,18 @@ const onVoiceSearch = (text: string) => {
   searchStore.executeSearch();
 };
 
+// ===== Табы «Категории | Меню» — пагинация слайдера панели (≤ $tablet) =====
+// Табы управляют USlider (go), а активный таб следует за свайпом (update:active).
+const panelSlides = [{ id: "categories" }, { id: "menu" }];
+const panelSlider = useTemplateRef<{ go: (n: number) => void }>("panel-slider");
+const activeTab = ref(1);
+const goTab = (n: number) => panelSlider.value?.go(n);
+
+// Пункты меню из Strapi (global.header.navigation) — для слайда «Меню»
+const navItems = computed<NavLink[]>(
+  () => (props.global?.header?.navigation ?? []) as NavLink[],
+);
+
 const categoryKey = computed(() => `category-dialog-${currentLocale.value}`)
 
 const {
@@ -237,45 +250,85 @@ const toggleHamburger = () => {
          Вынесена из __items как прямой потомок dialog и позиционируется (position:
          absolute) — поэтому контейнер dialog больше не нужен display: grid. -->
     <header class="dialog-hamburger__header visible-tablet">
-      <ProductFilter variant="panel" class="dialog-hamburger__search-field">
-        <template #trailing>
-            <VoiceInput
-              transparent
-              :disabled="false"
-              :locale="currentLocale"
-              @on-result="onVoiceSearch"
-            />
-        </template>
-      </ProductFilter>
-      <!-- Кнопка закрытия — ТА ЖЕ переиспользуемая кнопка, что и триггер
-           (UButton variant="hamburger"): при открытии показывает «крестик». -->
-      <UButton
-        class="dialog-hamburger__close"
-        :is-open="isOpen"
-        variant="hamburger"
-        :aria-label="buttonT.ariaLabelDialogClosed"
-        @click="close?.()"
-      />
+      <div class="dialog-hamburger__search-row">
+        <ProductFilter variant="panel" class="dialog-hamburger__search-field">
+          <template #trailing>
+              <VoiceInput
+                transparent
+                :disabled="false"
+                :locale="currentLocale"
+                @on-result="onVoiceSearch"
+              />
+          </template>
+        </ProductFilter>
+        <!-- Кнопка закрытия — ТА ЖЕ переиспользуемая кнопка, что и триггер
+             (UButton variant="hamburger"): при открытии показывает «крестик». -->
+        <UButton
+          class="dialog-hamburger__close"
+          :is-open="isOpen"
+          variant="hamburger"
+          :aria-label="buttonT.ariaLabelDialogClosed"
+          @click="close?.()"
+        />
+      </div>
+
+      <!-- Табы «Категории | Меню» — пагинация слайдера ниже -->
+      <div class="dialog-hamburger__tabs" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          class="dialog-hamburger__tab"
+          :class="{ 'dialog-hamburger__tab_is-active': activeTab === 1 }"
+          :aria-selected="activeTab === 1"
+          @click="goTab(1)"
+        >
+          {{ showHamburgerT.tabCategories }}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          class="dialog-hamburger__tab"
+          :class="{ 'dialog-hamburger__tab_is-active': activeTab === 2 }"
+          :aria-selected="activeTab === 2"
+          @click="goTab(2)"
+        >
+          {{ showHamburgerT.tabMenu }}
+        </button>
+      </div>
     </header>
     <div class="dialog-hamburger__items">
-      <!-- Каталог (категории/подкатегории/товары) — отдельный компонент -->
-      <HamburgerCatalog :category="category" @navigate="close?.()" />
-
-      <!-- Контакты — прямо в __items (обёртка __contacts была без стилей) -->
-      <div
-        v-for="item in phones"
-        :key="item.documentId || item.id"
-         class="dialog-hamburger__phones"
+      <!-- ≤ $tablet: слайдер «Категории | Меню». Desktop ≥1024 — только категории
+           (десктоп без изменений; табов/свайпа в Меню там нет). -->
+      <USlider
+        v-if="!isDesktopInstance"
+        ref="panel-slider"
+        class="dialog-hamburger__slider"
+        variant="background"
+        :slides="panelSlides"
+        :show-navigation="false"
+        :show-pagination="false"
+        @update:active="activeTab = $event"
       >
-        <Icon v-if="item.isMobile" name="et:phone" />
-
-        <Icon v-if="!item.isMobile" name="carbon:phone-ip" />
-        <a
-          :href="`tel:${item.phoneNumber.replace(/[^0-9+]/g, '')}`"
-          class="company__link-phones"
-          >{{ formatPhone(item.phoneNumber) }}
-        </a>
-      </div>
+        <template #default="{ slide }">
+          <HamburgerCatalog
+            v-if="slide.id === 'categories'"
+            :category="category"
+            @navigate="close?.()"
+          />
+          <HamburgerMenu
+            v-else
+            :navigation="navItems"
+            :socials="socials"
+            :phones="phones"
+            @navigate="close?.()"
+          />
+        </template>
+      </USlider>
+      <HamburgerCatalog
+        v-else
+        :category="category"
+        @navigate="close?.()"
+      />
     </div>
     </dialog>
     </Teleport>
@@ -429,24 +482,20 @@ const toggleHamburger = () => {
   &__items {
     display: flex;
     flex-direction: column;
-    row-gap: toEm(16);
-    // Внутренний скролл: контент ограничен высотой диалога и прокручивается внутри
     height: 100%;
     padding-inline: toEm(16);
     padding-block-start: toEm(22);
     padding-block-end: toEm(12);
+    // Desktop: обычный вертикальный скролл контента
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--success-color) var(--whitesmoke-color);
 
-    // Планшет и ниже: сверху абсолютная __header (поиск + закрытие) — резервируем
-    // под неё место, чтобы контент не уходил под шапку при скролле.
+    // Планшет и ниже: скролл — внутри слайдов; сверху абсолютная __header
+    // (поиск + табы) — резервируем под неё место.
     @media (max-width: $tablet) {
-      padding-block-start: toEm(70);
-    }
-
-    @media (max-width: $mobile) {
-      align-items: center;
+      overflow: hidden;
+      padding-block-start: toEm(112);
     }
   }
 
@@ -458,13 +507,80 @@ const toggleHamburger = () => {
     top: 0;
     inset-inline: 0;
     display: flex;
-    align-items: center;
-    column-gap: toEm(8);
+    flex-direction: column;
+    row-gap: toEm(8);
     padding-block: toEm(10);
     padding-inline: toEm(16);
-    // Фон: контент __items скроллится ПОД шапкой — прозрачная бы просвечивала
+    // Фон: контент слайдов скроллится ПОД шапкой — прозрачная бы просвечивала
     background-color: var(--light-color-transparent);
     backdrop-filter: blur(6px);
+  }
+
+  // Строка поиска: поле (растягивается) + кнопка закрытия
+  &__search-row {
+    display: flex;
+    align-items: center;
+    column-gap: toEm(8);
+    width: 100%;
+  }
+
+  // Табы «Категории | Меню»: активный — зелёная линия снизу
+  &__tabs {
+    display: flex;
+    column-gap: toEm(18);
+  }
+
+  &__tab {
+    position: relative;
+    padding-block-end: toEm(4);
+    font-weight: 600;
+    color: var(--color);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color var(--transition-duration);
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: toRem(2);
+      background-color: transparent;
+      transition: background-color var(--transition-duration);
+    }
+
+    &_is-active {
+      color: var(--green-color);
+
+      &::after {
+        background-color: var(--green-color);
+      }
+    }
+  }
+
+  // Слайдер панели: на всю высоту, слайды скроллятся вертикально
+  &__slider {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+
+    :deep(.slider) {
+      height: 100%;
+    }
+
+    :deep(.slider__container) {
+      height: 100%;
+      align-items: stretch;
+    }
+
+    :deep(.slider__slide) {
+      height: 100%;
+      display: block;
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
   }
 
   // Поле поиска занимает всё доступное место; кнопка закрытия — фиксированной ширины

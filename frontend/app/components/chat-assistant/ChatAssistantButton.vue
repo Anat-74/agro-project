@@ -111,10 +111,19 @@ const emit = defineEmits<{
     }
   }
 
-  // Прозрачный фон (внутри поля поиска). Идёт ПОСЛЕ &_voice, чтобы перебить
-  // его background-color: var(--light-color) при той же специфичности.
+  // Прозрачный вариант (внутри поля поиска): виден ТОЛЬКО значок микрофона —
+  // без фона и без рамки. Идёт ПОСЛЕ &_voice, чтобы перебить его background/
+  // border при той же специфичности; hover тоже без рамки. Состояние записи
+  // (.chat-btn_listening) имеет выше специфичность и остаётся заметным.
   &_transparent {
     background-color: transparent;
+    border-color: transparent;
+
+    @include hover {
+      &:not(:disabled) {
+        border-color: transparent;
+      }
+    }
   }
 
   &_suggestion {

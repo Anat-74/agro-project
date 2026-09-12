@@ -9,7 +9,7 @@ export const productFilterTranslations: Record<LocaleCode, {
 }> = {
    ru: {
       labelInput: "Поиск товаров",
-      placeholder: "Поиск...",
+      placeholder: "ищите товары здесь…",
       noResults: "Товары не найдены",
       labelSelect: "Сортировка товаров",
       optionName: "А --> Я",
@@ -18,7 +18,7 @@ export const productFilterTranslations: Record<LocaleCode, {
    },
    be: {
       labelInput: "Пошук тавараў",
-      placeholder: "Пошук...",
+      placeholder: "шукайце тавары тут…",
       noResults: "Тавары не знойдзены",
       labelSelect: "Сартаванне тавараў",
       optionName: "А --> Я",
