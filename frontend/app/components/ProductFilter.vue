@@ -202,7 +202,7 @@ onUnmounted(() => {
          // место под слот trailing (кнопка голосового ввода) справа ВНУТРИ поля
          padding-inline-end: toRem(48);
          border-radius: toRem(20);
-         font-size: toEm(15);
+         font-size: toEm(17);   // +2px (было 15)
 
          &::placeholder {
             color: var(--gray-color);

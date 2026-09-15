@@ -5,6 +5,7 @@ export const showHamburgerTranslations: Record<LocaleCode, {
   retry: string
   tabCategories: string
   tabMenu: string
+  menuProfileLogin: string
 }> = {
   ru: {
     title: 'Каталог',
@@ -13,6 +14,7 @@ export const showHamburgerTranslations: Record<LocaleCode, {
     retry: 'Повторить',
     tabCategories: 'Категории',
     tabMenu: 'Меню',
+    menuProfileLogin: 'Логин / Регистрация',
   },
   be: {
     title: 'Каталог',
@@ -21,5 +23,6 @@ export const showHamburgerTranslations: Record<LocaleCode, {
     retry: 'Паўтарыць',
     tabCategories: 'Катэгорыі',
     tabMenu: 'Меню',
+    menuProfileLogin: 'Уваход / Рэгістрацыя',
   }
 }

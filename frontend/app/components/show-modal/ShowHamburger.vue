@@ -116,11 +116,11 @@ useMeasureToVar("--catalog-h", {
 // и оверлей результатов (как в шапке сайта), но поле — всегда на всю ширину.
 const searchStore = useSearchStore();
 
-// Голосовой ввод в поиске: распознанный текст кладём в стор и сразу ищем
+// Голосовой ввод: кладём распознанный текст в стор. Поиск запустит уже
+// существующий debounce в ProductFilter (watch на searchName) — без дубля запроса.
 const onVoiceSearch = (text: string) => {
   if (!text) return;
   searchStore.filters.name = text;
-  searchStore.executeSearch();
 };
 
 // ===== Табы «Категории | Меню» — пагинация слайдера панели (≤ $tablet) =====
@@ -306,7 +306,7 @@ const toggleHamburger = () => {
         variant="background"
         :slides="panelSlides"
         :show-navigation="false"
-        :show-pagination="false"
+        :show-pagination="true"
         @update:active="activeTab = $event"
       >
         <template #default="{ slide }">
@@ -321,6 +321,20 @@ const toggleHamburger = () => {
             :socials="socials"
             :phones="phones"
             @navigate="close?.()"
+          />
+        </template>
+
+        <!-- Точки-пагинация: показывают, что это слайдер (только ≤ $tablet) -->
+        <template #pagination="{ go, active }">
+          <button
+            v-for="(slide, index) in panelSlides"
+            :key="slide.id"
+            type="button"
+            class="dialog-hamburger__dot"
+            :class="{ 'dialog-hamburger__dot_is-active': active === index + 1 }"
+            :aria-label="index === 0 ? showHamburgerT.tabCategories : showHamburgerT.tabMenu"
+            :aria-current="active === index + 1 ? 'true' : undefined"
+            @click="go(index + 1)"
           />
         </template>
       </USlider>
@@ -534,7 +548,8 @@ const toggleHamburger = () => {
     position: relative;
     padding-block-end: toEm(4);
     font-weight: 600;
-    color: var(--color);
+    font-size: toEm(18);   // +2px
+    color: var(--gray-color);   // неактивный — приглушён
     background: none;
     border: none;
     cursor: pointer;
@@ -580,6 +595,44 @@ const toggleHamburger = () => {
       display: block;
       overflow-y: auto;
       scrollbar-width: thin;
+      // место под точки-пагинацию, чтобы не перекрывали контент
+      padding-block-end: toRem(44);
+    }
+
+    // Точки внизу по центру (плавающие, с подложкой)
+    :deep(.slider__pagination) {
+      position: absolute;
+      z-index: 3;
+      left: 50%;
+      bottom: toRem(10);
+      translate: -50% 0;
+      display: flex;
+      column-gap: toRem(8);
+      padding: toRem(6) toRem(12);
+      border-radius: toRem(20);
+      background-color: var(--light-color-transparent);
+      backdrop-filter: blur(4px);
+    }
+  }
+
+  // Точка пагинации (вторичный индикатор слайдера)
+  &__dot {
+    width: toRem(8);
+    height: toRem(8);
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--gray-color);
+    opacity: 0.5;
+    cursor: pointer;
+    transition:
+      background-color var(--transition-duration),
+      opacity var(--transition-duration);
+
+    &_is-active {
+      background-color: var(--green-color);
+      opacity: 1;
+      cursor: default;
     }
   }
 
@@ -603,35 +656,6 @@ const toggleHamburger = () => {
   &__header &__close {
     width: toRem(40);
     padding-inline: 0;
-  }
-
-  &__phones {
-    display: flex;
-    align-items: center;
-    column-gap: toEm(4);
-    padding-inline: toEm(8);
-    padding-block: toEm(4);
-    border-radius: toRem(4);
-    font-weight: 600;
-    color: var(--warning-color);
-    background-color: var(--border-color-transparent);
-    transition: all var(--transition-duration);
-
-    &:not(:last-child) {
-      margin-block-end: toEm(6);
-    }
-
-    svg {
-      font-size: toRem(22);
-      color: var(--danger-color);
-    }
-
-    @include hover {
-      text-decoration: underline;
-      svg {
-        color: var(--danger-color);
-      }
-    }
   }
 }
 </style>

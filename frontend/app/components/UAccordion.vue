@@ -58,16 +58,22 @@ withDefaults(defineProps<Props>(), {
     .accordion__summary {
       color: var(--danger-color);
 
-      svg {
+      // Анимируется ТОЛЬКО шеврон (иконка процентов у «Акций» — статична)
+      .accordion__chevron {
         rotate: -90deg;
         transition: rotate var(--transition-duration);
       }
+    }
+
+    // У «Акций» цвет заголовка как у навигации — не меняем при раскрытии
+    .accordion__summary_is-discount {
+      color: var(--primary-color);
     }
   }
 
   &__details:not([open]) {
     .accordion__summary {
-      svg {
+      .accordion__chevron {
         transition: rotate var(--transition-duration);
       }
     }
@@ -95,18 +101,24 @@ withDefaults(defineProps<Props>(), {
       font-size: toRem(22);
     }
 
+    // Акции: заголовок — как у навигации; иконка процентов — warning, БЕЗ анимации
     &_is-discount {
       padding-inline: toEm(4);
       padding-block: toRem(6);
       outline: toRem(2) var(--light-color) outset;
-      color: var(--danger-color);
+      color: var(--primary-color);
 
-      svg {
+      .accordion__discount-icon {
+        color: var(--warning-color);
+        rotate: none;              // только шеврон анимируется
+      }
+
+      .accordion__chevron {
         color: var(--green-color);
       }
 
       @include hover {
-        color: var(--danger-hover);
+        color: var(--warning-color);
       }
     }
 
