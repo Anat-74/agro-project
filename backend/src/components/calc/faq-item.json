@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_calc_faq_items",
+  "info": {
+    "displayName": "Калькулятор: вопрос-ответ",
+    "description": "Элемент FAQ (для JSON-LD FAQPage)"
+  },
+  "options": {},
+  "attributes": {
+    "question": {
+      "type": "string",
+      "required": true
+    },
+    "answer": {
+      "type": "richtext",
+      "required": true
+    }
+  }
+}

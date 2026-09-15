@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_calc_defaults",
+  "info": {
+    "displayName": "Калькулятор: значения по умолчанию",
+    "description": "Дефолты калькулятора: единицы и типовые параметры"
+  },
+  "options": {},
+  "attributes": {
+    "units": {
+      "type": "enumeration",
+      "enum": [
+        "sqm",
+        "are"
+      ],
+      "default": "sqm",
+      "description": "Единицы площади: м² или сотки"
+    },
+    "defaultArea": {
+      "type": "decimal",
+      "description": "Площадь по умолчанию"
+    },
+    "defaultRowSpacing": {
+      "type": "decimal",
+      "description": "Междурядье по умолчанию, см"
+    },
+    "defaultPlantSpacing": {
+      "type": "decimal",
+      "description": "Расстояние в ряду по умолчанию, см"
+    }
+  }
+}

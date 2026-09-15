@@ -1,0 +1,63 @@
+{
+  "kind": "singleType",
+  "collectionName": "calculator_pages",
+  "info": {
+    "singularName": "calculator-page",
+    "pluralName": "calculator-pages",
+    "displayName": "Страница калькулятора",
+    "description": "Контент и настройки раздела «Всё для посадки и урожая» (калькулятор посадок)"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "heroTitle": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "heroSubtitle": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "intro": {
+      "type": "richtext",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "defaults": {
+      "type": "component",
+      "component": "calc.defaults",
+      "repeatable": false
+    },
+    "faq": {
+      "type": "component",
+      "component": "calc.faq-item",
+      "repeatable": true
+    },
+    "showCalculator": {
+      "type": "boolean",
+      "default": true
+    },
+    "seo": {
+      "type": "component",
+      "component": "seo.seo",
+      "repeatable": false
+    }
+  }
+}

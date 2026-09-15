@@ -584,6 +584,61 @@ export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiCalculatorPageCalculatorPage
+  extends Struct.SingleTypeSchema {
+  collectionName: 'calculator_pages';
+  info: {
+    description: '\u041A\u043E\u043D\u0442\u0435\u043D\u0442 \u0438 \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u0440\u0430\u0437\u0434\u0435\u043B\u0430 \u00AB\u0412\u0441\u0451 \u0434\u043B\u044F \u043F\u043E\u0441\u0430\u0434\u043A\u0438 \u0438 \u0443\u0440\u043E\u0436\u0430\u044F\u00BB (\u043A\u0430\u043B\u044C\u043A\u0443\u043B\u044F\u0442\u043E\u0440 \u043F\u043E\u0441\u0430\u0434\u043E\u043A)';
+    displayName: '\u0421\u0442\u0440\u0430\u043D\u0438\u0446\u0430 \u043A\u0430\u043B\u044C\u043A\u0443\u043B\u044F\u0442\u043E\u0440\u0430';
+    pluralName: 'calculator-pages';
+    singularName: 'calculator-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    defaults: Schema.Attribute.Component<'calc.defaults', false>;
+    faq: Schema.Attribute.Component<'calc.faq-item', true>;
+    heroSubtitle: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    heroTitle: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    intro: Schema.Attribute.RichText &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::calculator-page.calculator-page'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'seo.seo', false>;
+    showCalculator: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
   collectionName: 'categories';
   info: {
@@ -686,6 +741,60 @@ export interface ApiContactsPageContactsPage extends Struct.SingleTypeSchema {
           localized: true;
         };
       }>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiCropCrop extends Struct.CollectionTypeSchema {
+  collectionName: 'crops';
+  info: {
+    description: '\u0421\u043F\u0440\u0430\u0432\u043E\u0447\u043D\u0438\u043A \u0440\u0430\u0441\u0442\u0435\u043D\u0438\u0439 \u0434\u043B\u044F \u0440\u0430\u0437\u0434\u0435\u043B\u0430 \u00AB\u0412\u0441\u0451 \u0434\u043B\u044F \u043F\u043E\u0441\u0430\u0434\u043A\u0438 \u0438 \u0443\u0440\u043E\u0436\u0430\u044F\u00BB';
+    displayName: '\u0420\u0430\u0441\u0442\u0435\u043D\u0438\u0435 (\u043A\u0443\u043B\u044C\u0442\u0443\u0440\u0430)';
+    pluralName: 'crops';
+    singularName: 'crop';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.RichText &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    image: Schema.Attribute.Media<'images'>;
+    isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::crop.crop'>;
+    name: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    planting: Schema.Attribute.Component<'calc.planting', false>;
+    products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'seo.seo', false>;
+    shortDescription: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    slug: Schema.Attribute.UID<'name'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -923,6 +1032,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    crop: Schema.Attribute.Relation<'manyToOne', 'api::crop.crop'>;
     description: Schema.Attribute.RichText &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
@@ -960,6 +1070,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    packaging: Schema.Attribute.Component<'calc.packaging', true>;
     price: Schema.Attribute.Decimal &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
@@ -967,6 +1078,10 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
         };
       }>;
     publishedAt: Schema.Attribute.DateTime;
+    purpose: Schema.Attribute.Enumeration<
+      ['seeds', 'seedlings', 'fertilizer', 'fruitveg', 'other']
+    > &
+      Schema.Attribute.DefaultTo<'fruitveg'>;
     seo: Schema.Attribute.Component<'seo.seo', false>;
     seoDescription: Schema.Attribute.Text &
       Schema.Attribute.SetPluginOptions<{
@@ -1621,8 +1736,10 @@ declare module '@strapi/strapi' {
       'api::about-page.about-page': ApiAboutPageAboutPage;
       'api::ai-assistant.ai-assistant': ApiAiAssistantAiAssistant;
       'api::blog.blog': ApiBlogBlog;
+      'api::calculator-page.calculator-page': ApiCalculatorPageCalculatorPage;
       'api::category.category': ApiCategoryCategory;
       'api::contacts-page.contacts-page': ApiContactsPageContactsPage;
+      'api::crop.crop': ApiCropCrop;
       'api::global.global': ApiGlobalGlobal;
       'api::home-page.home-page': ApiHomePageHomePage;
       'api::news.news': ApiNewsNews;

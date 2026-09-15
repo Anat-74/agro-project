@@ -133,6 +133,27 @@
       "allowedTypes": [
         "images"
       ]
+    },
+    "purpose": {
+      "type": "enumeration",
+      "enum": [
+        "seeds",
+        "seedlings",
+        "fertilizer",
+        "fruitveg",
+        "other"
+      ],
+      "default": "fruitveg"
+    },
+    "crop": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::crop.crop"
+    },
+    "packaging": {
+      "type": "component",
+      "component": "calc.packaging",
+      "repeatable": true
     }
   }
 }

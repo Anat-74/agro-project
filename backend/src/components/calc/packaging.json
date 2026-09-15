@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_calc_packagings",
+  "info": {
+    "displayName": "Фасовка товара",
+    "description": "Вариант фасовки семян/удобрений: вес или штуки"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string",
+      "description": "Подпись фасовки (напр. «0,5 г»)"
+    },
+    "amount": {
+      "type": "decimal",
+      "description": "Количество в фасовке"
+    },
+    "unit": {
+      "type": "enumeration",
+      "enum": [
+        "g",
+        "kg",
+        "pcs"
+      ],
+      "default": "g"
+    }
+  }
+}
