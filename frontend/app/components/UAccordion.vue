@@ -101,11 +101,14 @@ withDefaults(defineProps<Props>(), {
       font-size: toRem(22);
     }
 
-    // Акции: заголовок — как у навигации; иконка процентов — warning, БЕЗ анимации
+    // Акции: заголовок — как у навигации (тот же outline/цвет), текст слева,
+    // шеврон прижат вправо; иконка процентов — warning, БЕЗ анимации
     &_is-discount {
       padding-inline: toEm(4);
       padding-block: toRem(6);
-      outline: toRem(2) var(--light-color) outset;
+      // outline НЕ переопределяем — берём как у навигации (.accordion__summary)
+      justify-content: flex-start;
+      column-gap: toEm(10);
       color: var(--primary-color);
 
       .accordion__discount-icon {
@@ -114,6 +117,7 @@ withDefaults(defineProps<Props>(), {
       }
 
       .accordion__chevron {
+        margin-inline-start: auto;   // шеврон — к правому краю
         color: var(--green-color);
       }
 

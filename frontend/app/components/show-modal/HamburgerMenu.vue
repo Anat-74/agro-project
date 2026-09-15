@@ -103,7 +103,7 @@ const { data: discount } = useCachedAsyncData(
       </li>
     </ul>
 
-    <!-- 2. Акции — <details>; блок растягивается (flex), прижимая низ слайда -->
+    <!-- 2. Акции -->
     <div class="hamburger-menu-panel__discount">
       <UAccordion v-if="discount?.length" name="menu-faq" variant="discount">
         <template #header>
@@ -141,23 +141,26 @@ const { data: discount } = useCachedAsyncData(
       </UAccordion>
     </div>
 
-    <!-- 3. Профиль (сразу после Акций): иконка слева + название -->
-    <ClientOnly>
-      <NuxtLink
-        class="hamburger-menu-panel__link accordion__summary"
-        :to="profileTo"
-        @click="emit('navigate')"
-      >
-        <Icon class="hamburger-menu-panel__icon" name="cil:user" />
-        <span class="hamburger-menu-panel__label">{{ profileLabel }}</span>
-      </NuxtLink>
-      <template #fallback>
-        <span class="hamburger-menu-panel__link accordion__summary">
+    <!-- 3. Профиль (сразу после Акций). Блок растягивается — прижимает
+         контакты и соцсети к самому низу слайда -->
+    <div class="hamburger-menu-panel__profile">
+      <ClientOnly>
+        <NuxtLink
+          class="hamburger-menu-panel__link accordion__summary"
+          :to="profileTo"
+          @click="emit('navigate')"
+        >
           <Icon class="hamburger-menu-panel__icon" name="cil:user" />
-          <span class="hamburger-menu-panel__label">{{ showHamburgerT.menuProfileLogin }}</span>
-        </span>
-      </template>
-    </ClientOnly>
+          <span class="hamburger-menu-panel__label">{{ profileLabel }}</span>
+        </NuxtLink>
+        <template #fallback>
+          <span class="hamburger-menu-panel__link accordion__summary">
+            <Icon class="hamburger-menu-panel__icon" name="cil:user" />
+            <span class="hamburger-menu-panel__label">{{ showHamburgerT.menuProfileLogin }}</span>
+          </span>
+        </template>
+      </ClientOnly>
+    </div>
 
     <!-- 4. Контакты + соцсети — правый край, внизу слайда -->
     <div class="hamburger-menu-panel__bottom">
@@ -216,8 +219,14 @@ const { data: discount } = useCachedAsyncData(
     text-align: left;
   }
 
-  // Блок Акций растягивается — прижимает контакты/соцсети к низу
+  // Блок Акций — обычный (не растягивается)
   &__discount {
+    flex: 0 0 auto;
+  }
+
+  // Профиль растягивается: он идёт сразу после Акций, а низ (контакты/соцсети)
+  // прижимается к самому низу слайда
+  &__profile {
     flex: 1 1 auto;
   }
 
