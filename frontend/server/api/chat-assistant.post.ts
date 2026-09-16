@@ -128,6 +128,65 @@ async function callCartTool(toolName: string, args: any): Promise<any> {
   };
 }
 
+// Инструмент калькулятора посадок: по растению (crop) и площади считает
+// потребность (растения, семена, пачки) и возвращает товары растения.
+async function calcPlantingTool(args: any, strapiUrl?: string, locale?: string): Promise<any> {
+  try {
+    const { strapi: { url: cfgUrl, token } } = useRuntimeConfig();
+    const baseUrl = strapiUrl || cfgUrl || "http://127.0.0.1:1337";
+    const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
+
+    const cropSlug = args?.cropSlug || args?.crop;
+    if (!cropSlug) {
+      return { success: false, error: "Не указано растение (cropSlug)" };
+    }
+
+    const response: any = await $fetch(`${baseUrl}/api/crops`, {
+      headers,
+      params: {
+        "filters[slug][$eq]": cropSlug,
+        locale: locale || "ru",
+        "populate[planting]": true,
+        "populate[products][populate][0]": "mainImage",
+      },
+    });
+
+    const crop = response?.data?.[0];
+    if (!crop) {
+      return { success: false, error: `Растение «${cropSlug}» не найдено` };
+    }
+
+    // Логика — общая (shared/utils/calc.ts, автоимпорт Nitro)
+    const result = calcPlanting({
+      areaSqm: args?.areaSqm ?? null,
+      bedLengthM: args?.bedLengthM ?? null,
+      planting: crop.planting ?? null,
+    });
+
+    return {
+      success: true,
+      crop: { name: crop.name, slug: crop.slug },
+      areaSqm: result.areaSqm,
+      plants: result.plants,
+      seedGrams: result.seedGrams,
+      fertilizerGrams: result.fertilizerGrams,
+      packs: result.packs,
+      products: (crop.products || []).map((p: any) => ({
+        documentId: p.documentId,
+        name: p.name,
+        slug: p.slug,
+        purpose: p.purpose,
+      })),
+    };
+  } catch (error) {
+    console.error("Error in calcPlantingTool:", error);
+    return {
+      success: false,
+      error: `Ошибка расчёта: ${error instanceof Error ? error.message : String(error)}`,
+    };
+  }
+}
+
 // Определяем доступные инструменты для AI-ассистента
 const AVAILABLE_TOOLS = [
   {
@@ -237,6 +296,32 @@ const AVAILABLE_TOOLS = [
       },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "calcPlanting",
+      description:
+        "Калькулятор посадок: сколько нужно семян/рассады на грядку. Считает растения, граммы семян (с учётом всхожести) и пачки по площади или длине грядки, и возвращает товары растения",
+      parameters: {
+        type: "object",
+        properties: {
+          cropSlug: {
+            type: "string",
+            description: "Slug растения (например: tomat, ogurec, morkov). Из запроса пользователя",
+          },
+          areaSqm: {
+            type: "number",
+            description: "Площадь грядки в м² (если пользователь назвал площадь)",
+          },
+          bedLengthM: {
+            type: "number",
+            description: "Длина грядки в метрах (если площадь не названа)",
+          },
+        },
+        required: ["cropSlug"],
+      },
+    },
+  },
 ];
 
 export default defineEventHandler(async (event) => {
@@ -314,6 +399,9 @@ ${JSON.stringify(lastSearchResults, null, 2)}
 8. "что посоветуешь", "похожие", "рекомендуй", "новинки", "популярное" → get_recommendations
    - "похожие на [товар]" → get_recommendations с basedOn: "category", sourceId: "[documentId товара]"
    - "что нового", "новинки" → get_recommendations с basedOn: "latest"
+9. "сколько семян/рассады нужно", "что посадить", "сколько на грядку", "чем посадить (томат/огурец/…)" → calcPlanting
+   - cropSlug: tomat | ogurec | perec-sladkij | morkov | ukrop (по названию растения из запроса)
+   - areaSqm, если названа площадь; иначе bedLengthM
 
 ФОРМАТ ОТВЕТА:
 - Для вызова инструмента: tool_calls массив, content пустой. НИКОГДА не отвечай текстом когда нужно вызвать инструмент. Даже если тебе кажется, что данных нет — вызови инструмент, я проверю.
@@ -540,6 +628,8 @@ ${JSON.stringify(lastSearchResults, null, 2)}
                 }
               };
             }
+          } else if (functionName === "calcPlanting") {
+            result = await calcPlantingTool(args, strapiUrl, locale);
           } else {
             result = {
               error: `Инструмент ${functionName} не реализован`,

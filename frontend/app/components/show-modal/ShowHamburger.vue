@@ -4,6 +4,7 @@ import { buttonTranslations } from "~/locales/button";
 import { showHamburgerTranslations } from "~/locales/showHamburger";
 import VoiceInput from "~/components/chat-assistant/VoiceInput.vue";
 import HamburgerCatalog from "~/components/show-modal/HamburgerCatalog.vue";
+import HamburgerGarden from "~/components/show-modal/HamburgerGarden.vue";
 import HamburgerMenu from "~/components/show-modal/HamburgerMenu.vue";
 
 const visuallyHiddenT = computed(() => visuallyHiddenTranslations[currentLocale.value])
@@ -123,12 +124,21 @@ const onVoiceSearch = (text: string) => {
   searchStore.filters.name = text;
 };
 
-// ===== Табы «Категории | Меню» — пагинация слайдера панели (≤ $tablet) =====
+// ===== Табы «Категории | Посадка | Меню» — пагинация слайдера (≤ $tablet) =====
 // Табы управляют USlider (go), а активный таб следует за свайпом (update:active).
-const panelSlides = [{ id: "categories" }, { id: "menu" }];
+const panelSlides = [
+  { id: "categories" },
+  { id: "garden" },
+  { id: "menu" },
+];
 const panelSlider = useTemplateRef<{ go: (n: number) => void }>("panel-slider");
 const activeTab = ref(1);
 const goTab = (n: number) => panelSlider.value?.go(n);
+const tabLabels = computed(() => [
+  showHamburgerT.value.tabCategories,
+  showHamburgerT.value.tabGarden,
+  showHamburgerT.value.tabMenu,
+]);
 
 // Пункты меню из Strapi (global.header.navigation) — для слайда «Меню»
 const navItems = computed<NavLink[]>(
@@ -272,27 +282,19 @@ const toggleHamburger = () => {
         />
       </div>
 
-      <!-- Табы «Категории | Меню» — пагинация слайдера ниже -->
+      <!-- Табы «Категории | Посадка | Меню» — пагинация слайдера ниже -->
       <div class="dialog-hamburger__tabs" role="tablist">
         <button
+          v-for="(label, index) in tabLabels"
+          :key="index"
           type="button"
           role="tab"
           class="dialog-hamburger__tab"
-          :class="{ 'dialog-hamburger__tab_is-active': activeTab === 1 }"
-          :aria-selected="activeTab === 1"
-          @click="goTab(1)"
+          :class="{ 'dialog-hamburger__tab_is-active': activeTab === index + 1 }"
+          :aria-selected="activeTab === index + 1"
+          @click="goTab(index + 1)"
         >
-          {{ showHamburgerT.tabCategories }}
-        </button>
-        <button
-          type="button"
-          role="tab"
-          class="dialog-hamburger__tab"
-          :class="{ 'dialog-hamburger__tab_is-active': activeTab === 2 }"
-          :aria-selected="activeTab === 2"
-          @click="goTab(2)"
-        >
-          {{ showHamburgerT.tabMenu }}
+          {{ label }}
         </button>
       </div>
     </header>
@@ -315,6 +317,10 @@ const toggleHamburger = () => {
             :category="category"
             @navigate="close?.()"
           />
+          <HamburgerGarden
+            v-else-if="slide.id === 'garden'"
+            @navigate="close?.()"
+          />
           <HamburgerMenu
             v-else
             :navigation="navItems"
@@ -327,12 +333,12 @@ const toggleHamburger = () => {
         <!-- Точки-пагинация: показывают, что это слайдер (только ≤ $tablet) -->
         <template #pagination="{ go, active }">
           <button
-            v-for="(slide, index) in panelSlides"
-            :key="slide.id"
+            v-for="(label, index) in tabLabels"
+            :key="index"
             type="button"
             class="dialog-hamburger__dot"
             :class="{ 'dialog-hamburger__dot_is-active': active === index + 1 }"
-            :aria-label="index === 0 ? showHamburgerT.tabCategories : showHamburgerT.tabMenu"
+            :aria-label="label"
             :aria-current="active === index + 1 ? 'true' : undefined"
             @click="go(index + 1)"
           />
@@ -491,6 +497,12 @@ const toggleHamburger = () => {
   // край по inset-inline:0 вылез бы за правый край экрана — раскрываем влево.
   .hamburger:not(.hamburger_desktop) & {
     inset-inline: auto 0;
+  }
+
+  // Планшет (768–1023): 3 таба + поиск не влезают в узкую --catalog-width —
+  // расширяем панель (desktop ≥1024 не затрагиваем).
+  @media (min-width: $mobile) and (max-width: $tablet) {
+    width: min(92vw, toRem(520));
   }
 
   &__items {

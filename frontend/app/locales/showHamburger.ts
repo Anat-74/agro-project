@@ -4,6 +4,7 @@ export const showHamburgerTranslations: Record<LocaleCode, {
   emptyDiscount: string
   retry: string
   tabCategories: string
+  tabGarden: string
   tabMenu: string
   menuProfileLogin: string
 }> = {
@@ -13,6 +14,7 @@ export const showHamburgerTranslations: Record<LocaleCode, {
     emptyDiscount: 'Акции временно недоступны',
     retry: 'Повторить',
     tabCategories: 'Категории',
+    tabGarden: 'Посадка',
     tabMenu: 'Меню',
     menuProfileLogin: 'Логин / Регистрация',
   },
@@ -22,6 +24,7 @@ export const showHamburgerTranslations: Record<LocaleCode, {
     emptyDiscount: 'Акцыі часова недаступныя',
     retry: 'Паўтарыць',
     tabCategories: 'Катэгорыі',
+    tabGarden: 'Пасадка',
     tabMenu: 'Меню',
     menuProfileLogin: 'Уваход / Рэгістрацыя',
   }
