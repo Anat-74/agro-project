@@ -18,6 +18,8 @@ const pageKey = computed(() => `calculator-page-${currentLocale.value}`);
 const { data: page } = useAsyncData(pageKey, async () => {
   const response: any = await find("calculator-page", {
     filters: { locale: { $eq: currentLocale.value } },
+    // Компоненты (faq/seo) в Strapi v5 приходят только с populate
+    populate: { faq: true, seo: true },
   } as any);
   return response?.data?.[0] || response?.data || null;
 });
@@ -84,7 +86,9 @@ const structuredData = computed(() => {
   return items;
 });
 
-useHead({
+// useHead с функцией — реактивно: данные (faq/seo) приходят асинхронно,
+// при статическом массиве скрипт не обновился бы после загрузки
+useHead(() => ({
   script: structuredData.value.length
     ? [
         {
@@ -97,7 +101,7 @@ useHead({
         },
       ]
     : [],
-});
+}));
 </script>
 
 <template>
