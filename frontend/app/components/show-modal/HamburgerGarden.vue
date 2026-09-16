@@ -30,6 +30,11 @@ interface GardenCrop {
   planting?: GardenPlanting | null;
 }
 
+// Тип товара растения: глобальный Product + наше поле purpose
+// (у глобального Product нет purpose, поэтому расширяем пересечением)
+type GardenPurpose = "seeds" | "seedlings" | "fertilizer" | "other";
+type GardenProduct = Product & { purpose?: GardenPurpose | null };
+
 // ===== Растения (crop) =====
 const cropKey = computed(() => `garden-crops-${currentLocale.value}`);
 const { data: crops, pending: pendingCrops } = useCachedAsyncData(
@@ -60,7 +65,8 @@ const selectedCrop = computed(
 watch(
   crops,
   (list) => {
-    if (!selectedId.value && list?.length) selectedId.value = list[0].documentId;
+    const first = list?.[0];
+    if (!selectedId.value && first) selectedId.value = first.documentId;
   },
   { immediate: true },
 );
@@ -83,7 +89,7 @@ const { data: products } = useCachedAsyncData(
   async () => {
     if (!selectedId.value) return [];
     const { find } = useStrapi();
-    const response = await find<Product>("products", {
+    const response = await find<GardenProduct>("products", {
       filters: {
         locale: { $eq: currentLocale.value },
         crop: { documentId: { $eq: selectedId.value } },
@@ -99,16 +105,16 @@ const { data: products } = useCachedAsyncData(
   { watch: [productsKey], server: false, ttl: 300_000 },
 );
 
-type Purpose = "seeds" | "seedlings" | "fertilizer" | "other";
+type Purpose = GardenPurpose;
 const purposeGroups = computed(() => {
-  const groups: Record<Purpose, Product[]> = {
+  const groups: Record<Purpose, GardenProduct[]> = {
     seeds: [],
     seedlings: [],
     fertilizer: [],
     other: [],
   };
   for (const p of products.value ?? []) {
-    const purpose = (p.purpose as Purpose) || "other";
+    const purpose: Purpose = p.purpose ?? "other";
     (groups[purpose] ?? groups.other).push(p);
   }
   const label: Record<Purpose, string> = {

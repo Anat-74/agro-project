@@ -5,7 +5,8 @@ import { showHamburgerTranslations } from "~/locales/showHamburger";
 // Вынесен из ShowHamburger в отдельный компонент. Клик по товару эмитит
 // `navigate` — родитель закрывает диалог (вместо прямого close?.() в шаблоне).
 const props = defineProps<{
-  category: Category[]
+  // Может быть null/undefined, пока данные грузятся (useCachedAsyncData)
+  category?: Category[] | null
 }>()
 
 const emit = defineEmits<{
@@ -25,7 +26,7 @@ const isActive = (path: string) => route.path === path
 
 <template>
   <ul v-if="props.category?.length" class="hamburger-catalog">
-    <li v-for="cat in props.category" :key="cat.documentId">
+    <li v-for="cat in (props.category ?? [])" :key="cat.documentId">
       <UAccordion name="faq" variant="default">
         <template #header>
           <UImage
