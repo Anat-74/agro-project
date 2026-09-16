@@ -42,8 +42,8 @@ export interface BackgroundBackgroundOptions extends Struct.ComponentSchema {
 export interface CalcDefaults extends Struct.ComponentSchema {
   collectionName: 'components_calc_defaults';
   info: {
-    description: '\u0414\u0435\u0444\u043E\u043B\u0442\u044B \u043A\u0430\u043B\u044C\u043A\u0443\u043B\u044F\u0442\u043E\u0440\u0430: \u0435\u0434\u0438\u043D\u0438\u0446\u044B \u0438 \u0442\u0438\u043F\u043E\u0432\u044B\u0435 \u043F\u0430\u0440\u0430\u043C\u0435\u0442\u0440\u044B';
-    displayName: '\u041A\u0430\u043B\u044C\u043A\u0443\u043B\u044F\u0442\u043E\u0440: \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F \u043F\u043E \u0443\u043C\u043E\u043B\u0447\u0430\u043D\u0438\u044E';
+    description: 'Default units and typical parameters for the calculator';
+    displayName: 'Calculator defaults';
   };
   attributes: {
     defaultArea: Schema.Attribute.Decimal;
@@ -57,8 +57,8 @@ export interface CalcDefaults extends Struct.ComponentSchema {
 export interface CalcFaqItem extends Struct.ComponentSchema {
   collectionName: 'components_calc_faq_items';
   info: {
-    description: '\u042D\u043B\u0435\u043C\u0435\u043D\u0442 FAQ (\u0434\u043B\u044F JSON-LD FAQPage)';
-    displayName: '\u041A\u0430\u043B\u044C\u043A\u0443\u043B\u044F\u0442\u043E\u0440: \u0432\u043E\u043F\u0440\u043E\u0441-\u043E\u0442\u0432\u0435\u0442';
+    description: 'FAQ entry (also used for JSON-LD FAQPage)';
+    displayName: 'Calculator FAQ item';
   };
   attributes: {
     answer: Schema.Attribute.RichText & Schema.Attribute.Required;
@@ -69,8 +69,8 @@ export interface CalcFaqItem extends Struct.ComponentSchema {
 export interface CalcPackaging extends Struct.ComponentSchema {
   collectionName: 'components_calc_packagings';
   info: {
-    description: '\u0412\u0430\u0440\u0438\u0430\u043D\u0442 \u0444\u0430\u0441\u043E\u0432\u043A\u0438 \u0441\u0435\u043C\u044F\u043D/\u0443\u0434\u043E\u0431\u0440\u0435\u043D\u0438\u0439: \u0432\u0435\u0441 \u0438\u043B\u0438 \u0448\u0442\u0443\u043A\u0438';
-    displayName: '\u0424\u0430\u0441\u043E\u0432\u043A\u0430 \u0442\u043E\u0432\u0430\u0440\u0430';
+    description: 'Packaging option for seeds/fertilizers: weight or pieces';
+    displayName: 'Product packaging';
   };
   attributes: {
     amount: Schema.Attribute.Decimal;
@@ -83,8 +83,8 @@ export interface CalcPackaging extends Struct.ComponentSchema {
 export interface CalcPlanting extends Struct.ComponentSchema {
   collectionName: 'components_calc_plantings';
   info: {
-    description: '\u041F\u0430\u0440\u0430\u043C\u0435\u0442\u0440\u044B \u043F\u043E\u0441\u0435\u0432\u0430: \u0441\u0445\u0435\u043C\u0430 \u043F\u043E\u0441\u0430\u0434\u043A\u0438, \u043D\u043E\u0440\u043C\u0430 \u0432\u044B\u0441\u0435\u0432\u0430, \u0432\u0441\u0445\u043E\u0436\u0435\u0441\u0442\u044C, \u0433\u043B\u0443\u0431\u0438\u043D\u0430';
-    displayName: '\u041F\u043E\u0441\u0430\u0434\u043A\u0430 (\u0441\u0435\u043C\u0435\u043D\u0430)';
+    description: 'Sowing parameters: spacing, seeding rate, germination, depth';
+    displayName: 'Planting (seeds)';
   };
   attributes: {
     germination: Schema.Attribute.Integer;

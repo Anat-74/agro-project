@@ -4,8 +4,8 @@
   "info": {
     "singularName": "calculator-page",
     "pluralName": "calculator-pages",
-    "displayName": "Страница калькулятора",
-    "description": "Контент и настройки раздела «Всё для посадки и урожая» (калькулятор посадок)"
+    "displayName": "Calculator page",
+    "description": "Content and settings for the gardening calculator section"
   },
   "options": {
     "draftAndPublish": true

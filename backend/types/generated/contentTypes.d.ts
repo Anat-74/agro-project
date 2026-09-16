@@ -588,8 +588,8 @@ export interface ApiCalculatorPageCalculatorPage
   extends Struct.SingleTypeSchema {
   collectionName: 'calculator_pages';
   info: {
-    description: '\u041A\u043E\u043D\u0442\u0435\u043D\u0442 \u0438 \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438 \u0440\u0430\u0437\u0434\u0435\u043B\u0430 \u00AB\u0412\u0441\u0451 \u0434\u043B\u044F \u043F\u043E\u0441\u0430\u0434\u043A\u0438 \u0438 \u0443\u0440\u043E\u0436\u0430\u044F\u00BB (\u043A\u0430\u043B\u044C\u043A\u0443\u043B\u044F\u0442\u043E\u0440 \u043F\u043E\u0441\u0430\u0434\u043E\u043A)';
-    displayName: '\u0421\u0442\u0440\u0430\u043D\u0438\u0446\u0430 \u043A\u0430\u043B\u044C\u043A\u0443\u043B\u044F\u0442\u043E\u0440\u0430';
+    description: 'Content and settings for the gardening calculator section';
+    displayName: 'Calculator page';
     pluralName: 'calculator-pages';
     singularName: 'calculator-page';
   };
@@ -750,8 +750,8 @@ export interface ApiContactsPageContactsPage extends Struct.SingleTypeSchema {
 export interface ApiCropCrop extends Struct.CollectionTypeSchema {
   collectionName: 'crops';
   info: {
-    description: '\u0421\u043F\u0440\u0430\u0432\u043E\u0447\u043D\u0438\u043A \u0440\u0430\u0441\u0442\u0435\u043D\u0438\u0439 \u0434\u043B\u044F \u0440\u0430\u0437\u0434\u0435\u043B\u0430 \u00AB\u0412\u0441\u0451 \u0434\u043B\u044F \u043F\u043E\u0441\u0430\u0434\u043A\u0438 \u0438 \u0443\u0440\u043E\u0436\u0430\u044F\u00BB';
-    displayName: '\u0420\u0430\u0441\u0442\u0435\u043D\u0438\u0435 (\u043A\u0443\u043B\u044C\u0442\u0443\u0440\u0430)';
+    description: 'Plant reference for the gardening calculator section';
+    displayName: 'Crop';
     pluralName: 'crops';
     singularName: 'crop';
   };

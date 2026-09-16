@@ -1,8 +1,8 @@
 {
   "collectionName": "components_calc_faq_items",
   "info": {
-    "displayName": "Калькулятор: вопрос-ответ",
-    "description": "Элемент FAQ (для JSON-LD FAQPage)"
+    "displayName": "Calculator FAQ item",
+    "description": "FAQ entry (also used for JSON-LD FAQPage)"
   },
   "options": {},
   "attributes": {

@@ -4,8 +4,8 @@
   "info": {
     "singularName": "crop",
     "pluralName": "crops",
-    "displayName": "Растение (культура)",
-    "description": "Справочник растений для раздела «Всё для посадки и урожая»"
+    "displayName": "Crop",
+    "description": "Plant reference for the gardening calculator section"
   },
   "options": {
     "draftAndPublish": true

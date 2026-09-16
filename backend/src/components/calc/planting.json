@@ -1,38 +1,38 @@
 {
   "collectionName": "components_calc_plantings",
   "info": {
-    "displayName": "Посадка (семена)",
-    "description": "Параметры посева: схема посадки, норма высева, всхожесть, глубина"
+    "displayName": "Planting (seeds)",
+    "description": "Sowing parameters: spacing, seeding rate, germination, depth"
   },
   "options": {},
   "attributes": {
     "rowSpacing": {
       "type": "decimal",
-      "description": "Междурядье, см"
+      "description": "Row spacing, cm"
     },
     "plantSpacing": {
       "type": "decimal",
-      "description": "Расстояние между растениями в ряду, см"
+      "description": "In-row spacing, cm"
     },
     "seedsPerHole": {
       "type": "integer",
-      "description": "Семян в лунку, шт"
+      "description": "Seeds per hole, pcs"
     },
     "seedRatePerSqM": {
       "type": "decimal",
-      "description": "Норма высева, г/м²"
+      "description": "Seeding rate, g/m²"
     },
     "seedRatePerPlant": {
       "type": "decimal",
-      "description": "Норма на растение, г"
+      "description": "Seeding rate per plant, g"
     },
     "germination": {
       "type": "integer",
-      "description": "Всхожесть, %"
+      "description": "Germination, %"
     },
     "seedingDepth": {
       "type": "decimal",
-      "description": "Глубина заделки, см"
+      "description": "Seeding depth, cm"
     }
   }
 }
