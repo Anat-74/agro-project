@@ -5,12 +5,14 @@ export interface UseDialogOptions {
   initialOpen?: boolean;   // Начальное состояние isOpen (для диалогов, открытых по умолчанию при SSR)
 }
 
-// Универсальный возвращаемый тип
+// Универсальный возвращаемый тип: управление всегда доступно (без dialogElement —
+// no-op), чтобы потребители могли вызывать open/close/toggle без доп. проверок
+// (иначе `ref?.toggle()` даёт TS-ошибку «possibly undefined»).
 interface UseDialogReturn {
-  open?: () => void;
-  close?: () => void;
+  open: () => void;
+  close: () => void;
   isOpen: Ref<boolean>;
-  toggle?: () => void; // Открыть→закрыть, закрыть→открыть (при наличии dialogElement)
+  toggle: () => void;
 }
 
 export const useDialog = (
@@ -26,9 +28,11 @@ export const useDialog = (
   // передаётся через payload.
   const isOpen = useState<boolean>(`dialog-${id}`, () => Boolean(initialOpen));
 
-  // Если dialogElement не передан, возвращаем только isOpen
+  // Если dialogElement не передан — нужен только isOpen; управление — no-op
+  // (сохраняем прежнюю семантику «нечего открывать», но типы не опциональны)
   if (!dialogElement) {
-    return { isOpen };
+    const noop = () => {};
+    return { isOpen, open: noop, close: noop, toggle: noop };
   }
 
   // ВАЖНО: open()/close() работают с ЛОКАЛЬНЫМ dialogElement этого вызова,
