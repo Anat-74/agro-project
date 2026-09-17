@@ -22,6 +22,13 @@ const showHamburgerT = computed(
 )
 
 const isActive = (path: string) => route.path === path
+
+// Разделы-хабы: их адрес (/{locale}/{slug}) совпадает с отдельной хаб-страницей,
+// поэтому категорию НЕ подсвечиваем по маршруту — активный цвет только при
+// раскрытом <details>, как у остальных категорий.
+const HUB_SLUGS = new Set(["posadka-i-urozhay"])
+const isCategoryActive = (slug?: string) =>
+  !!slug && !HUB_SLUGS.has(slug) && isActive(`/${currentLocale.value}/${slug}`)
 </script>
 
 <template>
@@ -42,9 +49,7 @@ const isActive = (path: string) => route.path === path
             :class="[
               'accordion__product-title',
               {
-                'accordion__product-title_is-active': isActive(
-                  `/${currentLocale}/${cat.slug}`,
-                ),
+                'accordion__product-title_is-active': isCategoryActive(cat.slug),
               },
             ]"
           >

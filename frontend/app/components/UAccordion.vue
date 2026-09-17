@@ -135,9 +135,9 @@ withDefaults(defineProps<Props>(), {
       }
     }
 
-    // Название ПОДКАТЕГОРИИ (h4 в слоте) — компактнее
+    // Название ПОДКАТЕГОРИИ (h4 в слоте) — заметно меньше названия категории
     .accordion__product-sub-title {
-      font-size: toEm(15);
+      font-size: toEm(19);
     }
   }
 
@@ -211,7 +211,11 @@ withDefaults(defineProps<Props>(), {
     font-weight: 800;
   }
 
+  // Название КАТЕГОРИИ (h3 в слоте) — крупнее подкатегории (явный размер,
+  // а не наследование: иначе подкатегория из-за жирности/line-height выходила крупнее)
   &__product-title {
+    font-size: toEm(22);
+
     &_is-active {
       color: var(--danger-color);
     }
