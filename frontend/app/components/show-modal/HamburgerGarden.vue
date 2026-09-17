@@ -23,12 +23,26 @@ interface GardenPlanting {
   germination?: number | null;
   seedingDepth?: number | null;
 }
+interface GardenSeedling {
+  plantsPerSqM?: number | null;
+  growingDays?: number | null;
+  sowingPeriod?: string | null;
+  transplantPeriod?: string | null;
+}
+interface GardenFertilizing {
+  ratePerSqM?: number | null;
+  applications?: number | null;
+  npk?: string | null;
+  kind?: "mineral" | "organic" | string | null;
+}
 interface GardenCrop {
   documentId: string;
   name: string;
   slug?: string;
   image?: { url?: string; alternativeText?: string } | null;
   planting?: GardenPlanting | null;
+  seedling?: GardenSeedling | null;
+  fertilizing?: GardenFertilizing | null;
 }
 
 // Тип товара растения: глобальный Product + наше поле purpose
@@ -55,6 +69,8 @@ const { data: crops, pending: pendingCrops } = useCachedAsyncData(
       pagination: { pageSize: 100 } as PaginationMeta,
       populate: {
         planting: true,
+        seedling: true,
+        fertilizing: true,
         image: { fields: ["alternativeText", "url"] },
       },
     } as any);
@@ -111,25 +127,87 @@ const { data: products } = useCachedAsyncData(
   { watch: [productsKey], server: false, ttl: 300_000 },
 );
 
-// ===== Калькулятор (после загрузки товаров — нужны их фасовки) =====
+// ===== Калькулятор: режимы «Семена / Рассада / Удобрение» =====
+type GardenMode = "seeds" | "seedlings" | "fertilizer";
+const mode = ref<GardenMode>("seeds");
 const area = ref(1);
 
-// Фасовки товаров-семян растения → расчёт пачек
-const seedPackagings = computed<GardenPackaging[]>(() =>
-  (products.value ?? [])
-    .filter((p) => p.purpose === "seeds")
-    .flatMap((p) => p.packaging ?? [])
-    .filter((pk) => pk?.amount)
-    .map((pk) => ({ label: pk.label ?? "", amount: pk.amount ?? 0, unit: pk.unit ?? "g" })),
-);
+const modeTabs = computed<{ id: GardenMode; label: string }[]>(() => [
+  { id: "seeds", label: t.value.modeSeeds },
+  { id: "seedlings", label: t.value.modeSeedlings },
+  { id: "fertilizer", label: t.value.modeFertilizer },
+]);
+
+// Фасовки товаров растения по назначению → пачки для активного режима
+const packagingsByPurpose = computed<Record<GardenMode, GardenPackaging[]>>(() => {
+  const pick = (purpose: GardenPurpose) =>
+    (products.value ?? [])
+      .filter((p) => p.purpose === purpose)
+      .flatMap((p) => p.packaging ?? [])
+      .filter((pk) => pk?.amount)
+      .map((pk) => ({ label: pk.label ?? "", amount: pk.amount ?? 0, unit: pk.unit ?? "g" }));
+  return {
+    seeds: pick("seeds"),
+    seedlings: pick("seedlings"),
+    fertilizer: pick("fertilizer"),
+  };
+});
 
 const result = computed(() =>
   calcPlanting({
+    mode: mode.value,
     areaSqm: area.value,
     planting: selectedCrop.value?.planting ?? null,
-    packagings: seedPackagings.value,
+    seedling: selectedCrop.value?.seedling ?? null,
+    fertilizing: selectedCrop.value?.fertilizing ?? null,
+    packagings: packagingsByPurpose.value[mode.value],
   }),
 );
+
+// Есть ли данные растения под активный режим
+const hasModeData = computed(() => {
+  const crop = selectedCrop.value;
+  if (!crop) return false;
+  if (mode.value === "seedlings") return !!crop.seedling;
+  if (mode.value === "fertilizer") return !!crop.fertilizing;
+  return !!crop.planting;
+});
+
+// Дополнительные сведения режима: сроки рассады / формула и вид удобрения
+const modeInfo = computed<{ label: string; value: string }[]>(() => {
+  const crop = selectedCrop.value;
+  if (!crop) return [];
+  const rows: { label: string; value: string }[] = [];
+
+  if (mode.value === "seedlings" && crop.seedling) {
+    const { growingDays, sowingPeriod, transplantPeriod } = crop.seedling;
+    if (growingDays) {
+      rows.push({
+        label: t.value.growingDays,
+        value: `${growingDays} ${t.value.unitDay}`,
+      });
+    }
+    if (sowingPeriod) {
+      rows.push({ label: t.value.sowingLabel, value: sowingPeriod });
+    }
+    if (transplantPeriod) {
+      rows.push({ label: t.value.transplantLabel, value: transplantPeriod });
+    }
+  }
+
+  if (mode.value === "fertilizer" && crop.fertilizing) {
+    const { npk, kind } = crop.fertilizing;
+    if (npk) rows.push({ label: t.value.npkLabel, value: npk });
+    if (kind) {
+      rows.push({
+        label: t.value.kindLabel,
+        value: kind === "organic" ? t.value.kindOrganic : t.value.kindMineral,
+      });
+    }
+  }
+
+  return rows;
+});
 
 type Purpose = GardenPurpose;
 const purposeGroups = computed(() => {
@@ -193,6 +271,25 @@ const purposeGroups = computed(() => {
 
     <!-- Калькулятор -->
     <section v-if="selectedCrop" class="hamburger-garden__section">
+      <div
+        class="hamburger-garden__modes"
+        role="tablist"
+        :aria-label="t.calcModes"
+      >
+        <button
+          v-for="tab in modeTabs"
+          :key="tab.id"
+          type="button"
+          role="tab"
+          class="hamburger-garden__mode"
+          :class="{ 'hamburger-garden__mode_is-active': mode === tab.id }"
+          :aria-selected="mode === tab.id"
+          @click="mode = tab.id"
+        >
+          {{ tab.label }}
+        </button>
+      </div>
+
       <label class="hamburger-garden__field">
         <span class="hamburger-garden__field-label">{{ t.areaLabel }}</span>
         <span class="hamburger-garden__field-input">
@@ -209,22 +306,38 @@ const purposeGroups = computed(() => {
         </span>
       </label>
 
-      <dl class="hamburger-garden__result">
+      <p v-if="!hasModeData" class="hamburger-garden__empty">{{ t.noData }}</p>
+
+      <dl v-if="hasModeData" class="hamburger-garden__result">
         <div v-if="result.plants !== null" class="hamburger-garden__result-row">
-          <dt>{{ t.plants }}</dt>
+          <dt>{{ mode === "seedlings" ? t.modeSeedlings : t.plants }}</dt>
           <dd>{{ result.plants }}</dd>
         </div>
-        <div v-if="result.seedGrams !== null" class="hamburger-garden__result-row">
+        <div
+          v-if="mode === 'seeds' && result.seedGrams !== null"
+          class="hamburger-garden__result-row"
+        >
           <dt>{{ t.seeds }}</dt>
           <dd>~{{ result.seedGrams }} {{ t.unitGram }}</dd>
         </div>
-        <div v-if="result.fertilizerGrams !== null" class="hamburger-garden__result-row">
+        <div
+          v-if="mode === 'fertilizer' && result.fertilizerGrams !== null"
+          class="hamburger-garden__result-row"
+        >
           <dt>{{ t.fertilizer }}</dt>
           <dd>~{{ result.fertilizerGrams }} {{ t.unitGram }}</dd>
         </div>
         <div v-if="result.packs?.length" class="hamburger-garden__result-row">
           <dt>{{ t.packs }}</dt>
           <dd>{{ result.packs.map((pack) => `${pack.label} × ${pack.count}`).join(", ") }}</dd>
+        </div>
+        <div
+          v-for="row in modeInfo"
+          :key="row.label"
+          class="hamburger-garden__result-row"
+        >
+          <dt>{{ row.label }}</dt>
+          <dd>{{ row.value }}</dd>
         </div>
       </dl>
     </section>
@@ -353,6 +466,39 @@ const purposeGroups = computed(() => {
       height: toRem(24);
       border-radius: 50%;
       object-fit: cover;
+    }
+  }
+
+  // Режимы расчёта (семена / рассада / удобрение)
+  &__modes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: toEm(4);
+    padding: toEm(4);
+    border-radius: toRem(10);
+    background-color: var(--light-color-transparent);
+  }
+
+  &__mode {
+    padding: toEm(6) toEm(8);
+    border: none;
+    border-radius: toRem(8);
+    background-color: transparent;
+    color: var(--gray-color);
+    font-size: toEm(14);
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      color var(--transition-duration),
+      background-color var(--transition-duration);
+
+    &_is-active {
+      color: var(--light-color);
+      background-color: var(--green-color);
+    }
+
+    @include hover {
+      color: var(--primary-color);
     }
   }
 

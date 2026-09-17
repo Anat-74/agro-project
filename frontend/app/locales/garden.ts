@@ -17,6 +17,19 @@ export const gardenTranslations: Record<LocaleCode, {
   emptyProducts: string
   unitGram: string
   unitPiece: string
+  modeSeeds: string
+  modeSeedlings: string
+  modeFertilizer: string
+  calcModes: string
+  growingDays: string
+  unitDay: string
+  sowingLabel: string
+  transplantLabel: string
+  npkLabel: string
+  kindLabel: string
+  kindMineral: string
+  kindOrganic: string
+  noData: string
   faqTitle: string
   openSection: string
 }> = {
@@ -39,6 +52,19 @@ export const gardenTranslations: Record<LocaleCode, {
     emptyProducts: 'Товары для этого растения скоро появятся',
     unitGram: 'г',
     unitPiece: 'шт',
+    modeSeeds: 'Семена',
+    modeSeedlings: 'Рассада',
+    modeFertilizer: 'Удобрение',
+    calcModes: 'Режим расчёта',
+    growingDays: 'Срок рассады',
+    unitDay: 'дн.',
+    sowingLabel: 'Посев',
+    transplantLabel: 'Высадка',
+    npkLabel: 'NPK',
+    kindLabel: 'Вид',
+    kindMineral: 'минеральное',
+    kindOrganic: 'органическое',
+    noData: 'Для этой культуры данных пока нет',
     faqTitle: 'Частые вопросы',
     openSection: 'Открыть раздел',
   },
@@ -61,6 +87,19 @@ export const gardenTranslations: Record<LocaleCode, {
     emptyProducts: 'Тавары для гэтай расліны хутка з’явяцца',
     unitGram: 'г',
     unitPiece: 'шт',
+    modeSeeds: 'Насенне',
+    modeSeedlings: 'Расада',
+    modeFertilizer: 'Угнаенне',
+    calcModes: 'Рэжым разліку',
+    growingDays: 'Тэрмін расады',
+    unitDay: 'дзён',
+    sowingLabel: 'Пасеў',
+    transplantLabel: 'Высадка',
+    npkLabel: 'NPK',
+    kindLabel: 'Від',
+    kindMineral: 'мінеральнае',
+    kindOrganic: 'арганічнае',
+    noData: 'Для гэтай расліны даных пакуль няма',
     faqTitle: 'Частыя пытанні',
     openSection: 'Адкрыць раздзел',
   }

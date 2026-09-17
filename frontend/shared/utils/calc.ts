@@ -17,20 +17,51 @@ export interface CalcPlanting {
   seedingDepth?: number | null;
 }
 
+export interface CalcSeedling {
+  /** Плотность рассады, растений на м² */
+  plantsPerSqM?: number | null;
+  /** Срок выращивания рассады, дней */
+  growingDays?: number | null;
+  /** Срок посева на рассаду (текстом) */
+  sowingPeriod?: string | null;
+  /** Срок высадки в грунт (текстом) */
+  transplantPeriod?: string | null;
+}
+
+export interface CalcFertilizing {
+  /** Норма удобрения, г/м² за одну подкормку */
+  ratePerSqM?: number | null;
+  /** Количество подкормок за сезон */
+  applications?: number | null;
+  /** Формула NPK, например 10-10-20 */
+  npk?: string | null;
+  /** Вид удобрения: минеральное / органическое */
+  kind?: "mineral" | "organic" | string | null;
+}
+
 export interface CalcPackaging {
   label?: string | null;
   amount?: number | null;
   unit?: "g" | "kg" | "pcs" | string | null;
 }
 
+/** Режим калькулятора: семена / рассада / удобрение */
+export type CalcMode = "seeds" | "seedlings" | "fertilizer";
+
 export interface CalcInput {
+  /** Режим расчёта (по умолчанию — семена) */
+  mode?: CalcMode | null;
   /** Площадь, м² (если известна) */
   areaSqm?: number | null;
   /** Длина грядки, м (если площадь не задана — считаем от схемы) */
   bedLengthM?: number | null;
   /** Параметры посева растения */
   planting?: CalcPlanting | null;
-  /** Норма удобрения, г/м² (для режима fertilizer) */
+  /** Параметры рассады растения */
+  seedling?: CalcSeedling | null;
+  /** Параметры удобрения растения */
+  fertilizing?: CalcFertilizing | null;
+  /** Норма удобрения, г/м² (совместимость с чат-инструментом) */
   fertilizerRatePerSqM?: number | null;
   /** Варианты фасовки товара (для перевода граммов в пачки) */
   packagings?: CalcPackaging[] | null;
@@ -45,6 +76,8 @@ export interface CalcPack {
 }
 
 export interface CalcResult {
+  /** Режим, по которому считали */
+  mode: CalcMode;
   /** Итоговая площадь, м² */
   areaSqm: number;
   /** Кол-во растений (может быть null, если нет схемы) */
@@ -53,6 +86,8 @@ export interface CalcResult {
   seedGrams: number | null;
   /** Нужно удобрения, г */
   fertilizerGrams: number | null;
+  /** Срок выращивания рассады, дней (режим рассады) */
+  growingDays: number | null;
   /** Варианты фасовок под потребность */
   packs: CalcPack[] | null;
 }
@@ -90,6 +125,29 @@ export const calcPlants = (
   return Math.round(areaSqm * perSqM);
 };
 
+/** Растений на площади для режима: в режиме рассады — плотность рассады, иначе схема посева. */
+export const calcPlantsOf = (
+  input: CalcInput,
+  areaSqm = calcAreaSqm(input),
+): number | null => {
+  if ((input.mode ?? "seeds") === "seedlings") {
+    const density = input.seedling?.plantsPerSqM;
+    if (density && density > 0 && areaSqm > 0) return Math.round(areaSqm * density);
+  }
+  return calcPlants(input, areaSqm);
+};
+
+/** Нужно удобрения, г: площадь × норма × число подкормок. */
+export const calcFertilizerGrams = (
+  input: CalcInput,
+  areaSqm = calcAreaSqm(input),
+): number | null => {
+  const rate = input.fertilizing?.ratePerSqM ?? input.fertilizerRatePerSqM;
+  if (!rate || rate <= 0 || areaSqm <= 0) return null;
+  const times = input.fertilizing?.applications;
+  return areaSqm * rate * (times && times > 0 ? times : 1);
+};
+
 /** Граммы фасовки (кг → г; штучные → null). */
 export const packGrams = (p: CalcPackaging): number | null => {
   if (!p?.amount || p.amount <= 0) return null;
@@ -122,11 +180,13 @@ export const calcPacks = (
 
 /**
  * Полный расчёт: площадь → растения → граммы семян (с учётом всхожести) → пачки.
- * Если задана `fertilizerRatePerSqM` — считаем граммы удобрения.
+ * Режимы: `seeds` — семена, `seedlings` — рассада (плотность, шт), `fertilizer` — удобрение.
+ * Граммы удобрения считаются всегда, если задана норма; пачки — по активному режиму.
  */
 export const calcPlanting = (input: CalcInput): CalcResult => {
+  const mode: CalcMode = input.mode ?? "seeds";
   const areaSqm = calcAreaSqm(input);
-  const plants = calcPlants(input, areaSqm);
+  const plants = calcPlantsOf(input, areaSqm);
 
   // Семена: норма на растение → иначе норма на м²
   let seedGrams: number | null = null;
@@ -144,19 +204,25 @@ export const calcPlanting = (input: CalcInput): CalcResult => {
   }
 
   // Удобрение
-  const fertilizerGrams =
-    input.fertilizerRatePerSqM && areaSqm
-      ? areaSqm * input.fertilizerRatePerSqM
-      : null;
+  const fertilizerGrams = calcFertilizerGrams(input, areaSqm);
 
-  const base = seedGrams ?? fertilizerGrams ?? null;
+  // Основа для расчёта пачек: в режиме рассады — штучные фасовки (по растениям),
+  // в режиме удобрения — граммы удобрения, иначе граммы семян
+  const base =
+    mode === "seedlings"
+      ? null
+      : mode === "fertilizer"
+        ? fertilizerGrams
+        : seedGrams ?? fertilizerGrams;
 
   return {
+    mode,
     areaSqm: round2(areaSqm),
     plants,
     seedGrams: seedGrams === null ? null : round2(seedGrams),
     fertilizerGrams:
       fertilizerGrams === null ? null : round2(fertilizerGrams),
+    growingDays: input.seedling?.growingDays ?? null,
     packs: calcPacks(base, input.packagings, plants),
   };
 };

@@ -147,6 +147,8 @@ async function calcPlantingTool(args: any, strapiUrl?: string, locale?: string):
         "filters[slug][$eq]": cropSlug,
         locale: locale || "ru",
         "populate[planting]": true,
+        "populate[seedling]": true,
+        "populate[fertilizing]": true,
         "populate[products][populate][0]": "mainImage",
       },
     });
@@ -156,20 +158,34 @@ async function calcPlantingTool(args: any, strapiUrl?: string, locale?: string):
       return { success: false, error: `Растение «${cropSlug}» не найдено` };
     }
 
+    // Режим: seeds (по умолчанию) / seedlings / fertilizer
+    const mode = ["seeds", "seedlings", "fertilizer"].includes(args?.mode)
+      ? args.mode
+      : "seeds";
+
     // Логика — общая (shared/utils/calc.ts, автоимпорт Nitro)
     const result = calcPlanting({
+      mode,
       areaSqm: args?.areaSqm ?? null,
       bedLengthM: args?.bedLengthM ?? null,
       planting: crop.planting ?? null,
+      seedling: crop.seedling ?? null,
+      fertilizing: crop.fertilizing ?? null,
     });
 
     return {
       success: true,
+      mode: result.mode,
       crop: { name: crop.name, slug: crop.slug },
       areaSqm: result.areaSqm,
       plants: result.plants,
       seedGrams: result.seedGrams,
       fertilizerGrams: result.fertilizerGrams,
+      growingDays: result.growingDays,
+      periods: {
+        sowing: crop.seedling?.sowingPeriod ?? null,
+        transplant: crop.seedling?.transplantPeriod ?? null,
+      },
       packs: result.packs,
       products: (crop.products || []).map((p: any) => ({
         documentId: p.documentId,
@@ -301,13 +317,19 @@ const AVAILABLE_TOOLS = [
     function: {
       name: "calcPlanting",
       description:
-        "Калькулятор посадок: сколько нужно семян/рассады на грядку. Считает растения, граммы семян (с учётом всхожести) и пачки по площади или длине грядки, и возвращает товары растения",
+        "Калькулятор посадок: сколько нужно семян/рассады/удобрения на грядку. Считает растения, граммы семян (с учётом всхожести), граммы удобрения и пачки по площади или длине грядки, и возвращает товары растения",
       parameters: {
         type: "object",
         properties: {
           cropSlug: {
             type: "string",
             description: "Slug растения (например: tomat, ogurec, morkov). Из запроса пользователя",
+          },
+          mode: {
+            type: "string",
+            enum: ["seeds", "seedlings", "fertilizer"],
+            description:
+              "Что считаем: seeds — семена (по умолчанию), seedlings — рассада (штуки), fertilizer — удобрение (граммы)",
           },
           areaSqm: {
             type: "number",
@@ -399,8 +421,9 @@ ${JSON.stringify(lastSearchResults, null, 2)}
 8. "что посоветуешь", "похожие", "рекомендуй", "новинки", "популярное" → get_recommendations
    - "похожие на [товар]" → get_recommendations с basedOn: "category", sourceId: "[documentId товара]"
    - "что нового", "новинки" → get_recommendations с basedOn: "latest"
-9. "сколько семян/рассады нужно", "что посадить", "сколько на грядку", "чем посадить (томат/огурец/…)" → calcPlanting
+9. "сколько семян/рассады/удобрения нужно", "что посадить", "сколько на грядку", "чем посадить (томат/огурец/…)" → calcPlanting
    - cropSlug: tomat | ogurec | perec-sladkij | morkov | ukrop (по названию растения из запроса)
+   - mode: seedlings (рассада), fertilizer (удобрение), иначе seeds
    - areaSqm, если названа площадь; иначе bedLengthM
 
 ФОРМАТ ОТВЕТА:

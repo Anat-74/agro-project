@@ -159,7 +159,12 @@
 ---
 
 ## Осталось по разделу (порядок предложен 16.09.2026)
-1. **`seedling` / `fertilizing`** — компоненты в `crop` + режимы в калькуляторе (рассада, удобрения).
+1. **`seedling` / `fertilizing`** ✅ (17.09) — компоненты `calc.seedling` / `calc.fertilizing`, поля в `crop`,
+   режимы **«Семена / Рассада / Удобрение»** (табы в калькуляторе), `shared/utils/calc.ts` (`mode`,
+   `calcPlantsOf`, `calcFertilizerGrams`), чат-инструмент `calcPlanting` принимает `mode`.
+   Данные заполнены **локально** (рассада: томат/огурец/перец; удобрения: все 5; для рассады добавлен
+   тестовый товар `purpose: seedlings`, фасовка в шт).
+   ⚠️ На **проде** данные `seedling`/`fertilizing` и товары-рассада не заполнены.
 2. **Корзина:** `useCartStore` — опциональный `quantity` → «В корзину» из расчёта (N кг).
    *Предусловие:* в каталоге должны появиться товары с `purpose: seeds/seedlings/fertilizer` и `packaging`.
 3. **`blog ↔ crop`** (M2M) + JSON-LD `HowTo`.
