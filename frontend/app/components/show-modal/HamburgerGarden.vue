@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { gardenTranslations } from "~/locales/garden";
 import { buttonTranslations } from "~/locales/button";
+import { cartTranslations } from "~/locales/cart";
 import { calcPacks, calcPlantsOf, calcPlanting } from "~~/shared/utils/calc";
 
 // Слайд «Посадка» панели каталога: «Что сажаем?» → расчёт (площадь → растения →
@@ -12,10 +13,10 @@ const emit = defineEmits<{
 const { currentLocale } = useLocale();
 const { getProductLink } = useProductLink();
 const cartStore = useCartStore();
-const { isInCart } = useIsInCart();
 
 const t = computed(() => gardenTranslations[currentLocale.value]);
 const buttonT = computed(() => buttonTranslations[currentLocale.value]);
+const cartT = computed(() => cartTranslations[currentLocale.value]);
 
 // Тип растения из Strapi (локально — глобального типа Crop нет)
 interface GardenPlanting {
@@ -99,6 +100,32 @@ watch(
     if (!selectedId.value && first) selectedId.value = first.documentId;
   },
   { immediate: true },
+);
+
+// ===== Статьи блога по выбранному растению (blog ↔ crop) =====
+const articlesKey = computed(
+  () => `garden-articles-${currentLocale.value}-${selectedId.value ?? "none"}`,
+);
+const { data: articles } = useCachedAsyncData(
+  articlesKey,
+  async () => {
+    if (!selectedId.value) return [];
+    const { find } = useStrapi();
+    const response = await find<{ documentId: string; title: string; slug: string; date?: string }>(
+      "blogs",
+      {
+        filters: {
+          locale: { $eq: currentLocale.value },
+          crops: { documentId: { $eq: selectedId.value } },
+        },
+        sort: ["date:desc"],
+        pagination: { pageSize: 10 } as PaginationMeta,
+        fields: ["title", "slug", "date"],
+      } as any,
+    );
+    return response.data || [];
+  },
+  { watch: [articlesKey], server: false, ttl: 600_000 },
 );
 
 // ===== Товары растения (по purpose) =====
@@ -240,6 +267,10 @@ const packCountFor = (product: GardenProduct): number => {
   const packs = calcPacks(base, product.packaging ?? null, plants);
   return packs?.[0]?.count ?? 1;
 };
+
+// Сколько единиц этого товара уже лежит в корзине (для состояния кнопки)
+const cartQtyFor = (documentId: string): number =>
+  cartStore.items.find((item) => item.product.documentId === documentId)?.quantity ?? 0;
 
 // «В корзину» из расчёта: добавляем сразу N пачек этого товара
 const addProductToCart = (product: GardenProduct) => {
@@ -416,13 +447,23 @@ const purposeGroups = computed(() => {
               <button
                 type="button"
                 class="hamburger-garden__add"
-                :class="{ 'hamburger-garden__add_in-cart': isInCart(prod.documentId) }"
-                :aria-label="`${buttonT.label}: ${prod.name}`"
+                :class="{ 'hamburger-garden__add_in-cart': cartQtyFor(prod.documentId) > 0 }"
+                :aria-label="
+                  cartQtyFor(prod.documentId) > 0
+                    ? `${buttonT.addedIsCart}: ${prod.name}`
+                    : `${buttonT.label}: ${prod.name}`
+                "
                 @click="addProductToCart(prod)"
               >
-                <Icon name="cil:cart" />
+                <Icon
+                  :name="cartQtyFor(prod.documentId) > 0 ? 'mingcute:check-line' : 'cil:cart'"
+                />
                 <span
-                  v-if="packCountFor(prod) > 1"
+                  v-if="cartQtyFor(prod.documentId) > 0"
+                  class="hamburger-garden__add-count"
+                >×{{ cartQtyFor(prod.documentId) }}</span>
+                <span
+                  v-else-if="packCountFor(prod) > 1"
                   class="hamburger-garden__add-count"
                 >×{{ packCountFor(prod) }}</span>
               </button>
@@ -433,6 +474,36 @@ const purposeGroups = computed(() => {
 
       <p v-else class="hamburger-garden__empty">{{ t.emptyProducts }}</p>
     </section>
+
+    <!-- Статьи блога по растению -->
+    <section v-if="selectedCrop && articles?.length" class="hamburger-garden__section">
+      <h3 class="hamburger-garden__question">{{ t.articlesTitle }}</h3>
+      <ul class="hamburger-garden__list">
+        <li v-for="article in articles" :key="article.documentId">
+          <NuxtLink
+            class="hamburger-garden__article"
+            :to="`/${currentLocale}/blog/${article.slug}`"
+            @click="emit('navigate')"
+          >
+            <Icon name="mingcute:document-line" />
+            <span>{{ article.title }}</span>
+          </NuxtLink>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Корзина: появляется только когда в ней что-то есть — видимая реакция
+         на «В корзину» прямо в панели (бейдж в шапке перекрыт дровером) -->
+    <NuxtLink
+      v-if="cartStore.totalItems"
+      class="hamburger-garden__cart"
+      :to="`/${currentLocale}/cartshopping`"
+      :aria-label="cartT.ariaLabelBasket"
+      @click="emit('navigate')"
+    >
+      <Icon name="cil:cart" />
+      <span>{{ cartT.title }} · {{ cartStore.totalItems }}</span>
+    </NuxtLink>
 
     <!-- Ссылка на хаб-страницу раздела (SEO-страница) -->
     <NuxtLink
@@ -662,11 +733,14 @@ const purposeGroups = computed(() => {
     cursor: pointer;
     transition:
       color var(--transition-duration),
-      border-color var(--transition-duration);
+      border-color var(--transition-duration),
+      background-color var(--transition-duration);
 
+    // Товар добавлен: заливка + галочка + количество в корзине
     &_in-cart {
       border-color: var(--green-color);
-      color: var(--green-color);
+      background-color: var(--green-color);
+      color: var(--light-color);
     }
 
     @include hover {
@@ -679,6 +753,28 @@ const purposeGroups = computed(() => {
     line-height: 1;
   }
 
+  // Корзина внутри панели (видно результат добавления, шапка перекрыта)
+  &__cart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: toEm(6);
+    padding: toEm(10) toEm(14);
+    border: toRem(1) solid var(--green-color);
+    border-radius: toRem(8);
+    color: var(--green-color);
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      color var(--transition-duration),
+      background-color var(--transition-duration);
+
+    @include hover {
+      color: var(--light-color);
+      background-color: var(--green-color);
+    }
+  }
+
   &__product {
     justify-content: flex-start;
     column-gap: toEm(8);
@@ -687,6 +783,21 @@ const purposeGroups = computed(() => {
 
   &__product-name {
     text-align: left;
+  }
+
+  // Ссылка на статью по растению
+  &__article {
+    display: flex;
+    align-items: center;
+    column-gap: toEm(6);
+    padding-block: toEm(2);
+    color: var(--color);
+    text-decoration: none;
+
+    @include hover {
+      color: var(--green-color);
+      text-decoration: underline;
+    }
   }
 
   &__empty {

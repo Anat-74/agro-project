@@ -15,12 +15,17 @@ interface CalculatorFaqItem {
   answer: string;
 }
 
+interface CalculatorHowToStep {
+  name: string;
+  text: string;
+}
+
 const pageKey = computed(() => `calculator-page-${currentLocale.value}`);
 const { data: page } = useAsyncData(pageKey, async () => {
   const response: any = await find("calculator-page", {
     filters: { locale: { $eq: currentLocale.value } },
-    // Компоненты (faq/seo) в Strapi v5 приходят только с populate
-    populate: { faq: true, seo: true },
+    // Компоненты (faq/seo/howTo) в Strapi v5 приходят только с populate
+    populate: { faq: true, seo: true, howTo: true },
   } as any);
   return response?.data?.[0] || response?.data || null;
 });
@@ -33,6 +38,14 @@ const seoDescription = computed(
   () => seo.value?.metaDescription || page.value?.heroSubtitle || t.value.subtitle,
 );
 const faq = computed<CalculatorFaqItem[]>(() => page.value?.faq || []);
+
+// Шаги HowTo: из Strapi, иначе — локализованный фолбэк из locales/garden.ts
+const howToSteps = computed<CalculatorHowToStep[]>(() => {
+  const fromStrapi = (page.value?.howTo || []).filter(
+    (step: CalculatorHowToStep) => step?.name && step?.text,
+  );
+  return fromStrapi.length ? fromStrapi : t.value.howToSteps;
+});
 
 useSeoMeta({
   title: seoTitle,
@@ -76,6 +89,12 @@ const schemaOrgNodes = computed<any[]>(() => {
         acceptedAnswer: { text: stripHtml(f.answer) },
       }),
     ),
+    defineHowTo({
+      name: t.value.howToTitle,
+      step: howToSteps.value.map((step) =>
+        defineHowToStep({ name: step.name, text: stripHtml(step.text) }),
+      ),
+    }),
   ];
 
   // Разметка из Strapi (seo.structuredData) — как дополнительный узел графа
