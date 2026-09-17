@@ -135,9 +135,11 @@ withDefaults(defineProps<Props>(), {
       }
     }
 
-    // Название ПОДКАТЕГОРИИ (h4 в слоте) — заметно меньше названия категории
+    // Название ПОДКАТЕГОРИИ (h4 в слоте) — на 2px больше товара (h4: 16/14).
+    // ВАЖНО: toRem/adaptiveValue, а НЕ toEm — toEm внутри summary (font-size em)
+    // компаундился и давал ~25px вместо 18 (см. историю правок).
     .accordion__product-sub-title {
-      font-size: toEm(19);
+      @include adaptiveValue("font-size", 18, 16);
     }
   }
 
@@ -211,10 +213,11 @@ withDefaults(defineProps<Props>(), {
     font-weight: 800;
   }
 
-  // Название КАТЕГОРИИ (h3 в слоте) — крупнее подкатегории (явный размер,
-  // а не наследование: иначе подкатегория из-за жирности/line-height выходила крупнее)
+  // Название КАТЕГОРИИ (h3 в слоте) — на 2px больше подкатегории (18/16).
+  // Явный размер, а не наследование: em внутри summary (font-size em)
+  // компаундился и давал ~30px вместо 20.
   &__product-title {
-    font-size: toEm(22);
+    @include adaptiveValue("font-size", 20, 18);
 
     &_is-active {
       color: var(--danger-color);
