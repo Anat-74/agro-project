@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { gardenTranslations } from "~/locales/garden";
+import { breadcrumbsTranslations } from "~/locales/breadcrumbs";
 
 // Хаб-страница раздела «Всё для посадки и урожая» (SEO + калькулятор).
 // Контент — single type `calculator-page` из Strapi (i18n).
@@ -42,66 +43,48 @@ useSeoMeta({
   ogImage: `${config.public.siteUrl}/pwa-512x512.png`,
 });
 
-// JSON-LD: FAQPage (из faq) + BreadcrumbList + structuredData из Strapi (если есть)
+// JSON-LD через @nuxtjs/seo (useSchemaOrg): модуль сам собирает единый @graph,
+// связывает вопросы с FAQPage и сериализует разметку — ручной useHead не нужен.
+const pageUrl = computed(
+  () => `${config.public.siteUrl}${route.fullPath}`,
+);
 const stripHtml = (html: string) => String(html || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 
-const structuredData = computed(() => {
-  const items: any[] = [];
-
-  if (seo.value?.structuredData) {
-    items.push(seo.value.structuredData);
-  }
-
-  if (faq.value.length) {
-    items.push({
-      "@context": "https://schema.org",
+// Передаём computed (ref) целиком: unhead разворачивает реактивные значения при
+// резолве тегов, поэтому асинхронные faq/seo попадают и в SSR-разметку.
+const schemaOrgNodes = computed<any[]>(() => {
+  const nodes: any[] = [
+    defineWebPage({
       "@type": "FAQPage",
-      mainEntity: faq.value.map((f) => ({
-        "@type": "Question",
-        name: f.question,
-        acceptedAnswer: { "@type": "Answer", text: stripHtml(f.answer) },
-      })),
-    });
-  }
+      name: seoTitle.value,
+      description: seoDescription.value,
+      url: pageUrl.value,
+      inLanguage: currentLocale.value,
+    }),
+    defineBreadcrumb({
+      itemListElement: [
+        {
+          name: breadcrumbsTranslations[currentLocale.value].home,
+          item: `${config.public.siteUrl}/${currentLocale.value}`,
+        },
+        { name: seoTitle.value, item: pageUrl.value },
+      ],
+    }),
+    ...faq.value.map((f) =>
+      defineQuestion({
+        question: f.question,
+        acceptedAnswer: { text: stripHtml(f.answer) },
+      }),
+    ),
+  ];
 
-  items.push({
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Главная",
-        item: `${config.public.siteUrl}/${currentLocale.value}`,
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: seoTitle.value,
-        item: `${config.public.siteUrl}${route.fullPath}`,
-      },
-    ],
-  });
+  // Разметка из Strapi (seo.structuredData) — как дополнительный узел графа
+  if (seo.value?.structuredData) nodes.push(seo.value.structuredData);
 
-  return items;
+  return nodes;
 });
 
-// useHead с функцией — реактивно: данные (faq/seo) приходят асинхронно,
-// при статическом массиве скрипт не обновился бы после загрузки
-useHead(() => ({
-  script: structuredData.value.length
-    ? [
-        {
-          type: "application/ld+json",
-          innerHTML: JSON.stringify(
-            structuredData.value.length === 1
-              ? structuredData.value[0]
-              : structuredData.value,
-          ),
-        },
-      ]
-    : [],
-}));
+useSchemaOrg(schemaOrgNodes);
 </script>
 
 <template>
