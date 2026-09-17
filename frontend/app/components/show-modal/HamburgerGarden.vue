@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// deploy-marker (технический комментарий для триггера сборки; удалить после)
 import { gardenTranslations } from "~/locales/garden";
 import { calcPlanting } from "~~/shared/utils/calc";
 
