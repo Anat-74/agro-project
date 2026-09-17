@@ -79,6 +79,12 @@
       "target": "api::product.product",
       "mappedBy": "crop"
     },
+    "blogs": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::blog.blog",
+      "inversedBy": "crops"
+    },
     "isActive": {
       "type": "boolean",
       "default": true

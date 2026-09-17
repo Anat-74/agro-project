@@ -80,6 +80,18 @@ export interface CalcFertilizing extends Struct.ComponentSchema {
   };
 }
 
+export interface CalcHowToStep extends Struct.ComponentSchema {
+  collectionName: 'components_calc_how_to_steps';
+  info: {
+    description: 'Single step of the planting HowTo (JSON-LD)';
+    displayName: 'HowTo step';
+  };
+  attributes: {
+    name: Schema.Attribute.String;
+    text: Schema.Attribute.Text;
+  };
+}
+
 export interface CalcPackaging extends Struct.ComponentSchema {
   collectionName: 'components_calc_packagings';
   info: {
@@ -325,6 +337,7 @@ declare module '@strapi/strapi' {
       'calc.defaults': CalcDefaults;
       'calc.faq-item': CalcFaqItem;
       'calc.fertilizing': CalcFertilizing;
+      'calc.how-to-step': CalcHowToStep;
       'calc.packaging': CalcPackaging;
       'calc.planting': CalcPlanting;
       'calc.seedling': CalcSeedling;

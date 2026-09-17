@@ -50,6 +50,11 @@
       "component": "calc.faq-item",
       "repeatable": true
     },
+    "howTo": {
+      "type": "component",
+      "component": "calc.how-to-step",
+      "repeatable": true
+    },
     "showCalculator": {
       "type": "boolean",
       "default": true

@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_calc_how_to_steps",
+  "info": {
+    "displayName": "HowTo step",
+    "description": "Single step of the planting HowTo (JSON-LD)"
+  },
+  "options": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "description": "Step title, e.g. Choose a plant"
+    },
+    "text": {
+      "type": "text",
+      "description": "Step description"
+    }
+  }
+}

@@ -565,6 +565,7 @@ export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    crops: Schema.Attribute.Relation<'manyToMany', 'api::crop.crop'>;
     date: Schema.Attribute.Date;
     image: Schema.Attribute.Media<'images'>;
     locale: Schema.Attribute.String;
@@ -619,6 +620,7 @@ export interface ApiCalculatorPageCalculatorPage
           localized: true;
         };
       }>;
+    howTo: Schema.Attribute.Component<'calc.how-to-step', true>;
     intro: Schema.Attribute.RichText &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
@@ -764,6 +766,7 @@ export interface ApiCropCrop extends Struct.CollectionTypeSchema {
     };
   };
   attributes: {
+    blogs: Schema.Attribute.Relation<'manyToMany', 'api::blog.blog'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
