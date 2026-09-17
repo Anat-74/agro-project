@@ -13,6 +13,7 @@ const emit = defineEmits<{
 const { currentLocale } = useLocale();
 const { getProductLink } = useProductLink();
 const cartStore = useCartStore();
+const { requestOpen: requestOpenCart } = useCartDialog();
 
 const t = computed(() => gardenTranslations[currentLocale.value]);
 const buttonT = computed(() => buttonTranslations[currentLocale.value]);
@@ -282,6 +283,12 @@ const addProductToCart = (product: GardenProduct) => {
   );
 };
 
+// Кнопка корзины в шапке слайда: закрываем дровер и просим AppHeader открыть диалог
+const closeAndOpenCart = () => {
+  emit("navigate");
+  requestOpenCart();
+};
+
 type Purpose = GardenPurpose;
 const purposeGroups = computed(() => {
   const groups: Record<Purpose, GardenProduct[]> = {
@@ -309,7 +316,22 @@ const purposeGroups = computed(() => {
 <template>
   <div class="hamburger-garden">
     <header class="hamburger-garden__head">
-      <h2 class="hamburger-garden__title">{{ t.title }}</h2>
+      <div class="hamburger-garden__head-top">
+        <h2 class="hamburger-garden__title">{{ t.title }}</h2>
+
+        <!-- Компактная кнопка корзины: открывает ДИАЛОГ корзины (страница корзины
+             — только для экранов выше tablet), появляется после первого добавления -->
+        <button
+          v-if="cartStore.totalItems"
+          type="button"
+          class="hamburger-garden__cart"
+          :aria-label="cartT.ariaLabelBasket"
+          @click="closeAndOpenCart"
+        >
+          <Icon name="cil:cart" />
+          <span class="hamburger-garden__cart-count">{{ cartStore.totalItems }}</span>
+        </button>
+      </div>
       <p class="hamburger-garden__subtitle">{{ t.subtitle }}</p>
     </header>
 
@@ -492,19 +514,6 @@ const purposeGroups = computed(() => {
       </ul>
     </section>
 
-    <!-- Корзина: появляется только когда в ней что-то есть — видимая реакция
-         на «В корзину» прямо в панели (бейдж в шапке перекрыт дровером) -->
-    <NuxtLink
-      v-if="cartStore.totalItems"
-      class="hamburger-garden__cart"
-      :to="`/${currentLocale}/cartshopping`"
-      :aria-label="cartT.ariaLabelBasket"
-      @click="emit('navigate')"
-    >
-      <Icon name="cil:cart" />
-      <span>{{ cartT.title }} · {{ cartStore.totalItems }}</span>
-    </NuxtLink>
-
     <!-- Ссылка на хаб-страницу раздела (SEO-страница) -->
     <NuxtLink
       class="hamburger-garden__more"
@@ -528,6 +537,13 @@ const purposeGroups = computed(() => {
     display: flex;
     flex-direction: column;
     row-gap: toEm(2);
+  }
+
+  &__head-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: toEm(8);
   }
 
   &__title {
@@ -753,26 +769,41 @@ const purposeGroups = computed(() => {
     line-height: 1;
   }
 
-  // Корзина внутри панели (видно результат добавления, шапка перекрыта)
+  // Компактная кнопка корзины в шапке слайда (диалог, не страница)
   &__cart {
-    display: flex;
+    position: relative;
+    flex-shrink: 0;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    column-gap: toEm(6);
-    padding: toEm(10) toEm(14);
-    border: toRem(1) solid var(--green-color);
-    border-radius: toRem(8);
-    color: var(--green-color);
-    font-weight: 600;
-    text-decoration: none;
-    transition:
-      color var(--transition-duration),
-      background-color var(--transition-duration);
+    width: toRem(34);
+    height: toRem(34);
+    border: none;
+    border-radius: 50%;
+    background-color: var(--green-color);
+    color: var(--light-color);
+    font-size: toRem(18);
+    cursor: pointer;
+    transition: opacity var(--transition-duration);
 
     @include hover {
-      color: var(--light-color);
-      background-color: var(--green-color);
+      opacity: 0.9;
     }
+  }
+
+  &__cart-count {
+    position: absolute;
+    top: toRem(-4);
+    right: toRem(-4);
+    min-width: toRem(16);
+    padding-inline: toRem(3);
+    border-radius: toRem(8);
+    background-color: var(--danger-color);
+    color: var(--light-color);
+    font-size: toRem(11);
+    font-weight: 700;
+    line-height: toRem(16);
+    text-align: center;
   }
 
   &__product {

@@ -72,6 +72,11 @@ onUnmounted(() => {
 
 const cartDialogRef = useTemplateRef<InstanceType<typeof ShowModalCartDialog>>('cart-dialog')
 
+// Запрос на открытие корзины из других компонентов (например, кнопка в дровере
+// «Посадка»): диалог живёт здесь, остальные лишь инкрементируют счётчик запросов
+const { requestId: cartDialogRequest } = useCartDialog()
+watch(cartDialogRequest, () => cartDialogRef.value?.open?.())
+
 // Превью товара из корзины — модалка живёт на уровне Header, как в личном кабинете
 const previewProduct = ref<Product | null>(null)
 const previewModalRef = useTemplateRef<InstanceType<typeof ShowModalProduct>>('preview-modal')
