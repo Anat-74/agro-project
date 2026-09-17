@@ -1,108 +1,101 @@
-// Добавляем главную страницу
-const urls = [{ loc: `/`, lastmod: new Date().toISOString() }];
+// Источник sitemap для @nuxtjs/sitemap (nuxt.config: sources: ["/api/__sitemap__/urls"]).
+//
+// Важно: массив ссылок собирается НА КАЖДЫЙ ЗАПРОС. Раньше он был module-level
+// и накапливался — повторные вызовы (dev, SWR-перегенерация) дублировали ссылки.
+//
+// populate — только объектный синтаксис Strapi v5: строка с вложенными путями
+// (`populate=category,image`) отдаёт 400, из-за чего товары и подкатегории
+// в карту не попадали (ошибка глушилась catch-ем).
 
-export default defineEventHandler(async () => {
-  const strapiUrl = process.env.NUXT_PUBLIC_STRAPI_URL;
-  const langs = ["ru", "be"];
+const LANGS = ["ru", "be"];
 
-  for (const lang of langs) {
+interface SitemapUrl {
+  loc: string;
+  lastmod?: string;
+}
+
+export default defineEventHandler(async (): Promise<SitemapUrl[]> => {
+  // runtimeConfig (а не process.env) — значения подставляются Nitro и в проде,
+  // где .env не читается автоматически
+  const config = useRuntimeConfig();
+  const strapiUrl = config.public.strapi?.url || process.env.NUXT_PUBLIC_STRAPI_URL;
+  const headers = { Authorization: `Bearer ${config.strapi?.token || process.env.NUXT_STRAPI_TOKEN}` };
+  const now = new Date().toISOString();
+
+  // Ссылки текущего запроса. Корень («/») не добавляем: он 307-редиректит на
+  // /ru и в карте сайта не нужен — вместо него главные локалей (ниже).
+  const urls: SitemapUrl[] = [];
+
+  const get = async (path: string): Promise<any[]> => {
     try {
-      // Получаем категории для локали
-      const categories = (await $fetch(
-        `${strapiUrl}/api/categories?populate=image&locale=${lang}`,
-        {
-          headers: { Authorization: `Bearer ${process.env.NUXT_STRAPI_TOKEN}` },
-        }
-      ).catch(() => ({ data: [] }))) as { data: any[] };
-
-      // Получаем подкатегории с продуктами для локали
-      const subcategories = (await $fetch(
-        `${strapiUrl}/api/subcategories?populate=products,category,products.image&locale=${lang}`,
-        {
-          headers: { Authorization: `Bearer ${process.env.NUXT_STRAPI_TOKEN}` },
-        }
-      ).catch(() => ({ data: [] }))) as { data: any[] };
-
-      // Получаем продукты, которые напрямую связаны с категориями (не через подкатегории)
-      const products = (await $fetch(
-        `${strapiUrl}/api/products?populate=category,image&locale=${lang}`,
-        {
-          headers: { Authorization: `Bearer ${process.env.NUXT_STRAPI_TOKEN}` },
-        }
-      ).catch(() => ({ data: [] }))) as { data: any[] };
-
-      // Добавляем статические страницы для локали
-      urls.push({ loc: `/${lang}/about`, lastmod: "2024-01-01" });
-      urls.push({ loc: `/${lang}/services`, lastmod: "2024-01-01" });
-      urls.push({ loc: `/${lang}/contacts`, lastmod: "2024-01-01" });
-      urls.push({
-        loc: `/${lang}/cartshopping`,
-        lastmod: new Date().toISOString(),
-      });
-
-      // Create a map of category ID to subcategories for easier lookup
-      const categorySubcategoriesMap: Record<string, any[]> = {};
-      if (subcategories.data) {
-        for (const sub of subcategories.data) {
-          if (sub.category) {
-            const categoryId = sub.category.id;
-            if (!categorySubcategoriesMap[categoryId]) {
-              categorySubcategoriesMap[categoryId] = [];
-            }
-            categorySubcategoriesMap[categoryId].push(sub);
-          }
-        }
-      }
-
-      // Добавляем категории для локали
-      if (categories.data) {
-        for (const cat of categories.data) {
-          if (!cat.id || !cat.slug) continue;
-          urls.push({
-            loc: `/${lang}/${cat.slug}`,
-            lastmod: cat.updatedAt || cat.createdAt,
-          });
-
-          // Добавляем подкатегории для этой категории
-          const subcategoriesForCat = categorySubcategoriesMap[cat.id];
-          if (subcategoriesForCat) {
-            for (const sub of subcategoriesForCat) {
-              if (!sub.slug) continue;
-              urls.push({
-                loc: `/${lang}/${cat.slug}/${sub.slug}`,
-                lastmod: sub.updatedAt || sub.createdAt,
-              });
-
-              // Добавляем продукты для этой подкатегории
-              if (sub.products && Array.isArray(sub.products)) {
-                for (const prod of sub.products) {
-                  if (!prod.slug) continue;
-                  urls.push({
-                    loc: `/${lang}/${cat.slug}/${sub.slug}/${prod.slug}`,
-                    lastmod: prod.updatedAt || prod.createdAt,
-                  });
-                }
-              }
-            }
-          }
-        }
-      }
-
-      // Добавляем продукты, которые напрямую связаны с категориями (не через подкатегории)
-      if (products.data) {
-        for (const prod of products.data) {
-          if (prod.category && !prod.subcategory?.data) {
-            // Только продукты, которые напрямую связаны с категорией
-            urls.push({
-              loc: `/${lang}/${prod.category.slug}/${prod.slug}`,
-              lastmod: prod.updatedAt || prod.createdAt,
-            });
-          }
-        }
-      }
+      // `as any` — Nitro типизирует $fetch по роутам и падает на шаблонной строке
+      const response = await $fetch<{ data?: any[] }>(`${strapiUrl}${path}` as any, { headers });
+      return response?.data || [];
     } catch (error) {
-      console.error(`Ошибка получения данных для локали ${lang}:`, error);
-      // Продолжаем с другими локалями
+      console.error(`[sitemap] ${path}:`, error);
+      return [];
+    }
+  };
+
+  for (const lang of LANGS) {
+    // Главная локали (у /ru, /be свои title/описание для поиска)
+    urls.push({ loc: `/${lang}`, lastmod: now });
+
+    // ===== Статические страницы =====
+    // /cartshopping в карту НЕ добавляем: страница корзины не для индекса
+    urls.push({ loc: `/${lang}/about`, lastmod: "2024-01-01" });
+    urls.push({ loc: `/${lang}/services`, lastmod: "2024-01-01" });
+    urls.push({ loc: `/${lang}/contacts`, lastmod: "2024-01-01" });
+
+    // ===== Категории / подкатегории / товары =====
+    const categories = await get(
+      `/api/categories?locale=${lang}&fields[0]=slug&fields[1]=updatedAt&pagination[pageSize]=200`,
+    );
+    const subcategories = await get(
+      `/api/subcategories?locale=${lang}&populate[category]=true&pagination[pageSize]=500`,
+    );
+    const products = await get(
+      `/api/products?locale=${lang}&populate[category]=true&populate[subcategory]=true&pagination[pageSize]=500`,
+    );
+
+    for (const cat of categories) {
+      if (!cat?.slug) continue;
+      urls.push({ loc: `/${lang}/${cat.slug}`, lastmod: cat.updatedAt || now });
+    }
+
+    for (const sub of subcategories) {
+      const categorySlug = sub?.category?.slug;
+      if (!categorySlug || !sub?.slug) continue;
+      urls.push({
+        loc: `/${lang}/${categorySlug}/${sub.slug}`,
+        lastmod: sub.updatedAt || now,
+      });
+    }
+
+    for (const prod of products) {
+      const categorySlug = prod?.category?.slug;
+      if (!prod?.slug || !categorySlug) continue;
+      const subcategorySlug = prod?.subcategory?.slug;
+      urls.push({
+        loc: subcategorySlug
+          ? `/${lang}/${categorySlug}/${subcategorySlug}/${prod.slug}`
+          : `/${lang}/${categorySlug}/${prod.slug}`,
+        lastmod: prod.updatedAt || now,
+      });
+    }
+
+    // ===== Блог: список + статьи локали =====
+    urls.push({ loc: `/${lang}/blog`, lastmod: now });
+
+    const posts = await get(
+      `/api/blogs?locale=${lang}&fields[0]=slug&fields[1]=updatedAt&sort[0]=date:desc&pagination[pageSize]=500`,
+    );
+    for (const post of posts) {
+      if (!post?.slug) continue;
+      urls.push({
+        loc: `/${lang}/blog/${post.slug}`,
+        lastmod: post.updatedAt || now,
+      });
     }
   }
 
