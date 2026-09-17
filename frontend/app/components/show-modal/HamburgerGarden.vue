@@ -1,17 +1,21 @@
 <script setup lang="ts">
 import { gardenTranslations } from "~/locales/garden";
-import { calcPlanting } from "~~/shared/utils/calc";
+import { buttonTranslations } from "~/locales/button";
+import { calcPacks, calcPlantsOf, calcPlanting } from "~~/shared/utils/calc";
 
 // Слайд «Посадка» панели каталога: «Что сажаем?» → расчёт (площадь → растения →
-// семена/удобрение) и товары для выбранного растения.
+// семена/рассада/удобрение) и товары для выбранного растения.
 const emit = defineEmits<{
   navigate: [];
 }>();
 
 const { currentLocale } = useLocale();
 const { getProductLink } = useProductLink();
+const cartStore = useCartStore();
+const { isInCart } = useIsInCart();
 
 const t = computed(() => gardenTranslations[currentLocale.value]);
+const buttonT = computed(() => buttonTranslations[currentLocale.value]);
 
 // Тип растения из Strapi (локально — глобального типа Crop нет)
 interface GardenPlanting {
@@ -52,6 +56,8 @@ type GardenPackaging = { label?: string | null; amount?: number | null; unit?: s
 type GardenProduct = Product & {
   purpose?: GardenPurpose | null;
   packaging?: GardenPackaging[] | null;
+  category?: { slug?: string } | null;
+  subcategory?: { slug?: string } | null;
 };
 
 // ===== Растения (crop) =====
@@ -209,6 +215,42 @@ const modeInfo = computed<{ label: string; value: string }[]>(() => {
   return rows;
 });
 
+// Растений для штучных фасовок рассады: считаем по плотности рассады
+// (независимо от активного режима), иначе — по схеме посева
+const seedlingPlants = computed(() =>
+  calcPlantsOf({
+    mode: "seedlings",
+    areaSqm: area.value,
+    planting: selectedCrop.value?.planting ?? null,
+    seedling: selectedCrop.value?.seedling ?? null,
+  }),
+);
+
+// Сколько пачек этого товара нужно по расчёту. Основа — НАЗНАЧЕНИЕ товара
+// (а не активный режим): семена считаем по граммам семян, удобрение — по
+// граммам удобрения, рассаду — по растениям (штучные фасовки).
+const packCountFor = (product: GardenProduct): number => {
+  const base =
+    product.purpose === "fertilizer"
+      ? result.value.fertilizerGrams
+      : product.purpose === "seedlings"
+        ? null
+        : result.value.seedGrams;
+  const plants = product.purpose === "seedlings" ? seedlingPlants.value : result.value.plants;
+  const packs = calcPacks(base, product.packaging ?? null, plants);
+  return packs?.[0]?.count ?? 1;
+};
+
+// «В корзину» из расчёта: добавляем сразу N пачек этого товара
+const addProductToCart = (product: GardenProduct) => {
+  cartStore.addToCart(
+    product,
+    product.category?.slug ?? "",
+    product.subcategory?.slug ?? null,
+    packCountFor(product),
+  );
+};
+
 type Purpose = GardenPurpose;
 const purposeGroups = computed(() => {
   const groups: Record<Purpose, GardenProduct[]> = {
@@ -350,7 +392,11 @@ const purposeGroups = computed(() => {
         <div v-for="group in purposeGroups" :key="group.id" class="hamburger-garden__group">
           <h4 class="hamburger-garden__group-title">{{ group.label }}</h4>
           <ul class="hamburger-garden__list">
-            <li v-for="prod in group.items" :key="prod.documentId">
+            <li
+              v-for="prod in group.items"
+              :key="prod.documentId"
+              class="hamburger-garden__product-item"
+            >
               <NuxtLink
                 class="hamburger-garden__product accordion__summary"
                 :to="getProductLink(prod)"
@@ -367,6 +413,19 @@ const purposeGroups = computed(() => {
                 />
                 <span class="hamburger-garden__product-name">{{ prod.name }}</span>
               </NuxtLink>
+              <button
+                type="button"
+                class="hamburger-garden__add"
+                :class="{ 'hamburger-garden__add_in-cart': isInCart(prod.documentId) }"
+                :aria-label="`${buttonT.label}: ${prod.name}`"
+                @click="addProductToCart(prod)"
+              >
+                <Icon name="cil:cart" />
+                <span
+                  v-if="packCountFor(prod) > 1"
+                  class="hamburger-garden__add-count"
+                >×{{ packCountFor(prod) }}</span>
+              </button>
             </li>
           </ul>
         </div>
@@ -579,6 +638,45 @@ const purposeGroups = computed(() => {
     display: flex;
     flex-direction: column;
     row-gap: toEm(4);
+  }
+
+  // Товар + кнопка «В корзину» из расчёта
+  &__product-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    column-gap: toEm(6);
+  }
+
+  &__add {
+    display: inline-flex;
+    align-items: center;
+    column-gap: toEm(2);
+    padding: toEm(4) toEm(6);
+    border: toRem(1) solid var(--border-color);
+    border-radius: toRem(8);
+    background-color: var(--light-color);
+    color: var(--primary-color);
+    font-size: toEm(13);
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      color var(--transition-duration),
+      border-color var(--transition-duration);
+
+    &_in-cart {
+      border-color: var(--green-color);
+      color: var(--green-color);
+    }
+
+    @include hover {
+      border-color: var(--green-color);
+      color: var(--green-color);
+    }
+  }
+
+  &__add-count {
+    line-height: 1;
   }
 
   &__product {

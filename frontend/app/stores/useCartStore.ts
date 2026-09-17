@@ -30,11 +30,15 @@ export const useCartStore = defineStore('cart', () => {
       items.value.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
     )
 
+   // quantity — сколько единиц товара добавить за раз (например, N пачек из
+   // расчёта калькулятора посадок); по умолчанию 1
    const addToCart = (
       product: Product,
       categorySlug: string,
-      subcategorySlug: string | null = null
+      subcategorySlug: string | null = null,
+      quantity: number = 1
     ) => {
+      const count = Math.max(1, Math.round(quantity || 1))
       const existingItem = items.value.find(item => item.product.documentId === product.documentId)
       
       const normalizedMainImage = product.mainImage?.url
@@ -45,7 +49,7 @@ export const useCartStore = defineStore('cart', () => {
             : '')
   
       if (existingItem) {
-        existingItem.quantity += 1
+        existingItem.quantity += count
       } else {
         items.value.push({
           product: {
@@ -55,7 +59,7 @@ export const useCartStore = defineStore('cart', () => {
             subcategorySlug,
             originalLocale: currentLocale.value // Сохраняем язык добавления
           },
-          quantity: 1
+          quantity: count
         })
       }
       saveCart()
