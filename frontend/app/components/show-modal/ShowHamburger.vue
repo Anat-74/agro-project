@@ -134,6 +134,17 @@ const panelSlides = [
 const panelSlider = useTemplateRef<{ go: (n: number) => void }>("panel-slider");
 const activeTab = ref(1);
 const goTab = (n: number) => panelSlider.value?.go(n);
+
+// Открыть панель сразу на слайде «Посадка» (вкладка 2). Нужно для CTA
+// «Рассчитать посадку»: на мобильном/планшете вместо перехода на страницу
+// открываем диалог (см. useGardenDialog).
+const openGarden = () => {
+  open();
+  activeTab.value = 2;
+  nextTick(() => goTab(2));
+};
+
+defineExpose({ open, close, isOpen, toggle, openGarden });
 const tabLabels = computed(() => [
   showHamburgerT.value.tabCategories,
   showHamburgerT.value.tabGarden,

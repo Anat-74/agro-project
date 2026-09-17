@@ -77,6 +77,12 @@ const cartDialogRef = useTemplateRef<InstanceType<typeof ShowModalCartDialog>>('
 const { requestId: cartDialogRequest } = useCartDialog()
 watch(cartDialogRequest, () => cartDialogRef.value?.open?.())
 
+// Мобильная панель каталога (≤ $tablet): запрос «открыть на вкладке Посадка»
+// приходит из CTA «Рассчитать посадку» в статье блога
+const hamburgerMobileRef = useTemplateRef<InstanceType<typeof ShowHamburger>>('hamburger-mobile')
+const { requestId: gardenDialogRequest } = useGardenDialog()
+watch(gardenDialogRequest, () => hamburgerMobileRef.value?.openGarden?.())
+
 // Превью товара из корзины — модалка живёт на уровне Header, как в личном кабинете
 const previewProduct = ref<Product | null>(null)
 const previewModalRef = useTemplateRef<InstanceType<typeof ShowModalProduct>>('preview-modal')
@@ -149,6 +155,7 @@ function openPreview(product: Product) {
         </NuxtLink>
         <ShowHamburger
           v-if="global"
+          ref="hamburger-mobile"
           class="header__hamburger"
           visibility-class="visible-tablet"
           dialog-id="hamburgerDialog"
