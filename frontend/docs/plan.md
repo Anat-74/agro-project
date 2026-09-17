@@ -14,6 +14,27 @@
 
 _Остались только конвенции/справка ниже. O2 реализован 03.09.2026 (не закоммичено): ShowShopFilter стартует закрытым (initialOpen:false, без авто-открытия/close на маунте); products/index.vue открывает панель на desktop один раз после `status === 'success'` (`useViewport` > mobile). Проверено: mobile — вход закрыт без клампа (нет флипа), кнопка открывает; desktop — открывается после данных._
 
+## Отложено / тех.долг (записано 16.09.2026)
+
+### Типизация (`vue-tsc --noEmit`)
+- **Состояние:** `57` ошибок TS, **все предсуществующие** (в новых агро-файлах ошибок нет).
+- **Топ по файлам:** `blog.vue` (10), `blog/[slug].vue` (10), `news.vue` (8), `news/[slug].vue` (8),
+  `about/contacts/services` (по 5), далее единичные (`CartShopping`, `UBackground`, `UProductGallery`,
+  `ShowModalProduct`, `ChatProductCard`, страницы products/товара).
+- **Причины:** `find/useAsyncData` без обобщений → `data` выводится как `{}`; фильтры (`$eq`,
+  `StrapiPrimitiveOperators<unknown>`); `PaginationMeta` (нужен `page` вместе с `pageSize`);
+  `useCachedAsyncData` c неподходящими опциями в одном месте.
+- **Подход:** добавить генерики (`find<Product>` и т.п.), типы `PaginationMeta`, локально `filters as any`;
+  по возможности ввести `vue-tsc`/`nuxi typecheck` в проверку.
+- **Запуск (в проект не установлен):** `npx -y -p vue-tsc -p typescript vue-tsc --noEmit`.
+
+### Локализация (ru → be)
+- **Отдельный этап для ВСЕХ данных**, не только для новых типов: аудит всех content types/компонентов
+  на полноту `be`-версий (у части существующих данных может быть только `ru`).
+- В рамках этапа — в т.ч. `be` для 5 растений (`crop`) и `calculator-page`, но проход — сквозной по всей CMS.
+
+---
+
 ## Реализовано 05.09.2026 (ShowHamburger ↔ Hero ↔ ShowShopFilter, часть §1)
 
 Правки в `ShowHamburger.vue`, `HeroSection.vue`, `styles.scss` (не закоммичено):
