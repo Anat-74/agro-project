@@ -6,6 +6,19 @@ const { find } = useStrapi()
 const { currentLocale } = useLocale()
 const t = computed(() => gardenTranslations[currentLocale.value])
 
+// Мобильный/планшетный сценарий: не уводим на страницу калькулятора, а открываем
+// панель каталога на вкладке «Посадка» (паттерн корзины: ≤ tablet — диалог).
+// Кнопка, а не NuxtLink: у ссылки навигация срабатывает раньше preventDefault.
+const { width } = useViewport()
+const { requestOpen } = useGardenDialog()
+const onCalculatorClick = () => {
+  if (width.value && width.value <= 1024) {
+    requestOpen()
+    return
+  }
+  navigateTo(`/${currentLocale.value}/posadka-i-urozhay`)
+}
+
 interface BlogCrop {
   name: string
   slug?: string
@@ -65,13 +78,14 @@ useHead({
 
       <!-- Перелинковка статьи с разделом посадок (blog ↔ crop) -->
       <aside class="blog-post__calc">
-        <NuxtLink
+        <UButton
+          variant="plain"
           class="blog-post__calc-link"
-          :to="`/${currentLocale}/posadka-i-urozhay`"
+          @click="onCalculatorClick"
         >
           <Icon name="cil:calculator" />
           {{ t.calculatorCta }}
-        </NuxtLink>
+        </UButton>
         <p v-if="post.crops?.length" class="blog-post__crops">
           <span class="blog-post__crops-label">{{ t.relatedCrop }}:</span>
           {{ post.crops.map((crop: { name: string }) => crop.name).join(", ") }}

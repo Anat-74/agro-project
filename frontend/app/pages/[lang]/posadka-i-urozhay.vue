@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { gardenTranslations } from "~/locales/garden";
 import { breadcrumbsTranslations } from "~/locales/breadcrumbs";
+// Явный импорт: авто-имя для этого пути — ShowModalHamburgerGarden,
+// поэтому без импорта тег рендерился как неизвестный (пустой) элемент
+import HamburgerGarden from "~/components/show-modal/HamburgerGarden.vue";
 
 // Хаб-страница раздела «Всё для посадки и урожая» (SEO + калькулятор).
 // Контент — single type `calculator-page` из Strapi (i18n).
@@ -9,6 +12,11 @@ const { currentLocale } = useLocale();
 const route = useRoute();
 const config = useRuntimeConfig();
 const t = computed(() => gardenTranslations[currentLocale.value]);
+
+// ≤ $tablet: калькулятор открывается в панели каталога (вкладка «Посадка»),
+// а не дублируется на странице — запрос обрабатывает AppHeader
+const { requestOpen } = useGardenDialog();
+const requestOpenGarden = () => requestOpen();
 
 interface CalculatorFaqItem {
   question: string;
@@ -120,24 +128,20 @@ useSchemaOrg(schemaOrgNodes);
         <MDC :value="page.intro" />
       </div>
 
-      <!-- Интерактивная часть: растения + калькулятор + товары -->
-      <HamburgerGarden class="garden-page__garden" />
+      <!-- Калькулятор в потоке страницы: только выше планшета (> $tablet).
+           На телефоне/планшете тот же калькулятор живёт в панели каталога —
+           единый сценарий без дублирования (кнопка ниже) -->
+      <HamburgerGarden class="garden-page__garden hidden-tablet" />
 
-      <!-- FAQ (для SEO/JSON-LD) -->
-      <section v-if="faq.length" class="garden-page__faq">
-        <h2 class="garden-page__faq-title">{{ t.faqTitle }}</h2>
-        <details v-for="(item, index) in faq" :key="index" class="accordion__details">
-          <summary class="accordion__summary">
-            <span>{{ item.question }}</span>
-            <Icon class="accordion__chevron" name="mingcute:down-line" />
-          </summary>
-          <div class="accordion__content">
-            <div class="garden-page__faq-answer">
-              <MDC :value="item.answer" />
-            </div>
-          </div>
-        </details>
-      </section>
+      <!-- ≤ $tablet: открываем панель сразу на вкладке «Посадка» -->
+      <UButton
+        variant="plain"
+        class="garden-page__open visible-tablet"
+        @click="requestOpenGarden"
+      >
+        <Icon name="cil:calculator" />
+        {{ t.calculatorCta }}
+      </UButton>
     </div>
   </section>
 </template>
@@ -146,16 +150,11 @@ useSchemaOrg(schemaOrgNodes);
 .garden-page {
   padding-block: toEm(32);
 
+  // Заголовки (h1/h2) стилизуются глобально (style guide §16) — не переопределяем
   &__container {
     display: flex;
     flex-direction: column;
     row-gap: toEm(20);
-  }
-
-  &__title {
-    font-size: toEm(32);
-    font-weight: 700;
-    color: var(--primary-color);
   }
 
   &__subtitle {
@@ -166,21 +165,22 @@ useSchemaOrg(schemaOrgNodes);
     min-height: auto;
   }
 
-  &__faq {
-    display: flex;
-    flex-direction: column;
-    row-gap: toEm(8);
-  }
+  // Кнопка «Рассчитать посадку» на телефоне/планшете (калькулятор — в панели)
+  &__open {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    column-gap: toEm(8);
+    padding: toEm(10) toEm(18);
+    border-radius: toRem(8);
+    background-color: var(--green-color);
+    color: var(--light-color);
+    font-weight: 600;
+    transition: opacity var(--transition-duration);
 
-  &__faq-title {
-    font-size: toEm(24);
-    font-weight: 700;
-    color: var(--primary-color);
-    margin-block-end: toEm(4);
-  }
-
-  &__faq-answer {
-    padding: toEm(8) toEm(4);
+    @include hover {
+      opacity: 0.9;
+    }
   }
 }
 </style>
