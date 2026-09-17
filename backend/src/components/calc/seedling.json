@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_calc_seedlings",
+  "info": {
+    "displayName": "Seedling (growing)",
+    "description": "Seedling parameters: density, growing days, sowing and transplant periods"
+  },
+  "options": {},
+  "attributes": {
+    "plantsPerSqM": {
+      "type": "decimal",
+      "description": "Seedling density, plants per m²"
+    },
+    "growingDays": {
+      "type": "integer",
+      "description": "Seedling growing period, days"
+    },
+    "sowingPeriod": {
+      "type": "string",
+      "description": "Sowing period for seedlings (text)"
+    },
+    "transplantPeriod": {
+      "type": "string",
+      "description": "Transplanting to open ground, period (text)"
+    }
+  }
+}

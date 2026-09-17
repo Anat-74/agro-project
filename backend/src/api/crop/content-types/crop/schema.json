@@ -58,6 +58,16 @@
       "component": "calc.planting",
       "repeatable": false
     },
+    "seedling": {
+      "type": "component",
+      "component": "calc.seedling",
+      "repeatable": false
+    },
+    "fertilizing": {
+      "type": "component",
+      "component": "calc.fertilizing",
+      "repeatable": false
+    },
     "seo": {
       "type": "component",
       "component": "seo.seo",

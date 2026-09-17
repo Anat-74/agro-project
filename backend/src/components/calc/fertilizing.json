@@ -1,0 +1,30 @@
+{
+  "collectionName": "components_calc_fertilizings",
+  "info": {
+    "displayName": "Fertilizing",
+    "description": "Fertilizer rates: rate per m², applications, NPK formula, kind"
+  },
+  "options": {},
+  "attributes": {
+    "ratePerSqM": {
+      "type": "decimal",
+      "description": "Fertilizer rate, g/m² per application"
+    },
+    "applications": {
+      "type": "integer",
+      "description": "Number of applications per season"
+    },
+    "npk": {
+      "type": "string",
+      "description": "NPK formula, e.g. 10-10-10"
+    },
+    "kind": {
+      "type": "enumeration",
+      "enum": [
+        "mineral",
+        "organic"
+      ],
+      "description": "Fertilizer kind"
+    }
+  }
+}

@@ -66,6 +66,20 @@ export interface CalcFaqItem extends Struct.ComponentSchema {
   };
 }
 
+export interface CalcFertilizing extends Struct.ComponentSchema {
+  collectionName: 'components_calc_fertilizings';
+  info: {
+    description: 'Fertilizer rates: rate per m\u00B2, applications, NPK formula, kind';
+    displayName: 'Fertilizing';
+  };
+  attributes: {
+    applications: Schema.Attribute.Integer;
+    kind: Schema.Attribute.Enumeration<['mineral', 'organic']>;
+    npk: Schema.Attribute.String;
+    ratePerSqM: Schema.Attribute.Decimal;
+  };
+}
+
 export interface CalcPackaging extends Struct.ComponentSchema {
   collectionName: 'components_calc_packagings';
   info: {
@@ -94,6 +108,20 @@ export interface CalcPlanting extends Struct.ComponentSchema {
     seedRatePerPlant: Schema.Attribute.Decimal;
     seedRatePerSqM: Schema.Attribute.Decimal;
     seedsPerHole: Schema.Attribute.Integer;
+  };
+}
+
+export interface CalcSeedling extends Struct.ComponentSchema {
+  collectionName: 'components_calc_seedlings';
+  info: {
+    description: 'Seedling parameters: density, growing days, sowing and transplant periods';
+    displayName: 'Seedling (growing)';
+  };
+  attributes: {
+    growingDays: Schema.Attribute.Integer;
+    plantsPerSqM: Schema.Attribute.Decimal;
+    sowingPeriod: Schema.Attribute.String;
+    transplantPeriod: Schema.Attribute.String;
   };
 }
 
@@ -296,8 +324,10 @@ declare module '@strapi/strapi' {
       'background.background-options': BackgroundBackgroundOptions;
       'calc.defaults': CalcDefaults;
       'calc.faq-item': CalcFaqItem;
+      'calc.fertilizing': CalcFertilizing;
       'calc.packaging': CalcPackaging;
       'calc.planting': CalcPlanting;
+      'calc.seedling': CalcSeedling;
       'contacts.email': ContactsEmail;
       'contacts.phone': ContactsPhone;
       'contacts.social': ContactsSocial;

@@ -773,6 +773,7 @@ export interface ApiCropCrop extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    fertilizing: Schema.Attribute.Component<'calc.fertilizing', false>;
     image: Schema.Attribute.Media<'images'>;
     isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     locale: Schema.Attribute.String;
@@ -787,6 +788,7 @@ export interface ApiCropCrop extends Struct.CollectionTypeSchema {
     planting: Schema.Attribute.Component<'calc.planting', false>;
     products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
     publishedAt: Schema.Attribute.DateTime;
+    seedling: Schema.Attribute.Component<'calc.seedling', false>;
     seo: Schema.Attribute.Component<'seo.seo', false>;
     shortDescription: Schema.Attribute.Text &
       Schema.Attribute.SetPluginOptions<{
