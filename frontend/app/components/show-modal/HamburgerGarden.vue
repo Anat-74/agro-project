@@ -27,18 +27,13 @@ interface GardenCrop {
   documentId: string;
   name: string;
   slug?: string;
-  image?: { url?: string; alternativeText?: string } | null;
   planting?: GardenPlanting | null;
 }
 
 // Тип товара растения: глобальный Product + наше поле purpose
 // (у глобального Product нет purpose, поэтому расширяем пересечением)
 type GardenPurpose = "seeds" | "seedlings" | "fertilizer" | "other";
-type GardenPackaging = { label?: string | null; amount?: number | null; unit?: string | null };
-type GardenProduct = Product & {
-  purpose?: GardenPurpose | null;
-  packaging?: GardenPackaging[] | null;
-};
+type GardenProduct = Product & { purpose?: GardenPurpose | null };
 
 // ===== Растения (crop) =====
 const cropKey = computed(() => `garden-crops-${currentLocale.value}`);
@@ -53,10 +48,7 @@ const { data: crops, pending: pendingCrops } = useCachedAsyncData(
       },
       sort: ["name:asc"],
       pagination: { pageSize: 100 } as PaginationMeta,
-      populate: {
-        planting: true,
-        image: { fields: ["alternativeText", "url"] },
-      },
+      populate: { planting: true },
     } as any);
     return response.data || [];
   },
@@ -79,6 +71,15 @@ watch(
   { immediate: true },
 );
 
+// ===== Калькулятор =====
+const area = ref(1);
+const result = computed(() =>
+  calcPlanting({
+    areaSqm: area.value,
+    planting: selectedCrop.value?.planting ?? null,
+  }),
+);
+
 // ===== Товары растения (по purpose) =====
 const productsKey = computed(
   () => `garden-products-${currentLocale.value}-${selectedId.value ?? "none"}`,
@@ -97,38 +98,11 @@ const { data: products } = useCachedAsyncData(
       populate: {
         mainImage: { fields: ["alternativeText", "url"] },
         image: { fields: ["alternativeText", "url"] },
-        packaging: true,
-        // нужны для getProductLink (категория/подкатегория → URL товара)
-        category: { fields: ["slug"] },
-        subcategory: {
-          fields: ["slug"],
-          populate: { category: { fields: ["slug"] } },
-        },
       },
     } as any);
     return response.data || [];
   },
   { watch: [productsKey], server: false, ttl: 300_000 },
-);
-
-// ===== Калькулятор (после загрузки товаров — нужны их фасовки) =====
-const area = ref(1);
-
-// Фасовки товаров-семян растения → расчёт пачек
-const seedPackagings = computed<GardenPackaging[]>(() =>
-  (products.value ?? [])
-    .filter((p) => p.purpose === "seeds")
-    .flatMap((p) => p.packaging ?? [])
-    .filter((pk) => pk?.amount)
-    .map((pk) => ({ label: pk.label ?? "", amount: pk.amount ?? 0, unit: pk.unit ?? "g" })),
-);
-
-const result = computed(() =>
-  calcPlanting({
-    areaSqm: area.value,
-    planting: selectedCrop.value?.planting ?? null,
-    packagings: seedPackagings.value,
-  }),
 );
 
 type Purpose = GardenPurpose;
@@ -174,16 +148,7 @@ const purposeGroups = computed(() => {
           :class="{ 'hamburger-garden__chip_is-active': crop.documentId === selectedId }"
           @click="selectedId = crop.documentId"
         >
-          <UImage
-            v-if="crop.image?.url"
-            :src="crop.image.url"
-            :alt="crop.image.alternativeText || ''"
-            class="hamburger-garden__chip-image"
-            width="24"
-            height="24"
-            type="icon"
-          />
-          <span>{{ crop.name }}</span>
+          {{ crop.name }}
         </button>
       </div>
       <p v-else-if="!pendingCrops" class="hamburger-garden__empty">
@@ -221,10 +186,6 @@ const purposeGroups = computed(() => {
         <div v-if="result.fertilizerGrams !== null" class="hamburger-garden__result-row">
           <dt>{{ t.fertilizer }}</dt>
           <dd>~{{ result.fertilizerGrams }} {{ t.unitGram }}</dd>
-        </div>
-        <div v-if="result.packs?.length" class="hamburger-garden__result-row">
-          <dt>{{ t.packs }}</dt>
-          <dd>{{ result.packs.map((pack) => `${pack.label} × ${pack.count}`).join(", ") }}</dd>
         </div>
       </dl>
     </section>
@@ -318,9 +279,6 @@ const purposeGroups = computed(() => {
   }
 
   &__chip {
-    display: inline-flex;
-    align-items: center;
-    column-gap: toEm(6);
     padding: toEm(6) toEm(12);
     border: toRem(1) solid var(--border-color);
     border-radius: toRem(20);
@@ -341,18 +299,6 @@ const purposeGroups = computed(() => {
 
     @include hover {
       border-color: var(--green-color);
-    }
-  }
-
-  // Изображение растения в чипе (круглое)
-  &__chip-image {
-    flex-shrink: 0;
-
-    :deep(img) {
-      width: toRem(24);
-      height: toRem(24);
-      border-radius: 50%;
-      object-fit: cover;
     }
   }
 
