@@ -6,6 +6,14 @@ import { calcPacks, calcPlantsOf, calcPlanting } from "~~/shared/utils/calc";
 
 // Слайд «Посадка» панели каталога: «Что сажаем?» → расчёт (площадь → растения →
 // семена/рассада/удобрение) и товары для выбранного растения.
+interface Props {
+  // Показывать блок «Частые вопросы». На странице калькулятора вопросы выводятся
+  // отдельным блоком страницы (виден и на телефоне), чтобы не было дубля
+  showFaq?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), { showFaq: true });
+
 const emit = defineEmits<{
   navigate: [];
 }>();
@@ -132,10 +140,16 @@ const { data: articles } = useCachedAsyncData(
 // ===== FAQ раздела (calculator-page.faq) =====
 // Один источник для страницы калькулятора и для слайда «Посадка» (≤ $tablet)
 type GardenFaqItem = { question: string; answer: string };
-const faqKey = computed(() => `garden-faq-${currentLocale.value}`);
+// Ключ кэша разный для страницы и панели: на странице вопросы не грузим (их
+// выводит сама страница), иначе пустой ответ из кэша попал бы и в панель
+const faqKey = computed(
+  () => `garden-faq-${currentLocale.value}-${props.showFaq ? "panel" : "page"}`,
+);
 const { data: faqItems } = useCachedAsyncData(
   faqKey,
   async () => {
+    // На странице калькулятора вопросы выводятся самой страницей — запрос не нужен
+    if (!props.showFaq) return [];
     const { find } = useStrapi();
     const response = await find<{ faq?: GardenFaqItem[] }>("calculator-page", {
       filters: { locale: { $eq: currentLocale.value } },
@@ -309,11 +323,16 @@ const addProductToCart = (product: GardenProduct) => {
   );
 };
 
-// Кнопка корзины в шапке слайда: закрываем дровер и просим AppHeader открыть диалог
-const closeAndOpenCart = () => {
-  emit("navigate");
+// Кнопка корзины в шапке слайда: открываем диалог корзины ПОВЕРХ панели,
+// саму панель не закрываем (пользователь продолжает выбирать товары)
+const openCart = () => {
   requestOpenCart();
 };
+
+// Группы <details> уникальны для каждого инстанса компонента: страница и панель
+// живут в одном документе, а name у details склеивает их группы НА ВЕСЬ документ
+// (открытие в панели закрывало бы пункт на странице)
+const faqGroupId = useId();
 
 type Purpose = GardenPurpose;
 const purposeGroups = computed(() => {
@@ -351,7 +370,7 @@ const purposeGroups = computed(() => {
         variant="plain"
         class="hamburger-garden__cart"
         :aria-label="cartT.ariaLabelBasket"
-        @click="closeAndOpenCart"
+        @click="openCart"
       >
         <Icon name="cil:cart" />
         <span class="hamburger-garden__cart-count">{{ cartStore.totalItems }}</span>
@@ -549,31 +568,23 @@ const purposeGroups = computed(() => {
     </section>
 
     <!-- Частые вопросы: тот же источник (calculator-page.faq), что и на странице -->
-    <section v-if="faqItems?.length" class="hamburger-garden__section">
+    <section v-if="showFaq && faqItems?.length" class="hamburger-garden__section">
       <h3 class="hamburger-garden__question">{{ t.faqTitle }}</h3>
       <UAccordion
         v-for="(item, index) in faqItems"
         :key="index"
-        :name="`garden-faq-${index}`"
+        :name="`garden-faq-${faqGroupId}-${index}`"
       >
         <template #header>
           <h4 class="hamburger-garden__faq-question">{{ item.question }}</h4>
         </template>
         <div class="hamburger-garden__faq-answer">
-          <MDC :value="item.answer" />
+          <div class="hamburger-garden__faq-text">
+            <MDC :value="item.answer" />
+          </div>
         </div>
       </UAccordion>
     </section>
-
-    <!-- Ссылка на хаб-страницу раздела (SEO-страница) -->
-    <NuxtLink
-      class="hamburger-garden__more"
-      :to="`/${currentLocale}/posadka-i-urozhay`"
-      @click="emit('navigate')"
-    >
-      {{ t.openSection }}
-      <Icon name="mingcute:right-line" />
-    </NuxtLink>
   </div>
 </template>
 
@@ -692,7 +703,6 @@ const purposeGroups = computed(() => {
       width: toRem(24);
       height: toRem(24);
       border-radius: 50%;
-      object-fit: cover;
     }
   }
 
@@ -842,6 +852,16 @@ const purposeGroups = computed(() => {
   }
 
   &__faq-answer {
+    // ОБЯЗАТЕЛЬНО: контент аккордеона — сосед <details>, схлопывание
+    // (grid-template-rows: 0fr) работает только если у ребёнка overflow: hidden,
+    // иначе ответ виден всегда и раскрытие «не работает» (как в каталоге:
+    // .accordion__product-list)
+    overflow: hidden;
+  }
+
+  // Отступы — на самом ответе, а не на обёртке: паддинг обёртки не схлопывается
+  // и у закрытого вопроса оставалась бы видимая полоса
+  &__faq-text {
     padding: toEm(8) toEm(4);
   }
 
@@ -909,26 +929,6 @@ const purposeGroups = computed(() => {
     color: var(--gray-color);
     font-style: italic;
     @include adaptiveValue("font-size", 14, 12);
-  }
-
-  // Ссылка на хаб-раздел
-  &__more {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    column-gap: toEm(6);
-    margin-block-start: auto;
-    padding: toEm(10) toEm(14);
-    border-radius: toRem(8);
-    background-color: var(--green-color);
-    color: var(--light-color);
-    font-weight: 600;
-    text-decoration: none;
-    transition: opacity var(--transition-duration);
-
-    @include hover {
-      opacity: 0.9;
-    }
   }
 }
 </style>

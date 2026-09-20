@@ -31,12 +31,12 @@ export const gardenTranslations: Record<LocaleCode, {
   kindOrganic: string
   noData: string
   articlesTitle: string
+  sectionArticles: string
   relatedCrop: string
   calculatorCta: string
   howToTitle: string
   howToSteps: { name: string; text: string }[]
   faqTitle: string
-  openSection: string
 }> = {
   ru: {
     title: 'Собери свою грядку',
@@ -71,6 +71,7 @@ export const gardenTranslations: Record<LocaleCode, {
     kindOrganic: 'органическое',
     noData: 'Для этой культуры данных пока нет',
     articlesTitle: 'Статьи по растению',
+    sectionArticles: 'Статьи по посадке и урожаю',
     relatedCrop: 'Растение',
     calculatorCta: 'Рассчитать посадку',
     howToTitle: 'Как рассчитать посадку',
@@ -81,7 +82,6 @@ export const gardenTranslations: Record<LocaleCode, {
       { name: 'Добавьте товары в корзину', text: 'Нажмите «В корзину» у нужного товара — количество пачек рассчитается автоматически.' },
     ],
     faqTitle: 'Частые вопросы',
-    openSection: 'Открыть раздел',
   },
   be: {
     title: 'Збяры сваю градку',
@@ -116,6 +116,7 @@ export const gardenTranslations: Record<LocaleCode, {
     kindOrganic: 'арганічнае',
     noData: 'Для гэтай расліны даных пакуль няма',
     articlesTitle: 'Артыкулы пра расліну',
+    sectionArticles: 'Артыкулы пра пасадку і ўраджай',
     relatedCrop: 'Расліна',
     calculatorCta: 'Разлічыць пасадку',
     howToTitle: 'Як разлічыць пасадку',
@@ -126,6 +127,5 @@ export const gardenTranslations: Record<LocaleCode, {
       { name: 'Дадайце тавары ў кошык', text: 'Націсніце «Дадаць у кошык» каля патрэбнага тавару — колькасць пачак разлічыцца аўтаматычна.' },
     ],
     faqTitle: 'Частыя пытанні',
-    openSection: 'Адкрыць раздзел',
   }
 }
