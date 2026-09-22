@@ -360,6 +360,10 @@ const toggleHamburger = () => {
         :category="category"
         @navigate="close?.()"
       />
+
+      <!-- Плавающая корзина: фиксирована внизу справа внутри панели, чтобы её
+           было видно при добавлении товаров и она не сдвигала содержимое -->
+      <CartFloatingButton />
     </div>
     </dialog>
     </Teleport>

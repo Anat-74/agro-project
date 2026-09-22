@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { gardenTranslations } from "~/locales/garden";
 import { buttonTranslations } from "~/locales/button";
-import { cartTranslations } from "~/locales/cart";
 import ShowModalArticle from "~/components/show-modal/ShowModalArticle.vue";
 import { calcPacks, calcPlantsOf, calcPlanting } from "~~/shared/utils/calc";
 
@@ -22,11 +21,9 @@ const emit = defineEmits<{
 const { currentLocale } = useLocale();
 const { getProductLink } = useProductLink();
 const cartStore = useCartStore();
-const { requestOpen: requestOpenCart } = useCartDialog();
 
 const t = computed(() => gardenTranslations[currentLocale.value]);
 const buttonT = computed(() => buttonTranslations[currentLocale.value]);
-const cartT = computed(() => cartTranslations[currentLocale.value]);
 
 // Тип растения из Strapi (локально — глобального типа Crop нет)
 interface GardenPlanting {
@@ -315,15 +312,9 @@ const packCountFor = (product: GardenProduct): number => {
   return packs?.[0]?.count ?? 1;
 };
 
-// Сколько единиц этого товара уже лежит в корзине (для состояния кнопки)
+// Сколько единиц этого товара уже лежит в корзине (для состояния кнопки и счётчика)
 const cartQtyFor = (documentId: string): number =>
   cartStore.items.find((item) => item.product.documentId === documentId)?.quantity ?? 0;
-
-// Что показываем рядом с кнопкой: сколько уже в корзине, иначе — сколько нужно
-const addCountFor = (product: GardenProduct): number => {
-  const inCart = cartQtyFor(product.documentId);
-  return inCart > 0 ? inCart : packCountFor(product);
-};
 
 // «В корзину» из расчёта: добавляем сразу N пачек этого товара
 const addProductToCart = (product: GardenProduct) => {
@@ -333,12 +324,6 @@ const addProductToCart = (product: GardenProduct) => {
     product.subcategory?.slug ?? null,
     packCountFor(product),
   );
-};
-
-// Кнопка корзины в шапке слайда: открываем диалог корзины ПОВЕРХ панели,
-// саму панель не закрываем (пользователь продолжает выбирать товары)
-const openCart = () => {
-  requestOpenCart();
 };
 
 // Группы <details> уникальны для каждого инстанса компонента: страница и панель
@@ -374,20 +359,6 @@ const purposeGroups = computed(() => {
   <div class="hamburger-garden">
     <header class="hamburger-garden__head">
       <h2 class="hamburger-garden__title">{{ t.title }}</h2>
-
-      <!-- Компактная кнопка корзины: открывает ДИАЛОГ корзины (страница корзины
-           — только для экранов выше tablet), появляется после первого добавления -->
-      <UButton
-        v-if="cartStore.totalItems"
-        variant="plain"
-        class="hamburger-garden__cart"
-        :aria-label="cartT.ariaLabelBasket"
-        @click="openCart"
-      >
-        <Icon name="cil:cart" />
-        <span class="hamburger-garden__cart-count">{{ cartStore.totalItems }}</span>
-      </UButton>
-
       <p class="hamburger-garden__subtitle">{{ t.subtitle }}</p>
     </header>
 
@@ -529,21 +500,26 @@ const purposeGroups = computed(() => {
                 />
                 <span class="hamburger-garden__product-name">{{ prod.name }}</span>
               </NuxtLink>
-              <span
-                v-if="addCountFor(prod) > 1"
-                class="hamburger-garden__add-count"
-              >×{{ addCountFor(prod) }}</span>
-              <!-- Кнопка добавления — общий вариант проекта (ProductCard): «+» → «✓» -->
+              <!-- Кнопка добавления в корзину: иконка корзины, а количество
+                   добавленного — счётчиком НАД кнопкой (абсолютное позиционирование,
+                   поэтому соседние элементы не сдвигаются) -->
               <UButton
-                variant="add"
-                :is-in-cart="cartQtyFor(prod.documentId) > 0"
+                variant="plain"
+                class="hamburger-garden__add"
+                :class="{ 'hamburger-garden__add_in-cart': cartQtyFor(prod.documentId) > 0 }"
                 :aria-label="
                   cartQtyFor(prod.documentId) > 0
                     ? `${buttonT.addedIsCart}: ${prod.name}`
                     : `${buttonT.label}: ${prod.name}`
                 "
                 @click="addProductToCart(prod)"
-              />
+              >
+                <Icon name="cil:cart" />
+                <span
+                  v-if="cartQtyFor(prod.documentId) > 0"
+                  class="hamburger-garden__add-count"
+                >{{ cartQtyFor(prod.documentId) }}</span>
+              </UButton>
             </li>
           </ul>
         </div>
@@ -615,17 +591,11 @@ const purposeGroups = computed(() => {
   row-gap: toEm(16);
   min-height: 100%;
 
+  // Шапка слайда: заголовок + подзаголовок
   &__head {
     display: flex;
     flex-direction: column;
     row-gap: toEm(2);
-  }
-
-  &__head-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    column-gap: toEm(8);
   }
 
   &__title {
@@ -634,29 +604,7 @@ const purposeGroups = computed(() => {
     color: var(--primary-color);
   }
 
-  // Шапка слайда: заголовок + кнопка корзины в первой строке, подзаголовок ниже.
-  // Без обёрток-дивов — grid-области
-  &__head {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-areas:
-      "title cart"
-      "subtitle subtitle";
-    align-items: center;
-    column-gap: toEm(8);
-    row-gap: toEm(2);
-  }
-
-  &__title {
-    grid-area: title;
-  }
-
-  &__cart {
-    grid-area: cart;
-  }
-
   &__subtitle {
-    grid-area: subtitle;
     font-size: toEm(15);
     color: var(--gray-color);
   }
@@ -828,22 +776,61 @@ const purposeGroups = computed(() => {
     row-gap: toEm(4);
   }
 
-  // Товар: название (1fr) + количество + кнопка «В корзину» (общий вариант проекта)
+  // Товар: название (1fr) + кнопка добавления в корзину
   &__product-item {
     display: grid;
-    grid-template-columns: 1fr auto auto;
+    grid-template-columns: 1fr auto;
     align-items: center;
     column-gap: toEm(6);
   }
 
-  &__add-count {
-    color: var(--gray-color);
-    font-size: toEm(13);
-    font-weight: 600;
-    line-height: 1;
+  // Кнопка добавления в корзину: иконка корзины, при добавлении — заливка
+  &__add {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: toRem(34);
+    height: toRem(34);
+    border: toRem(1) solid var(--success-color);
+    border-radius: toRem(8);
+    color: var(--green-color);
+    font-size: toRem(18);
+    transition:
+      color var(--transition-duration),
+      border-color var(--transition-duration),
+      background-color var(--transition-duration);
+
+    &_in-cart {
+      border-color: var(--success-color);
+      background-color: var(--success-color);
+      color: var(--light-color);
+    }
+
+    @include hover {
+      border-color: var(--warning-hover);
+      color: var(--warning-hover);
+    }
   }
 
-  // Скелетон списка товаров (данные грузятся на клиенте)
+  // Счётчик добавленного — НАД кнопкой: абсолютное позиционирование, поэтому
+  // кнопка не растёт и соседние элементы не сдвигаются
+  &__add-count {
+    position: absolute;
+    top: toRem(-7);
+    right: toRem(-7);
+    min-width: toRem(18);
+    padding-inline: toRem(4);
+    border-radius: toRem(9);
+    background-color: var(--danger-color);
+    color: var(--light-color);
+    font-size: toRem(11);
+    font-weight: 700;
+    line-height: toRem(18);
+    text-align: center;
+    pointer-events: none;
+  }
+
   // Частые вопросы (тот же аккордеон, что в каталоге и меню)
   &__faq-question {
     // Родитель — аккордеон проекта со шрифтом 22px, поэтому делитель указываем
@@ -865,43 +852,6 @@ const purposeGroups = computed(() => {
   // и у закрытого вопроса оставалась бы видимая полоса
   &__faq-text {
     padding: toEm(8) toEm(4);
-  }
-
-  // Компактная кнопка корзины в шапке слайда (диалог, не страница)
-  &__cart {
-    position: relative;
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    // Фиксированный размер кнопки — toRem: у неё свой шрифт (18px),
-    // и em считался бы от него, а не от 16px
-    width: toRem(34);
-    height: toRem(34);
-    border-radius: 50%;
-    background-color: var(--green-color);
-    color: var(--light-color);
-    font-size: toEm(18);
-    transition: opacity var(--transition-duration);
-
-    @include hover {
-      opacity: 0.9;
-    }
-  }
-
-  &__cart-count {
-    position: absolute;
-    top: toRem(-4);
-    right: toRem(-4);
-    min-width: toRem(16);
-    padding-inline: toRem(3);
-    border-radius: toRem(8);
-    background-color: var(--danger-color);
-    color: var(--light-color);
-    font-size: toRem(11);
-    font-weight: 700;
-    line-height: toRem(16);
-    text-align: center;
   }
 
   &__product {
