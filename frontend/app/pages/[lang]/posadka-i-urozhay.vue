@@ -4,6 +4,7 @@ import { breadcrumbsTranslations } from "~/locales/breadcrumbs";
 // Явный импорт: авто-имя для этого пути — ShowModalHamburgerGarden,
 // поэтому без импорта тег рендерился как неизвестный (пустой) элемент
 import HamburgerGarden from "~/components/show-modal/HamburgerGarden.vue";
+import ShowModalArticle from "~/components/show-modal/ShowModalArticle.vue";
 
 // Хаб-страница раздела «Всё для посадки и урожая» (SEO + калькулятор).
 // Контент — single type `calculator-page` из Strapi (i18n).
@@ -17,6 +18,16 @@ const t = computed(() => gardenTranslations[currentLocale.value]);
 // а не дублируется на странице — запрос обрабатывает AppHeader
 const { requestOpen } = useGardenDialog();
 const requestOpenGarden = () => requestOpen();
+
+// Клик по статье из блока «Статьи по посадке и урожаю»: на телефоне —
+// модальное окно, на десктопе — обычный переход на страницу статьи
+const articleModalRef = useTemplateRef<InstanceType<typeof ShowModalArticle>>("article-modal");
+const { activeArticle, interceptArticleClick } = useArticleModal();
+
+const onArticleClick = (item: ArticleLinkItem, event: MouseEvent) => {
+  if (!interceptArticleClick(item, event)) return;
+  nextTick(() => articleModalRef.value?.openModal());
+};
 
 interface CalculatorFaqItem {
   question: string;
@@ -57,8 +68,7 @@ interface SectionArticle {
   date?: string;
 }
 
-const articlesKey = computed(() => `garden-section-articles-${currentLocale.value}`);
-const { data: articles } = useAsyncData(articlesKey, async () => {
+const articlesKey = computed(() => `garden-section-articles-${currentLocale.value}`);const { data: articles } = useAsyncData(articlesKey, async () => {
   const response: any = await find("blogs", {
     filters: {
       locale: { $eq: currentLocale.value },
@@ -172,7 +182,11 @@ useSchemaOrg(schemaOrgNodes);
       <section v-if="articles?.length" class="garden-page__articles">
         <h2 class="garden-page__articles-title">{{ t.sectionArticles }}</h2>
         <ul class="garden-page__articles-list">
-          <li v-for="article in articles" :key="article.documentId">
+          <li
+            v-for="article in articles"
+            :key="article.documentId"
+            @click.capture="onArticleClick(article, $event)"
+          >
             <NuxtLink
               class="garden-page__article"
               :to="`/${currentLocale}/blog/${article.slug}`"
@@ -208,6 +222,14 @@ useSchemaOrg(schemaOrgNodes);
         </UAccordion>
       </section>
     </div>
+
+    <!-- Модальное окно статьи: на телефоне читаем здесь, страница — для десктопа и поиска -->
+    <ShowModalArticle
+      ref="article-modal"
+      :slug="activeArticle?.slug"
+      :title="activeArticle?.title"
+      :date="activeArticle?.date"
+    />
   </section>
 </template>
 
@@ -300,7 +322,9 @@ useSchemaOrg(schemaOrgNodes);
   }
 
   &__faq-question {
-    font-size: toEm(16);
+    // Родитель — аккордеон проекта со шрифтом 22px, поэтому делитель указываем
+    // явно: без него toEm(16) дал бы 22px (em считается от родителя)
+    font-size: toEm(16, 22);
     font-weight: 600;
     text-align: left;
   }

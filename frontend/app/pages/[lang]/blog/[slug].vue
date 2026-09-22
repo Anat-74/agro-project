@@ -68,29 +68,32 @@ useHead({
 <template>
   <div>
     <article v-if="post" class="blog-post">
-      <NuxtLink :to="`/${currentLocale}/blog`" class="blog-post__back">← Назад к блогу</NuxtLink>
-      <header class="blog-post__header">
-        <h1>{{ post.title }}</h1>
-        <time class="blog-post__date">{{ post.date }}</time>
-        <span v-if="post.author" class="blog-post__author">{{ post.author }}</span>
-      </header>
-      <MDC v-if="post.content" :value="post.content" class="blog-post__content" />
+      <!-- Имя с __container даёт проектный констрейнт и боковые отступы -->
+      <div class="blog-post__container">
+        <NuxtLink :to="`/${currentLocale}/blog`" class="blog-post__back">← Назад к блогу</NuxtLink>
+        <header class="blog-post__header">
+          <h1 class="blog-post__title">{{ post.title }}</h1>
+          <time class="blog-post__date">{{ post.date }}</time>
+          <span v-if="post.author" class="blog-post__author">{{ post.author }}</span>
+        </header>
+        <MDC v-if="post.content" :value="post.content" class="blog-post__content" />
 
-      <!-- Перелинковка статьи с разделом посадок (blog ↔ crop) -->
-      <aside class="blog-post__calc">
-        <UButton
-          variant="plain"
-          class="blog-post__calc-link"
-          @click="onCalculatorClick"
-        >
-          <Icon name="cil:calculator" />
-          {{ t.calculatorCta }}
-        </UButton>
-        <p v-if="post.crops?.length" class="blog-post__crops">
-          <span class="blog-post__crops-label">{{ t.relatedCrop }}:</span>
-          {{ post.crops.map((crop: { name: string }) => crop.name).join(", ") }}
-        </p>
-      </aside>
+        <!-- Перелинковка статьи с разделом посадок (blog ↔ crop) -->
+        <aside class="blog-post__calc">
+          <UButton
+            variant="plain"
+            class="blog-post__calc-link"
+            @click="onCalculatorClick"
+          >
+            <Icon name="cil:calculator" />
+            {{ t.calculatorCta }}
+          </UButton>
+          <p v-if="post.crops?.length" class="blog-post__crops">
+            <span class="blog-post__crops-label">{{ t.relatedCrop }}:</span>
+            {{ post.crops.map((crop: { name: string }) => crop.name).join(", ") }}
+          </p>
+        </aside>
+      </div>
     </article>
     <div v-else class="blog-post__empty">Статья не найдена</div>
   </div>
@@ -99,23 +102,28 @@ useHead({
 <style lang="scss" scoped>
 .blog-post {
   padding-block-start: toEm(32);
-  max-width: toRem(800);
-  margin-inline: auto;
+
+  // Ограничение ширины текста статьи: глобальное правило [class*="__container"]
+  // даёт боковые отступы и центрирование, здесь только сужаем до удобной строки
+  &__container {
+    max-width: toRem(800);
+  }
 
   &__back {
     display: inline-block;
-    margin-block-end: toRem(16);
+    margin-block-end: toEm(16);
     color: var(--success-color);
     text-decoration: none;
   }
 
   &__header {
-    margin-block-end: toRem(24);
+    margin-block-end: toEm(24);
+  }
 
-    h1 {
-      font-size: toEm(32);
-      margin-block-end: toRem(8);
-    }
+  // Заголовок статьи — глобального размера (стиль-гайд §16), здесь только отступ.
+  // toRem, а не toEm: у заголовка свой крупный шрифт, и em считался бы от него
+  &__title {
+    margin-block-end: toRem(8);
   }
 
   &__date, &__author {
@@ -126,7 +134,7 @@ useHead({
 
   &__empty {
     text-align: center;
-    padding: toRem(48);
+    padding: toEm(48);
     color: var(--gray-color);
   }
 
@@ -136,7 +144,7 @@ useHead({
     flex-direction: column;
     align-items: flex-start;
     row-gap: toEm(8);
-    margin-block-start: toRem(32);
+    margin-block-start: toEm(32);
     padding: toEm(16);
     border: toRem(1) solid var(--green-color);
     border-radius: toRem(12);

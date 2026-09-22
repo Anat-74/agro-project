@@ -2,6 +2,7 @@
 import { gardenTranslations } from "~/locales/garden";
 import { buttonTranslations } from "~/locales/button";
 import { cartTranslations } from "~/locales/cart";
+import ShowModalArticle from "~/components/show-modal/ShowModalArticle.vue";
 import { calcPacks, calcPlantsOf, calcPlanting } from "~~/shared/utils/calc";
 
 // Слайд «Посадка» панели каталога: «Что сажаем?» → расчёт (площадь → растения →
@@ -112,6 +113,17 @@ watch(
 );
 
 // ===== Статьи блога по выбранному растению (blog ↔ crop) =====
+// Клик по статье: на телефоне/планшете открываем модальное окно (страница статьи
+// остаётся для десктопа и поиска); кнопку «Рассчитать посадку» внутри не показываем —
+// человек уже находится в калькуляторе
+const articleModalRef = useTemplateRef<InstanceType<typeof ShowModalArticle>>("article-modal");
+const { activeArticle, interceptArticleClick } = useArticleModal();
+
+const onArticleClick = (item: ArticleLinkItem, event: MouseEvent) => {
+  if (!interceptArticleClick(item, event)) return;
+  nextTick(() => articleModalRef.value?.openModal());
+};
+
 const articlesKey = computed(
   () => `garden-articles-${currentLocale.value}-${selectedId.value ?? "none"}`,
 );
@@ -383,17 +395,11 @@ const purposeGroups = computed(() => {
     <section class="hamburger-garden__section">
       <h3 class="hamburger-garden__question">{{ t.question }}</h3>
 
-      <!-- Скелетон: данные растений грузятся только на клиенте, поэтому до ответа
-           показываем плейсхолдеры — блок не выглядит пустым -->
-      <div v-if="pendingCrops" class="hamburger-garden__chips" aria-hidden="true">
-        <span
-          v-for="n in 5"
-          :key="n"
-          class="hamburger-garden__chip hamburger-garden__chip_skeleton"
-        />
-      </div>
+      <!-- Растения. Данные приходят только на клиенте, поэтому во время загрузки
+           показываем общий индикатор проекта (ULoader показывает себя сам) -->
+      <ULoader v-show="pendingCrops" />
 
-      <div v-else-if="crops?.length" class="hamburger-garden__chips">
+      <div v-if="crops?.length" class="hamburger-garden__chips">
         <UButton
           v-for="crop in crops"
           :key="crop.documentId"
@@ -416,7 +422,7 @@ const purposeGroups = computed(() => {
         </UButton>
       </div>
 
-      <p v-else class="hamburger-garden__empty">
+      <p v-else-if="!pendingCrops" class="hamburger-garden__empty">
         {{ t.emptyCrops }}
       </p>
     </section>
@@ -543,22 +549,27 @@ const purposeGroups = computed(() => {
         </div>
       </div>
 
-      <p v-else-if="pendingProducts" class="hamburger-garden__skeleton-list" aria-hidden="true">
-        <span v-for="n in 3" :key="n" class="hamburger-garden__skeleton-row" />
-      </p>
+      <ULoader v-show="pendingProducts" />
 
-      <p v-else class="hamburger-garden__empty">{{ t.emptyProducts }}</p>
+      <p v-if="!pendingProducts && !purposeGroups.length" class="hamburger-garden__empty">
+        {{ t.emptyProducts }}
+      </p>
     </section>
 
     <!-- Статьи блога по растению -->
     <section v-if="selectedCrop && articles?.length" class="hamburger-garden__section">
       <h3 class="hamburger-garden__question">{{ t.articlesTitle }}</h3>
       <ul class="hamburger-garden__list">
-        <li v-for="article in articles" :key="article.documentId">
+        <!-- Клик перехватываем на li (фаза перехвата): на телефоне откроется
+             модалка, на десктопе ссылка сработает как обычно -->
+        <li
+          v-for="article in articles"
+          :key="article.documentId"
+          @click.capture="onArticleClick(article, $event)"
+        >
           <NuxtLink
             class="hamburger-garden__article"
             :to="`/${currentLocale}/blog/${article.slug}`"
-            @click="emit('navigate')"
           >
             <Icon name="mingcute:document-line" />
             <span>{{ article.title }}</span>
@@ -566,6 +577,15 @@ const purposeGroups = computed(() => {
         </li>
       </ul>
     </section>
+
+    <!-- Модальное окно статьи (страница — для десктопа и поиска, модалка — для телефона) -->
+    <ShowModalArticle
+      ref="article-modal"
+      :slug="activeArticle?.slug"
+      :title="activeArticle?.title"
+      :date="activeArticle?.date"
+      :show-calculator="false"
+    />
 
     <!-- Частые вопросы: тот же источник (calculator-page.faq), что и на странице -->
     <section v-if="showFaq && faqItems?.length" class="hamburger-garden__section">
@@ -681,15 +701,6 @@ const purposeGroups = computed(() => {
       border-color: var(--green-color);
     }
 
-    // Плейсхолдер на время загрузки данных (растения грузятся на клиенте)
-    &_skeleton {
-      width: toEm(96);
-      height: toEm(36);
-      border-color: transparent;
-      background-color: var(--light-color-transparent);
-      pointer-events: none;
-    }
-
     @include hover {
       border-color: var(--green-color);
     }
@@ -717,7 +728,8 @@ const purposeGroups = computed(() => {
   }
 
   &__mode {
-    padding: toEm(6) toEm(8);
+    // Делитель 14 — собственный шрифт кнопки (ниже font-size)
+    padding: toEm(6, 14) toEm(8, 14);
     border-radius: toRem(8);
     background-color: transparent;
     color: var(--gray-color);
@@ -832,21 +844,11 @@ const purposeGroups = computed(() => {
   }
 
   // Скелетон списка товаров (данные грузятся на клиенте)
-  &__skeleton-list {
-    display: flex;
-    flex-direction: column;
-    row-gap: toEm(6);
-  }
-
-  &__skeleton-row {
-    height: toEm(32);
-    border-radius: toRem(8);
-    background-color: var(--light-color-transparent);
-  }
-
   // Частые вопросы (тот же аккордеон, что в каталоге и меню)
   &__faq-question {
-    font-size: toEm(16);
+    // Родитель — аккордеон проекта со шрифтом 22px, поэтому делитель указываем
+    // явно: без него toEm(16) дал бы 22px (em считается от родителя)
+    font-size: toEm(16, 22);
     font-weight: 600;
     text-align: left;
   }
@@ -872,8 +874,10 @@ const purposeGroups = computed(() => {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: toEm(34);
-    height: toEm(34);
+    // Фиксированный размер кнопки — toRem: у неё свой шрифт (18px),
+    // и em считался бы от него, а не от 16px
+    width: toRem(34);
+    height: toRem(34);
     border-radius: 50%;
     background-color: var(--green-color);
     color: var(--light-color);

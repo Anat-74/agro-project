@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { seoTranslations } from '~/locales/seo'
+import ShowModalArticle from "~/components/show-modal/ShowModalArticle.vue"
 
 const { find } = useStrapi()
 const { currentLocale } = useLocale()
@@ -7,14 +8,34 @@ const route = useRoute()
 const config = useRuntimeConfig()
 const t = computed(() => seoTranslations[currentLocale.value])
 
+// Клик по статье: на телефоне/планшете открываем модальное окно вместо перехода
+// на страницу (страница остаётся для десктопа и поиска)
+const articleModalRef = useTemplateRef<InstanceType<typeof ShowModalArticle>>("article-modal")
+const { activeArticle, interceptArticleClick } = useArticleModal()
+
+const onArticleClick = (item: ArticleLinkItem, event: MouseEvent) => {
+  if (!interceptArticleClick(item, event)) return
+  nextTick(() => articleModalRef.value?.openModal())
+}
+
+interface BlogListItem {
+  id?: number
+  documentId?: string
+  slug?: string
+  title?: string
+  date?: string | null
+  author?: string | null
+  image?: { url?: string } | null
+}
+
 const { data: posts } = useAsyncData(
   `blog-list-${currentLocale.value}`,
   async () => {
-    const response = await find("blogs", {
+    const response = await find<BlogListItem>("blogs", {
       sort: "date:desc",
       pagination: { pageSize: 50 },
-    })
-    return response.data || []
+    } as any)
+    return (response.data || []) as BlogListItem[]
   }
 )
 
@@ -32,14 +53,19 @@ useSeoMeta({
 <template>
   <section class="blog-page" aria-labelledby="blog-page-title">
     <div class="blog-page__container">
-      <h1 id="blog-page-title">Блог</h1>
+      <h1 id="blog-page-title" class="blog-page__title">Блог</h1>
 
       <div v-if="!posts?.length" class="blog-page__empty">
         Скоро здесь появятся статьи
       </div>
 
       <ul v-else class="blog-page__list">
-        <li v-for="post in posts || []" :key="post.documentId || post.id" class="blog-page__item">
+        <li
+          v-for="post in posts || []"
+          :key="post.documentId || post.id"
+          class="blog-page__item"
+          @click.capture="onArticleClick(post, $event)"
+        >
           <NuxtLink
             :to="`/${currentLocale}/blog/${post.slug}`"
             class="blog-page__link"
@@ -61,6 +87,14 @@ useSeoMeta({
         </li>
       </ul>
     </div>
+
+    <!-- Модальное окно статьи: на телефоне читаем здесь, страница — для десктопа и поиска -->
+    <ShowModalArticle
+      ref="article-modal"
+      :slug="activeArticle?.slug"
+      :title="activeArticle?.title"
+      :date="activeArticle?.date"
+    />
   </section>
 </template>
 
@@ -68,14 +102,15 @@ useSeoMeta({
 .blog-page {
   padding-block-start: toEm(32);
 
-  h1 {
-    font-size: toEm(32);
+  // Размер заголовка — глобальный (стиль-гайд §16), здесь только отступ.
+  // toRem, а не toEm: у заголовка свой крупный шрифт, и em считался бы от него
+  &__title {
     margin-block-end: toRem(24);
   }
 
   &__empty {
     text-align: center;
-    padding: toRem(48);
+    padding: toEm(48);
     color: var(--gray-color);
     font-size: toEm(18);
   }
@@ -85,7 +120,7 @@ useSeoMeta({
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: toRem(16);
+    gap: toEm(16);
   }
 
   &__link {
@@ -96,8 +131,8 @@ useSeoMeta({
 
 .blog-card {
   display: flex;
-  gap: toRem(16);
-  padding: toRem(16);
+  gap: toEm(16);
+  padding: toEm(16);
   border: toRem(1) solid var(--border-color);
   border-radius: toRem(8);
 
@@ -112,7 +147,7 @@ useSeoMeta({
   &__body {
     display: flex;
     flex-direction: column;
-    gap: toRem(8);
+    gap: toEm(8);
   }
 
   &__date {
@@ -122,7 +157,6 @@ useSeoMeta({
 
   &__title {
     margin: 0;
-    font-size: toEm(20);
     color: var(--color);
   }
 

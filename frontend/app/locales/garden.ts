@@ -32,6 +32,8 @@ export const gardenTranslations: Record<LocaleCode, {
   noData: string
   articlesTitle: string
   sectionArticles: string
+  articlesLoadError: string
+  articlesRetry: string
   relatedCrop: string
   calculatorCta: string
   howToTitle: string
@@ -72,6 +74,8 @@ export const gardenTranslations: Record<LocaleCode, {
     noData: 'Для этой культуры данных пока нет',
     articlesTitle: 'Статьи по растению',
     sectionArticles: 'Статьи по посадке и урожаю',
+    articlesLoadError: 'Не удалось загрузить статью',
+    articlesRetry: 'Повторить',
     relatedCrop: 'Растение',
     calculatorCta: 'Рассчитать посадку',
     howToTitle: 'Как рассчитать посадку',
@@ -117,6 +121,8 @@ export const gardenTranslations: Record<LocaleCode, {
     noData: 'Для гэтай расліны даных пакуль няма',
     articlesTitle: 'Артыкулы пра расліну',
     sectionArticles: 'Артыкулы пра пасадку і ўраджай',
+    articlesLoadError: 'Не ўдалося загрузіць артыкул',
+    articlesRetry: 'Паўтарыць',
     relatedCrop: 'Расліна',
     calculatorCta: 'Разлічыць пасадку',
     howToTitle: 'Як разлічыць пасадку',
