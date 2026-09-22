@@ -229,8 +229,8 @@ const toggleHamburger = () => {
 <template>
   <!-- Единый корень: ShowHamburger — fragment, иначе Teleport диалога
        добавляет в grid container-bottom лишний элемент и ломает размещение каталога -->
-  <div class="hamburger" :class="[props.visibilityClass, { hamburger_desktop: isDesktopInstance }]">
-  <div :class="['hamburger-menu']">
+  <div :class="['hamburger', props.visibilityClass, { hamburger_desktop: isDesktopInstance }]">
+  <div class="hamburger-menu">
     <UButton
       :is-open="isOpen"
       variant="hamburger"
@@ -300,8 +300,10 @@ const toggleHamburger = () => {
           :key="index"
           type="button"
           role="tab"
-          class="dialog-hamburger__tab"
-          :class="{ 'dialog-hamburger__tab_is-active': activeTab === index + 1 }"
+          :class="[
+            'dialog-hamburger__tab',
+            { 'dialog-hamburger__tab_is-active': activeTab === index + 1 },
+          ]"
           :aria-selected="activeTab === index + 1"
           @click="goTab(index + 1)"
         >
@@ -328,10 +330,18 @@ const toggleHamburger = () => {
             :category="category"
             @navigate="close?.()"
           />
-          <HamburgerGarden
+          <!-- Слайд «Посадка»: кнопка корзины прикреплена к правому верхнему углу
+               слайда. Она появляется только на этом слайде, в потоке не участвует
+               (нулевая высота) — содержимое не сдвигается -->
+          <div
             v-else-if="slide.id === 'garden'"
-            @navigate="close?.()"
-          />
+            class="dialog-hamburger__garden"
+          >
+            <div class="dialog-hamburger__cart">
+              <CartPanelButton />
+            </div>
+            <HamburgerGarden @navigate="close?.()" />
+          </div>
           <HamburgerMenu
             v-else
             :navigation="navItems"
@@ -347,8 +357,10 @@ const toggleHamburger = () => {
             v-for="(label, index) in tabLabels"
             :key="index"
             type="button"
-            class="dialog-hamburger__dot"
-            :class="{ 'dialog-hamburger__dot_is-active': active === index + 1 }"
+            :class="[
+              'dialog-hamburger__dot',
+              { 'dialog-hamburger__dot_is-active': active === index + 1 },
+            ]"
             :aria-label="label"
             :aria-current="active === index + 1 ? 'true' : undefined"
             @click="go(index + 1)"
@@ -360,10 +372,6 @@ const toggleHamburger = () => {
         :category="category"
         @navigate="close?.()"
       />
-
-      <!-- Плавающая корзина: фиксирована внизу справа внутри панели, чтобы её
-           было видно при добавлении товаров и она не сдвигала содержимое -->
-      <CartFloatingButton />
     </div>
     </dialog>
     </Teleport>
@@ -599,6 +607,33 @@ const toggleHamburger = () => {
       &::after {
         background-color: var(--green-color);
       }
+    }
+  }
+
+  // Слайд «Посадка»: опора для прикреплённой кнопки корзины
+  &__garden {
+    position: relative;
+    height: 100%;
+  }
+
+  // Кнопка корзины в правом верхнем углу слайда: sticky внутри прокручиваемой
+  // области — не уезжает при прокрутке; нулевая высота — места в потоке
+  // не занимает, поэтому содержимое не сдвигается
+  &__cart {
+    position: sticky;
+    top: toRem(8);
+    z-index: 3;
+    height: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    // Постоянная вкладка справа: под счётчик, который выступает за кнопку
+    padding-inline-end: toRem(8);
+    // Пустая полоса не должна перехватывать клики по контенту
+    pointer-events: none;
+
+    > * {
+      pointer-events: auto;
     }
   }
 

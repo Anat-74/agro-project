@@ -375,8 +375,10 @@ const purposeGroups = computed(() => {
           v-for="crop in crops"
           :key="crop.documentId"
           variant="plain"
-          class="hamburger-garden__chip"
-          :class="{ 'hamburger-garden__chip_is-active': crop.documentId === selectedId }"
+          :class="[
+            'hamburger-garden__chip',
+            { 'hamburger-garden__chip_is-active': crop.documentId === selectedId },
+          ]"
           :aria-pressed="crop.documentId === selectedId"
           @click="selectedId = crop.documentId"
         >
@@ -410,8 +412,10 @@ const purposeGroups = computed(() => {
           :key="tab.id"
           variant="plain"
           role="tab"
-          class="hamburger-garden__mode"
-          :class="{ 'hamburger-garden__mode_is-active': mode === tab.id }"
+          :class="[
+            'hamburger-garden__mode',
+            { 'hamburger-garden__mode_is-active': mode === tab.id },
+          ]"
           :aria-selected="mode === tab.id"
           @click="mode = tab.id"
         >
@@ -500,23 +504,32 @@ const purposeGroups = computed(() => {
                 />
                 <span class="hamburger-garden__product-name">{{ prod.name }}</span>
               </NuxtLink>
-              <!-- Кнопка добавления в корзину: иконка корзины, а количество
-                   добавленного — счётчиком НАД кнопкой (абсолютное позиционирование,
-                   поэтому соседние элементы не сдвигаются) -->
+              <!-- Кнопка добавления в корзину: иконка корзины. Количество —
+                   счётчиком НАД кнопкой (абсолютное позиционирование, поэтому
+                   кнопка не растёт и соседние элементы не сдвигаются).
+                   Плюсик на иконке подсказывает: повторное нажатие добавит ещё -->
               <UButton
                 variant="plain"
-                class="hamburger-garden__add"
-                :class="{ 'hamburger-garden__add_in-cart': cartQtyFor(prod.documentId) > 0 }"
+                :class="[
+                  'hamburger-garden__add',
+                  { 'hamburger-garden__add_in-cart': cartQtyFor(prod.documentId) > 0 },
+                ]"
                 :aria-label="
                   cartQtyFor(prod.documentId) > 0
-                    ? `${buttonT.addedIsCart}: ${prod.name}`
+                    ? `${buttonT.ariaLabelIncreaseQuantity}: ${prod.name}`
                     : `${buttonT.label}: ${prod.name}`
                 "
                 @click="addProductToCart(prod)"
               >
                 <Icon name="cil:cart" />
+                <Icon
+                  v-if="cartQtyFor(prod.documentId) > 0"
+                  name="mingcute:add-line"
+                  class="hamburger-garden__add-plus"
+                />
                 <span
                   v-if="cartQtyFor(prod.documentId) > 0"
+                  :key="cartQtyFor(prod.documentId)"
                   class="hamburger-garden__add-count"
                 >{{ cartQtyFor(prod.documentId) }}</span>
               </UButton>
@@ -782,6 +795,11 @@ const purposeGroups = computed(() => {
     grid-template-columns: 1fr auto;
     align-items: center;
     column-gap: toEm(6);
+    // Постоянные отступы под счётчик, который выступает за кнопку вверх и вправо:
+    // отступы неизменные, поэтому ничего не сдвигается и не появляется
+    // горизонтальная прокрутка (раньше счётчик вылезал за область прокрутки)
+    padding-block-start: toEm(6);
+    padding-inline-end: toEm(8);
   }
 
   // Кнопка добавления в корзину: иконка корзины, при добавлении — заливка
@@ -817,8 +835,8 @@ const purposeGroups = computed(() => {
   // кнопка не растёт и соседние элементы не сдвигаются
   &__add-count {
     position: absolute;
-    top: toRem(-7);
-    right: toRem(-7);
+    top: toEm(-6);
+    right: toEm(-6);
     min-width: toRem(18);
     padding-inline: toRem(4);
     border-radius: toRem(9);
@@ -828,6 +846,17 @@ const purposeGroups = computed(() => {
     font-weight: 700;
     line-height: toRem(18);
     text-align: center;
+    pointer-events: none;
+    // Ключ меняется вместе с количеством — анимация проигрывается заново
+    animation: gardenCountPop 0.25s ease;
+  }
+
+  // Плюсик на иконке: подсказка, что повторное нажатие добавит ещё
+  &__add-plus {
+    position: absolute;
+    right: toRem(4);
+    bottom: toRem(3);
+    font-size: toRem(11);
     pointer-events: none;
   }
 
@@ -883,6 +912,21 @@ const purposeGroups = computed(() => {
     color: var(--gray-color);
     font-style: italic;
     @include adaptiveValue("font-size", 14, 12);
+  }
+}
+
+// Короткая подсветка счётчика при добавлении: видно, что количество выросло
+@keyframes gardenCountPop {
+  0% {
+    scale: 1;
+  }
+
+  50% {
+    scale: 1.3;
+  }
+
+  100% {
+    scale: 1;
   }
 }
 </style>

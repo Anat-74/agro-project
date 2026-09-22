@@ -123,9 +123,6 @@ function openPreview(product: Product) {
       <UCartButton class="header__cart" @open="cartDialogRef?.open?.()" />
       <ProfileLink />
     </div>
-
-    <!-- Плавающая корзина для планшета и телефона: фиксирована, не сдвигает контент -->
-    <CartFloatingButton />
     <div :class="['header__bottom', { 'header__bottom_hidden': isNavHidden }]">
       <div class="header__container-bottom">
         <ShowHamburger
