@@ -2,6 +2,7 @@
 import { gardenTranslations } from "~/locales/garden";
 import { buttonTranslations } from "~/locales/button";
 import ShowModalArticle from "~/components/show-modal/ShowModalArticle.vue";
+import ShowModalProduct from "~/components/show-modal/ShowModalProduct.vue";
 import { calcPacks, calcPlantsOf, calcPlanting } from "~~/shared/utils/calc";
 
 // Слайд «Посадка» панели каталога: «Что сажаем?» → расчёт (площадь → растения →
@@ -13,10 +14,6 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), { showFaq: true });
-
-const emit = defineEmits<{
-  navigate: [];
-}>();
 
 const { currentLocale } = useLocale();
 const { getProductLink } = useProductLink();
@@ -119,6 +116,28 @@ const { activeArticle, interceptArticleClick } = useArticleModal();
 const onArticleClick = (item: ArticleLinkItem, event: MouseEvent) => {
   if (!interceptArticleClick(item, event)) return;
   nextTick(() => articleModalRef.value?.openModal());
+};
+
+// Ссылка на товар: на телефоне и планшете открываем окно товара, а не переходим
+// на страницу (страница остаётся для десктопа и поисковых систем, ссылка —
+// настоящая, поэтому роботы по ней ходят). Модалка сама догружает товар по его
+// адресу тем же ключом кэша, что и страница товара
+const { width } = useViewport();
+const productModalRef = useTemplateRef<InstanceType<typeof ShowModalProduct>>("product-modal");
+const activeProduct = ref<GardenProduct | null>(null);
+
+const onProductClick = (product: GardenProduct, event: MouseEvent) => {
+  if (!width.value || width.value > 1024) return;
+  // Перехватываем только клик по самой ссылке: кнопка «добавить в корзину»
+  // стоит в той же строке и не должна открывать окно товара
+  const clickedLink = (event.target as Element | null)?.closest("a");
+  if (!clickedLink) return;
+  // Останавливаем событие: ссылка не проверяет preventDefault и всё равно
+  // выполнила бы переход — клик не должен до неё дойти
+  event.stopPropagation();
+  event.preventDefault();
+  activeProduct.value = product;
+  nextTick(() => productModalRef.value?.openModal?.());
 };
 
 const articlesKey = computed(
@@ -326,8 +345,7 @@ const addProductToCart = (product: GardenProduct) => {
   );
 };
 
-// Группы <details> уникальны для каждого инстанса компонента: страница и панель
-// живут в одном документе, а name у details склеивает их группы НА ВЕСЬ документ
+// Группы <details> уникальны для каждого инстанса компонента: страница и панель// живут в одном документе, а name у details склеивает их группы НА ВЕСЬ документ
 // (открытие в панели закрывало бы пункт на странице)
 const faqGroupId = useId();
 
@@ -487,11 +505,11 @@ const purposeGroups = computed(() => {
               v-for="prod in group.items"
               :key="prod.documentId"
               class="hamburger-garden__product-item"
+              @click.capture="onProductClick(prod, $event)"
             >
               <NuxtLink
                 class="hamburger-garden__product accordion__summary"
                 :to="getProductLink(prod)"
-                @click="emit('navigate')"
               >
                 <UImage
                   v-if="prod.mainImage?.url || prod.image?.length"
@@ -504,10 +522,10 @@ const purposeGroups = computed(() => {
                 />
                 <span class="hamburger-garden__product-name">{{ prod.name }}</span>
               </NuxtLink>
-              <!-- Кнопка добавления в корзину: иконка корзины. Количество —
-                   счётчиком НАД кнопкой (абсолютное позиционирование, поэтому
-                   кнопка не растёт и соседние элементы не сдвигаются).
-                   Плюсик на иконке подсказывает: повторное нажатие добавит ещё -->
+              <!-- Кнопка добавления: иконка корзины, поверх неё — плюс
+                   (добавить / добавить ещё). Кнопка «втиснутая» (паттерн кнопки
+                   темы). Количество — счётчиком НАД кнопкой (абсолютное
+                   позиционирование: кнопка не растёт, соседи не сдвигаются) -->
               <UButton
                 variant="plain"
                 :class="[
@@ -523,7 +541,6 @@ const purposeGroups = computed(() => {
               >
                 <Icon name="cil:cart" />
                 <Icon
-                  v-if="cartQtyFor(prod.documentId) > 0"
                   name="mingcute:add-line"
                   class="hamburger-garden__add-plus"
                 />
@@ -574,6 +591,13 @@ const purposeGroups = computed(() => {
       :title="activeArticle?.title"
       :date="activeArticle?.date"
       :show-calculator="false"
+    />
+
+    <!-- Модальное окно товара: на телефоне открываем вместо перехода на страницу -->
+    <ShowModalProduct
+      ref="product-modal"
+      :product="activeProduct"
+      hide-trigger
     />
 
     <!-- Частые вопросы: тот же источник (calculator-page.faq), что и на странице -->
@@ -795,48 +819,68 @@ const purposeGroups = computed(() => {
     grid-template-columns: 1fr auto;
     align-items: center;
     column-gap: toEm(6);
-    // Постоянные отступы под счётчик, который выступает за кнопку вверх и вправо:
-    // отступы неизменные, поэтому ничего не сдвигается и не появляется
-    // горизонтальная прокрутка (раньше счётчик вылезал за область прокрутки)
-    padding-block-start: toEm(6);
+    // Постоянный отступ сверху — под счётчик, который стоит прямо над кнопкой;
+    // справа — под его выступ. Отступы неизменные: ничего не сдвигается
+    // и не появляется горизонтальная прокрутка
+    padding-block-start: toEm(20);
     padding-inline-end: toEm(8);
   }
 
-  // Кнопка добавления в корзину: иконка корзины, при добавлении — заливка
+  // Кнопка добавления: иконка корзины + плюс поверх неё, вид «втиснутой» кнопки
+  // (светлый фон + inset-тени — паттерн кнопки темы)
   &__add {
     position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: toRem(34);
-    height: toRem(34);
-    border: toRem(1) solid var(--success-color);
-    border-radius: toRem(8);
-    color: var(--green-color);
-    font-size: toRem(18);
+    width: toRem(36);
+    height: toRem(36);
+    border: toRem(1) solid var(--border-color);
+    border-radius: toRem(10);
+    background-color: var(--light-color);
+    box-shadow:
+      0 toRem(2) toRem(4) rgba(0, 0, 0, 0.25),
+      inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
+      0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+    color: var(--success-color);
+    font-size: toRem(20);
     transition:
       color var(--transition-duration),
-      border-color var(--transition-duration),
-      background-color var(--transition-duration);
+      box-shadow var(--transition-duration);
 
+    // Товар уже в корзине: кнопка «вдавлена» глубже
     &_in-cart {
-      border-color: var(--success-color);
-      background-color: var(--success-color);
-      color: var(--light-color);
+      box-shadow:
+        inset 0 toRem(3) toRem(5) rgba(0, 0, 0, 0.3),
+        0 toRem(1) 0 rgba(255, 255, 255, 0.4);
     }
 
     @include hover {
-      border-color: var(--warning-hover);
       color: var(--warning-hover);
     }
   }
 
-  // Счётчик добавленного — НАД кнопкой: абсолютное позиционирование, поэтому
-  // кнопка не растёт и соседние элементы не сдвигаются
+  // Плюс по центру, поверх иконки корзины: светлая подложка, чтобы линии
+  // корзины не мешали читать плюс
+  &__add-plus {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    padding: toRem(1);
+    border-radius: 50%;
+    background-color: var(--light-color);
+    font-size: toRem(13);
+    pointer-events: none;
+  }
+
+  // Счётчик — прямо НАД кнопкой, по центру: абсолютное позиционирование,
+  // поэтому кнопка не растёт и соседние элементы не сдвигаются
   &__add-count {
     position: absolute;
-    top: toEm(-6);
-    right: toEm(-6);
+    bottom: calc(100% + toRem(2));
+    left: 50%;
+    translate: -50% 0;
     min-width: toRem(18);
     padding-inline: toRem(4);
     border-radius: toRem(9);
@@ -851,13 +895,9 @@ const purposeGroups = computed(() => {
     animation: gardenCountPop 0.25s ease;
   }
 
-  // Плюсик на иконке: подсказка, что повторное нажатие добавит ещё
-  &__add-plus {
-    position: absolute;
-    right: toRem(4);
-    bottom: toRem(3);
-    font-size: toRem(11);
-    pointer-events: none;
+  // Ссылка на товар: оутлайн — только у «details» (аккордеон), здесь не нужен
+  &__product {
+    outline: none;
   }
 
   // Частые вопросы (тот же аккордеон, что в каталоге и меню)

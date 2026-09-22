@@ -337,10 +337,8 @@ const toggleHamburger = () => {
             v-else-if="slide.id === 'garden'"
             class="dialog-hamburger__garden"
           >
-            <div class="dialog-hamburger__cart">
-              <CartPanelButton />
-            </div>
-            <HamburgerGarden @navigate="close?.()" />
+            <CartPanelButton class="dialog-hamburger__cart" />
+            <HamburgerGarden />
           </div>
           <HamburgerMenu
             v-else
@@ -610,31 +608,19 @@ const toggleHamburger = () => {
     }
   }
 
-  // Слайд «Посадка»: опора для прикреплённой кнопки корзины
+  // Слайд «Посадка»: опора для кнопки корзины
   &__garden {
     position: relative;
     height: 100%;
   }
 
-  // Кнопка корзины в правом верхнем углу слайда: sticky внутри прокручиваемой
-  // области — не уезжает при прокрутке; нулевая высота — места в потоке
-  // не занимает, поэтому содержимое не сдвигается
+  // Кнопка корзины в правом верхнем углу слайда. Позиционирование абсолютное —
+  // в потоке не участвует, поэтому содержимое не сдвигается
   &__cart {
-    position: sticky;
+    position: absolute;
     top: toRem(8);
+    right: toRem(8);
     z-index: 3;
-    height: 0;
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-end;
-    // Постоянная вкладка справа: под счётчик, который выступает за кнопку
-    padding-inline-end: toRem(8);
-    // Пустая полоса не должна перехватывать клики по контенту
-    pointer-events: none;
-
-    > * {
-      pointer-events: auto;
-    }
   }
 
   // Слайдер панели: на всю высоту, слайды скроллятся вертикально
@@ -710,6 +696,23 @@ const toggleHamburger = () => {
   &__close {
     flex: 0 0 auto;
     height: toRem(40);
+    // Втиснение: светлый фон + inset-тени (паттерн кнопки темы)
+    background-color: var(--light-color);
+    border: toRem(1) solid var(--border-color);
+    box-shadow:
+      0 toRem(2) toRem(4) rgba(0, 0, 0, 0.25),
+      inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
+      0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+
+    // Скругление правых углов: было 6px — стало +4px
+    border-radius: 0 toRem(10) toRem(10) 0;
+
+    // Линии «бургера»/крестика на светлом фоне — зелёные
+    span,
+    &::before,
+    &::after {
+      background-color: var(--success-color);
+    }
   }
 
   // Приоритет над .btn_hamburger_is-open { width:100%; padding-inline:0 }
