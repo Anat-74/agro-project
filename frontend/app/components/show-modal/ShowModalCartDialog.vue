@@ -2,10 +2,12 @@
 import ShowModalCheckoutForm from '~/components/show-modal/ShowModalCheckoutForm.vue'
 import { cartTranslations } from '~/locales/cart'
 import { discountProductTranslations } from '~/locales/discountProduct'
+import { buttonTranslations } from '~/locales/button'
 
 const { currentLocale } = useLocale()
 const cartT = computed(() => cartTranslations[currentLocale.value])
 const discountT = computed(() => discountProductTranslations[currentLocale.value])
+const buttonT = computed(() => buttonTranslations[currentLocale.value])
 const cartStore = useCartStore()
 
 const dialogRef = useTemplateRef<HTMLDialogElement>('cart-dialog')
@@ -71,13 +73,13 @@ onMounted(() => {
           <span v-if="cartStore.totalItems > 0" class="cart-dialog__count">
             {{ cartStore.totalItems }}
           </span>
-          <button
+          <UButton
+            variant="close-modal"
+            icon="mingcute:close-line"
             class="cart-dialog__close"
-            aria-label="Закрыть корзину"
+            :aria-label="buttonT.ariaLabelDialogClosed"
             @click="close"
-          >
-            <Icon name="mingcute:close-line" />
-          </button>
+          />
         </div>
       </header>
 
@@ -269,24 +271,7 @@ onMounted(() => {
   font-weight: 700;
 }
 
-.cart-dialog__close {
-  display: grid;
-  place-items: center;
-  width: toRem(36);
-  height: toRem(36);
-  border-radius: 50%;
-  cursor: pointer;
-  transition: background var(--transition-duration);
-
-  @include hover {
-    background: var(--bg-secondary);
-  }
-
-  svg {
-    font-size: toRem(22);
-    color: var(--color);
-  }
-}
+// Вид крестика задаёт variant="close-modal" в UButton — здесь стилей не нужно
 
 // ====== Empty state ======
 .cart-dialog__empty {

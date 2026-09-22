@@ -24,6 +24,7 @@ interface Props {
     | "go-to-top"
     | "pagination"
     | "close"
+    | "close-modal"
     | "share"
     | "slide-next"
     | "product-details"
@@ -663,7 +664,6 @@ defineEmits<Emits>();
     color: var(--light-color);
     transition: all var(--transition-duration);
     border-radius: toRem(4);
-
     svg, .icon {
       color: inherit;
       fill: currentColor;
@@ -678,6 +678,40 @@ defineEmits<Emits>();
     &:active {
       background: rgba(255, 255, 255, 0.2);
       transform: scale(0.95);
+    }
+  }
+
+  /* Крестик закрытия модальных окон: светлый круг с тенью, иконка цвета текста.
+     Вид взят из модалки товара и стал общим для всех модалок проекта:
+     размер и внешний вид здесь, в компоненте, а в модалке остаётся только
+     позиционирование (например, отступ от края) */
+  &_close-modal {
+    width: toRem(36);
+    height: toRem(36);
+    padding: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 toRem(2) toRem(10) rgba(0, 0, 0, 0.15);
+    color: var(--color);
+    transition:
+      background var(--transition-duration),
+      scale var(--transition-duration);
+
+    // Обёртка иконки из шаблона не должна растягиваться на всю кнопку
+    .btn-icon {
+      width: auto;
+      height: auto;
+    }
+
+    svg {
+      width: toRem(22);
+      height: toRem(22);
+      color: inherit;
+    }
+
+    @include hover {
+      background: var(--bg-secondary);
+      scale: 1.06;
     }
   }
 

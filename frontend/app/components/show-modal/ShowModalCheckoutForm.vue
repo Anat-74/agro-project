@@ -1,6 +1,11 @@
 <script setup lang="ts">
+import { buttonTranslations } from '~/locales/button'
+
 const dialogRef = useTemplateRef<HTMLDialogElement>('checkout-dialog')
 const { open, close, isOpen } = useDialog('cartCheckout', dialogRef, { useShowMethod: false })
+
+const { currentLocale } = useLocale()
+const buttonT = computed(() => buttonTranslations[currentLocale.value])
 
 defineExpose({ open, close, isOpen })
 </script>
@@ -8,13 +13,13 @@ defineExpose({ open, close, isOpen })
 <template>
   <dialog ref="checkout-dialog" class="checkout-dialog">
     <div class="checkout-dialog__panel">
-      <button
+      <UButton
+        variant="close-modal"
+        icon="mingcute:close-line"
         class="checkout-dialog__close"
-        aria-label="Закрыть"
+        :aria-label="buttonT.ariaLabelDialogClosed"
         @click="close"
-      >
-        <Icon name="mingcute:close-line" />
-      </button>
+      />
       <OrderForm @order-success="close" />
     </div>
   </dialog>
@@ -82,22 +87,5 @@ defineExpose({ open, close, isOpen })
   margin: 0;
 }
 
-.checkout-dialog__close {
-  display: grid;
-  place-items: center;
-  width: toRem(32);
-  height: toRem(32);
-  border-radius: 50%;
-  cursor: pointer;
-  transition: background var(--transition-duration);
-
-  @include hover {
-    background: var(--bg-secondary);
-  }
-
-  svg {
-    font-size: toRem(20);
-    color: var(--color);
-  }
-}
+// Вид крестика задаёт variant="close-modal" в UButton — здесь стилей не нужно
 </style>

@@ -142,15 +142,14 @@ const handleAddToCart = () => {
 
   <!-- Диалог всегда смонтирован: при hide-trigger кнопки нет, но модалка открывается через ref (корзина) -->
   <dialog ref="product-dialog" class="product-modal">
-    <!-- Крестик: плавающий, сверху справа, всегда доступен -->
-    <button
-      type="button"
+    <!-- Крестик: общий компонент кнопки (вид задан в UButton, здесь только позиция) -->
+    <UButton
+      variant="close-modal"
+      icon="mingcute:close-line"
       class="product-modal__close"
-      aria-label="Закрыть"
+      :aria-label="buttonTranslations[currentLocale].ariaLabelDialogClosed"
       @click="close"
-    >
-      <Icon name="mingcute:close-line" />
-    </button>
+    />
 
     <div v-if="status === 'pending'" class="product-modal__skeleton">
       <div class="product-modal__skeleton-gallery" />
@@ -293,31 +292,13 @@ const handleAddToCart = () => {
   }
 
   &__close {
+    // Только позиция: вид кнопки задаёт variant="close-modal" в UButton.
+    // z-index выше контента: у .slider из USlider z-index: 100 — иначе на мобильной
+    // раскладке (галерея сверху) слайдер перекрывал крестик и клик не попадал.
     position: absolute;
     top: toRem(14);
     right: toRem(14);
-    // Выше контента: у .slider из USlider z-index: 100 — без этого на мобильной
-    // раскладке (галерея сверху) слайдер перекрывал крестик и клик не попадал.
     z-index: 1000;
-    display: grid;
-    place-items: center;
-    width: toRem(40);
-    height: toRem(40);
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.92);
-    box-shadow: 0 toRem(2) toRem(10) rgba(0, 0, 0, 0.15);
-    color: var(--color);
-    cursor: pointer;
-    transition: background var(--transition-duration), scale var(--transition-duration);
-
-    svg {
-      font-size: toRem(22);
-    }
-
-    @include hover {
-      background: var(--bg-secondary);
-      scale: 1.06;
-    }
   }
 
   &__skeleton {
