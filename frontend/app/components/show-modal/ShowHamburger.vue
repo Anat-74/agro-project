@@ -696,21 +696,22 @@ const toggleHamburger = () => {
   &__close {
     flex: 0 0 auto;
     height: toRem(40);
-    // Как поле поиска: светлый фон + такая же рамка (2px цветом --primary-color)
-    background-color: var(--light-color);
+    // Фон прозрачный (как у поля ввода), рамка — как у поля поиска
+    background-color: transparent;
     border: toRem(2) solid var(--primary-color);
     // Скругление всех углов (базовые 6px + 4px)
     border-radius: toRem(10);
+    // Втиснутый край (эталон — рамка langSwitcher): светлый блик снизу
+    box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
 
-    // Крестик — «канавка»: тёмная линия + светлый блик (паттерн разделителя
-    // между colorMode и langSwitcher). Втиснут сам крестик, а не кнопка.
+    // Крестик — цветом рамки, с тем же приёмом: светлый блик снизу.
     // :deep — потому что полоса-середина рисуется на элементе внутри UButton,
     // и обычный scoped-селектор до него не достаёт
     :deep(span),
     &::before,
     &::after {
-      background-color: rgba(0, 0, 0, 0.3);
-      box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.6);
+      background-color: var(--primary-color);
+      box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
     }
   }
 

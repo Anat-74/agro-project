@@ -21,12 +21,19 @@ interface Props {
   name?: string
   // checkbox-пилюля (теги): скрытый чекбокс + label-пилюля, модель — массив значений
   pill?: boolean
+  // Выделять значение при фокусе: пользователь сразу печатает новое число,
+  // не стирая предыдущее вручную (для текстовых полей)
+  selectOnFocus?: boolean
+  // Очищать поле при фокусе: то же удобство для ЧИСЛОВЫХ полей, где браузер
+  // не поддерживает выделение (selectionStart у type=number пустой).
+  // Если пользователь ушёл, ничего не введя, значение возвращается
+  clearOnFocus?: boolean
 }
 
 const { type = 'text', label = '', placeholder = '', rows = 3,
   disabled = false, readonly = false, required = false, error = '', icon = '',
   autocomplete = '', min = 0, max = 100, step = 1, ariaLabel = '', value = '', name = '',
-  pill = false } = defineProps<Props>()
+  pill = false, selectOnFocus = false, clearOnFocus = false } = defineProps<Props>()
 
 const model = defineModel<any>()
 const inputId = useId()
@@ -40,6 +47,26 @@ const inputType = computed(() => {
   if (type === 'password' && showPassword.value) return 'text'
   return type
 })
+
+// Выделение/очистка значения при фокусе: пользователь сразу печатает новое
+// число, не стирая предыдущее вручную
+const onFieldFocus = (e: FocusEvent) => {
+  const el = e.target
+  if (!(el instanceof HTMLInputElement)) return
+  if (selectOnFocus) {
+    // Для type=number выделение не поддерживается — просто пропускаем
+    try { el.select() } catch { /* числовое поле — не поддерживается */ }
+  }
+  if (clearOnFocus) el.value = ''
+}
+
+// Если поле очищали при фокусе, а пользователь ушёл, ничего не введя,
+// возвращаем прежнее значение (модель не менялась)
+const onFieldBlur = (e: FocusEvent) => {
+  const el = e.target
+  if (!(el instanceof HTMLInputElement) || !clearOnFocus) return
+  if (el.value === '') el.value = String(model.value ?? '')
+}
 
 // Проверка/смена: для пилюли модель — массив выбранных значений, для обычного checkbox — boolean
 const onCheckboxChange = (e: Event) => {
@@ -220,8 +247,14 @@ const onRangeDualTrackClick = (e: MouseEvent) => {
         :required="required"
         :autocomplete="autocomplete || undefined"
         :aria-label="ariaLabel || undefined"
+        :min="type === 'number' ? min : undefined"
+        :max="type === 'number' ? max : undefined"
+        :step="type === 'number' ? step : undefined"
+        :inputmode="type === 'number' ? 'decimal' : undefined"
         class="u-input__field"
         :class="{ 'u-input__field_password': type === 'password' }"
+        @focus="onFieldFocus"
+        @blur="onFieldBlur"
       >
       <UButton
         v-if="type === 'password'"

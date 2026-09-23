@@ -226,7 +226,32 @@ const { data: products, pending: pendingProducts } = useCachedAsyncData(
 // ===== Калькулятор: режимы «Семена / Рассада / Удобрение» =====
 type GardenMode = "seeds" | "seedlings" | "fertilizer";
 const mode = ref<GardenMode>("seeds");
-const area = ref(1);
+// ===== Площадь: храним всегда в м², а показываем в выбранной единице =====
+// 1 сотка = 100 м². Пользователь вводит значение в выбранной единице,
+// в расчёт всегда уходит м²
+type AreaUnit = "sqm" | "sotka";
+const AREA_UNIT_FACTOR: Record<AreaUnit, number> = { sqm: 1, sotka: 100 };
+const areaUnit = ref<AreaUnit>("sqm");
+const areaSqm = ref(1);
+
+const areaUnitTabs = computed<{ id: AreaUnit; label: string }[]>(() => [
+  { id: "sqm", label: t.value.areaUnitSqm },
+  { id: "sotka", label: t.value.areaUnitSotka },
+]);
+
+// Подпись единицы рядом с полем (м² / соток)
+const areaUnitLabel = computed(() =>
+  areaUnit.value === "sotka" ? t.value.areaUnitSotka : t.value.areaUnitSqm,
+);
+
+// Значение для поля ввода: показываем в выбранной единице
+const areaInput = computed<number>({
+  get: () => areaSqm.value / AREA_UNIT_FACTOR[areaUnit.value],
+  set: (value) => {
+    const num = Number(value);
+    areaSqm.value = Number.isFinite(num) && num > 0 ? num * AREA_UNIT_FACTOR[areaUnit.value] : 0;
+  },
+});
 
 const modeTabs = computed<{ id: GardenMode; label: string }[]>(() => [
   { id: "seeds", label: t.value.modeSeeds },
@@ -252,7 +277,7 @@ const packagingsByPurpose = computed<Record<GardenMode, GardenPackaging[]>>(() =
 const result = computed(() =>
   calcPlanting({
     mode: mode.value,
-    areaSqm: area.value,
+    areaSqm: areaSqm.value,
     planting: selectedCrop.value?.planting ?? null,
     seedling: selectedCrop.value?.seedling ?? null,
     fertilizing: selectedCrop.value?.fertilizing ?? null,
@@ -310,7 +335,7 @@ const modeInfo = computed<{ label: string; value: string }[]>(() => {
 const seedlingPlants = computed(() =>
   calcPlantsOf({
     mode: "seedlings",
-    areaSqm: area.value,
+    areaSqm: areaSqm.value,
     planting: selectedCrop.value?.planting ?? null,
     seedling: selectedCrop.value?.seedling ?? null,
   }),
@@ -420,6 +445,8 @@ const purposeGroups = computed(() => {
 
     <!-- Калькулятор -->
     <section v-if="selectedCrop" class="hamburger-garden__section">
+      <h3 class="hamburger-garden__question">{{ t.calcHeading }}</h3>
+
       <div
         class="hamburger-garden__modes"
         role="tablist"
@@ -441,21 +468,41 @@ const purposeGroups = computed(() => {
         </UButton>
       </div>
 
-      <label class="hamburger-garden__field">
-        <span class="hamburger-garden__field-label">{{ t.areaLabel }}</span>
-        <span class="hamburger-garden__field-input">
-          <input
-            v-model.number="area"
-            type="number"
-            min="0.1"
-            step="0.1"
-            inputmode="decimal"
-            class="hamburger-garden__input"
-            :aria-label="`${t.areaLabel}, ${t.areaUnit}`"
-          >
-          <span class="hamburger-garden__field-unit">{{ t.areaUnit }}</span>
-        </span>
-      </label>
+      <!-- Единицы площади: м² / сотки (1 сотка = 100 м²) -->
+      <div
+        class="hamburger-garden__modes hamburger-garden__modes_units"
+        role="radiogroup"
+        :aria-label="t.areaUnits"
+      >
+        <UButton
+          v-for="unit in areaUnitTabs"
+          :key="unit.id"
+          variant="plain"
+          role="radio"
+          :class="[
+            'hamburger-garden__mode',
+            { 'hamburger-garden__mode_is-active': areaUnit === unit.id },
+          ]"
+          :aria-checked="areaUnit === unit.id"
+          @click="areaUnit = unit.id"
+        >
+          {{ unit.label }}
+        </UButton>
+      </div>
+
+      <div class="hamburger-garden__field">
+        <UInput
+          v-model.number="areaInput"
+          type="number"
+          :min="0.1"
+          :step="0.1"
+          clear-on-focus
+          :label="t.areaLabel"
+          :aria-label="`${t.areaLabel}, ${areaUnitLabel}`"
+          class="hamburger-garden__input"
+        />
+        <span class="hamburger-garden__field-unit">{{ areaUnitLabel }}</span>
+      </div>
 
       <p v-if="!hasModeData" class="hamburger-garden__empty">{{ t.noData }}</p>
 
@@ -539,7 +586,12 @@ const purposeGroups = computed(() => {
                 @click="addProductToCart(prod)"
               >
                 <Icon name="cil:cart" />
-                <span class="hamburger-garden__add-plus" />
+                <!-- Плюс появляется только когда товар уже в корзине
+                     (намёк: повторное нажатие добавит ещё) -->
+                <span
+                  v-if="cartQtyFor(prod.documentId) > 0"
+                  class="hamburger-garden__add-plus"
+                />
                 <span
                   v-if="cartQtyFor(prod.documentId) > 0"
                   :key="cartQtyFor(prod.documentId)"
@@ -731,35 +783,32 @@ const purposeGroups = computed(() => {
   }
 
   // Площадь
+  // Единицы площади: два таба (м² / сотки)
+  &__modes_units {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  // Поле площади — компонент UInput (подпись «Площадь» внутри него)
   &__field {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    column-gap: toEm(10);
-  }
-
-  &__field-label {
-    font-weight: 600;
-    color: var(--color);
-  }
-
-  &__field-input {
-    display: flex;
-    align-items: center;
-    column-gap: toEm(6);
+    align-items: flex-end;
+    column-gap: toEm(8);
   }
 
   &__input {
-    width: toRem(84);
-    padding: toEm(6) toEm(10);
-    border: toRem(1) solid var(--border-color);
-    border-radius: toRem(8);
-    text-align: right;
-    color: var(--color);
-    background-color: var(--light-color);
+    flex: 0 1 toRem(140);
+    min-width: 0;
+
+    // Компактнее базового поля, число — по правому краю
+    :deep(.u-input__field) {
+      padding-block: toEm(7);
+      font-size: toEm(16);
+      text-align: right;
+    }
   }
 
   &__field-unit {
+    padding-block-end: toEm(9);
     color: var(--gray-color);
   }
 
@@ -856,13 +905,14 @@ const purposeGroups = computed(() => {
     }
   }
 
-  // Плюс — «канавка» (тёмная линия + светлый блик), как разделитель между
-  // colorMode и langSwitcher. Стоит в правом нижнем углу иконки корзины,
-  // поэтому корзина читается целиком
+  // Плюс — «канавка» по эталону (рамка langSwitcher): тонкая тёмная линия
+  // + светлый блик снизу. По центру кнопки, поверх иконки корзины;
+  // полосы тонкие (2px), поэтому корзина остаётся читаемой
   &__add-plus {
     position: absolute;
-    right: toRem(4);
-    bottom: toRem(4);
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
     width: toRem(16);
     height: toRem(16);
     pointer-events: none;
@@ -874,7 +924,7 @@ const purposeGroups = computed(() => {
       top: calc(50% - toRem(1));
       left: 0;
       width: 100%;
-      height: toRem(3);
+      height: toRem(2);
       background-color: rgba(0, 0, 0, 0.25);
       box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
     }

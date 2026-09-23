@@ -4,6 +4,10 @@ export const gardenTranslations: Record<LocaleCode, {
   question: string
   areaLabel: string
   areaUnit: string
+  areaUnits: string
+  areaUnitSqm: string
+  areaUnitSotka: string
+  calcHeading: string
   plants: string
   seeds: string
   fertilizer: string
@@ -46,6 +50,10 @@ export const gardenTranslations: Record<LocaleCode, {
     question: 'Что сажаем?',
     areaLabel: 'Площадь',
     areaUnit: 'м²',
+    areaUnits: 'Единицы площади',
+    areaUnitSqm: 'м²',
+    areaUnitSotka: 'соток',
+    calcHeading: 'Калькулятор расчёта',
     plants: 'Растений',
     seeds: 'Семян',
     fertilizer: 'Удобрения',
@@ -93,6 +101,10 @@ export const gardenTranslations: Record<LocaleCode, {
     question: 'Што саджаем?',
     areaLabel: 'Плошча',
     areaUnit: 'м²',
+    areaUnits: 'Адзінкі плошчы',
+    areaUnitSqm: 'м²',
+    areaUnitSotka: 'сотак',
+    calcHeading: 'Калькулятар разліку',
     plants: 'Раслін',
     seeds: 'Насення',
     fertilizer: 'Угнаення',
