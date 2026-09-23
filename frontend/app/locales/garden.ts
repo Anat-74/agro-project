@@ -7,6 +7,7 @@ export const gardenTranslations: Record<LocaleCode, {
   areaUnits: string
   areaUnitSqm: string
   areaUnitSotka: string
+  areaUnitSotkaTab: string
   calcHeading: string
   plants: string
   seeds: string
@@ -53,6 +54,7 @@ export const gardenTranslations: Record<LocaleCode, {
     areaUnits: 'Единицы площади',
     areaUnitSqm: 'м²',
     areaUnitSotka: 'соток',
+    areaUnitSotkaTab: 'сотки',
     calcHeading: 'Калькулятор расчёта',
     plants: 'Растений',
     seeds: 'Семян',
@@ -104,6 +106,7 @@ export const gardenTranslations: Record<LocaleCode, {
     areaUnits: 'Адзінкі плошчы',
     areaUnitSqm: 'м²',
     areaUnitSotka: 'сотак',
+    areaUnitSotkaTab: 'соткі',
     calcHeading: 'Калькулятар разліку',
     plants: 'Раслін',
     seeds: 'Насення',

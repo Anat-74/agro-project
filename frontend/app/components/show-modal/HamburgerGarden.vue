@@ -236,7 +236,8 @@ const areaSqm = ref(1);
 
 const areaUnitTabs = computed<{ id: AreaUnit; label: string }[]>(() => [
   { id: "sqm", label: t.value.areaUnitSqm },
-  { id: "sotka", label: t.value.areaUnitSotka },
+  // В табе — «сотки», а рядом с полем подпись «соток» (например, «5 соток»)
+  { id: "sotka", label: t.value.areaUnitSotkaTab },
 ]);
 
 // Подпись единицы рядом с полем (м² / соток)
@@ -468,9 +469,10 @@ const purposeGroups = computed(() => {
         </UButton>
       </div>
 
-      <!-- Единицы площади: м² / сотки (1 сотка = 100 м²) -->
+      <!-- Единицы площади: м² / сотки (1 сотка = 100 м²). Отдельной строкой
+           справа, кнопки — по ширине текста -->
       <div
-        class="hamburger-garden__modes hamburger-garden__modes_units"
+        class="hamburger-garden__units"
         role="radiogroup"
         :aria-label="t.areaUnits"
       >
@@ -480,8 +482,8 @@ const purposeGroups = computed(() => {
           variant="plain"
           role="radio"
           :class="[
-            'hamburger-garden__mode',
-            { 'hamburger-garden__mode_is-active': areaUnit === unit.id },
+            'hamburger-garden__unit',
+            { 'hamburger-garden__unit_is-active': areaUnit === unit.id },
           ]"
           :aria-checked="areaUnit === unit.id"
           @click="areaUnit = unit.id"
@@ -490,18 +492,21 @@ const purposeGroups = computed(() => {
         </UButton>
       </div>
 
+      <!-- Площадь: подпись слева, поле и единица — справа -->
       <div class="hamburger-garden__field">
-        <UInput
-          v-model.number="areaInput"
-          type="number"
-          :min="0.1"
-          :step="0.1"
-          clear-on-focus
-          :label="t.areaLabel"
-          :aria-label="`${t.areaLabel}, ${areaUnitLabel}`"
-          class="hamburger-garden__input"
-        />
-        <span class="hamburger-garden__field-unit">{{ areaUnitLabel }}</span>
+        <span class="hamburger-garden__field-label">{{ t.areaLabel }}</span>
+        <span class="hamburger-garden__field-input">
+          <UInput
+            v-model.number="areaInput"
+            type="number"
+            :min="0.1"
+            :step="0.1"
+            clear-on-focus
+            :aria-label="`${t.areaLabel}, ${areaUnitLabel}`"
+            class="hamburger-garden__input"
+          />
+          <span class="hamburger-garden__field-unit">{{ areaUnitLabel }}</span>
+        </span>
       </div>
 
       <p v-if="!hasModeData" class="hamburger-garden__empty">{{ t.noData }}</p>
@@ -566,6 +571,10 @@ const purposeGroups = computed(() => {
                   width="32"
                   height="32"
                   type="icon"
+                />
+                <Icon
+                  name="mingcute:shopping-bag-2-line"
+                  class="hamburger-garden__product-icon"
                 />
                 <span class="hamburger-garden__product-name">{{ prod.name }}</span>
               </NuxtLink>
@@ -675,6 +684,10 @@ const purposeGroups = computed(() => {
   flex-direction: column;
   row-gap: toEm(16);
   min-height: 100%;
+  // Светлая подложка: на размытом фоне панели зелёные подписи и текст читались плохо
+  padding: toEm(12);
+  border-radius: toRem(12);
+  background-color: rgba(255, 255, 255, 0.72);
 
   // Шапка слайда: заголовок + подзаголовок
   &__head {
@@ -783,20 +796,60 @@ const purposeGroups = computed(() => {
   }
 
   // Площадь
-  // Единицы площади: два таба (м² / сотки)
-  &__modes_units {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  // Единицы площади: отдельная строка справа, кнопки по ширине текста
+  &__units {
+    display: flex;
+    justify-content: flex-end;
+    column-gap: toEm(6);
   }
 
-  // Поле площади — компонент UInput (подпись «Площадь» внутри него)
+  &__unit {
+    padding: toEm(4) toEm(10);
+    // Тонкая рамка — чтобы неактивный таб читался как кнопка на размытом фоне.
+    // Рамку даём обеим кнопкам, чтобы размеры совпадали
+    border: toRem(1) solid var(--border-color);
+    border-radius: toRem(8);
+    background-color: var(--light-color-transparent);
+    color: var(--gray-color);
+    font-size: toEm(14);
+    font-weight: 600;
+    transition:
+      color var(--transition-duration),
+      border-color var(--transition-duration),
+      background-color var(--transition-duration);
+
+    &_is-active {
+      border-color: var(--green-color);
+      color: var(--light-color);
+      background-color: var(--green-color);
+    }
+
+    @include hover {
+      color: var(--primary-color);
+    }
+  }
+
+  // Площадь: подпись слева, поле и единица справа
   &__field {
     display: flex;
-    align-items: flex-end;
-    column-gap: toEm(8);
+    align-items: center;
+    justify-content: space-between;
+    column-gap: toEm(10);
+  }
+
+  &__field-label {
+    font-weight: 600;
+    color: var(--color);
+  }
+
+  &__field-input {
+    display: flex;
+    align-items: center;
+    column-gap: toEm(6);
   }
 
   &__input {
-    flex: 0 1 toRem(140);
+    flex: 0 1 toRem(120);
     min-width: 0;
 
     // Компактнее базового поля, число — по правому краю
@@ -808,7 +861,6 @@ const purposeGroups = computed(() => {
   }
 
   &__field-unit {
-    padding-block-end: toEm(9);
     color: var(--gray-color);
   }
 
@@ -816,23 +868,46 @@ const purposeGroups = computed(() => {
   &__result {
     display: flex;
     flex-direction: column;
-    row-gap: toEm(6);
-    padding: toEm(10) toEm(12);
+    // Без отступа между строками: строки разделяются «канавкой» (см. ниже)
+    row-gap: 0;
+    padding: toEm(4) toEm(12);
     border-radius: toRem(8);
     background-color: var(--light-color-transparent);
   }
 
   &__result-row {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: space-between;
-    column-gap: toEm(10);
+    padding-block: toEm(6);
+    // Горизонтальная «канавка» между строками — эталон: разделитель секций
+    // в диалоге фильтров (тёмная линия + внутренняя тень + светлый блик)
+    border-bottom: toRem(1) solid rgba(0, 0, 0, 0.3);
+    box-shadow:
+      inset 0 toRem(-1) 0 rgba(0, 0, 0, 0.08),
+      0 toRem(1) 0 rgba(255, 255, 255, 0.6);
+
+    &:last-child {
+      border-bottom: none;
+      box-shadow: none;
+    }
 
     dt {
+      display: flex;
+      align-items: center;
       color: var(--gray-color);
     }
 
     dd {
+      display: flex;
+      align-items: center;
+      // Вертикальная «канавка» перед колонкой значений
+      margin-inline-start: toEm(12);
+      padding-inline-start: toEm(12);
+      border-inline-start: toRem(1) solid rgba(0, 0, 0, 0.3);
+      box-shadow:
+        inset toRem(1) 0 0 rgba(0, 0, 0, 0.08),
+        toRem(1) 0 0 rgba(255, 255, 255, 0.6);
       font-weight: 700;
       color: var(--primary-color);
     }
@@ -905,9 +980,9 @@ const purposeGroups = computed(() => {
     }
   }
 
-  // Плюс — «канавка» по эталону (рамка langSwitcher): тонкая тёмная линия
-  // + светлый блик снизу. По центру кнопки, поверх иконки корзины;
-  // полосы тонкие (2px), поэтому корзина остаётся читаемой
+  // Плюс — «канавка» (эталон: разделитель секций в фильтрах): тёмная линия
+  // + внутренняя тёмная тень + светлый блик снизу. По центру кнопки, поверх
+  // иконки корзины. Полосы потолще (4px) — иначе плюс почти не видно
   &__add-plus {
     position: absolute;
     top: 50%;
@@ -921,12 +996,15 @@ const purposeGroups = computed(() => {
     &::after {
       content: "";
       position: absolute;
-      top: calc(50% - toRem(1));
+      top: calc(50% - toRem(2));
       left: 0;
       width: 100%;
-      height: toRem(2);
-      background-color: rgba(0, 0, 0, 0.25);
-      box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+      height: toRem(4);
+      border-radius: toRem(1);
+      background-color: rgba(0, 0, 0, 0.3);
+      box-shadow:
+        inset 0 toRem(-1) 0 rgba(0, 0, 0, 0.12),
+        0 toRem(1) 0 rgba(255, 255, 255, 0.6);
     }
 
     &::after {
@@ -997,8 +1075,19 @@ const purposeGroups = computed(() => {
     }
   }
 
+  // Иконка товара перед названием
+  &__product-icon {
+    flex-shrink: 0;
+    font-size: toRem(18);
+    color: var(--primary-color);
+  }
+
   &__product-name {
     text-align: left;
+    // Шрифт на 2px меньше, чем задаёт класс аккордеона: у родителя 22px → 20px
+    font-size: toEm(20, 22);
+    // Стандартный цвет текста (как у «Площадь» и ссылок статей)
+    color: var(--color);
     // Постоянное, но неброское подчёркивание — признак кликабельности
     text-decoration: underline;
     text-decoration-color: rgba(0, 0, 0, 0.25);
