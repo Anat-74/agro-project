@@ -338,7 +338,7 @@ const toggleHamburger = () => {
             class="dialog-hamburger__garden"
           >
             <CartPanelButton class="dialog-hamburger__cart" />
-            <HamburgerGarden />
+            <HamburgerGarden :socials="socials" />
           </div>
           <HamburgerMenu
             v-else

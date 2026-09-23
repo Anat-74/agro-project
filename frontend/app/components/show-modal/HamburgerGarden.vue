@@ -11,9 +11,14 @@ interface Props {
   // Показывать блок «Частые вопросы». На странице калькулятора вопросы выводятся
   // отдельным блоком страницы (виден и на телефоне), чтобы не было дубля
   showFaq?: boolean;
+  // Соцсети — показываем в свободной части плашки (на странице раздела не нужны)
+  socials?: SocialLink[];
 }
 
-const props = withDefaults(defineProps<Props>(), { showFaq: true });
+const props = withDefaults(defineProps<Props>(), {
+  showFaq: true,
+  socials: () => [],
+});
 
 const { currentLocale } = useLocale();
 const { getProductLink } = useProductLink();
@@ -683,6 +688,12 @@ const purposeGroups = computed(() => {
       </UAccordion>
     </section>
 
+    <!-- Соцсети в свободной части плашки: справа, по центру свободного места,
+         в рамке-«канавке» (как блок langSwitcher на мобильном) -->
+    <div v-if="socials.length" class="hamburger-garden__socials">
+      <USocials :socials="socials" />
+    </div>
+
     <!-- Модальные окна (в конце разметки, чтобы не разрывать соседство секций,
          от которого зависит разделитель между блоками) -->
     <ShowModalArticle
@@ -730,18 +741,42 @@ const purposeGroups = computed(() => {
     color: var(--gray-color);
   }
 
-  // Блоки — каждый в рамке-«канавке» (эталон: рамка langSwitcher):
-  // 2px рамка, скругление 4px и светлый блик по внутреннему верхнему краю.
-  // Рамку получают все блоки, включая «Что сажаем?» — она же отделяет его
-  // от заголовка и вступления выше
+  // Блоки — каждый в рамке-«канавке» (эталон: рамка langSwitcher): 1px рамка,
+  // скругление 4px и светлый блик по внутреннему верхнему краю
   &__section {
     display: flex;
     flex-direction: column;
     row-gap: toEm(8);
-    padding: toEm(10);
-    border: toRem(2) solid rgba(0, 0, 0, 0.25);
+    // Сверху на 3px меньше (7 вместо 10)
+    padding: toEm(7) toEm(10) toEm(10);
+    border: toRem(1) solid rgba(0, 0, 0, 0.25);
     border-radius: toRem(4);
     box-shadow: inset 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+  }
+
+  // Первый блок («Что сажаем?») — без рамки: только горизонтальная «канавка»
+  // сверху, которая отделяет его от заголовка и вступления
+  &__section:first-of-type {
+    padding: toEm(12) 0 0;
+    border: none;
+    border-top: toRem(1) solid rgba(0, 0, 0, 0.25);
+    box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+  }
+
+  // Соцсети — справа, по центру свободного места, в рамке-«канавке»
+  &__socials {
+    align-self: flex-end;
+    margin-block: auto;
+    padding: toEm(4) toEm(6);
+    border: toRem(1) solid rgba(0, 0, 0, 0.25);
+    border-radius: toRem(6);
+    box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+
+    // Иконки на 2px меньше, чем в панели «Меню» (24 → 22)
+    :deep(img) {
+      width: toRem(22);
+      height: toRem(22);
+    }
   }
 
   &__question {
@@ -858,8 +893,8 @@ const purposeGroups = computed(() => {
     border-radius: toRem(8);
     background-color: var(--light-color-transparent);
     color: var(--gray-color);
-    // Верхний регистр «съедает» место — шрифт чуть меньше
-    font-size: toEm(15);
+    // Ещё на 2px меньше (13px) — верхний регистр «съедает» место
+    font-size: toEm(13);
     font-weight: 600;
     text-transform: uppercase;
     transition:
@@ -1000,13 +1035,12 @@ const purposeGroups = computed(() => {
     row-gap: toEm(4);
   }
 
-  // Товар: название (1fr) + кнопка добавления в корзину
+  // Товар: подложка (ссылка) — по ширине контента, кнопка — у правого края
   &__product-item {
-    display: grid;
-    grid-template-columns: 1fr auto;
+    display: flex;
     align-items: center;
-    column-gap: toEm(6);
-    // Небольшой отступ под счётчик, который выступает за кнопку вправо-вверх
+    justify-content: space-between;
+    column-gap: toEm(8);
     padding-block: toEm(6);
     padding-inline-end: toEm(8);
   }
@@ -1093,10 +1127,10 @@ const purposeGroups = computed(() => {
     text-decoration: none;
 
     // Подсказка, что по товару можно кликнуть (на телефоне откроется окно товара):
-    // при наведении подчёркивание становится ярче и текст зеленеет
+    // при наведении подчёркивание становится ярче, а текст — цвета warning-hover
     @include hover {
       .hamburger-garden__product-name {
-        color: var(--green-color);
+        color: var(--warning-hover);
         text-decoration-color: currentColor;
       }
     }
@@ -1106,7 +1140,7 @@ const purposeGroups = computed(() => {
   &__product-icon {
     flex-shrink: 0;
     font-size: toRem(18);
-    color: var(--primary-color);
+    color: var(--warning-hover);
   }
 
   &__product-name {
