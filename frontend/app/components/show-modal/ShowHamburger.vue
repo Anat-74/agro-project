@@ -696,22 +696,19 @@ const toggleHamburger = () => {
   &__close {
     flex: 0 0 auto;
     height: toRem(40);
-    // Втиснение: светлый фон + inset-тени (паттерн кнопки темы)
-    background-color: var(--light-color);
-    border: toRem(1) solid var(--border-color);
-    box-shadow:
-      0 toRem(2) toRem(4) rgba(0, 0, 0, 0.25),
-      inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
-      0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+    // Скругление всех углов (базовые 6px + 4px)
+    border-radius: toRem(10);
 
-    // Скругление правых углов: было 6px — стало +4px
-    border-radius: 0 toRem(10) toRem(10) 0;
-
-    // Линии «бургера»/крестика на светлом фоне — зелёные
-    span,
+    // Втиснутые полосы крестика (и «бургера»): внутренняя тень + светлый блик.
+    // Втиснут сам крестик, а не кнопка.
+    // :deep — потому что полоса-середина рисуется на элементе внутри UButton,
+    // и обычный scoped-селектор до него не достаёт
+    :deep(span),
     &::before,
     &::after {
-      background-color: var(--success-color);
+      box-shadow:
+        inset 0 toRem(2) toRem(2) rgba(0, 0, 0, 0.45),
+        0 toRem(1) 0 rgba(255, 255, 255, 0.45);
     }
   }
 

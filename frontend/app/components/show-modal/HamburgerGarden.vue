@@ -522,10 +522,9 @@ const purposeGroups = computed(() => {
                 />
                 <span class="hamburger-garden__product-name">{{ prod.name }}</span>
               </NuxtLink>
-              <!-- Кнопка добавления: иконка корзины, поверх неё — плюс
-                   (добавить / добавить ещё). Кнопка «втиснутая» (паттерн кнопки
-                   темы). Количество — счётчиком НАД кнопкой (абсолютное
-                   позиционирование: кнопка не растёт, соседи не сдвигаются) -->
+              <!-- Кнопка добавления: иконка корзины, поверх неё — крупный плюс
+                   с эффектом втиснения. Количество — счётчиком НАД кнопкой справа
+                   (абсолютное позиционирование: кнопка не растёт, соседи не сдвигаются) -->
               <UButton
                 variant="plain"
                 :class="[
@@ -540,10 +539,7 @@ const purposeGroups = computed(() => {
                 @click="addProductToCart(prod)"
               >
                 <Icon name="cil:cart" />
-                <Icon
-                  name="mingcute:add-line"
-                  class="hamburger-garden__add-plus"
-                />
+                <span class="hamburger-garden__add-plus" />
                 <span
                   v-if="cartQtyFor(prod.documentId) > 0"
                   :key="cartQtyFor(prod.documentId)"
@@ -811,6 +807,12 @@ const purposeGroups = computed(() => {
     display: flex;
     flex-direction: column;
     row-gap: toEm(4);
+
+    // Первая строка группы — компактнее: иначе между подписью группы
+    // и товарами слишком большой отступ (у остальных строк он нужен под счётчик)
+    > li:first-child {
+      padding-block-start: toEm(6);
+    }
   }
 
   // Товар: название (1fr) + кнопка добавления в корзину
@@ -826,8 +828,8 @@ const purposeGroups = computed(() => {
     padding-inline-end: toEm(8);
   }
 
-  // Кнопка добавления: иконка корзины + плюс поверх неё, вид «втиснутой» кнопки
-  // (светлый фон + inset-тени — паттерн кнопки темы)
+  // Кнопка добавления: иконка корзины + плюс поверх неё.
+  // Втиснутый — САМ ПЛЮС (см. __add-plus), кнопка обычная
   &__add {
     position: relative;
     display: inline-flex;
@@ -838,21 +840,15 @@ const purposeGroups = computed(() => {
     border: toRem(1) solid var(--border-color);
     border-radius: toRem(10);
     background-color: var(--light-color);
-    box-shadow:
-      0 toRem(2) toRem(4) rgba(0, 0, 0, 0.25),
-      inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
-      0 toRem(1) 0 rgba(255, 255, 255, 0.4);
     color: var(--success-color);
     font-size: toRem(20);
     transition:
       color var(--transition-duration),
-      box-shadow var(--transition-duration);
+      border-color var(--transition-duration);
 
-    // Товар уже в корзине: кнопка «вдавлена» глубже
+    // Товар уже в корзине — заметная рамка
     &_in-cart {
-      box-shadow:
-        inset 0 toRem(3) toRem(5) rgba(0, 0, 0, 0.3),
-        0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+      border-color: var(--success-color);
     }
 
     @include hover {
@@ -860,27 +856,43 @@ const purposeGroups = computed(() => {
     }
   }
 
-  // Плюс по центру, поверх иконки корзины: светлая подложка, чтобы линии
-  // корзины не мешали читать плюс
+  // Плюс: две полосы с эффектом втиснения (внутренняя тень + светлый блик),
+  // крупный — хорошо виден поверх иконки корзины
   &__add-plus {
     position: absolute;
     top: 50%;
     left: 50%;
     translate: -50% -50%;
-    padding: toRem(1);
-    border-radius: 50%;
-    background-color: var(--light-color);
-    font-size: toRem(13);
+    width: toRem(22);
+    height: toRem(22);
     pointer-events: none;
+
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      top: calc(50% - toRem(2));
+      left: 0;
+      width: 100%;
+      height: toRem(4);
+      border-radius: toRem(2);
+      background-color: var(--success-color);
+      box-shadow:
+        inset 0 toRem(2) toRem(2) rgba(0, 0, 0, 0.4),
+        0 toRem(1) 0 rgba(255, 255, 255, 0.6);
+    }
+
+    &::after {
+      rotate: 90deg;
+    }
   }
 
-  // Счётчик — прямо НАД кнопкой, по центру: абсолютное позиционирование,
+  // Счётчик — НАД кнопкой, с правой стороны: абсолютное позиционирование,
   // поэтому кнопка не растёт и соседние элементы не сдвигаются
   &__add-count {
     position: absolute;
     bottom: calc(100% + toRem(2));
-    left: 50%;
-    translate: -50% 0;
+    right: 0;
     min-width: toRem(18);
     padding-inline: toRem(4);
     border-radius: toRem(9);
@@ -927,10 +939,26 @@ const purposeGroups = computed(() => {
     justify-content: flex-start;
     column-gap: toEm(8);
     text-decoration: none;
+
+    // Подсказка, что по товару можно кликнуть (на телефоне откроется окно товара):
+    // при наведении подчёркивание становится ярче и текст зеленеет
+    @include hover {
+      .hamburger-garden__product-name {
+        color: var(--green-color);
+        text-decoration-color: currentColor;
+      }
+    }
   }
 
   &__product-name {
     text-align: left;
+    // Постоянное, но неброское подчёркивание — признак кликабельности
+    text-decoration: underline;
+    text-decoration-color: rgba(0, 0, 0, 0.25);
+    text-underline-offset: toRem(3);
+    transition:
+      color var(--transition-duration),
+      text-decoration-color var(--transition-duration);
   }
 
   // Ссылка на статью по растению
