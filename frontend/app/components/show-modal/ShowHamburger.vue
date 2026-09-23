@@ -628,9 +628,9 @@ const toggleHamburger = () => {
     flex: 1 1 auto;
     min-height: 0;
     display: flex;
-    // Зона под точки-пагинацию: область прокрутки заканчивается ВЫШЕ точек,
-    // поэтому контент никогда не оказывается под ними
-    padding-block-end: toRem(40);
+    // Зона под точки-пагинацию: область прокрутки заканчивается ВЫШЕ точек.
+    // Точки опущены на 9px, поэтому и зона уменьшена на те же 9px
+    padding-block-end: toRem(31);
 
     :deep(.slider) {
       height: 100%;
@@ -651,12 +651,12 @@ const toggleHamburger = () => {
       padding-block-end: toRem(16);
     }
 
-    // Точки внизу по центру (плавающие, с подложкой)
+    // Точки внизу по центру (плавающие, с подложкой). Опущены на 9px ниже
     :deep(.slider__pagination) {
       position: absolute;
       z-index: 3;
       left: 50%;
-      bottom: toRem(10);
+      bottom: toRem(1);
       translate: -50% 0;
       display: flex;
       column-gap: toRem(8);

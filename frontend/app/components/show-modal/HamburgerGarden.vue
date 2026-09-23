@@ -730,18 +730,18 @@ const purposeGroups = computed(() => {
     color: var(--gray-color);
   }
 
+  // Блоки — каждый в рамке-«канавке» (эталон: рамка langSwitcher):
+  // 2px рамка, скругление 4px и светлый блик по внутреннему верхнему краю.
+  // Рамку получают все блоки, включая «Что сажаем?» — она же отделяет его
+  // от заголовка и вступления выше
   &__section {
     display: flex;
     flex-direction: column;
     row-gap: toEm(8);
-  }
-
-  // Разделитель между логическими блоками — «канавка» (эталон: рамка langSwitcher):
-  // тёмная линия + светлый блик снизу. У первого блока линии нет
-  &__section + &__section {
-    padding-block-start: toEm(16);
-    border-top: toRem(1) solid rgba(0, 0, 0, 0.25);
-    box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+    padding: toEm(10);
+    border: toRem(2) solid rgba(0, 0, 0, 0.25);
+    border-radius: toRem(4);
+    box-shadow: inset 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
   }
 
   &__question {
