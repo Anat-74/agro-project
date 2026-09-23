@@ -645,7 +645,7 @@ const toggleHamburger = () => {
       scrollbar-width: thin;
       // Место под точки-пагинацию: точки плавающие, поэтому контент слайда
       // должен заканчиваться выше них
-      padding-block-end: toRem(72);
+      padding-block-end: toRem(110);
     }
 
     // Точки внизу по центру (плавающие, с подложкой)

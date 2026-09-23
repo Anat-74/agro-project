@@ -573,6 +573,7 @@ const purposeGroups = computed(() => {
                   type="icon"
                 />
                 <Icon
+                  v-if="!(prod.mainImage?.url || prod.image?.length)"
                   name="mingcute:shopping-bag-2-line"
                   class="hamburger-garden__product-icon"
                 />
@@ -594,7 +595,11 @@ const purposeGroups = computed(() => {
                 "
                 @click="addProductToCart(prod)"
               >
-                <Icon name="cil:cart" />
+                <Icon
+                  name="cil:cart"
+                  :width="20"
+                  :height="20"
+                />
                 <!-- Плюс появляется только когда товар уже в корзине
                      (намёк: повторное нажатие добавит ещё) -->
                 <span
@@ -811,7 +816,8 @@ const purposeGroups = computed(() => {
     border-radius: toRem(8);
     background-color: var(--light-color-transparent);
     color: var(--gray-color);
-    font-size: toEm(14);
+    // На 2px больше прежнего (14 → 16)
+    font-size: toEm(16);
     font-weight: 600;
     transition:
       color var(--transition-duration),
@@ -901,6 +907,10 @@ const purposeGroups = computed(() => {
     dd {
       display: flex;
       align-items: center;
+      justify-content: flex-end;
+      // Фиксированная ширина колонки значений: тогда вертикальные линии
+      // во всех строках совпадают (раньше шли «вразнобой»)
+      flex: 0 0 toRem(110);
       // Вертикальная «канавка» перед колонкой значений
       margin-inline-start: toEm(12);
       padding-inline-start: toEm(12);
@@ -965,7 +975,8 @@ const purposeGroups = computed(() => {
     border-radius: toRem(10);
     background-color: var(--light-color);
     color: var(--success-color);
-    font-size: toRem(20);
+    // Иконка корзины меньше — над ней помещается плюс (без наложения)
+    font-size: toRem(16);
     transition:
       color var(--transition-duration),
       border-color var(--transition-duration);
@@ -980,26 +991,25 @@ const purposeGroups = computed(() => {
     }
   }
 
-  // Плюс — «канавка» (эталон: разделитель секций в фильтрах): тёмная линия
-  // + внутренняя тёмная тень + светлый блик снизу. По центру кнопки, поверх
-  // иконки корзины. Полосы потолще (4px) — иначе плюс почти не видно
+  // Плюс: небольшой, стоит НАД иконкой корзины (в верхней части кнопки).
+  // «Канавка» — тёмная линия + светлый блик снизу
   &__add-plus {
     position: absolute;
-    top: 50%;
+    top: toRem(1);
     left: 50%;
-    translate: -50% -50%;
-    width: toRem(16);
-    height: toRem(16);
+    translate: -50% 0;
+    width: toRem(9);
+    height: toRem(9);
     pointer-events: none;
 
     &::before,
     &::after {
       content: "";
       position: absolute;
-      top: calc(50% - toRem(2));
+      top: calc(50% - toRem(1));
       left: 0;
       width: 100%;
-      height: toRem(4);
+      height: toRem(2);
       border-radius: toRem(1);
       background-color: rgba(0, 0, 0, 0.3);
       box-shadow:
