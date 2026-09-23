@@ -226,6 +226,14 @@ const { data: products, pending: pendingProducts } = useCachedAsyncData(
 // ===== Калькулятор: режимы «Семена / Рассада / Удобрение» =====
 type GardenMode = "seeds" | "seedlings" | "fertilizer";
 const mode = ref<GardenMode>("seeds");
+
+// Иконка по назначению: используется и в табах режимов, и в подписях групп товаров
+const PURPOSE_ICONS: Record<Purpose, string> = {
+  seeds: "mdi:seed-outline",
+  seedlings: "mdi:sprout-outline",
+  fertilizer: "mingcute:flask-2-line",
+  other: "mingcute:basket-2-line",
+};
 // ===== Площадь: храним всегда в м², а показываем в выбранной единице =====
 // 1 сотка = 100 м². Пользователь вводит значение в выбранной единице,
 // в расчёт всегда уходит м²
@@ -254,10 +262,10 @@ const areaInput = computed<number>({
   },
 });
 
-const modeTabs = computed<{ id: GardenMode; label: string }[]>(() => [
-  { id: "seeds", label: t.value.modeSeeds },
-  { id: "seedlings", label: t.value.modeSeedlings },
-  { id: "fertilizer", label: t.value.modeFertilizer },
+const modeTabs = computed<{ id: GardenMode; label: string; icon: string }[]>(() => [
+  { id: "seeds", label: t.value.modeSeeds, icon: PURPOSE_ICONS.seeds },
+  { id: "seedlings", label: t.value.modeSeedlings, icon: PURPOSE_ICONS.seedlings },
+  { id: "fertilizer", label: t.value.modeFertilizer, icon: PURPOSE_ICONS.fertilizer },
 ]);
 
 // Фасовки товаров растения по назначению → пачки для активного режима
@@ -394,7 +402,7 @@ const purposeGroups = computed(() => {
     other: t.value.purposeOther,
   };
   return (["seeds", "seedlings", "fertilizer", "other"] as Purpose[])
-    .map((id) => ({ id, label: label[id], items: groups[id] }))
+    .map((id) => ({ id, label: label[id], icon: PURPOSE_ICONS[id], items: groups[id] }))
     .filter((g) => g.items.length);
 });
 </script>
@@ -465,48 +473,52 @@ const purposeGroups = computed(() => {
           :aria-selected="mode === tab.id"
           @click="mode = tab.id"
         >
+          <Icon :name="tab.icon" />
           {{ tab.label }}
         </UButton>
       </div>
 
-      <!-- Единицы площади: м² / сотки (1 сотка = 100 м²). Отдельной строкой
-           справа, кнопки — по ширине текста -->
-      <div
-        class="hamburger-garden__units"
-        role="radiogroup"
-        :aria-label="t.areaUnits"
-      >
-        <UButton
-          v-for="unit in areaUnitTabs"
-          :key="unit.id"
-          variant="plain"
-          role="radio"
-          :class="[
-            'hamburger-garden__unit',
-            { 'hamburger-garden__unit_is-active': areaUnit === unit.id },
-          ]"
-          :aria-checked="areaUnit === unit.id"
-          @click="areaUnit = unit.id"
+      <!-- Площадь: подпись с иконкой слева, единицы (м² / сотки) справа -->
+      <div class="hamburger-garden__units-row">
+        <span class="hamburger-garden__field-label">
+          <Icon name="mdi:ruler-square" class="hamburger-garden__label-icon" />
+          {{ t.areaLabel }}
+        </span>
+
+        <div
+          class="hamburger-garden__units"
+          role="radiogroup"
+          :aria-label="t.areaUnits"
         >
-          {{ unit.label }}
-        </UButton>
+          <UButton
+            v-for="unit in areaUnitTabs"
+            :key="unit.id"
+            variant="plain"
+            role="radio"
+            :class="[
+              'hamburger-garden__unit',
+              { 'hamburger-garden__unit_is-active': areaUnit === unit.id },
+            ]"
+            :aria-checked="areaUnit === unit.id"
+            @click="areaUnit = unit.id"
+          >
+            {{ unit.label }}
+          </UButton>
+        </div>
       </div>
 
-      <!-- Площадь: подпись слева, поле и единица — справа -->
+      <!-- Поле ввода площади (справа) и единица измерения -->
       <div class="hamburger-garden__field">
-        <span class="hamburger-garden__field-label">{{ t.areaLabel }}</span>
-        <span class="hamburger-garden__field-input">
-          <UInput
-            v-model.number="areaInput"
-            type="number"
-            :min="0.1"
-            :step="0.1"
-            clear-on-focus
-            :aria-label="`${t.areaLabel}, ${areaUnitLabel}`"
-            class="hamburger-garden__input"
-          />
-          <span class="hamburger-garden__field-unit">{{ areaUnitLabel }}</span>
-        </span>
+        <UInput
+          v-model.number="areaInput"
+          type="number"
+          :min="0.1"
+          :step="0.1"
+          clear-on-focus
+          :aria-label="`${t.areaLabel}, ${areaUnitLabel}`"
+          class="hamburger-garden__input"
+        />
+        <span class="hamburger-garden__field-unit">{{ areaUnitLabel }}</span>
       </div>
 
       <p v-if="!hasModeData" class="hamburger-garden__empty">{{ t.noData }}</p>
@@ -547,11 +559,17 @@ const purposeGroups = computed(() => {
 
     <!-- Товары растения -->
     <section v-if="selectedCrop" class="hamburger-garden__section">
-      <h3 class="hamburger-garden__question">{{ t.productsTitle }}</h3>
+      <h3 class="hamburger-garden__question">
+        <Icon name="mingcute:basket-2-line" class="hamburger-garden__question-icon" />
+        {{ t.productsTitle }}
+      </h3>
 
       <div v-if="purposeGroups.length" class="hamburger-garden__groups">
         <div v-for="group in purposeGroups" :key="group.id" class="hamburger-garden__group">
-          <h4 class="hamburger-garden__group-title">{{ group.label }}</h4>
+          <h4 class="hamburger-garden__group-title">
+            <Icon :name="group.icon" class="hamburger-garden__group-icon" />
+            {{ group.label }}
+          </h4>
           <ul class="hamburger-garden__list">
             <li
               v-for="prod in group.items"
@@ -596,15 +614,9 @@ const purposeGroups = computed(() => {
                 @click="addProductToCart(prod)"
               >
                 <Icon
-                  name="cil:cart"
+                  :name="cartQtyFor(prod.documentId) > 0 ? 'mingcute:add-line' : 'cil:cart'"
                   :width="20"
                   :height="20"
-                />
-                <!-- Плюс появляется только когда товар уже в корзине
-                     (намёк: повторное нажатие добавит ещё) -->
-                <span
-                  v-if="cartQtyFor(prod.documentId) > 0"
-                  class="hamburger-garden__add-plus"
                 />
                 <span
                   v-if="cartQtyFor(prod.documentId) > 0"
@@ -626,7 +638,10 @@ const purposeGroups = computed(() => {
 
     <!-- Статьи блога по растению -->
     <section v-if="selectedCrop && articles?.length" class="hamburger-garden__section">
-      <h3 class="hamburger-garden__question">{{ t.articlesTitle }}</h3>
+      <h3 class="hamburger-garden__question">
+        <Icon name="mdi:book-open-outline" class="hamburger-garden__question-icon" />
+        {{ t.articlesTitle }}
+      </h3>
       <ul class="hamburger-garden__list">
         <!-- Клик перехватываем на li (фаза перехвата): на телефоне откроется
              модалка, на десктопе ссылка сработает как обычно -->
@@ -646,25 +661,12 @@ const purposeGroups = computed(() => {
       </ul>
     </section>
 
-    <!-- Модальное окно статьи (страница — для десктопа и поиска, модалка — для телефона) -->
-    <ShowModalArticle
-      ref="article-modal"
-      :slug="activeArticle?.slug"
-      :title="activeArticle?.title"
-      :date="activeArticle?.date"
-      :show-calculator="false"
-    />
-
-    <!-- Модальное окно товара: на телефоне открываем вместо перехода на страницу -->
-    <ShowModalProduct
-      ref="product-modal"
-      :product="activeProduct"
-      hide-trigger
-    />
-
     <!-- Частые вопросы: тот же источник (calculator-page.faq), что и на странице -->
     <section v-if="showFaq && faqItems?.length" class="hamburger-garden__section">
-      <h3 class="hamburger-garden__question">{{ t.faqTitle }}</h3>
+      <h3 class="hamburger-garden__question">
+        <Icon name="mingcute:question-line" class="hamburger-garden__question-icon" />
+        {{ t.faqTitle }}
+      </h3>
       <UAccordion
         v-for="(item, index) in faqItems"
         :key="index"
@@ -680,6 +682,22 @@ const purposeGroups = computed(() => {
         </div>
       </UAccordion>
     </section>
+
+    <!-- Модальные окна (в конце разметки, чтобы не разрывать соседство секций,
+         от которого зависит разделитель между блоками) -->
+    <ShowModalArticle
+      ref="article-modal"
+      :slug="activeArticle?.slug"
+      :title="activeArticle?.title"
+      :date="activeArticle?.date"
+      :show-calculator="false"
+    />
+
+    <ShowModalProduct
+      ref="product-modal"
+      :product="activeProduct"
+      hide-trigger
+    />
   </div>
 </template>
 
@@ -715,13 +733,30 @@ const purposeGroups = computed(() => {
   &__section {
     display: flex;
     flex-direction: column;
-    row-gap: toEm(10);
+    row-gap: toEm(8);
+  }
+
+  // Разделитель между логическими блоками — «канавка» (эталон: рамка langSwitcher):
+  // тёмная линия + светлый блик снизу. У первого блока линии нет
+  &__section + &__section {
+    padding-block-start: toEm(16);
+    border-top: toRem(1) solid rgba(0, 0, 0, 0.25);
+    box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
   }
 
   &__question {
+    display: flex;
+    align-items: center;
+    column-gap: toEm(6);
     font-size: toEm(18);
     font-weight: 600;
     color: var(--primary-color);
+  }
+
+  // Иконка перед заголовком раздела
+  &__question-icon {
+    flex-shrink: 0;
+    font-size: toRem(20);
   }
 
   // Растения — чипы
@@ -801,7 +836,14 @@ const purposeGroups = computed(() => {
   }
 
   // Площадь
-  // Единицы площади: отдельная строка справа, кнопки по ширине текста
+  // Площадь: подпись с иконкой слева, единицы измерения справа
+  &__units-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: toEm(10);
+  }
+
   &__units {
     display: flex;
     justify-content: flex-end;
@@ -816,9 +858,10 @@ const purposeGroups = computed(() => {
     border-radius: toRem(8);
     background-color: var(--light-color-transparent);
     color: var(--gray-color);
-    // На 2px больше прежнего (14 → 16)
-    font-size: toEm(16);
+    // Верхний регистр «съедает» место — шрифт чуть меньше
+    font-size: toEm(15);
     font-weight: 600;
+    text-transform: uppercase;
     transition:
       color var(--transition-duration),
       border-color var(--transition-duration),
@@ -835,23 +878,27 @@ const purposeGroups = computed(() => {
     }
   }
 
-  // Площадь: подпись слева, поле и единица справа
+  // Поле площади: справа (подпись — в строке с единицами выше)
   &__field {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    column-gap: toEm(10);
+    justify-content: flex-end;
+    column-gap: toEm(8);
   }
 
   &__field-label {
+    display: inline-flex;
+    align-items: center;
+    column-gap: toEm(6);
     font-weight: 600;
     color: var(--color);
   }
 
-  &__field-input {
-    display: flex;
-    align-items: center;
-    column-gap: toEm(6);
+  // Иконка перед подписью «Площадь»
+  &__label-icon {
+    flex-shrink: 0;
+    font-size: toRem(18);
+    color: var(--primary-color);
   }
 
   &__input {
@@ -931,22 +978,26 @@ const purposeGroups = computed(() => {
   }
 
   &__group-title {
+    display: flex;
+    align-items: center;
+    column-gap: toEm(6);
     font-size: toEm(15);
     font-weight: 600;
     color: var(--gray-color);
     margin-block-end: toEm(4);
   }
 
+  // Иконка перед названием группы (семена / рассада / удобрения)
+  &__group-icon {
+    flex-shrink: 0;
+    font-size: toRem(18);
+    color: var(--primary-color);
+  }
+
   &__list {
     display: flex;
     flex-direction: column;
     row-gap: toEm(4);
-
-    // Первая строка группы — компактнее: иначе между подписью группы
-    // и товарами слишком большой отступ (у остальных строк он нужен под счётчик)
-    > li:first-child {
-      padding-block-start: toEm(6);
-    }
   }
 
   // Товар: название (1fr) + кнопка добавления в корзину
@@ -955,15 +1006,13 @@ const purposeGroups = computed(() => {
     grid-template-columns: 1fr auto;
     align-items: center;
     column-gap: toEm(6);
-    // Постоянный отступ сверху — под счётчик, который стоит прямо над кнопкой;
-    // справа — под его выступ. Отступы неизменные: ничего не сдвигается
-    // и не появляется горизонтальная прокрутка
-    padding-block-start: toEm(20);
+    // Небольшой отступ под счётчик, который выступает за кнопку вправо-вверх
+    padding-block: toEm(6);
     padding-inline-end: toEm(8);
   }
 
-  // Кнопка добавления: иконка корзины + плюс поверх неё.
-  // Втиснутый — САМ ПЛЮС (см. __add-plus), кнопка обычная
+  // Кнопка добавления: иконка корзины, а когда товар уже в корзине — плюс
+  // (плюс подсказывает, что повторное нажатие добавит ещё)
   &__add {
     position: relative;
     display: inline-flex;
@@ -991,43 +1040,11 @@ const purposeGroups = computed(() => {
     }
   }
 
-  // Плюс: небольшой, стоит НАД иконкой корзины (в верхней части кнопки).
-  // «Канавка» — тёмная линия + светлый блик снизу
-  &__add-plus {
-    position: absolute;
-    top: toRem(1);
-    left: 50%;
-    translate: -50% 0;
-    width: toRem(9);
-    height: toRem(9);
-    pointer-events: none;
-
-    &::before,
-    &::after {
-      content: "";
-      position: absolute;
-      top: calc(50% - toRem(1));
-      left: 0;
-      width: 100%;
-      height: toRem(2);
-      border-radius: toRem(1);
-      background-color: rgba(0, 0, 0, 0.3);
-      box-shadow:
-        inset 0 toRem(-1) 0 rgba(0, 0, 0, 0.12),
-        0 toRem(1) 0 rgba(255, 255, 255, 0.6);
-    }
-
-    &::after {
-      rotate: 90deg;
-    }
-  }
-
-  // Счётчик — НАД кнопкой, с правой стороны: абсолютное позиционирование,
-  // поэтому кнопка не растёт и соседние элементы не сдвигаются
+  // Счётчик — как у кнопки корзины: в правом верхнем углу, вплотную к иконке
   &__add-count {
     position: absolute;
-    bottom: calc(100% + toRem(2));
-    right: 0;
+    top: toRem(-4);
+    right: toRem(-4);
     min-width: toRem(18);
     padding-inline: toRem(4);
     border-radius: toRem(9);
@@ -1094,8 +1111,8 @@ const purposeGroups = computed(() => {
 
   &__product-name {
     text-align: left;
-    // Шрифт на 2px меньше, чем задаёт класс аккордеона: у родителя 22px → 20px
-    font-size: toEm(20, 22);
+    // Ещё на 2px меньше (было 20px → 18px)
+    font-size: toEm(18, 22);
     // Стандартный цвет текста (как у «Площадь» и ссылок статей)
     color: var(--color);
     // Постоянное, но неброское подчёркивание — признак кликабельности
