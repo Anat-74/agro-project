@@ -856,30 +856,27 @@ const purposeGroups = computed(() => {
     }
   }
 
-  // Плюс: две полосы с эффектом втиснения (внутренняя тень + светлый блик),
-  // крупный — хорошо виден поверх иконки корзины
+  // Плюс — «канавка» (тёмная линия + светлый блик), как разделитель между
+  // colorMode и langSwitcher. Стоит в правом нижнем углу иконки корзины,
+  // поэтому корзина читается целиком
   &__add-plus {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    translate: -50% -50%;
-    width: toRem(22);
-    height: toRem(22);
+    right: toRem(4);
+    bottom: toRem(4);
+    width: toRem(16);
+    height: toRem(16);
     pointer-events: none;
 
     &::before,
     &::after {
       content: "";
       position: absolute;
-      top: calc(50% - toRem(2));
+      top: calc(50% - toRem(1));
       left: 0;
       width: 100%;
-      height: toRem(4);
-      border-radius: toRem(2);
-      background-color: var(--success-color);
-      box-shadow:
-        inset 0 toRem(2) toRem(2) rgba(0, 0, 0, 0.4),
-        0 toRem(1) 0 rgba(255, 255, 255, 0.6);
+      height: toRem(3);
+      background-color: rgba(0, 0, 0, 0.25);
+      box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
     }
 
     &::after {
