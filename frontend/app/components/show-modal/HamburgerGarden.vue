@@ -1122,7 +1122,7 @@ const purposeGroups = computed(() => {
     }
   }
 
-  // Иконка товара перед названием
+  // Иконка товара (фолбэк, когда у товара нет изображения из CMS)
   &__product-icon {
     flex-shrink: 0;
     font-size: toRem(18);
