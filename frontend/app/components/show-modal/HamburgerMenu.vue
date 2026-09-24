@@ -10,8 +10,6 @@ const props = defineProps<{
   navigation?: NavLink[]
   socials: SocialLink[]
   phones: Phone[]
-  // Почта — из global.email (как в попапе контактов)
-  email: Email[]
 }>()
 
 const emit = defineEmits<{
@@ -180,17 +178,6 @@ const { data: discount } = useCachedAsyncData(
         </a>
       </div>
 
-      <div
-        v-for="mail in email"
-        :key="mail.documentId || mail.id"
-        class="hamburger-menu-panel__mail"
-      >
-        <Icon v-if="mail.isEmail" name="material-symbols:mail-outline" />
-        <a v-if="mail.isEmail" :href="`mailto:${mail.email}`" class="company__link-phones">
-          {{ mail.email }}
-        </a>
-      </div>
-
       <USocials class="hamburger-menu-panel__socials" :socials="socials" />
     </div>
   </nav>
@@ -251,9 +238,8 @@ const { data: discount } = useCachedAsyncData(
     row-gap: toEm(8);
   }
 
-  // Телефон и почта: иконка и текст выровнены по центру по вертикали
-  &__phone,
-  &__mail {
+  // Телефон: иконка и текст выровнены по центру по вертикали
+  &__phone {
     display: flex;
     align-items: center;
     column-gap: toEm(6);

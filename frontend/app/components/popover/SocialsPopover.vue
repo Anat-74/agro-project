@@ -67,12 +67,12 @@ const popoverId = `socials-popover-${useId()}`;
     // Сброс паддингов/min-height UButton (btn_plain), иначе плашка не круглая
     min-height: 0;
     padding: 0;
-    border: toRem(1) solid rgba(0, 0, 0, 0.25);
+    // Фона достаточно: без рамки и без светового блика по краю
+    border: none;
     border-radius: 50%;
     color: var(--primary-color);
     background-color: var(--light-color-transparent);
     backdrop-filter: blur(4px);
-    box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
     font-size: toRem(20);
     anchor-name: --socials-popover;   // якорь для дропдауна (Anchor Positioning)
     transition:

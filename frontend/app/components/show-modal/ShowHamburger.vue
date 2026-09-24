@@ -350,7 +350,6 @@ const toggleHamburger = () => {
             :navigation="navItems"
             :socials="socials"
             :phones="phones"
-            :email="email"
             @navigate="close?.()"
           />
         </template>
@@ -656,17 +655,27 @@ const toggleHamburger = () => {
     flex: 1 1 auto;
     min-height: 0;
     display: flex;
+    // Обёртка «прозрачна» для указателя: её нижняя полоса (padding-block-end)
+    // физически перекрывает нижнюю ось (телефон/соцсети) и «съедала» клики по
+    // ним. Интерактив возвращаем контенту слайдов и точкам (ниже)
+    pointer-events: none;
     // Зона под точки-пагинацию: область прокрутки заканчивается ВЫШЕ точек.
     // Точки опущены на 9px, поэтому и зона уменьшена на те же 9px
     padding-block-end: toRem(31);
 
+    // Нижняя полоса слайдера (его padding-block-end) — зона точек. Физически
+    // она перекрывает нижнюю ось (телефон/соцсети) и «съедала» клики по ним.
+    // Поэтому слайдер прозрачен для указателя, а интерактивны только контент
+    // слайдов (свайп/скролл) и сами точки
     :deep(.slider) {
       height: 100%;
+      pointer-events: none;
     }
 
     :deep(.slider__container) {
       height: 100%;
       align-items: stretch;
+      pointer-events: auto;
     }
 
     :deep(.slider__slide) {
@@ -693,6 +702,8 @@ const toggleHamburger = () => {
     :deep(.slider__pagination) {
       position: absolute;
       z-index: 3;
+      // Слайдер прозрачен для указателя — точкам возвращаем клики явно
+      pointer-events: auto;
       left: 50%;
       bottom: calc(var(--axis-bottom) - var(--items-pad-end));
       translate: -50% 0;

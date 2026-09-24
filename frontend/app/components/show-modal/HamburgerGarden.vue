@@ -1001,14 +1001,16 @@ const purposeGroups = computed(() => {
     font-size: toEm(15);
     font-weight: 600;
     color: var(--gray-color);
-    margin-block-end: toEm(4);
+    // Отступ до списка товаров — на 2px меньше прежнего (был toEm(4) ≈ 3.3px)
+    margin-block-end: calc(#{toEm(4)} - #{toRem(2)});
   }
 
-  // Иконка перед названием группы (семена / рассада / удобрения)
+  // Иконка перед названием группы (семена / рассада / удобрения).
+  // Цвет — как у самого подзаголовка группы
   &__group-icon {
     flex-shrink: 0;
     font-size: toRem(18);
-    color: var(--primary-color);
+    color: var(--gray-color);
   }
 
   &__list {
@@ -1075,9 +1077,11 @@ const purposeGroups = computed(() => {
     animation: gardenCountPop 0.25s ease;
   }
 
-  // Ссылка на товар: оутлайн — только у «details» (аккордеон), здесь не нужен
+  // Ссылка на товар: оутлайн — только у «details» (аккордеон), здесь не нужен.
+  // Фон аккордеона (--light-color-transparent) тоже убираем: у товара только текст
   &__product {
     outline: none;
+    background-color: transparent;
   }
 
   // Частые вопросы (тот же аккордеон, что в каталоге и меню)
@@ -1129,8 +1133,8 @@ const purposeGroups = computed(() => {
     text-align: left;
     // Ещё на 2px меньше (было 20px → 18px)
     font-size: toEm(18, 22);
-    // Стандартный цвет текста (как у «Площадь» и ссылок статей)
-    color: var(--color);
+    // Цвет товара — warning (акцент), на ховере — warning-hover
+    color: var(--warning-color);
     // Постоянное, но неброское подчёркивание — признак кликабельности
     text-decoration: underline;
     text-decoration-color: rgba(0, 0, 0, 0.25);
