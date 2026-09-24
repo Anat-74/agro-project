@@ -50,7 +50,10 @@ imports: { dirs: ["shared/types/**", "shared/utils/**"] },
 
 - `components/popover/BackgroundPopover.vue` — переключатель фонов (не `<dialog>`): **Popover API** (`popover="auto"`), открытие по `popovertarget` на `UButton variant="icon"`, закрытие кликом вне/Escape нативно.
 - Внутри — `USlider` (вариант `background`): компактная горизонтальная карточка, превью фона + название, кнопки prev/next по бокам, свайп — нативный `scroll-snap`.
-- Имя с суффиксом `Popover` — консистентно с `ColorModePopover`, `ContactsPopover`, `MoreMenuPopover`.
+- Имя с суффиксом `Popover` — консистентно с `ColorModePopover`, `ContactsPopover`,
+  `SocialsPopover`, `MoreMenuPopover`. Самостоятельный попап (свой триггер, открытие по клику,
+  `popovertarget`) — без префикса (`ContactsPopover` — панель каталога); попап с ВНЕШНИМ триггером
+  (ховер пункта навигации, provide/inject `isContacts`) — `NavContactsPopover`.
 - `usePopover(id, ref)` синхронизирует `isOpen`; выбор фона → `emit('select')` + `close()`.
 
 ## 4.2 Локализация текстов — два источника

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { VISIBILITY_KEY } from "#shared/utils/visibility";
-import ContactsPopover from "~/components/popover/ContactsPopover.vue";
+import NavContactsPopover from "~/components/popover/NavContactsPopover.vue";
 
 const { isContacts, visibleIsContacts, hideContacts } =
   inject<VisibilityState>(VISIBILITY_KEY)!;
@@ -39,7 +39,7 @@ defineProps<{
           <!-- Поповер контактов: hover-показ через provide/inject (isContacts из app.vue).
                DOM-потомок li — пока курсор над поповером (и его ::before-мостом),
                mouseleave на li не срабатывает и дропдаун не закрывается -->
-          <ContactsPopover
+          <NavContactsPopover
             v-if="item.url === '/contacts'"
             :email="email"
             :phones="phones"
@@ -80,7 +80,7 @@ defineProps<{
     color: var(--primary-color);
 
     &_contacts {
-      anchor-name: --contacts-anchor;   // якорь для ContactsPopover (Anchor Positioning)
+      anchor-name: --contacts-anchor;   // якорь для NavContactsPopover (Anchor Positioning)
 
       svg {
         transition: rotate var(--transition-duration), color var(--transition-duration);
@@ -126,7 +126,7 @@ defineProps<{
   }
 
   // Caret разворачивается, когда поповер контактов открыт
-  &__item:has(.contacts-popover:popover-open) &__link_contacts svg {
+  &__item:has(.nav-contacts-popover:popover-open) &__link_contacts svg {
     rotate: 180deg;
   }
 }

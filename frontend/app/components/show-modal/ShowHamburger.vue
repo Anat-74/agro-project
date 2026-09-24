@@ -6,6 +6,8 @@ import VoiceInput from "~/components/chat-assistant/VoiceInput.vue";
 import HamburgerCatalog from "~/components/show-modal/HamburgerCatalog.vue";
 import HamburgerGarden from "~/components/show-modal/HamburgerGarden.vue";
 import HamburgerMenu from "~/components/show-modal/HamburgerMenu.vue";
+import ContactsPopover from "~/components/popover/ContactsPopover.vue";
+import SocialsPopover from "~/components/popover/SocialsPopover.vue";
 
 const visuallyHiddenT = computed(() => visuallyHiddenTranslations[currentLocale.value])
 const buttonT = computed(() => buttonTranslations[currentLocale.value])
@@ -150,6 +152,9 @@ const tabLabels = computed(() => [
   showHamburgerT.value.tabGarden,
   showHamburgerT.value.tabMenu,
 ]);
+
+// Почта для попапа контактов и слайда «Меню» — из global (как в AppHeader: global.email)
+const email = computed<Email[]>(() => (props.global?.email ?? []) as Email[]);
 
 // Пункты меню из Strapi (global.header.navigation) — для слайда «Меню»
 const navItems = computed<NavLink[]>(
@@ -345,6 +350,7 @@ const toggleHamburger = () => {
             :navigation="navItems"
             :socials="socials"
             :phones="phones"
+            :email="email"
             @navigate="close?.()"
           />
         </template>
@@ -371,13 +377,15 @@ const toggleHamburger = () => {
         @navigate="close?.()"
       />
 
-      <!-- Соцсети — на нижней кромке плашки: справа, напротив точек пагинации,
-           в ряд. Только на слайде «Посадка» (в слайде «Меню» свои соцсети) -->
+      <!-- Нижняя ось плашки (≤ $tablet): телефон — точки пагинации — соцсети.
+           Видна на всех слайдах. Монтируем только при открытой панели: попапы
+           уходят в top-layer и не прячутся вместе с закрытым диалогом -->
       <div
-        v-if="!isDesktopInstance && activeTab === 2 && socials.length"
-        class="dialog-hamburger__socials"
+        v-if="!isDesktopInstance && isOpen"
+        class="dialog-hamburger__axis"
       >
-        <USocials :socials="socials" />
+        <ContactsPopover :phones="phones" :email="email" />
+        <SocialsPopover :socials="socials" />
       </div>
     </div>
     </dialog>
@@ -437,6 +445,15 @@ const toggleHamburger = () => {
   // display НЕ задаём: у <dialog> дефолт block; открытие/закрытие анимируется
   // через `display` в transition (none ↔ block) + @starting-style.
   z-index: 9999;
+  // Нижняя ось панели: высота плашек (телефон, точки, соцсети) и низ плашек от
+  // нижней кромки панели. Точки пагинации живут внутри слайдера, а его низ выше
+  // кромки на --items-pad-end (padding-block-end у __items) — у них bottom
+  // считается с этой поправкой (см. :deep(.slider__pagination) ниже)
+  // Значения — через интерполяцию #{...}: Sass НЕ вычисляет функции внутри
+  // CSS-переменных, без #{} в CSS ушло бы литеральное `toRem(30)` (невалидно)
+  --axis-h: #{toRem(30)};
+  --axis-bottom: #{toRem(8)};
+  --items-pad-end: #{toEm(12)};
   height: 100dvh;
   width: 100dvw;
   translate: -100%;
@@ -670,14 +687,18 @@ const toggleHamburger = () => {
       padding-block-end: toRem(16);
     }
 
-    // Точки внизу по центру (плавающие, с подложкой). Опущены на 9px ниже
+    // Точки внизу по центру (плавающие, с подложкой) — на одной оси с кнопкой
+    // телефона и соцсетей: та же высота плашки (--axis-h) и тот же низ
+    // (--axis-bottom), но с поправкой на низ слайдера (--items-pad-end)
     :deep(.slider__pagination) {
       position: absolute;
       z-index: 3;
       left: 50%;
-      bottom: toRem(1);
+      bottom: calc(var(--axis-bottom) - var(--items-pad-end));
       translate: -50% 0;
+      height: var(--axis-h);
       display: flex;
+      align-items: center;
       column-gap: toRem(8);
       padding: toRem(6) toRem(12);
       border-radius: toRem(20);
@@ -686,35 +707,22 @@ const toggleHamburger = () => {
     }
   }
 
-  // Соцсети на нижней кромке плашки: справа, напротив точек пагинации.
-  // bottom: 12px — низ __items отстоит от кромки на его padding-block-end,
-  // +1px — на столько же выше кромки стоят сами точки
-  &__socials {
+  // Нижняя ось плашки: кнопка телефона, точки пагинации и кнопка соцсетей
+  // стоят на одной линии. Кнопки абсолютны (точки — вообще внутри слайдера),
+  // поэтому выравнивание задаётся общей высотой плашек и общим низом от кромки
+  &__axis {
     position: absolute;
     z-index: 3;
-    right: toEm(12);
-    bottom: toRem(13);
-    padding: toRem(6) toRem(10);
-    border: toRem(1) solid rgba(0, 0, 0, 0.25);
-    border-radius: toRem(6);
-    background-color: var(--light-color-transparent);
-    backdrop-filter: blur(4px);
-    box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+    bottom: var(--axis-bottom);
+    inset-inline: toEm(12);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    // Промежуток прозрачен для кликов — иначе полоса перекрывала бы точки
+    pointer-events: none;
 
-    // В открытой панели USocials складывается в колонку (_is-open) —
-    // здесь нужен ряд, как у точек пагинации
-    :deep(.socials) {
-      align-self: auto;
-      align-items: center;
-      flex-direction: row;
-      row-gap: 0;
-      column-gap: toEm(10);
-    }
-
-    // Иконки на 2px меньше, чем в панели «Меню» (24 → 22)
-    :deep(img) {
-      width: toRem(22);
-      height: toRem(22);
+    > * {
+      pointer-events: auto;
     }
   }
 

@@ -1,49 +1,56 @@
 <script setup lang="ts">
-import { VISIBILITY_KEY } from "#shared/utils/visibility";
+import { buttonTranslations } from "~/locales/button";
 
-const props = defineProps<{
-  email: Email[];
+// Самостоятельный попап контактов (телефоны + почта) для нижней кромки панели
+// каталога: триггер-иконка внутри компонента, открытие по клику — нативный
+// Popover API (popovertarget + popover), без JS-состояния.
+// Ховер-карточка контактов в шапке — отдельный компонент NavContactsPopover.vue
+defineProps<{
   phones: Phone[];
+  email: Email[];
 }>();
 
-// Видимость контактов — глобальное состояние из app.vue (provide/inject):
-// на него реагируют HeroSection/HeroGrids, а здесь поповер показывается/скрывается
-const { isContacts } = inject<VisibilityState>(VISIBILITY_KEY)!;
+const { currentLocale } = useLocale();
+const buttonT = computed(() => buttonTranslations[currentLocale.value]);
 
-const popoverRef = useTemplateRef<HTMLElement>("contacts-popover");
-
-const { open, close } = usePopover("contacts", popoverRef);
-
-// Показываем поповер, когда isContacts (ховер на «Контакты» в навигации)
-watch(isContacts, (visible) => {
-  if (visible) open();
-  else close();
-});
+// id поповера уникален для каждого экземпляра (правило style guide §14)
+const popoverId = `contacts-popover-${useId()}`;
 </script>
 
 <template>
-  <!-- popover="manual": закрытие только уходом мыши (без light-dismiss).
-       Позиция — Anchor Positioning относительно ссылки «Контакты» (--contacts-anchor).
-       Поповер — DOM-потомок li: пока курсор над ним (в т.ч. над ::before-мостом),
-       mouseleave на li не срабатывает и дропдаун не закрывается -->
-  <div ref="contacts-popover" popover="manual" class="contacts-popover">
-    <div class="contacts-popover__card">
-      <div
-        v-for="phone in phones"
-        :key="phone.documentId || phone.id"
-        class="contacts-popover__link"
-      >
-        <Icon v-if="phone.isMobile" name="et:phone" />
-        <Icon v-if="!phone.isMobile" name="carbon:phone-ip" />
-        <a :href="`tel:${phone.phoneNumber.replace(/[^0-9+]/g, '')}`">{{ formatPhone(phone.phoneNumber) }}</a>
-      </div>
-      <div
-        v-for="mail in email"
-        :key="mail.documentId || mail.id"
-        class="contacts-popover__link"
-      >
-        <Icon v-if="mail.isEmail" name="material-symbols:mail-outline" />
-        <a v-if="mail.isEmail" :href="`mailto:${mail.email}`">{{ mail.email }}</a>
+  <div class="contacts-popover">
+    <UButton
+      variant="plain"
+      class="contacts-popover__trigger"
+      :popovertarget="popoverId"
+      :aria-label="buttonT.ariaLabelContacts"
+    >
+      <Icon name="mingcute:phone-line" />
+    </UButton>
+    <!-- Поповер — в top-layer, поэтому не режется overflow панели.
+         Раскрывается ВВЕРХ (триггер у нижней кромки плашки), при нехватке
+         места переворачивается (flip-block) -->
+    <div :id="popoverId" popover class="contacts-popover__dropdown">
+      <div class="contacts-popover__card">
+        <div
+          v-for="phone in phones"
+          :key="phone.documentId || phone.id"
+          class="contacts-popover__link"
+        >
+          <Icon v-if="phone.isMobile" name="et:phone" />
+          <Icon v-if="!phone.isMobile" name="carbon:phone-ip" />
+          <a :href="`tel:${phone.phoneNumber.replace(/[^0-9+]/g, '')}`">
+            {{ formatPhone(phone.phoneNumber) }}
+          </a>
+        </div>
+        <div
+          v-for="mail in email"
+          :key="mail.documentId || mail.id"
+          class="contacts-popover__link"
+        >
+          <Icon v-if="mail.isEmail" name="material-symbols:mail-outline" />
+          <a v-if="mail.isEmail" :href="`mailto:${mail.email}`">{{ mail.email }}</a>
+        </div>
       </div>
     </div>
   </div>
@@ -51,56 +58,102 @@ watch(isContacts, (visible) => {
 
 <style lang="scss" scoped>
 .contacts-popover {
-  position: fixed;
-  margin: 0;
-  inset: auto;
-  margin-block-start: toRem(4);
-  position-anchor: --contacts-anchor;
-  // span-left: правый край поповера у правого края ссылки, расширение влево —
-  // ссылка у правого края экрана, иначе поповер переполнял бы вьюпорт (браузер зажимает)
-  position-area: bottom span-left;
+  interpolate-size: allow-keywords;   // анимация height: auto (в FF/Safari — мгновенно)
 
-  // Мост: продолжает хит-зону поповера вверх, в зазор между ссылкой и карточкой.
-  // Без него при переходе курсора со ссылки на дропдаун сработает mouseleave на li
-  // и дропдаун закроется (мышь не успеет дотянуться)
-  &::before {
-    content: "";
-    position: absolute;
-    top: toRem(-4);
-    inset-inline: 0;
-    height: toRem(4);
+  // Триггер — иконка-плашка на оси пагинации: та же «канавка» и подложка
+  &__trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--axis-h);
+    height: var(--axis-h);
+    // Сброс паддингов/min-height UButton (btn_plain), иначе плашка не круглая
+    min-height: 0;
+    padding: 0;
+    border: toRem(1) solid rgba(0, 0, 0, 0.25);
+    border-radius: 50%;
+    color: var(--primary-color);
+    background-color: var(--light-color-transparent);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+    font-size: toRem(20);
+    anchor-name: --contacts-popover;   // якорь для дропдауна (Anchor Positioning)
+    transition:
+      color var(--transition-duration),
+      border-color var(--transition-duration);
+
+    @include hover {
+      color: var(--warning-hover);
+      border-color: var(--green-color);
+    }
   }
 
-  // Мобильный: ховер не нужен (на тач-устройствах клик конфликтует с переходом
-  // на /contacts), контакты доступны через страницу /contacts.
-  // display: none не даёт поповеру открыться (showPopover игнорируется)
-  @media (max-width: $tablet) {
-    display: none;
+  // Дропдаун в top-layer (fixed + инсеты от якоря)
+  &__dropdown {
+    position: fixed;
+    margin: 0;
+    inset: auto;
+    margin-block-end: toRem(6);
+    position-anchor: --contacts-popover;
+    // Вверх, расширяясь вправо: триггер у ЛЕВОГО края плашки
+    position-area: top span-right;
+    position-try-fallbacks: flip-block;
+
+    opacity: 0;
+    transition:
+      opacity 0.3s,
+      overlay 0.3s allow-discrete,
+      display 0.3s allow-discrete;
+
+    &:popover-open {
+      opacity: 1;
+    }
+
+    @starting-style {
+      &:popover-open {
+        opacity: 0;
+      }
+    }
   }
 
+  // Карточка контактов — визуал как у ховер-карточки в шапке
   &__card {
     display: flex;
     flex-direction: column;
     align-items: center;
     row-gap: toEm(8);
-    padding-inline: toRem(12);
-    padding-block-start: toRem(12);
-    padding-block-end: toRem(6);
+    padding: toRem(6) toRem(12) toRem(12);
     white-space: nowrap;
     border-radius: toRem(4);
     color: var(--color);
     background-color: var(--secondary-color);
+    box-shadow: 0 toRem(4) toRem(12) rgba(0, 0, 0, 0.1);
+    // Плавное раскрытие высоты: height: auto интерполируется interpolate-size
+    // (на [popover] display задавать нельзя — height живёт на карточке)
+    height: 0;
+    overflow: hidden;
+    transition: height 0.3s;
+  }
+
+  &__dropdown:popover-open &__card {
+    height: auto;
+  }
+
+  @starting-style {
+    &__dropdown:popover-open &__card {
+      height: 0;
+    }
   }
 
   &__link {
-    width: toRem(236);
+    width: 100%;
     display: grid;
     grid-template-columns: auto 1fr;
     align-items: center;
     justify-items: end;
     column-gap: toRem(9);
+    padding-block: toRem(4);
     padding-inline: toRem(9);
-    padding-block: toRem(1);
     border-radius: toRem(4);
     font-size: toRem(18);
     font-weight: 500;

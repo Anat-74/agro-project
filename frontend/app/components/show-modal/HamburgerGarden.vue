@@ -719,6 +719,13 @@ const purposeGroups = computed(() => {
     display: flex;
     flex-direction: column;
     row-gap: toEm(2);
+    // Разделитель ПОД шапкой (у самого блока «Что сажаем?» бордера нет вообще).
+    // Раньше линия висела как border-top первого блока — у него унаследован
+    // border-radius: 4px, отчего концы линии скруглялись («признак закругления»).
+    // У шапки радиуса нет — линия строго горизонтальная, от края до края.
+    padding-block-end: toEm(16);
+    border-bottom: toRem(1) solid rgba(0, 0, 0, 0.25);
+    box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
   }
 
   &__title {
@@ -745,17 +752,14 @@ const purposeGroups = computed(() => {
     box-shadow: inset 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
   }
 
-  // Первый блок («Что сажаем?») — та же горизонтальная «канавка», что была между
-  // блоками: без рамки вокруг блока и без скруглений. Отделяет блок от текста выше
+  // Первый блок («Что сажаем?») — без рамки вообще: разделитель живёт под шапкой
+  // слайда (`&__head`, border-bottom). border-radius сбрасываем явно: у базового
+  // `&__section` он 4px и скругляет концы линий («признак закругления»)
   &__section:first-of-type {
-    padding-block-start: toEm(16);
-    padding-inline: 0;
+    padding: 0;
     border: none;
-    border-top: toRem(1) solid rgba(0, 0, 0, 0.25);
-    box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+    border-radius: 0;
   }
-
-  // Соцсети живут на нижней кромке панели (ShowHamburger), не в карточке
 
   &__question {
     display: flex;
