@@ -11,13 +11,10 @@ interface Props {
   // Показывать блок «Частые вопросы». На странице калькулятора вопросы выводятся
   // отдельным блоком страницы (виден и на телефоне), чтобы не было дубля
   showFaq?: boolean;
-  // Соцсети — показываем в свободной части плашки (на странице раздела не нужны)
-  socials?: SocialLink[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
   showFaq: true,
-  socials: () => [],
 });
 
 const { currentLocale } = useLocale();
@@ -688,12 +685,6 @@ const purposeGroups = computed(() => {
       </UAccordion>
     </section>
 
-    <!-- Соцсети в свободной части плашки: справа, по центру свободного места,
-         в рамке-«канавке» (как блок langSwitcher на мобильном) -->
-    <div v-if="socials.length" class="hamburger-garden__socials">
-      <USocials :socials="socials" />
-    </div>
-
     <!-- Модальные окна (в конце разметки, чтобы не разрывать соседство секций,
          от которого зависит разделитель между блоками) -->
     <ShowModalArticle
@@ -754,30 +745,17 @@ const purposeGroups = computed(() => {
     box-shadow: inset 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
   }
 
-  // Первый блок («Что сажаем?») — без рамки: только горизонтальная «канавка»
-  // сверху, которая отделяет его от заголовка и вступления
+  // Первый блок («Что сажаем?») — та же горизонтальная «канавка», что была между
+  // блоками: без рамки вокруг блока и без скруглений. Отделяет блок от текста выше
   &__section:first-of-type {
-    padding: toEm(12) 0 0;
+    padding-block-start: toEm(16);
+    padding-inline: 0;
     border: none;
     border-top: toRem(1) solid rgba(0, 0, 0, 0.25);
     box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
   }
 
-  // Соцсети — справа, по центру свободного места, в рамке-«канавке»
-  &__socials {
-    align-self: flex-end;
-    margin-block: auto;
-    padding: toEm(4) toEm(6);
-    border: toRem(1) solid rgba(0, 0, 0, 0.25);
-    border-radius: toRem(6);
-    box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
-
-    // Иконки на 2px меньше, чем в панели «Меню» (24 → 22)
-    :deep(img) {
-      width: toRem(22);
-      height: toRem(22);
-    }
-  }
+  // Соцсети живут на нижней кромке панели (ShowHamburger), не в карточке
 
   &__question {
     display: flex;

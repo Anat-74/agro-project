@@ -338,7 +338,7 @@ const toggleHamburger = () => {
             class="dialog-hamburger__garden"
           >
             <CartPanelButton class="dialog-hamburger__cart" />
-            <HamburgerGarden :socials="socials" />
+            <HamburgerGarden />
           </div>
           <HamburgerMenu
             v-else
@@ -370,6 +370,15 @@ const toggleHamburger = () => {
         :category="category"
         @navigate="close?.()"
       />
+
+      <!-- Соцсети — на нижней кромке плашки: справа, напротив точек пагинации,
+           в ряд. Только на слайде «Посадка» (в слайде «Меню» свои соцсети) -->
+      <div
+        v-if="!isDesktopInstance && activeTab === 2 && socials.length"
+        class="dialog-hamburger__socials"
+      >
+        <USocials :socials="socials" />
+      </div>
     </div>
     </dialog>
     </Teleport>
@@ -527,6 +536,8 @@ const toggleHamburger = () => {
   }
 
   &__items {
+    // Опора для __socials (нижняя кромка плашки)
+    position: relative;
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -644,6 +655,14 @@ const toggleHamburger = () => {
     :deep(.slider__slide) {
       height: 100%;
       display: block;
+      // Горизонтальный скролл внутри слайда не нужен — и он не должен появляться
+      // сам: при появлении ВЕРТИКАЛЬНОГО скролла (контент выше слайда) браузер
+      // сужает полосу контента на ширину скроллбара, а карточка слайда
+      // (`.hamburger-garden`, width: auto) остаётся на 1–2px шире → overflow-x
+      // становился auto и внизу слайда вылезал горизонтальный скроллбар.
+      // overflow-x: hidden снимает его совсем (контент слайда вписывается
+      // в ширину панели, вертикальный скролл работает как раньше).
+      overflow-x: hidden;
       overflow-y: auto;
       scrollbar-width: thin;
       // Место под точки-пагинацию теперь задаётся отступом у __slider
@@ -664,6 +683,38 @@ const toggleHamburger = () => {
       border-radius: toRem(20);
       background-color: var(--light-color-transparent);
       backdrop-filter: blur(4px);
+    }
+  }
+
+  // Соцсети на нижней кромке плашки: справа, напротив точек пагинации.
+  // bottom: 12px — низ __items отстоит от кромки на его padding-block-end,
+  // +1px — на столько же выше кромки стоят сами точки
+  &__socials {
+    position: absolute;
+    z-index: 3;
+    right: toEm(12);
+    bottom: toRem(13);
+    padding: toRem(6) toRem(10);
+    border: toRem(1) solid rgba(0, 0, 0, 0.25);
+    border-radius: toRem(6);
+    background-color: var(--light-color-transparent);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+
+    // В открытой панели USocials складывается в колонку (_is-open) —
+    // здесь нужен ряд, как у точек пагинации
+    :deep(.socials) {
+      align-self: auto;
+      align-items: center;
+      flex-direction: row;
+      row-gap: 0;
+      column-gap: toEm(10);
+    }
+
+    // Иконки на 2px меньше, чем в панели «Меню» (24 → 22)
+    :deep(img) {
+      width: toRem(22);
+      height: toRem(22);
     }
   }
 
