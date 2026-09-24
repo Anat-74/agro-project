@@ -1066,7 +1066,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     mainImage: Schema.Attribute.Media<'images'> &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
-          localized: true;
+          localized: false;
         };
       }>;
     name: Schema.Attribute.String &
