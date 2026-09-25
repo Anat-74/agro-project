@@ -561,10 +561,14 @@ const purposeGroups = computed(() => {
 
     <!-- Товары растения -->
     <section v-if="selectedCrop" class="hamburger-garden__section">
-      <h3 class="hamburger-garden__question">
-        <Icon name="mingcute:basket-2-line" class="hamburger-garden__question-icon" />
-        {{ t.productsTitle }}
-      </h3>
+      <div class="hamburger-garden__section-head">
+        <h3 class="hamburger-garden__question">
+          <Icon name="mingcute:basket-2-line" class="hamburger-garden__question-icon" />
+          {{ t.productsTitle }}
+        </h3>
+        <!-- Правый слот: в панели сюда приходит кнопка корзины; на странице раздела — пусто -->
+        <slot name="products-action" />
+      </div>
 
       <div v-if="purposeGroups.length" class="hamburger-garden__groups">
         <div v-for="group in purposeGroups" :key="group.id" class="hamburger-garden__group">
@@ -770,9 +774,21 @@ const purposeGroups = computed(() => {
     color: var(--primary-color);
   }
 
-  // Иконка перед заголовком раздела
+  // Строка заголовка блока: заголовок слева, действие справа (в панели — кнопка
+  // корзины). Правое выравнивание — на одну вертикаль с шевронами групп
+  &__section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: toEm(10);
+  }
+
+  // Иконка перед заголовком раздела. overflow: visible + display: block —
+  // иначе svg режет артворк по краям (было заметно сверху)
   &__question-icon {
     flex-shrink: 0;
+    display: block;
+    overflow: visible;
     font-size: toRem(20);
   }
 
@@ -875,10 +891,11 @@ const purposeGroups = computed(() => {
     border-radius: toRem(8);
     background-color: var(--light-color-transparent);
     color: var(--gray-color);
-    // Ещё на 2px меньше (13px) — верхний регистр «съедает» место
-    font-size: toEm(13);
+    // +2px к прежнему размеру: было toEm(13) ≈ 11.45px → стало 13.45px
+    // (делитель — фактический шрифт родителя: 14.1px). Верхний регистр снят:
+    // «М²» и «Сотки» заданы значениями в локалях (текст как в макете, не через CSS)
+    font-size: toEm(13.45, 14.1);
     font-weight: 600;
-    text-transform: uppercase;
     transition:
       color var(--transition-duration),
       border-color var(--transition-duration),

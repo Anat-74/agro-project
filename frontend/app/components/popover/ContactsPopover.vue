@@ -58,6 +58,9 @@ const popoverId = `contacts-popover-${useId()}`;
 
 <style lang="scss" scoped>
 .contacts-popover {
+  // Флекс, а не блок: иначе строчный интерлиньяж обёртки добавляет ~2px
+  // к высоте, и кнопка перестаёт быть по центру общей оси панели (точки/соцсети)
+  display: flex;
   interpolate-size: allow-keywords;   // анимация height: auto (в FF/Safari — мгновенно)
 
   // Триггер — иконка-плашка на оси пагинации: та же «канавка» и подложка

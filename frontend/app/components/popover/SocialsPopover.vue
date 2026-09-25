@@ -55,6 +55,9 @@ const popoverId = `socials-popover-${useId()}`;
 
 <style lang="scss" scoped>
 .socials-popover {
+  // Флекс, а не блок: иначе строчный интерлиньяж обёртки добавляет ~2px
+  // к высоте, и кнопка перестаёт быть по центру общей оси панели (точки/телефон)
+  display: flex;
   interpolate-size: allow-keywords;   // анимация height: auto (в FF/Safari — мгновенно)
 
   // Триггер — иконка-плашка на оси пагинации (та же «канавка», что у точек)

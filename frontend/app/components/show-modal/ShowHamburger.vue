@@ -335,15 +335,18 @@ const toggleHamburger = () => {
             :category="category"
             @navigate="close?.()"
           />
-          <!-- Слайд «Посадка»: кнопка корзины прикреплена к правому верхнему углу
-               слайда. Она появляется только на этом слайде, в потоке не участвует
-               (нулевая высота) — содержимое не сдвигается -->
+          <!-- Слайд «Посадка»: калькулятор и товары растения. Кнопка корзины
+               не висит в углу слайда, а передаётся в заголовок блока «Товары
+               для растения» (слот products-action) — там она всегда на виду -->
           <div
             v-else-if="slide.id === 'garden'"
             class="dialog-hamburger__garden"
           >
-            <CartPanelButton class="dialog-hamburger__cart" />
-            <HamburgerGarden />
+            <HamburgerGarden>
+              <template #products-action>
+                <CartPanelButton class="dialog-hamburger__cart" />
+              </template>
+            </HamburgerGarden>
           </div>
           <HamburgerMenu
             v-else
@@ -450,9 +453,10 @@ const toggleHamburger = () => {
   // считается с этой поправкой (см. :deep(.slider__pagination) ниже)
   // Значения — через интерполяцию #{...}: Sass НЕ вычисляет функции внутри
   // CSS-переменных, без #{} в CSS ушло бы литеральное `toRem(30)` (невалидно)
-  --axis-h: #{toRem(30)};
-  --axis-bottom: #{toRem(8)};
-  --items-pad-end: #{toEm(12)};
+  --axis-h: #{toRem(30)};          // высота кнопок оси (телефон, соцсети)
+  --dots-h: #{toRem(24)};          // высота плашки точек — уже, чем у кнопок
+  --axis-bottom: #{toRem(5)};      // низ кнопок оси от нижней кромки панели
+  --items-pad-end: #{toEm(12)};    // padding-block-end у __items
   height: 100dvh;
   width: 100dvw;
   translate: -100%;
@@ -641,13 +645,16 @@ const toggleHamburger = () => {
     height: 100%;
   }
 
-  // Кнопка корзины в правом верхнем углу слайда. Позиционирование абсолютное —
-  // в потоке не участвует, поэтому содержимое не сдвигается
+  // Кнопка корзины в заголовке блока «Товары для растения» (приходит туда
+  // через слот products-action). На 3px меньше штатной (40 → 37px),
+  // иконка — тоже на 3px (20 → 17px). Составной селектор — чтобы точно
+  // перебить размер из CartPanelButton
   &__cart {
-    position: absolute;
-    top: toRem(8);
-    right: toRem(8);
-    z-index: 3;
+    &.cart-panel {
+      width: toRem(37);
+      height: toRem(37);
+      font-size: toRem(17);
+    }
   }
 
   // Слайдер панели: на всю высоту, слайды скроллятся вертикально
@@ -696,22 +703,25 @@ const toggleHamburger = () => {
       padding-block-end: toRem(16);
     }
 
-    // Точки внизу по центру (плавающие, с подложкой) — на одной оси с кнопкой
-    // телефона и соцсетей: та же высота плашки (--axis-h) и тот же низ
-    // (--axis-bottom), но с поправкой на низ слайдера (--items-pad-end)
+    // Точки внизу по центру (плавающие) — на одной оси с кнопкой телефона и
+    // соцсетей. Плашка точек ниже кнопок (--dots-h < --axis-h), поэтому низ
+    // считаем от общей оси: низ кнопок + разница полувысот, с поправкой на низ
+    // слайдера (--items-pad-end). Так центры всех трёх элементов совпадают
     :deep(.slider__pagination) {
       position: absolute;
       z-index: 3;
       // Слайдер прозрачен для указателя — точкам возвращаем клики явно
       pointer-events: auto;
       left: 50%;
-      bottom: calc(var(--axis-bottom) - var(--items-pad-end));
+      bottom: calc(
+        var(--axis-bottom) + (var(--axis-h) - var(--dots-h)) / 2 - var(--items-pad-end)
+      );
       translate: -50% 0;
-      height: var(--axis-h);
+      height: var(--dots-h);
       display: flex;
       align-items: center;
       column-gap: toRem(8);
-      padding: toRem(6) toRem(12);
+      padding-inline: toRem(8);
       border-radius: toRem(20);
       background-color: var(--light-color-transparent);
       backdrop-filter: blur(4px);
