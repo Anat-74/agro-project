@@ -18,6 +18,8 @@ export const buttonTranslations: Record<LocaleCode, {
    ariaLabelViewProduct: string
    ariaLabelContacts: string
    ariaLabelSocials: string
+   ariaLabelShowAllProducts: string
+   ariaLabelCollapseProducts: string
 
  }> = {
    ru: {
@@ -39,7 +41,9 @@ export const buttonTranslations: Record<LocaleCode, {
        ariaLabelProductDetails: "Посмотреть характеристики товара",
        ariaLabelViewProduct: "Открыть карточку товара",
        ariaLabelContacts: "Контакты",
-       ariaLabelSocials: "Соцсети"
+       ariaLabelSocials: "Соцсети",
+       ariaLabelShowAllProducts: "Показать все товары группы",
+       ariaLabelCollapseProducts: "Свернуть список товаров"
    },
    be: {
       label: "Дадаць у кошык",
@@ -60,6 +64,8 @@ export const buttonTranslations: Record<LocaleCode, {
        ariaLabelProductDetails: "Паглядзець характарыстыкі тавару",
        ariaLabelViewProduct: "Адкрыць картку тавара",
        ariaLabelContacts: "Кантакты",
-       ariaLabelSocials: "Сацсеткі"
+       ariaLabelSocials: "Сацсеткі",
+       ariaLabelShowAllProducts: "Паказаць усе тавары групы",
+       ariaLabelCollapseProducts: "Згарнуць спіс тавараў"
    }
  }

@@ -383,6 +383,19 @@ const addProductToCart = (product: GardenProduct) => {
 
 // Группы <details> уникальны для каждого инстанса компонента: страница и панель// живут в одном документе, а name у details склеивает их группы НА ВЕСЬ документ
 // (открытие в панели закрывало бы пункт на странице)
+// Группы товаров: показываем не больше 2 позиций, остальное — по шеврону
+// «показать все» (решение 25.09). Раскрытие — по индексу группы
+const GROUP_PREVIEW = 2;
+const expandedGroups = ref<Set<number>>(new Set());
+const groupProducts = (items: GardenProduct[], index: number) =>
+  expandedGroups.value.has(index) ? items : items.slice(0, GROUP_PREVIEW);
+const toggleGroupProducts = (index: number) => {
+  const next = new Set(expandedGroups.value);
+  if (next.has(index)) next.delete(index);
+  else next.add(index);
+  expandedGroups.value = next;
+};
+
 const faqGroupId = useId();
 
 type Purpose = GardenPurpose;
@@ -571,68 +584,98 @@ const purposeGroups = computed(() => {
       </div>
 
       <div v-if="purposeGroups.length" class="hamburger-garden__groups">
-        <div v-for="group in purposeGroups" :key="group.id" class="hamburger-garden__group">
-          <h4 class="hamburger-garden__group-title">
-            <Icon :name="group.icon" class="hamburger-garden__group-icon" />
-            {{ group.label }}
-          </h4>
-          <ul class="hamburger-garden__list">
-            <li
-              v-for="prod in group.items"
-              :key="prod.documentId"
-              class="hamburger-garden__product-item"
-              @click.capture="onProductClick(prod, $event)"
+        <UAccordion
+          v-for="(group, index) in purposeGroups"
+          :key="group.id"
+          open
+        >
+          <template #header>
+            <span class="hamburger-garden__group-label">
+              <Icon :name="group.icon" class="hamburger-garden__group-icon" />
+              <span class="hamburger-garden__group-title">{{ group.label }}</span>
+            </span>
+            <!-- Пунктирный лидер: растягивается между названием и шевроном -->
+            <span class="hamburger-garden__group-leader" aria-hidden="true" />
+          </template>
+
+          <!-- Тело группы: обёртка с overflow: hidden нужна для схлопывания -->
+          <div class="hamburger-garden__group-body">
+            <ul class="hamburger-garden__list">
+              <li
+                v-for="prod in groupProducts(group.items, index)"
+                :key="prod.documentId"
+                class="hamburger-garden__product-item"
+                @click.capture="onProductClick(prod, $event)"
+              >
+                <NuxtLink
+                  class="hamburger-garden__product accordion__summary"
+                  :to="getProductLink(prod)"
+                >
+                  <UImage
+                    v-if="prod.mainImage?.url || prod.image?.length"
+                    :src="prod.mainImage?.url || prod.image?.[0]?.url"
+                    alt=""
+                    class="accordion__product-image-link"
+                    width="32"
+                    height="32"
+                    type="icon"
+                  />
+                  <Icon
+                    v-if="!(prod.mainImage?.url || prod.image?.length)"
+                    name="mingcute:shopping-bag-2-line"
+                    class="hamburger-garden__product-icon"
+                  />
+                  <span class="hamburger-garden__product-name">{{ prod.name }}</span>
+                </NuxtLink>
+                <!-- Кнопка добавления: иконка корзины, поверх неё — крупный плюс
+                     с эффектом втиснения. Количество — счётчиком НАД кнопкой справа
+                     (абсолютное позиционирование: кнопка не растёт, соседи не сдвигаются) -->
+                <UButton
+                  variant="plain"
+                  :class="[
+                    'hamburger-garden__add',
+                    { 'hamburger-garden__add_in-cart': cartQtyFor(prod.documentId) > 0 },
+                  ]"
+                  :aria-label="
+                    cartQtyFor(prod.documentId) > 0
+                      ? `${buttonT.ariaLabelIncreaseQuantity}: ${prod.name}`
+                      : `${buttonT.label}: ${prod.name}`
+                  "
+                  @click="addProductToCart(prod)"
+                >
+                  <Icon
+                    :name="cartQtyFor(prod.documentId) > 0 ? 'mingcute:add-line' : 'cil:cart'"
+                    :width="20"
+                    :height="20"
+                  />
+                  <span
+                    v-if="cartQtyFor(prod.documentId) > 0"
+                    :key="cartQtyFor(prod.documentId)"
+                    class="hamburger-garden__add-count"
+                  >{{ cartQtyFor(prod.documentId) }}</span>
+                </UButton>
+              </li>
+            </ul>
+
+            <!-- «Показать все»: только если товаров больше превью -->
+            <UButton
+              v-if="group.items.length > GROUP_PREVIEW"
+              variant="plain"
+              :class="[
+                'hamburger-garden__show-all',
+                { 'hamburger-garden__show-all_is-open': expandedGroups.has(index) },
+              ]"
+              :aria-label="
+                expandedGroups.has(index)
+                  ? buttonT.ariaLabelCollapseProducts
+                  : buttonT.ariaLabelShowAllProducts
+              "
+              @click="toggleGroupProducts(index)"
             >
-              <NuxtLink
-                class="hamburger-garden__product accordion__summary"
-                :to="getProductLink(prod)"
-              >
-                <UImage
-                  v-if="prod.mainImage?.url || prod.image?.length"
-                  :src="prod.mainImage?.url || prod.image?.[0]?.url"
-                  alt=""
-                  class="accordion__product-image-link"
-                  width="32"
-                  height="32"
-                  type="icon"
-                />
-                <Icon
-                  v-if="!(prod.mainImage?.url || prod.image?.length)"
-                  name="mingcute:shopping-bag-2-line"
-                  class="hamburger-garden__product-icon"
-                />
-                <span class="hamburger-garden__product-name">{{ prod.name }}</span>
-              </NuxtLink>
-              <!-- Кнопка добавления: иконка корзины, поверх неё — крупный плюс
-                   с эффектом втиснения. Количество — счётчиком НАД кнопкой справа
-                   (абсолютное позиционирование: кнопка не растёт, соседи не сдвигаются) -->
-              <UButton
-                variant="plain"
-                :class="[
-                  'hamburger-garden__add',
-                  { 'hamburger-garden__add_in-cart': cartQtyFor(prod.documentId) > 0 },
-                ]"
-                :aria-label="
-                  cartQtyFor(prod.documentId) > 0
-                    ? `${buttonT.ariaLabelIncreaseQuantity}: ${prod.name}`
-                    : `${buttonT.label}: ${prod.name}`
-                "
-                @click="addProductToCart(prod)"
-              >
-                <Icon
-                  :name="cartQtyFor(prod.documentId) > 0 ? 'mingcute:add-line' : 'cil:cart'"
-                  :width="20"
-                  :height="20"
-                />
-                <span
-                  v-if="cartQtyFor(prod.documentId) > 0"
-                  :key="cartQtyFor(prod.documentId)"
-                  class="hamburger-garden__add-count"
-                >{{ cartQtyFor(prod.documentId) }}</span>
-              </UButton>
-            </li>
-          </ul>
-        </div>
+              <Icon name="mingcute:down-line" />
+            </UButton>
+          </div>
+        </UAccordion>
       </div>
 
       <ULoader v-show="pendingProducts" />
@@ -1004,30 +1047,87 @@ const purposeGroups = computed(() => {
     }
   }
 
-  // Товары
+  // Товары: группы — аккордеоны проекта (UAccordion). Промежуток даёт сам
+  // аккордеон (padding-block у .accordion__details), поэтому контейнер без
+  // flex-gap: иначе details и его content получили бы лишний зазор
   &__groups {
+    display: block;
+
+    // Нейтрализуем глобальные стили summary аккордеона (фон/паддинги/оутлайн) —
+    // сохраняем текущий вид группы. Цвет при раскрытии не меняем на danger
+    :deep(.accordion__summary) {
+      padding: 0;
+      background: none;
+      outline: none;
+    }
+
+    :deep(.accordion__details[open] > .accordion__summary) {
+      color: var(--gray-color);
+    }
+
+    :deep(.accordion__details) {
+      padding-block: toRem(3);
+    }
+  }
+
+  // Подпись группы: иконка + название (шрифт summary — 22px, делитель явный)
+  &__group-label {
     display: flex;
-    flex-direction: column;
-    row-gap: toEm(12);
+    align-items: center;
+    column-gap: toEm(6, 22);
   }
 
   &__group-title {
-    display: flex;
-    align-items: center;
-    column-gap: toEm(6);
-    font-size: toEm(15);
+    font-size: toEm(15, 22);
     font-weight: 600;
     color: var(--gray-color);
-    // Отступ до списка товаров — на 2px меньше прежнего (был toEm(4) ≈ 3.3px)
-    margin-block-end: calc(#{toEm(4)} - #{toRem(2)});
   }
 
-  // Иконка перед названием группы (семена / рассада / удобрения).
-  // Цвет — как у самого подзаголовка группы
+  // Пунктирный лидер: тянется между названием и штатным шевроном аккордеона,
+  // по вертикальному центру строки (высота 0 + граница = линия по центру)
+  &__group-leader {
+    flex: 1;
+    height: 0;
+    align-self: center;
+    margin-inline: toEm(8, 22);
+    border-bottom: toRem(1) dashed var(--border-color);
+  }
+
+  // Иконка перед названием группы (семена / рассада / удобрения)
   &__group-icon {
     flex-shrink: 0;
     font-size: toRem(18);
     color: var(--gray-color);
+  }
+
+  // Тело группы — обязательный overflow: hidden для схлопывания аккордеона
+  &__group-body {
+    overflow: hidden;
+    // Тот же отступ «подзаголовок → товары», что был до перевода в аккордеон
+    padding-block-start: toRem(1.3);
+  }
+
+  // «Показать все»: по центру под списком, шеврон переворачивается при раскрытии
+  &__show-all {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding-block: toEm(2);
+    color: var(--primary-color);
+
+    :deep(svg) {
+      font-size: toRem(20);
+      transition: rotate var(--transition-duration);
+    }
+
+    &_is-open :deep(svg) {
+      rotate: -180deg;
+    }
+
+    @include hover {
+      color: var(--warning-color);
+    }
   }
 
   &__list {

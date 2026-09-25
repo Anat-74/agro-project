@@ -6,12 +6,15 @@ interface Props {
   variant?: 'default' | 'sub' | 'discount'
   // Активный пункт (текущий маршрут) — подсветка summary
   active?: boolean
+  // Раскрыт по умолчанию (начальное состояние; дальше — нативный тоггл details)
+  open?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
   name: '',
   variant: 'default',
   active: false,
+  open: false,
 })
 </script>
 
@@ -20,7 +23,7 @@ withDefaults(defineProps<Props>(), {
        Контент намеренно ВНЕ <details>: нативный details скрывает всё, кроме
        summary, а нам нужна анимация раскрытия через grid-template-rows (0fr→1fr)
        по соседнему селектору .accordion__details[open] + .accordion__content. -->
-  <details :name="name" class="accordion__details">
+  <details :name="name" :open="open" class="accordion__details">
     <summary
       :class="[
         'accordion__summary',
