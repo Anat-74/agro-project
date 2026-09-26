@@ -1162,45 +1162,25 @@ const purposeGroups = computed(() => {
     }
   }
 
-  // Доп. товары (за превью): свёрнуты и раскрываются ровно как разделы
-  // аккордеона — grid-template-rows 0fr → 1fr, та же длительность анимации.
-  // Паддинг и отрицательный margin гасим, чтобы свёрнутая строка не занимала
-  // места (отрицательный margin компенсирует row-gap списка)
+  // Доп. товары (за превью): в свёрнутом виде занимают ноль и раскрываются
+  // с той же длительностью, что и содержимое аккордеона (0.3s).
+  // Механизм — max-height (grid-template-rows не схлопывался: содержимое с
+  // фиксированными высотами — картинка 32px, кнопка 36px — не давало строке сжаться)
   &__product-item_extra {
-    grid-template-rows: 0fr;
+    max-height: 0;
     padding-block: 0;
     margin-block-start: calc(-1 * #{toEm(4)});
     overflow: hidden;
-    // Длительность — как у .accordion__content (0.3s), чтобы анимация совпадала
     transition:
-      grid-template-rows 0.3s,
+      max-height 0.3s,
       padding-block-start 0.3s,
       padding-block-end 0.3s,
       margin-block-start 0.3s;
 
-    // Схлопывание grid-строки сработает, только если у детей overflow: hidden:
-    // иначе min-height: auto не даёт строке сжаться до нуля
-    > * {
-      overflow: hidden;
-    }
-
-    // У кнопки «+» фиксированная высота 36px — её min-content не даёт строке
-    // сжаться. В свёрнутом состоянии высоту снимаем (строка обрезана, не видно)
-    &:not(.hamburger-garden__product-item_extra_is-open)
-      > .hamburger-garden__add {
-      height: 0;
-      min-height: 0;
-    }
-
     &_is-open {
-      grid-template-rows: 1fr;
+      max-height: toRem(120);   // с запасом на длинное название в одну-две строки
       padding-block: toEm(6);
       margin-block-start: 0;
-      overflow: visible;
-
-      > * {
-        overflow: visible;
-      }
     }
   }
 

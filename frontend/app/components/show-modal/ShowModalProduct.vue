@@ -37,7 +37,7 @@ const wrapperRef = useTemplateRef<HTMLDivElement>("wrapper")
 const { open, close } = useDialog(
   dialogId,
   dialogElement,
-  { useShowMethod: false }
+  { useShowMethod: true }
 )
 
 // Реактивный ключ: при смене продукта (общий инстанс) детали перезапрашиваются.
@@ -241,9 +241,11 @@ const handleAddToCart = () => {
   cursor: pointer;
 }
 
-// Модалка товара — по паттерну проекта (как Order/Checkout):
-// нативный <dialog> центрирует сам (top-layer + margin: auto), никаких
-// position:fixed / z-index / display — только размеры и анимация входа.
+// Модалка товара — по паттерну проекта (как Order/Checkout): открывается через
+// showModal() (useShowMethod: true), поэтому диалог в top-layer и считается от
+// вьюпорта — вид одинаков из любого места (шапка, корзина, панель «Посадка»,
+// чат, история заказов). С useShowMethod: false позиционирование зависело от
+// предка: внутри панели это ломало сетку — галерея с миниатюрами наезжала на заголовок.
 .product-modal {
   width: min(92vw, toRem(920));
   height: min(90vh, toRem(760));
