@@ -140,7 +140,12 @@ const handleAddToCart = () => {
     />
   </div>
 
-  <!-- Диалог всегда смонтирован: при hide-trigger кнопки нет, но модалка открывается через ref (корзина) -->
+  <!-- Диалог всегда смонтирован: при hide-trigger кнопки нет, но модалка открывается через ref (корзина).
+       Teleport в body — изоляция от места открытия: иначе панель «Посадка» своими
+       deep-правилами для .slider (height: 100%, pointer-events: none) протекает
+       внутрь модалки. Из-за height: 100% ломается расчёт высоты галереи, и
+       миниатюры вылезают на блок с заголовком -->
+  <Teleport to="body">
   <dialog ref="product-dialog" class="product-modal">
     <!-- Крестик: общий компонент кнопки (вид задан в UButton, здесь только позиция) -->
     <UButton
@@ -227,6 +232,7 @@ const handleAddToCart = () => {
       </div>
     </div>
   </dialog>
+  </Teleport>
 </template>
 
 <style lang="scss" scoped>
@@ -361,6 +367,7 @@ const handleAddToCart = () => {
 
   &__gallery {
     min-width: 0;
+    // Контейнер productImage — как в UProductGallery (единообразно)
     @include containerParent(productImage, inline-size);
 
     // Блок главного изображения: фон убран, вместо него — рамка со скруглением.
