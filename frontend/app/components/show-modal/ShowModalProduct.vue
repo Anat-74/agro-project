@@ -376,6 +376,11 @@ const handleAddToCart = () => {
   // Пагинация — отдельный блок вне слайдера, без фона: просто миниатюры
   // с тонкой рамкой и скруглением.
   &__thumbs {
+    // Именованный контейнер для миниатюр: без него правило в UImage
+    // (@container productThumbImage → max-width: 80px) мёртвое, и миниатюры
+    // подчинялись правилам productImage — размер зависел от того, какой
+    // productImage-контейнер оказался ближайшим предком при открытии модалки
+    @include containerParent(productThumbImage, inline-size);
     display: flex;
     justify-content: center;
     flex-wrap: wrap;

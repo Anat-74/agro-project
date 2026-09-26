@@ -463,7 +463,20 @@ const toggleHamburger = () => {
   margin: 0;
   overflow: hidden;   // клип: внутренний скролл обеспечивает __items
   background-color: transparent;
-  backdrop-filter: blur(22px);
+
+  // ВАЖНО: blur — на псевдоэлементе, а НЕ на самом диалоге. backdrop-filter на
+  // диалоге делает его containing block для fixed-потомков, и модалка товара
+  // (dialog:modal → position: fixed) перестаёт уходить в top-layer: она
+  // «проваливается» внутрь панели, из-за чего нижняя ось панели (z-index: 3)
+  // рисуется поверх неё — миниатюры галереи наезжают на заголовок
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    backdrop-filter: blur(22px);
+    pointer-events: none;
+  }
   // display с задержкой: при закрытии панель видима на время exit-анимации
   // (translate/scale), затем display:none убирает её из accessibility-дерева
   // (иначе закрытый диалог остаётся в a11y-дереве)
