@@ -383,12 +383,11 @@ const addProductToCart = (product: GardenProduct) => {
 
 // Группы <details> уникальны для каждого инстанса компонента: страница и панель// живут в одном документе, а name у details склеивает их группы НА ВЕСЬ документ
 // (открытие в панели закрывало бы пункт на странице)
-// Группы товаров: показываем не больше 2 позиций, остальное — по шеврону
-// «показать все» (решение 25.09). Раскрытие — по индексу группы
+// Группы товаров: первые GROUP_PREVIEW позиций видны сразу, остальные свёрнуты
+// и раскрываются по шеврону «показать все» (решение 25.09).
+// Анимация раскрытия — как у разделов аккордеона: grid-template-rows 0fr → 1fr
 const GROUP_PREVIEW = 2;
 const expandedGroups = ref<Set<number>>(new Set());
-const groupProducts = (items: GardenProduct[], index: number) =>
-  expandedGroups.value.has(index) ? items : items.slice(0, GROUP_PREVIEW);
 const toggleGroupProducts = (index: number) => {
   const next = new Set(expandedGroups.value);
   if (next.has(index)) next.delete(index);
@@ -576,7 +575,7 @@ const purposeGroups = computed(() => {
     <section v-if="selectedCrop" class="hamburger-garden__section">
       <div class="hamburger-garden__section-head">
         <h3 class="hamburger-garden__question">
-          <Icon name="mingcute:basket-2-line" class="hamburger-garden__question-icon" />
+          <Icon name="mingcute:basket-line" class="hamburger-garden__question-icon" />
           {{ t.productsTitle }}
         </h3>
         <!-- Правый слот: в панели сюда приходит кнопка корзины; на странице раздела — пусто -->
@@ -602,9 +601,16 @@ const purposeGroups = computed(() => {
           <div class="hamburger-garden__group-body">
             <ul class="hamburger-garden__list">
               <li
-                v-for="prod in groupProducts(group.items, index)"
+                v-for="(prod, itemIndex) in group.items"
                 :key="prod.documentId"
-                class="hamburger-garden__product-item"
+                :class="[
+                  'hamburger-garden__product-item',
+                  {
+                    'hamburger-garden__product-item_extra': itemIndex >= GROUP_PREVIEW,
+                    'hamburger-garden__product-item_extra_is-open':
+                      itemIndex >= GROUP_PREVIEW && expandedGroups.has(index),
+                  },
+                ]"
                 @click.capture="onProductClick(prod, $event)"
               >
                 <NuxtLink
@@ -1107,14 +1113,16 @@ const purposeGroups = computed(() => {
     padding-block-start: toRem(1.3);
   }
 
-  // «Показать все»: по центру под списком, шеврон переворачивается при раскрытии
+  // «Показать все»: по центру под списком, шеврон переворачивается при раскрытии.
+  // Цвет — как у названий товаров (та же переменная); сам шеврон наследует цвет
+  // кнопки через currentColor, вторую переменную не заводим
   &__show-all {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
     padding-block: toEm(2);
-    color: var(--primary-color);
+    color: var(--warning-color);
 
     :deep(svg) {
       font-size: toRem(20);
@@ -1126,7 +1134,7 @@ const purposeGroups = computed(() => {
     }
 
     @include hover {
-      color: var(--warning-color);
+      color: var(--warning-hover);
     }
   }
 
@@ -1136,14 +1144,64 @@ const purposeGroups = computed(() => {
     row-gap: toEm(4);
   }
 
-  // Товар: подложка (ссылка) — по ширине контента, кнопка — у правого края
+  // Товар: подложка (ссылка) — по ширине контента, кнопка — у правого края.
+  // Grid (а не flex) — потому что доп. товары схлопываются через
+  // grid-template-rows 0fr → 1fr, как разделы аккордеона
   &__product-item {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto;
     align-items: center;
-    justify-content: space-between;
     column-gap: toEm(8);
     padding-block: toEm(6);
     padding-inline-end: toEm(8);
+
+    // Ссылка — по своему контенту (как было во flex), иначе её внутренний
+    // space-between разнёс бы картинку и название по краям колонки
+    .hamburger-garden__product {
+      justify-self: start;
+    }
+  }
+
+  // Доп. товары (за превью): свёрнуты и раскрываются ровно как разделы
+  // аккордеона — grid-template-rows 0fr → 1fr, та же длительность анимации.
+  // Паддинг и отрицательный margin гасим, чтобы свёрнутая строка не занимала
+  // места (отрицательный margin компенсирует row-gap списка)
+  &__product-item_extra {
+    grid-template-rows: 0fr;
+    padding-block: 0;
+    margin-block-start: calc(-1 * #{toEm(4)});
+    overflow: hidden;
+    // Длительность — как у .accordion__content (0.3s), чтобы анимация совпадала
+    transition:
+      grid-template-rows 0.3s,
+      padding-block-start 0.3s,
+      padding-block-end 0.3s,
+      margin-block-start 0.3s;
+
+    // Схлопывание grid-строки сработает, только если у детей overflow: hidden:
+    // иначе min-height: auto не даёт строке сжаться до нуля
+    > * {
+      overflow: hidden;
+    }
+
+    // У кнопки «+» фиксированная высота 36px — её min-content не даёт строке
+    // сжаться. В свёрнутом состоянии высоту снимаем (строка обрезана, не видно)
+    &:not(.hamburger-garden__product-item_extra_is-open)
+      > .hamburger-garden__add {
+      height: 0;
+      min-height: 0;
+    }
+
+    &_is-open {
+      grid-template-rows: 1fr;
+      padding-block: toEm(6);
+      margin-block-start: 0;
+      overflow: visible;
+
+      > * {
+        overflow: visible;
+      }
+    }
   }
 
   // Кнопка добавления: иконка корзины, а когда товар уже в корзине — плюс
