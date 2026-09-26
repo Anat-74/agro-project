@@ -270,6 +270,28 @@ const modeTabs = computed<{ id: GardenMode; label: string; icon: string }[]>(() 
   { id: "fertilizer", label: t.value.modeFertilizer, icon: PURPOSE_ICONS.fertilizer },
 ]);
 
+// Слайдер расчёта: табы = слайды. Клик по табу переключает слайд,
+// свайп слайдера обновляет активный таб (как в слайдере панели)
+const calcSlider = useTemplateRef("calc-slider");
+
+const selectMode = (id: GardenMode) => {
+  mode.value = id;
+  const index = modeTabs.value.findIndex((tab) => tab.id === id);
+  if (index >= 0) calcSlider.value?.go(index + 1);
+};
+
+const onCalcSlide = (n: number) => {
+  const tab = modeTabs.value[n - 1];
+  if (tab) mode.value = tab.id;
+};
+
+// Подписи фасовок для слайда: в шаблоне обращаться к packs напрямую небезопасно
+// (тип допускает undefined — редактор подчёркивал выражение)
+const packsLabel = (m: GardenMode) =>
+  (resultFor(m).packs ?? [])
+    .map((pack) => `${pack.label} × ${pack.count}`)
+    .join(", ");
+
 // Фасовки товаров растения по назначению → пачки для активного режима
 const packagingsByPurpose = computed<Record<GardenMode, GardenPackaging[]>>(() => {
   const pick = (purpose: GardenPurpose) =>
@@ -285,33 +307,38 @@ const packagingsByPurpose = computed<Record<GardenMode, GardenPackaging[]>>(() =
   };
 });
 
-const result = computed(() =>
+// Расчёт по КОНКРЕТНОМУ режиму — нужен слайдам (каждый слайд = режим расчёта)
+const resultFor = (m: GardenMode) =>
   calcPlanting({
-    mode: mode.value,
+    mode: m,
     areaSqm: areaSqm.value,
     planting: selectedCrop.value?.planting ?? null,
     seedling: selectedCrop.value?.seedling ?? null,
     fertilizing: selectedCrop.value?.fertilizing ?? null,
-    packagings: packagingsByPurpose.value[mode.value],
-  }),
-);
+    packagings: packagingsByPurpose.value[m],
+  });
 
-// Есть ли данные растения под активный режим
-const hasModeData = computed(() => {
+// Расчёт активного режима (для товаров и логики вне слайдера)
+const result = computed(() => resultFor(mode.value));
+
+// Есть ли данные растения под конкретный режим
+const hasModeDataFor = (m: GardenMode) => {
   const crop = selectedCrop.value;
   if (!crop) return false;
-  if (mode.value === "seedlings") return !!crop.seedling;
-  if (mode.value === "fertilizer") return !!crop.fertilizing;
+  if (m === "seedlings") return !!crop.seedling;
+  if (m === "fertilizer") return !!crop.fertilizing;
   return !!crop.planting;
-});
+};
 
-// Дополнительные сведения режима: сроки рассады / формула и вид удобрения
-const modeInfo = computed<{ label: string; value: string }[]>(() => {
+// Есть ли данные растения под активный режим — считаем по слайду (см. шаблон)
+
+// Дополнительные сведения КОНКРЕТНОГО режима: сроки рассады / формула и вид удобрения
+const modeInfoFor = (m: GardenMode): { label: string; value: string }[] => {
   const crop = selectedCrop.value;
   if (!crop) return [];
   const rows: { label: string; value: string }[] = [];
 
-  if (mode.value === "seedlings" && crop.seedling) {
+  if (m === "seedlings" && crop.seedling) {
     const { growingDays, sowingPeriod, transplantPeriod } = crop.seedling;
     if (growingDays) {
       rows.push({
@@ -327,7 +354,7 @@ const modeInfo = computed<{ label: string; value: string }[]>(() => {
     }
   }
 
-  if (mode.value === "fertilizer" && crop.fertilizing) {
+  if (m === "fertilizer" && crop.fertilizing) {
     const { npk, kind } = crop.fertilizing;
     if (npk) rows.push({ label: t.value.npkLabel, value: npk });
     if (kind) {
@@ -339,7 +366,9 @@ const modeInfo = computed<{ label: string; value: string }[]>(() => {
   }
 
   return rows;
-});
+};
+
+// Сведения активного режима считаются по слайду (см. шаблон)
 
 // Растений для штучных фасовок рассады: считаем по плотности рассады
 // (независимо от активного режима), иначе — по схеме посева
@@ -485,7 +514,7 @@ const purposeGroups = computed(() => {
             { 'hamburger-garden__mode_is-active': mode === tab.id },
           ]"
           :aria-selected="mode === tab.id"
-          @click="mode = tab.id"
+          @click="selectMode(tab.id)"
         >
           <Icon :name="tab.icon" />
           {{ tab.label }}
@@ -535,40 +564,66 @@ const purposeGroups = computed(() => {
         <span class="hamburger-garden__field-unit">{{ areaUnitLabel }}</span>
       </div>
 
-      <p v-if="!hasModeData" class="hamburger-garden__empty">{{ t.noData }}</p>
+      <!-- Расчёт: слайдер по режимам — тот же паттерн, что у слайдера панели
+           (USlider). Табы выше переключают слайды, внизу по центру — точки -->
+      <USlider
+        ref="calc-slider"
+        :slides="modeTabs"
+        slide-key="id"
+        variant="background"
+        height="auto"
+        :show-navigation="false"
+        class="hamburger-garden__calc-slider"
+        @update:active="onCalcSlide"
+      >
+        <template #default="{ slide }">
+          <p v-if="!hasModeDataFor(slide.id)" class="hamburger-garden__empty">
+            {{ t.noData }}
+          </p>
 
-      <dl v-if="hasModeData" class="hamburger-garden__result">
-        <div v-if="result.plants !== null" class="hamburger-garden__result-row">
-          <dt>{{ mode === "seedlings" ? t.modeSeedlings : t.plants }}</dt>
-          <dd>{{ result.plants }}</dd>
-        </div>
-        <div
-          v-if="mode === 'seeds' && result.seedGrams !== null"
-          class="hamburger-garden__result-row"
-        >
-          <dt>{{ t.seeds }}</dt>
-          <dd>~{{ result.seedGrams }} {{ t.unitGram }}</dd>
-        </div>
-        <div
-          v-if="mode === 'fertilizer' && result.fertilizerGrams !== null"
-          class="hamburger-garden__result-row"
-        >
-          <dt>{{ t.fertilizer }}</dt>
-          <dd>~{{ result.fertilizerGrams }} {{ t.unitGram }}</dd>
-        </div>
-        <div v-if="result.packs?.length" class="hamburger-garden__result-row">
-          <dt>{{ t.packs }}</dt>
-          <dd>{{ result.packs.map((pack) => `${pack.label} × ${pack.count}`).join(", ") }}</dd>
-        </div>
-        <div
-          v-for="row in modeInfo"
-          :key="row.label"
-          class="hamburger-garden__result-row"
-        >
-          <dt>{{ row.label }}</dt>
-          <dd>{{ row.value }}</dd>
-        </div>
-      </dl>
+          <dl v-else class="hamburger-garden__result">
+            <div
+              v-if="resultFor(slide.id).plants !== null"
+              class="hamburger-garden__result-row"
+            >
+              <dt>{{ slide.id === "seedlings" ? t.modeSeedlings : t.plants }}</dt>
+              <dd>{{ resultFor(slide.id).plants }}</dd>
+            </div>
+            <div
+              v-if="slide.id === 'seeds' && resultFor('seeds').seedGrams !== null"
+              class="hamburger-garden__result-row"
+            >
+              <dt>{{ t.seeds }}</dt>
+              <dd>~{{ resultFor("seeds").seedGrams }} {{ t.unitGram }}</dd>
+            </div>
+            <div
+              v-if="
+                slide.id === 'fertilizer' &&
+                resultFor('fertilizer').fertilizerGrams !== null
+              "
+              class="hamburger-garden__result-row"
+            >
+              <dt>{{ t.fertilizer }}</dt>
+              <dd>~{{ resultFor("fertilizer").fertilizerGrams }} {{ t.unitGram }}</dd>
+            </div>
+            <div
+              v-if="resultFor(slide.id).packs?.length"
+              class="hamburger-garden__result-row"
+            >
+              <dt>{{ t.packs }}</dt>
+              <dd>{{ packsLabel(slide.id) }}</dd>
+            </div>
+            <div
+              v-for="row in modeInfoFor(slide.id)"
+              :key="row.label"
+              class="hamburger-garden__result-row"
+            >
+              <dt>{{ row.label }}</dt>
+              <dd>{{ row.value }}</dd>
+            </div>
+          </dl>
+        </template>
+      </USlider>
     </section>
 
     <!-- Товары растения -->
@@ -1000,6 +1055,53 @@ const purposeGroups = computed(() => {
     color: var(--gray-color);
   }
 
+  // Слайдер расчёта: слайды по режимам — тот же паттерн, что у слайдера панели
+  // (USlider, вариант background). Внизу — только точки, без подложки
+  &__calc-slider {
+    // min-width: 0 — иначе слайдер как flex-элемент секции получает
+    // автоматический min-width = сумму min-content слайдов (3 × 100%),
+    // растягивается примерно на 630px и уезжает за карточку
+    min-width: 0;
+    margin-block-start: toEm(2);
+
+    // Слайды и контейнер — flex-элементы слайдера: без min-width: 0 их
+    // автоматический минимум равен min-content самого широкого слайда, из-за
+    // чего вся цепочка (карточка → секция → слайдер) растягивается шире экрана
+    :deep(.slider__container),
+    :deep(.slider__slide) {
+      min-width: 0;
+    }
+
+    // Пагинация: снимаем абсолют и плашку — точки по центру под слайдом
+    :deep(.slider__pagination) {
+      position: static;
+      translate: none;
+      height: auto;
+      display: flex;
+      justify-content: center;
+      column-gap: toRem(8);
+      margin-block-start: toEm(8);
+    }
+
+    // Точки видимы на светлой карточке: неактивные серые, активная — зелёная
+    :deep(.slider__pagination-dot) {
+      width: toRem(8);
+      height: toRem(8);
+      border: none;
+      outline: none;
+      background-color: var(--gray-color);
+      opacity: 0.35;
+      transition:
+        opacity var(--transition-duration),
+        background-color var(--transition-duration);
+    }
+
+    :deep(.slider__pagination-dot_active) {
+      opacity: 1;
+      background-color: var(--primary-color);
+    }
+  }
+
   // Результат
   &__result {
     display: flex;
@@ -1120,11 +1222,23 @@ const purposeGroups = computed(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    padding-block: toEm(2);
+    // Круглая кнопка вокруг шеврона: закругление 50%, размер по иконке
+    width: toRem(32);
+    height: toRem(32);
+    margin-inline: auto;   // по центру под списком
+    padding: 0;
+    min-height: 0;         // сброс паддингов/min-height UButton, иначе не круг
+    // «Канавка» как в эталонных блоках проекта (BannerLayouts / ShowShopFilter):
+    // тонкая тёмная линия + светлый блик под ней
+    border: toRem(1) solid rgba(0, 0, 0, 0.25);
+    border-radius: 50%;
+    box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+    // Единственный источник цвета — кнопка (как у названий товаров)
     color: var(--warning-color);
 
     :deep(svg) {
+      // Шеврон наследует цвет кнопки через currentColor — второй переменной нет
+      color: currentColor;
       font-size: toRem(20);
       transition: rotate var(--transition-duration);
     }

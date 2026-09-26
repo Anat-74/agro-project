@@ -95,7 +95,10 @@ defineExpose({ openModal, close, isOpen });
 </script>
 
 <template>
-  <!-- Диалог смонтирован всегда: кнопки-триггера нет, открывается через ref -->
+  <!-- Диалог смонтирован всегда: кнопки-триггера нет, открывается через ref.
+       Teleport в body — изоляция от места открытия (как у модалки товара):
+       иначе deep-правила панели/карточек протекают внутрь диалога -->
+  <Teleport to="body">
   <dialog ref="article-dialog" class="article-modal">
     <!-- Крестик: общий компонент кнопки (вид задан в UButton, здесь только позиция) -->
     <UButton
@@ -147,6 +150,7 @@ defineExpose({ openModal, close, isOpen });
       </UButton>
     </article>
   </dialog>
+  </Teleport>
 </template>
 
 <style lang="scss" scoped>
@@ -156,6 +160,10 @@ defineExpose({ openModal, close, isOpen });
 .article-modal {
   width: min(92vw, toRem(760));
   max-height: min(90vh, toRem(760));
+  // min-height: окно открывается раньше, чем приходят данные, и без этого
+  // «прыгало» по высоте (сначала лоадер, потом контент). Держим сразу
+  // правдоподобный размер
+  min-height: min(60vh, toRem(520));
   border-radius: toRem(20);
   background: var(--light-color);
   box-shadow: 0 toRem(24) toRem(80) rgba(0, 0, 0, 0.3);
