@@ -1058,18 +1058,30 @@ const purposeGroups = computed(() => {
   // Слайдер расчёта: слайды по режимам — тот же паттерн, что у слайдера панели
   // (USlider, вариант background). Внизу — только точки, без подложки
   &__calc-slider {
-    // min-width: 0 — иначе слайдер как flex-элемент секции получает
-    // автоматический min-width = сумму min-content слайдов (3 × 100%),
-    // растягивается примерно на 630px и уезжает за карточку
+    // L1: делаем слайдер настоящим скролл-портом.
+    // min-width: 0 — иначе как flex-элемент секции получает автоматический
+    // min-width = min-content слайдов и растягивает карточку шире экрана.
+    // width/max-width + overflow: hidden не дают контенту распирать вёрстку.
     min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
     margin-block-start: toEm(2);
 
-    // Слайды и контейнер — flex-элементы слайдера: без min-width: 0 их
-    // автоматический минимум равен min-content самого широкого слайда, из-за
-    // чего вся цепочка (карточка → секция → слайдер) растягивается шире экрана
-    :deep(.slider__container),
+    :deep(.slider__container) {
+      min-width: 0;
+      // L1: column-gap: 0 — иначе go()/snap в USlider считают позицию по
+      // clientWidth без gap и активный слайд «плывёт»
+      column-gap: 0;
+      // L2: запрещаем scroll chaining по X — на краях жест не уходит
+      // родительскому слайдеру панели (иначе свайп листает «Меню»)
+      overscroll-behavior-x: contain;
+    }
+
     :deep(.slider__slide) {
       min-width: 0;
+      flex: 0 0 100%;
+      scroll-snap-align: start;
     }
 
     // Пагинация: снимаем абсолют и плашку — точки по центру под слайдом
