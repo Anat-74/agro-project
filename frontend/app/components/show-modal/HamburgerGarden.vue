@@ -1096,26 +1096,30 @@ const purposeGroups = computed(() => {
   // Внизу — только точки, без подложки
   &__calc-slider {
     // column-gap: 0 — у background-варианта gap 8px, из-за него USlider.go()
-    // (считает позицию по clientWidth) промахивается мимо слайда
+    // (считает позицию по clientWidth) промахивается мимо слайда.
+    // overflow-x: hidden — исключаем НАТИВНУЮ прокрутку: свайп обрабатываем сами
+    // (иначе браузер прокручивает ленту и параллельно работает go(), отчего
+    // лента «прокручивается» и табы дёргаются). Программный go() работает.
     :deep(.slider__container) {
       column-gap: 0;
+      overflow-x: hidden;
     }
 
-    // Пагинация: снимаем абсолют и плашку — точки по центру под слайдом
+    // Пагинация: снимаем абсолют и плашку — точки в правом углу под слайдом
     :deep(.slider__pagination) {
       position: static;
       translate: none;
       height: auto;
       display: flex;
-      justify-content: center;
+      justify-content: flex-end;
       column-gap: toRem(8);
       margin-block-start: toEm(8);
     }
 
     // Точки видимы на светлой карточке: неактивные серые, активная — зелёная
     :deep(.slider__pagination-dot) {
-      width: toRem(8);
-      height: toRem(8);
+      width: toRem(7);
+      height: toRem(7);
       border: none;
       outline: none;
       background-color: var(--gray-color);
