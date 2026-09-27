@@ -285,6 +285,26 @@ const onCalcSlide = (n: number) => {
   if (tab) mode.value = tab.id;
 };
 
+// Свайп по блоку расчёта: минимальный собственный обработчик — USlider не умеет
+// «отбирать» горизонтальный жест у родительского слайдера панели. Вертикаль
+// оставляем прокрутке контента (touch-action: pan-y у секции расчёта)
+const calcSwipeX = ref<number | null>(null);
+
+const onCalcSwipeStart = (e: TouchEvent) => {
+  calcSwipeX.value = e.touches[0]?.clientX ?? null;
+};
+
+const onCalcSwipeEnd = (e: TouchEvent) => {
+  const start = calcSwipeX.value;
+  calcSwipeX.value = null;
+  if (start === null) return;
+  const dx = (e.changedTouches[0]?.clientX ?? start) - start;
+  if (Math.abs(dx) < 40) return;
+  const index = modeTabs.value.findIndex((tab) => tab.id === mode.value);
+  const next = modeTabs.value[index + (dx < 0 ? 1 : -1)];
+  if (next) selectMode(next.id);
+};
+
 // Подписи фасовок для слайда: в шаблоне обращаться к packs напрямую небезопасно
 // (тип допускает undefined — редактор подчёркивал выражение)
 const packsLabel = (m: GardenMode) =>
@@ -496,7 +516,12 @@ const purposeGroups = computed(() => {
     </section>
 
     <!-- Калькулятор -->
-    <section v-if="selectedCrop" class="hamburger-garden__section">
+    <section
+      v-if="selectedCrop"
+      class="hamburger-garden__section hamburger-garden__section_calc"
+      @touchstart.passive="onCalcSwipeStart"
+      @touchend="onCalcSwipeEnd"
+    >
       <h3 class="hamburger-garden__question">{{ t.calcHeading }}</h3>
 
       <div
@@ -816,6 +841,10 @@ const purposeGroups = computed(() => {
   display: flex;
   flex-direction: column;
   row-gap: toEm(16);
+  // Ширина строго по слайду панели: без этого карточка считается по
+  // содержимому (слайдер расчёта распирал её до ~510px)
+  width: 100%;
+  min-width: 0;
   min-height: 100%;
   // Светлая подложка: на размытом фоне панели зелёные подписи и текст читались плохо
   padding: toEm(12);
@@ -858,6 +887,12 @@ const purposeGroups = computed(() => {
     border: toRem(1) solid rgba(0, 0, 0, 0.25);
     border-radius: toRem(4);
     box-shadow: inset 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+  }
+
+  // Секция расчёта: горизонтальный свайп обрабатываем сами, вертикальный
+  // отдаём прокрутке контента (иначе панель листается на «Меню»)
+  &__section_calc {
+    touch-action: pan-y;
   }
 
   // Первый блок («Что сажаем?») — без рамки вообще: разделитель живёт под шапкой
@@ -1057,31 +1092,13 @@ const purposeGroups = computed(() => {
 
   // Слайдер расчёта: слайды по режимам — тот же паттерн, что у слайдера панели
   // (USlider, вариант background). Внизу — только точки, без подложки
+  // Слайдер расчёта: слайды по режимам (USlider, вариант background).
+  // Внизу — только точки, без подложки
   &__calc-slider {
-    // L1: делаем слайдер настоящим скролл-портом.
-    // min-width: 0 — иначе как flex-элемент секции получает автоматический
-    // min-width = min-content слайдов и растягивает карточку шире экрана.
-    // width/max-width + overflow: hidden не дают контенту распирать вёрстку.
-    min-width: 0;
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden;
-    margin-block-start: toEm(2);
-
+    // column-gap: 0 — у background-варианта gap 8px, из-за него USlider.go()
+    // (считает позицию по clientWidth) промахивается мимо слайда
     :deep(.slider__container) {
-      min-width: 0;
-      // L1: column-gap: 0 — иначе go()/snap в USlider считают позицию по
-      // clientWidth без gap и активный слайд «плывёт»
       column-gap: 0;
-      // L2: запрещаем scroll chaining по X — на краях жест не уходит
-      // родительскому слайдеру панели (иначе свайп листает «Меню»)
-      overscroll-behavior-x: contain;
-    }
-
-    :deep(.slider__slide) {
-      min-width: 0;
-      flex: 0 0 100%;
-      scroll-snap-align: start;
     }
 
     // Пагинация: снимаем абсолют и плашку — точки по центру под слайдом
