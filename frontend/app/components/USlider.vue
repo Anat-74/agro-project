@@ -166,6 +166,9 @@ defineExpose({ go, active });
   &__slide {
     flex: 0 0 100%;
     scroll-snap-align: center;
+    // Один свайп — максимум один слайд: без этого сильный флинг проскакивает
+    // несколько снап-точек (вплоть до конца ленты) и активный слайд «плывёт»
+    scroll-snap-stop: always;
     display: grid;
     place-items: center;
     color: var(--color);
