@@ -570,6 +570,10 @@ export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
     image: Schema.Attribute.Media<'images'>;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::blog.blog'>;
+    preserves: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::preserve.preserve'
+    >;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'seo.seo', false>;
     slug: Schema.Attribute.UID<'title'>;
@@ -1010,6 +1014,121 @@ export interface ApiOrderOrder extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiPreservePagePreservePage extends Struct.SingleTypeSchema {
+  collectionName: 'preserve_pages';
+  info: {
+    description: 'Content and settings for the preserves section (jam, canning, salting)';
+    displayName: 'Preserve page';
+    pluralName: 'preserve-pages';
+    singularName: 'preserve-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    defaults: Schema.Attribute.Component<'calc.defaults', false>;
+    faq: Schema.Attribute.Component<'calc.faq-item', true>;
+    heroSubtitle: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    heroTitle: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    howTo: Schema.Attribute.Component<'calc.how-to-step', true>;
+    intro: Schema.Attribute.RichText &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::preserve-page.preserve-page'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'seo.seo', false>;
+    showCalculator: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPreservePreserve extends Struct.CollectionTypeSchema {
+  collectionName: 'preserves';
+  info: {
+    description: '\u041F\u0440\u043E\u0434\u0443\u043A\u0442 \u0440\u0430\u0437\u0434\u0435\u043B\u0430 \u00AB\u0417\u0430\u0433\u043E\u0442\u043E\u0432\u043A\u0438\u00BB: \u044F\u0433\u043E\u0434\u0430, \u0444\u0440\u0443\u043A\u0442, \u043E\u0432\u043E\u0449, \u0433\u0440\u0438\u0431 \u0441 \u043D\u043E\u0440\u043C\u0430\u043C\u0438 \u043F\u043E \u0440\u0435\u0436\u0438\u043C\u0430\u043C';
+    displayName: 'Preserve';
+    pluralName: 'preserves';
+    singularName: 'preserve';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    blogs: Schema.Attribute.Relation<'manyToMany', 'api::blog.blog'>;
+    canning: Schema.Attribute.Component<'preserve.norms', false>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.RichText &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    image: Schema.Attribute.Media<'images'>;
+    isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    jam: Schema.Attribute.Component<'preserve.norms', false>;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::preserve.preserve'
+    >;
+    name: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    products: Schema.Attribute.Relation<'oneToMany', 'api::product.product'>;
+    publishedAt: Schema.Attribute.DateTime;
+    salting: Schema.Attribute.Component<'preserve.norms', false>;
+    seo: Schema.Attribute.Component<'seo.seo', false>;
+    shortDescription: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    slug: Schema.Attribute.UID<'name'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiProductProduct extends Struct.CollectionTypeSchema {
   collectionName: 'products';
   info: {
@@ -1076,6 +1195,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
         };
       }>;
     packaging: Schema.Attribute.Component<'calc.packaging', true>;
+    preserve: Schema.Attribute.Relation<'manyToOne', 'api::preserve.preserve'>;
     price: Schema.Attribute.Decimal &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
@@ -1084,7 +1204,15 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       }>;
     publishedAt: Schema.Attribute.DateTime;
     purpose: Schema.Attribute.Enumeration<
-      ['seeds', 'seedlings', 'fertilizer', 'fruitveg', 'other']
+      [
+        'seeds',
+        'seedlings',
+        'fertilizer',
+        'fruitveg',
+        'ingredients',
+        'jars',
+        'other',
+      ]
     > &
       Schema.Attribute.DefaultTo<'fruitveg'>;
     seo: Schema.Attribute.Component<'seo.seo', false>;
@@ -1749,6 +1877,8 @@ declare module '@strapi/strapi' {
       'api::home-page.home-page': ApiHomePageHomePage;
       'api::news.news': ApiNewsNews;
       'api::order.order': ApiOrderOrder;
+      'api::preserve-page.preserve-page': ApiPreservePagePreservePage;
+      'api::preserve.preserve': ApiPreservePreserve;
       'api::product.product': ApiProductProduct;
       'api::services-page.services-page': ApiServicesPageServicesPage;
       'api::subcategory.subcategory': ApiSubcategorySubcategory;

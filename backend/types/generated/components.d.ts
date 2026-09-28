@@ -261,6 +261,22 @@ export interface LegalBankDetails extends Struct.ComponentSchema {
   };
 }
 
+export interface PreserveNorms extends Struct.ComponentSchema {
+  collectionName: 'components_preserve_norms';
+  info: {
+    description: '\u041D\u043E\u0440\u043C\u044B \u0437\u0430\u0433\u043E\u0442\u043E\u0432\u043A\u0438 \u043D\u0430 1 \u043A\u0433 \u043F\u0440\u043E\u0434\u0443\u043A\u0442\u0430: \u0441\u0430\u0445\u0430\u0440, \u0441\u043E\u043B\u044C, \u0443\u043A\u0441\u0443\u0441, \u0432\u043E\u0434\u0430, \u0432\u044B\u0445\u043E\u0434';
+    displayName: 'Preserve norms';
+  };
+  attributes: {
+    note: Schema.Attribute.Text;
+    saltPerKg: Schema.Attribute.Decimal;
+    sugarPerKg: Schema.Attribute.Decimal;
+    vinegarPerKg: Schema.Attribute.Decimal;
+    waterPerKg: Schema.Attribute.Decimal;
+    yieldPerKg: Schema.Attribute.Decimal;
+  };
+}
+
 export interface SectionsFeaturedProducts extends Struct.ComponentSchema {
   collectionName: 'components_sections_featured_products';
   info: {
@@ -349,6 +365,7 @@ declare module '@strapi/strapi' {
       'layout.header': LayoutHeader;
       'layout.link': LayoutLink;
       'legal.bank-details': LegalBankDetails;
+      'preserve.norms': PreserveNorms;
       'sections.featured-products': SectionsFeaturedProducts;
       'sections.hero-grids': SectionsHeroGrids;
       'seo.seo': SeoSeo;
