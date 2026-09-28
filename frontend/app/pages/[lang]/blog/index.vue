@@ -64,11 +64,14 @@ useSeoMeta({
           v-for="post in posts || []"
           :key="post.documentId || post.id"
           class="blog-page__item"
+          itemscope
+          itemtype="https://schema.org/Article"
           @click.capture="onArticleClick(post, $event)"
         >
           <NuxtLink
             :to="`/${currentLocale}/blog/${post.slug}`"
             class="blog-page__link"
+            itemprop="url"
           >
             <article class="blog-card">
               <img
@@ -78,9 +81,13 @@ useSeoMeta({
                 class="blog-card__image"
               >
               <div class="blog-card__body">
-                <time class="blog-card__date">{{ post.date }}</time>
-                <h2 class="blog-card__title">{{ post.title }}</h2>
-                <span v-if="post.author" class="blog-card__author">{{ post.author }}</span>
+                <time
+                  class="blog-card__date"
+                  itemprop="datePublished"
+                  :datetime="post.date || undefined"
+                >{{ post.date }}</time>
+                <h2 class="blog-card__title" itemprop="headline">{{ post.title }}</h2>
+                <span v-if="post.author" class="blog-card__author" itemprop="author">{{ post.author }}</span>
               </div>
             </article>
           </NuxtLink>

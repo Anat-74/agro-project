@@ -44,6 +44,9 @@ export const gardenTranslations: Record<LocaleCode, {
   howToTitle: string
   howToSteps: { name: string; text: string }[]
   faqTitle: string
+  seoPlantsTitle: string
+  seoProductsTitle: string
+  seoModesTitle: string
 }> = {
   ru: {
     title: 'Собери свою грядку',
@@ -96,6 +99,9 @@ export const gardenTranslations: Record<LocaleCode, {
       { name: 'Добавьте товары в корзину', text: 'Нажмите «В корзину» у нужного товара — количество пачек рассчитается автоматически.' },
     ],
     faqTitle: 'Частые вопросы',
+    seoPlantsTitle: 'Растения раздела',
+    seoProductsTitle: 'Товары раздела',
+    seoModesTitle: 'Режимы расчёта',
   },
   be: {
     title: 'Збяры сваю градку',
@@ -148,5 +154,8 @@ export const gardenTranslations: Record<LocaleCode, {
       { name: 'Дадайце тавары ў кошык', text: 'Націсніце «Дадаць у кошык» каля патрэбнага тавару — колькасць пачак разлічыцца аўтаматычна.' },
     ],
     faqTitle: 'Частыя пытанні',
+    seoPlantsTitle: 'Расліны раздзела',
+    seoProductsTitle: 'Тавары раздзела',
+    seoModesTitle: 'Рэжымы разліку',
   }
 }

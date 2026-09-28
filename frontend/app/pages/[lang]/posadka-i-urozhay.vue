@@ -80,6 +80,48 @@ const articlesKey = computed(() => `garden-section-articles-${currentLocale.valu
   } as any);
   return (response?.data || []) as SectionArticle[];
 });
+
+// Скрытый SEO-блок страницы: растения и товары раздела + режимы расчёта.
+// Названия растений и режимы — текстом (у растения нет отдельной страницы),
+// товары — настоящими ссылками; блок виден только поиску и скринридерам
+type SeoSectionCrop = { documentId: string; name: string; slug: string };
+type SeoSectionProduct = Product & {
+  category?: { slug?: string } | null;
+  subcategory?: { slug?: string } | null;
+};
+
+const { getProductLink } = useProductLink();
+const seoSectionKey = computed(() => `garden-seo-section-${currentLocale.value}`);
+const { data: seoSection } = useAsyncData(seoSectionKey, async () => {
+  const [cropsResponse, productsResponse] = await Promise.all([
+    find<SeoSectionCrop>("crops", {
+      filters: {
+        locale: { $eq: currentLocale.value },
+        isActive: { $eq: true },
+      },
+      fields: ["name", "slug"],
+      sort: ["name:asc"],
+      pagination: { pageSize: 100 },
+    } as any),
+    find<SeoSectionProduct>("products", {
+      filters: {
+        locale: { $eq: currentLocale.value },
+        purpose: { $notNull: true },
+      },
+      fields: ["name", "slug"],
+      populate: {
+        category: { fields: ["slug"] },
+        subcategory: { fields: ["slug"] },
+      },
+      pagination: { pageSize: 100 },
+    } as any),
+  ]);
+
+  return {
+    crops: (cropsResponse?.data || []) as SeoSectionCrop[],
+    products: (productsResponse?.data || []) as SeoSectionProduct[],
+  };
+});
 // Шаги HowTo: из Strapi, иначе — локализованный фолбэк из locales/garden.ts
 const howToSteps = computed<CalculatorHowToStep[]>(() => {
   const fromStrapi = (page.value?.howTo || []).filter(
@@ -220,6 +262,34 @@ useSchemaOrg(schemaOrgNodes);
             </div>
           </div>
         </UAccordion>
+      </section>
+
+      <!-- Скрытый SEO-блок: раздел, растения, товары и режимы расчёта.
+           Виден только поисковым системам и скринридерам -->
+      <section class="visually-hidden">
+        <h2>{{ t.title }}</h2>
+        <p>{{ t.subtitle }}</p>
+
+        <h3>{{ t.seoPlantsTitle }}</h3>
+        <ul>
+          <li v-for="crop in seoSection?.crops" :key="crop.documentId">
+            {{ crop.name }}
+          </li>
+        </ul>
+
+        <h3>{{ t.seoProductsTitle }}</h3>
+        <ul>
+          <li v-for="product in seoSection?.products" :key="product.documentId">
+            <NuxtLink :to="getProductLink(product)">{{ product.name }}</NuxtLink>
+          </li>
+        </ul>
+
+        <h3>{{ t.seoModesTitle }}</h3>
+        <ul>
+          <li>{{ t.modeSeeds }}</li>
+          <li>{{ t.modeSeedlings }}</li>
+          <li>{{ t.modeFertilizer }}</li>
+        </ul>
       </section>
     </div>
 

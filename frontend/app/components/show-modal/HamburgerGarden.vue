@@ -799,15 +799,24 @@ const purposeGroups = computed(() => {
         <li
           v-for="article in articles"
           :key="article.documentId"
+          itemscope
+          itemtype="https://schema.org/Article"
           @click.capture="onArticleClick(article, $event)"
         >
           <NuxtLink
             class="hamburger-garden__article"
             :to="`/${currentLocale}/blog/${article.slug}`"
+            itemprop="url"
           >
             <Icon name="mingcute:document-line" />
-            <span>{{ article.title }}</span>
+            <span itemprop="headline">{{ article.title }}</span>
           </NuxtLink>
+          <time
+            v-if="article.date"
+            class="visually-hidden"
+            itemprop="datePublished"
+            :datetime="article.date"
+          >{{ article.date }}</time>
         </li>
       </ul>
     </section>
