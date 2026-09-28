@@ -1,5 +1,9 @@
 # План работ
 
+> Перенесён из `frontend/docs/plan.md` 28.09.2026.
+> **Расположение документов:** временные планы — только `.kilo/plans/*`; `frontend/docs/*` —
+> постоянные правила (`style/patterns.md`, `nuxt-async-data.md`, `ai-assistant*.md`).
+
 ## Реализовано (история, по коммитам)
 
 - `794ac77` — `useDialog` → `useState` (SSR-утечка: шапка пропадала на главной после SSR продуктов).

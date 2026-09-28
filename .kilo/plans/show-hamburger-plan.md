@@ -48,5 +48,5 @@
 - Тех. ограничение корзины: `CartItem.quantity` — целое; `addToCart` не принимает `quantity`
   → нужно расширить (`addToCart(product, slug, sub, quantity?)`), расчёт — в целых кг (`Math.ceil`).
 
-### 3. Смежное (ведётся в `frontend/docs/plan.md`)
+### 3. Смежное (ведётся в `.kilo/plans/frontend-plan.md`)
 - Типизация (`vue-tsc --noEmit`), локализация ru/be по всем данным.
