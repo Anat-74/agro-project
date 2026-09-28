@@ -911,6 +911,8 @@ const purposeGroups = computed(() => {
   &__section:first-of-type {
     border-bottom: none;
     border-radius: toRem(4) toRem(4) 0 0;
+    // Низ = верху секции расчёта (15px), иначе блок «Что сажаем?» жмётся к пунктиру
+    padding-block-end: toEm(15);
   }
 
   // Растение не выбрано — секции расчёта нет, рамка «Что сажаем?» замыкается
@@ -1111,7 +1113,8 @@ const purposeGroups = computed(() => {
   }
 
   &__input {
-    flex: 0 1 toRem(120);
+    // На 20% уже прежней ширины (было 120px) — значения всё равно короткие
+    flex: 0 1 toRem(96);
     min-width: 0;
 
     // Компактнее базового поля, число — по правому краю
@@ -1160,21 +1163,26 @@ const purposeGroups = computed(() => {
   }
 
   // Результат
-  // Таблица результата: строка — flex (подпись слева, значение справа).
-  // Значение занимает ширину по своему контенту, поэтому вертикальная линия
-  // стоит вплотную к самому значению, а не на общей границе колонки
+  // Таблица результата: grid, колонка значений — по самому широкому значению
+  // (max-content) → вертикальные линии во всех строках в одной плоскости;
+  // значение идёт сразу за линией (небольшой отступ)
   &__result {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr max-content;
     padding: toEm(4) toEm(12);
     border-radius: toRem(8);
     background-color: var(--light-color-transparent);
   }
 
+  // Обёртка строки растворяется: dt/dd становятся ячейками grid
   &__result-row {
+    display: contents;
+  }
+
+  &__result-row dt,
+  &__result-row dd {
     display: flex;
-    align-items: stretch;
-    justify-content: space-between;
+    align-items: center;
     padding-block: toEm(6);
     // Горизонтальная «канавка» между строками — эталон: разделитель секций
     // в диалоге фильтров (тёмная линия + внутренняя тень + светлый блик)
@@ -1182,32 +1190,39 @@ const purposeGroups = computed(() => {
     box-shadow:
       inset 0 toRem(-1) 0 rgba(0, 0, 0, 0.08),
       0 toRem(1) 0 rgba(255, 255, 255, 0.6);
-
-    &:last-child {
-      border-bottom: none;
-      box-shadow: none;
-    }
   }
 
   &__result-row dt {
-    display: flex;
-    align-items: center;
     color: var(--gray-color);
   }
 
   &__result-row dd {
-    display: flex;
-    align-items: center;
+    // Значения — по правому краю
     justify-content: flex-end;
-    // Небольшой отступ между вертикальной линией и самим значением
+    // Небольшой отступ между вертикальной линией и колонкой значений
     padding-inline-start: toEm(8);
-    // Вертикальная «канавка» слева от значения
+    // Вертикальная «канавка»: одна плоскость во всех строках
     border-inline-start: toRem(1) solid rgba(0, 0, 0, 0.3);
     box-shadow:
+      inset 0 toRem(-1) 0 rgba(0, 0, 0, 0.08),
+      0 toRem(1) 0 rgba(255, 255, 255, 0.6),
       inset toRem(1) 0 0 rgba(0, 0, 0, 0.08),
       toRem(1) 0 0 rgba(255, 255, 255, 0.6);
     font-weight: 700;
     color: var(--primary-color);
+  }
+
+  // Последняя строка — без горизонтальной канавки
+  &__result-row:last-child dt {
+    border-bottom: none;
+    box-shadow: none;
+  }
+
+  &__result-row:last-child dd {
+    border-bottom: none;
+    box-shadow:
+      inset toRem(1) 0 0 rgba(0, 0, 0, 0.08),
+      toRem(1) 0 0 rgba(255, 255, 255, 0.6);
   }
 
   // Товары: группы — аккордеоны проекта (UAccordion). Промежуток даёт сам
