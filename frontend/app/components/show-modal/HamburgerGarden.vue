@@ -535,7 +535,7 @@ const purposeGroups = computed(() => {
       @touchcancel="onCalcSwipeCancel"
     >
       <h3 class="hamburger-garden__question">
-        <Icon name="mingcute:calculator-line" class="hamburger-garden__question-icon" />
+        <Icon name="mdi:calculator-variant-outline" class="hamburger-garden__question-icon" />
         {{ t.calcHeading }}
       </h3>
 
@@ -920,11 +920,24 @@ const purposeGroups = computed(() => {
   }
 
   // Секция расчёта прижата к верхней части группы (margin гасит row-gap
-  // карточки), сверху — пунктирный разделитель
+  // карточки), сверху — пунктирный разделитель шириной 90% по центру
   &__section:first-of-type + &__section_calc {
+    position: relative;
     margin-block-start: calc(-1 * toEm(16));
-    border-top: toRem(1) dashed rgba(0, 0, 0, 0.25);
+    // Верхнюю границу рисует пунктирный ::before, а не рамка секции
+    border-top: none;
     border-radius: 0 0 toRem(4) toRem(4);
+    // Отступ до пунктира увеличен на 8px (7 + 8) — блоки не «слипаются»
+    padding-block-start: toEm(15);
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset-block-start: 0;
+      // Не до самых краёв блока — 90% ширины по центру
+      inset-inline: 5%;
+      border-block-start: toRem(1) dashed rgba(0, 0, 0, 0.25);
+    }
   }
 
   &__question {
@@ -1147,26 +1160,21 @@ const purposeGroups = computed(() => {
   }
 
   // Результат
-  // Таблица результата: grid, колонка значений — по самому длинному значению
-  // (max-content), поэтому вертикальные линии совпадают во всех строках и стоят
-  // сразу слева от значений (зазор задаёт padding-inline-start)
+  // Таблица результата: строка — flex (подпись слева, значение справа).
+  // Значение занимает ширину по своему контенту, поэтому вертикальная линия
+  // стоит вплотную к самому значению, а не на общей границе колонки
   &__result {
-    display: grid;
-    grid-template-columns: 1fr max-content;
+    display: flex;
+    flex-direction: column;
     padding: toEm(4) toEm(12);
     border-radius: toRem(8);
     background-color: var(--light-color-transparent);
   }
 
-  // Обёртка строки растворяется: dt/dd становятся ячейками grid
   &__result-row {
-    display: contents;
-  }
-
-  &__result-row dt,
-  &__result-row dd {
     display: flex;
-    align-items: center;
+    align-items: stretch;
+    justify-content: space-between;
     padding-block: toEm(6);
     // Горизонтальная «канавка» между строками — эталон: разделитель секций
     // в диалоге фильтров (тёмная линия + внутренняя тень + светлый блик)
@@ -1174,38 +1182,32 @@ const purposeGroups = computed(() => {
     box-shadow:
       inset 0 toRem(-1) 0 rgba(0, 0, 0, 0.08),
       0 toRem(1) 0 rgba(255, 255, 255, 0.6);
+
+    &:last-child {
+      border-bottom: none;
+      box-shadow: none;
+    }
   }
 
   &__result-row dt {
+    display: flex;
+    align-items: center;
     color: var(--gray-color);
   }
 
   &__result-row dd {
+    display: flex;
+    align-items: center;
     justify-content: flex-end;
-    // Зазор между вертикальной линией и самим значением
-    padding-inline-start: toEm(12);
-    // Вертикальная «канавка» слева от колонки значений
+    // Небольшой отступ между вертикальной линией и самим значением
+    padding-inline-start: toEm(8);
+    // Вертикальная «канавка» слева от значения
     border-inline-start: toRem(1) solid rgba(0, 0, 0, 0.3);
     box-shadow:
-      inset 0 toRem(-1) 0 rgba(0, 0, 0, 0.08),
-      0 toRem(1) 0 rgba(255, 255, 255, 0.6),
       inset toRem(1) 0 0 rgba(0, 0, 0, 0.08),
       toRem(1) 0 0 rgba(255, 255, 255, 0.6);
     font-weight: 700;
     color: var(--primary-color);
-  }
-
-  // Последняя строка — без горизонтальной канавки
-  &__result-row:last-child dt {
-    border-bottom: none;
-    box-shadow: none;
-  }
-
-  &__result-row:last-child dd {
-    border-bottom: none;
-    box-shadow:
-      inset toRem(1) 0 0 rgba(0, 0, 0, 0.08),
-      toRem(1) 0 0 rgba(255, 255, 255, 0.6);
   }
 
   // Товары: группы — аккордеоны проекта (UAccordion). Промежуток даёт сам
