@@ -27,33 +27,49 @@ const emit = defineEmits<{ "update:active": [value: number] }>();
 watch(active, (v) => emit("update:active", v));
 
 let rafId: number;
-// Пока идёт программный плавный скролл (клик по пагинации), не пересчитываем
-// активный слайд: scroll-события во время анимации возвращали бы active обратно
-// (2 → 1 → 2) и миниатюра «мигала» бордером.
+// Пока идёт программный скролл (go), не пересчитываем активный слайд по scroll:
+// scroll-события во время анимации возвращали бы active обратно (2 → 1 → 2) —
+// из-за этого мигали табы и миниатюры. Подавление снимаем, когда контейнер
+// доехал до цели; таймер — только страховка, если scroll вообще не возникнет.
 let suppressScrollActive = false;
+let scrollTarget: number | null = null;
 let scrollEndTimer: ReturnType<typeof setTimeout> | undefined;
 
 const go = (n: number, smooth = true) => {
-  const width = container.value?.clientWidth || 0;
-  container.value?.scrollTo({
-    left: (n - 1) * width,
+  const el = container.value;
+  const width = el?.clientWidth || 0;
+  const left = (n - 1) * width;
+  el?.scrollTo({
+    left,
     behavior: smooth ? "smooth" : "auto",
   });
   active.value = n;
   suppressScrollActive = true;
+  scrollTarget = left;
   clearTimeout(scrollEndTimer);
   scrollEndTimer = setTimeout(() => {
     suppressScrollActive = false;
-  }, 500);
+    scrollTarget = null;
+  }, 1000);
 };
 
 const handleScroll = () => {
   cancelAnimationFrame(rafId);
   rafId = requestAnimationFrame(() => {
-    if (suppressScrollActive) return;
-    const width = container.value?.clientWidth || 1;
-    const newActive =
-      Math.round((container.value?.scrollLeft || 0) / width) + 1;
+    const el = container.value;
+    if (!el) return;
+    if (suppressScrollActive) {
+      // Программный скролл доехал до цели — снимаем подавление сразу,
+      // не дожидаясь таймера (иначе активный слайд откатывался назад)
+      if (scrollTarget !== null && Math.abs(el.scrollLeft - scrollTarget) <= 2) {
+        suppressScrollActive = false;
+        scrollTarget = null;
+        clearTimeout(scrollEndTimer);
+      }
+      return;
+    }
+    const width = el.clientWidth || 1;
+    const newActive = Math.round(el.scrollLeft / width) + 1;
 
     if (newActive !== active.value) {
       active.value = newActive;

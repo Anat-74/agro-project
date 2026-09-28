@@ -1100,20 +1100,18 @@ const purposeGroups = computed(() => {
     // overflow-x: hidden — исключаем НАТИВНУЮ прокрутку: свайп обрабатываем сами
     // (иначе браузер прокручивает ленту и параллельно работает go(), отчего
     // лента «прокручивается» и табы дёргаются). Программный go() работает.
+    // scroll-snap-type: none — при программном переходе снап не нужен и только
+    // добавляет рывок в конце анимации
     :deep(.slider__container) {
       column-gap: 0;
       overflow-x: hidden;
+      scroll-snap-type: none;
     }
 
-    // Пагинация: снимаем абсолют и плашку — точки в правом углу под слайдом
+    // Пагинация: точки в правом углу (остальное — из базы USlider)
     :deep(.slider__pagination) {
-      position: static;
-      translate: none;
-      height: auto;
-      display: flex;
       justify-content: flex-end;
       column-gap: toRem(8);
-      margin-block-start: toEm(8);
     }
 
     // Точки видимы на светлой карточке: неактивные серые, активная — зелёная
