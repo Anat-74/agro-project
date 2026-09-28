@@ -285,24 +285,32 @@ const onCalcSlide = (n: number) => {
   if (tab) mode.value = tab.id;
 };
 
-// Свайп по блоку расчёта: минимальный собственный обработчик — USlider не умеет
-// «отбирать» горизонтальный жест у родительского слайдера панели. Вертикаль
-// оставляем прокрутке контента (touch-action: pan-y у секции расчёта)
+// Свайп по блоку расчёта: зона шире самого слайдера (табы, поле площади,
+// таблица). Механику даёт USlider (nested + swipeBy) — здесь только жест
 const calcSwipeX = ref<number | null>(null);
+const calcSwipeY = ref<number | null>(null);
 
 const onCalcSwipeStart = (e: TouchEvent) => {
   calcSwipeX.value = e.touches[0]?.clientX ?? null;
+  calcSwipeY.value = e.touches[0]?.clientY ?? null;
 };
 
 const onCalcSwipeEnd = (e: TouchEvent) => {
-  const start = calcSwipeX.value;
+  const startX = calcSwipeX.value;
+  const startY = calcSwipeY.value;
   calcSwipeX.value = null;
-  if (start === null) return;
-  const dx = (e.changedTouches[0]?.clientX ?? start) - start;
-  if (Math.abs(dx) < 40) return;
-  const index = modeTabs.value.findIndex((tab) => tab.id === mode.value);
-  const next = modeTabs.value[index + (dx < 0 ? 1 : -1)];
-  if (next) selectMode(next.id);
+  calcSwipeY.value = null;
+  if (startX === null || startY === null) return;
+  const touch = e.changedTouches[0];
+  calcSlider.value?.swipeBy(
+    (touch?.clientX ?? startX) - startX,
+    (touch?.clientY ?? startY) - startY,
+  );
+};
+
+const onCalcSwipeCancel = () => {
+  calcSwipeX.value = null;
+  calcSwipeY.value = null;
 };
 
 // Подписи фасовок для слайда: в шаблоне обращаться к packs напрямую небезопасно
@@ -521,6 +529,7 @@ const purposeGroups = computed(() => {
       class="hamburger-garden__section hamburger-garden__section_calc"
       @touchstart.passive="onCalcSwipeStart"
       @touchend="onCalcSwipeEnd"
+      @touchcancel="onCalcSwipeCancel"
     >
       <h3 class="hamburger-garden__question">{{ t.calcHeading }}</h3>
 
@@ -593,6 +602,7 @@ const purposeGroups = computed(() => {
            (USlider). Табы выше переключают слайды, внизу по центру — точки -->
       <USlider
         ref="calc-slider"
+        nested
         :slides="modeTabs"
         slide-key="id"
         variant="background"
@@ -1095,18 +1105,8 @@ const purposeGroups = computed(() => {
   // Слайдер расчёта: слайды по режимам (USlider, вариант background).
   // Внизу — только точки, без подложки
   &__calc-slider {
-    // column-gap: 0 — у background-варианта gap 8px, из-за него USlider.go()
-    // (считает позицию по clientWidth) промахивается мимо слайда.
-    // overflow-x: hidden — исключаем НАТИВНУЮ прокрутку: свайп обрабатываем сами
-    // (иначе браузер прокручивает ленту и параллельно работает go(), отчего
-    // лента «прокручивается» и табы дёргаются). Программный go() работает.
-    // scroll-snap-type: none — при программном переходе снап не нужен и только
-    // добавляет рывок в конце анимации
-    :deep(.slider__container) {
-      column-gap: 0;
-      overflow-x: hidden;
-      scroll-snap-type: none;
-    }
+    // Отключение нативного скролла, snap и column-gap даёт USlider в режиме
+    // nested — здесь только оформление пагинации
 
     // Пагинация: точки в правом углу (остальное — из базы USlider)
     :deep(.slider__pagination) {
@@ -1253,17 +1253,16 @@ const purposeGroups = computed(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    // Круглая кнопка вокруг шеврона: закругление 50%, размер по иконке
+    // Круглая кнопка вокруг шеврона: закругление 50%, размер по иконке.
+    // Без рамки и блика — только светлый фон
     width: toRem(32);
     height: toRem(32);
     margin-inline: auto;   // по центру под списком
     padding: 0;
     min-height: 0;         // сброс паддингов/min-height UButton, иначе не круг
-    // «Канавка» как в эталонных блоках проекта (BannerLayouts / ShowShopFilter):
-    // тонкая тёмная линия + светлый блик под ней
-    border: toRem(1) solid rgba(0, 0, 0, 0.25);
+    border: none;
     border-radius: 50%;
-    box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+    background-color: var(--light-color-transparent);
     // Единственный источник цвета — кнопка (как у названий товаров)
     color: var(--warning-color);
 

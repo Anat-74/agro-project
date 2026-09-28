@@ -797,7 +797,8 @@ const toggleHamburger = () => {
     :deep(span),
     &::before,
     &::after {
-      background-color: var(--primary-color);
+      // Цвет полос — стандартный тёмный (как у иконок проекта)
+      background-color: var(--color);
       box-shadow:
         inset 0 toRem(-1) 0 rgba(0, 0, 0, 0.12),
         0 toRem(1) 0 rgba(255, 255, 255, 0.6);

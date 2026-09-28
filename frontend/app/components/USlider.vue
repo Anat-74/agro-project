@@ -7,6 +7,10 @@ interface Props<T = any> {
   paginationPosition?: "bottom" | "left";
   showPagination?: boolean;
   showNavigation?: boolean;
+  // Вложенный слайдер (слайдер внутри слайдера): переключаем слайды
+  // программно своим свайпом, нативный скролл и snap выключены, чтобы жест
+  // не уходил родительскому слайдеру. Вертикаль остаётся прокрутке родителя
+  nested?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -16,6 +20,7 @@ const props = withDefaults(defineProps<Props>(), {
   paginationPosition: "bottom",
   showPagination: true,
   showNavigation: true,
+  nested: false,
 });
 
 const container = useTemplateRef("container");
@@ -85,8 +90,18 @@ onUnmounted(() => {
   clearTimeout(scrollEndTimer);
 });
 
+// Свайп для вложенного режима (nested): нативный скролл выключен, поэтому жест
+// обрабатывает место использования — навешивает touch-события на нужную зону
+// (она может быть шире самого слайдера) и вызывает swipeBy(dx, dy).
+// Вертикальный жест не трогаем (|dy| > |dx|) — его прокручивает родитель.
+const swipeBy = (dx: number, dy: number) => {
+  if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+  const next = active.value + (dx < 0 ? 1 : -1);
+  if (next >= 1 && next <= props.slides.length) go(next);
+};
+
 // Для внешнего управления слайдером (напр. пагинация-миниатюры вне слайдера в модалке)
-defineExpose({ go, active });
+defineExpose({ go, active, swipeBy });
 </script>
 
 <template>
@@ -94,7 +109,10 @@ defineExpose({ go, active });
     :class="[
       'slider',
       `slider_${props.variant}`,
-      { 'slider_pagination-left': props.paginationPosition === 'left' },
+      {
+        'slider_pagination-left': props.paginationPosition === 'left',
+        slider_nested: props.nested,
+      },
     ]"
     :style="{ minHeight: props.height }"
   >
@@ -333,6 +351,20 @@ defineExpose({ go, active });
 
     .slider__pagination {
       margin-block-start: toRem(8);
+    }
+  }
+
+  // ===== Режим: вложенный слайдер (слайдер внутри слайдера) =====
+  // Нативный скролл и snap выключены — переход программный (go), свайп свой
+  // (onNestedTouch*). touch-action: pan-y оставляет вертикаль родителю, поэтому
+  // горизонтальный жест не листает внешний слайдер.
+  &_nested {
+    touch-action: pan-y;
+
+    .slider__container {
+      column-gap: 0;
+      overflow-x: hidden;
+      scroll-snap-type: none;
     }
   }
 }
