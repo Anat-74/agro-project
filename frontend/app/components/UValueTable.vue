@@ -13,17 +13,20 @@ interface Props {
   caption?: string;
   captionHidden?: boolean;
   labelWidth?: string;
+  /** muted — как в характеристиках товара; plain — светлый фон и тёмный разделитель */
+  variant?: "muted" | "plain";
 }
 
 const props = withDefaults(defineProps<Props>(), {
   caption: "",
   captionHidden: true,
   labelWidth: "60%",
+  variant: "muted",
 });
 </script>
 
 <template>
-  <table class="value-table">
+  <table :class="['value-table', `value-table_${props.variant}`]">
     <caption
       v-if="props.caption"
       :class="['value-table__caption', { 'visually-hidden': props.captionHidden }]"
@@ -74,6 +77,15 @@ const props = withDefaults(defineProps<Props>(), {
   &__value {
     padding-inline: toEm(8);
     text-align: left;
+  }
+
+  // Вариант для калькулятора: светлый фон строк и тёмный разделитель 1px
+  // (в характеристиках товара — приглушённый фон и светлый разделитель)
+  &_plain {
+    .value-table__row {
+      border-bottom-color: var(--color);
+      background-color: var(--light-color);
+    }
   }
 }
 </style>

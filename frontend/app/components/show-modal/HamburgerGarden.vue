@@ -647,6 +647,7 @@ const purposeGroups = computed(() => {
 
           <UValueTable
             v-else
+            variant="plain"
             :rows="resultRowsFor(slide.id)"
             :caption="t.calcHeading"
           />
@@ -1131,11 +1132,15 @@ const purposeGroups = computed(() => {
   // Внизу — только точки, без подложки
   &__calc-slider {
     // Отключение нативного скролла, snap и column-gap даёт USlider в режиме
-    // nested — здесь только оформление пагинации
+    // nested — здесь только оформление пагинации и компактные отступы:
+    // поле → таблица ближе на 5px (компенсируем row-gap карточки)
+    margin-block-start: toEm(-5);
 
     // Пагинация: точки в правом углу (остальное — из базы USlider)
     :deep(.slider__pagination) {
       justify-content: flex-end;
+      // Таблица → точки ближе на 5px (базовые 8px из варианта background)
+      margin-block-start: toRem(3);
       column-gap: toRem(8);
     }
 
