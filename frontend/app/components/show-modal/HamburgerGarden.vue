@@ -4,6 +4,14 @@ import { buttonTranslations } from "~/locales/button";
 import ShowModalArticle from "~/components/show-modal/ShowModalArticle.vue";
 import ShowModalProduct from "~/components/show-modal/ShowModalProduct.vue";
 import { calcPacks, calcPlantsOf, calcPlanting } from "~~/shared/utils/calc";
+import {
+  GARDEN_MODES,
+  GARDEN_PURPOSES,
+  gardenMode,
+  gardenPurposeIcon,
+  type GardenMode,
+  type GardenPurpose,
+} from "~~/shared/utils/garden-modes";
 
 // Слайд «Посадка» панели каталога: «Что сажаем?» → расчёт (площадь → растения →
 // семена/рассада/удобрение) и товары для выбранного растения.
@@ -57,8 +65,8 @@ interface GardenCrop {
 }
 
 // Тип товара растения: глобальный Product + наше поле purpose
-// (у глобального Product нет purpose, поэтому расширяем пересечением)
-type GardenPurpose = "seeds" | "seedlings" | "fertilizer" | "other";
+// (у глобального Product нет purpose, поэтому расширяем пересечением).
+// GardenPurpose импортируется из реестра режимов
 type GardenPackaging = { label?: string | null; amount?: number | null; unit?: string | null };
 type GardenProduct = Product & {
   purpose?: GardenPurpose | null;
@@ -226,16 +234,8 @@ const { data: products, pending: pendingProducts } = useCachedAsyncData(
 );
 
 // ===== Калькулятор: режимы «Семена / Рассада / Удобрение» =====
-type GardenMode = "seeds" | "seedlings" | "fertilizer";
+// Состав режимов, иконки и подписи — в реестре shared/utils/garden-modes.ts
 const mode = ref<GardenMode>("seeds");
-
-// Иконка по назначению: используется и в табах режимов, и в подписях групп товаров
-const PURPOSE_ICONS: Record<Purpose, string> = {
-  seeds: "mdi:seed-outline",
-  seedlings: "mdi:sprout-outline",
-  fertilizer: "mingcute:flask-2-line",
-  other: "mingcute:basket-2-line",
-};
 // ===== Площадь: храним всегда в м², а показываем в выбранной единице =====
 // 1 сотка = 100 м². Пользователь вводит значение в выбранной единице,
 // в расчёт всегда уходит м²
@@ -264,11 +264,13 @@ const areaInput = computed<number>({
   },
 });
 
-const modeTabs = computed<{ id: GardenMode; label: string; icon: string }[]>(() => [
-  { id: "seeds", label: t.value.modeSeeds, icon: PURPOSE_ICONS.seeds },
-  { id: "seedlings", label: t.value.modeSeedlings, icon: PURPOSE_ICONS.seedlings },
-  { id: "fertilizer", label: t.value.modeFertilizer, icon: PURPOSE_ICONS.fertilizer },
-]);
+const modeTabs = computed<{ id: GardenMode; label: string; icon: string }[]>(() =>
+  GARDEN_MODES.map((item) => ({
+    id: item.id,
+    label: t.value[item.key],
+    icon: gardenPurposeIcon(item.purpose),
+  })),
+);
 
 // Слайдер расчёта: табы = слайды. Клик по табу переключает слайд,
 // свайп слайдера обновляет активный таб (как в слайдере панели)
@@ -328,11 +330,10 @@ const packagingsByPurpose = computed<Record<GardenMode, GardenPackaging[]>>(() =
       .flatMap((p) => p.packaging ?? [])
       .filter((pk) => pk?.amount)
       .map((pk) => ({ label: pk.label ?? "", amount: pk.amount ?? 0, unit: pk.unit ?? "g" }));
-  return {
-    seeds: pick("seeds"),
-    seedlings: pick("seedlings"),
-    fertilizer: pick("fertilizer"),
-  };
+  // Раскладываем по режимам из реестра: режим сам знает своё назначение
+  const out = {} as Record<GardenMode, GardenPackaging[]>;
+  for (const item of GARDEN_MODES) out[item.id] = pick(item.purpose);
+  return out;
 });
 
 // Расчёт по КОНКРЕТНОМУ режиму — нужен слайдам (каждый слайд = режим расчёта)
@@ -352,10 +353,9 @@ const result = computed(() => resultFor(mode.value));
 // Есть ли данные растения под конкретный режим
 const hasModeDataFor = (m: GardenMode) => {
   const crop = selectedCrop.value;
-  if (!crop) return false;
-  if (m === "seedlings") return !!crop.seedling;
-  if (m === "fertilizer") return !!crop.fertilizing;
-  return !!crop.planting;
+  const config = gardenMode(m);
+  if (!crop || !config) return false;
+  return !!crop[config.dataField];
 };
 
 // Есть ли данные растения под активный режим — считаем по слайду (см. шаблон)
@@ -393,6 +393,34 @@ const modeInfoFor = (m: GardenMode): { label: string; value: string }[] => {
     }
   }
 
+  return rows;
+};
+
+// Строки таблицы результата для слайда — единая таблица проекта (UValueTable)
+const resultRowsFor = (m: GardenMode): { label: string; value: string | number }[] => {
+  const rows: { label: string; value: string | number }[] = [];
+  const data = resultFor(m);
+
+  if (data.plants !== null) {
+    rows.push({
+      label: m === "seedlings" ? t.value.modeSeedlings : t.value.plants,
+      value: data.plants,
+    });
+  }
+  if (m === "seeds" && data.seedGrams !== null) {
+    rows.push({ label: t.value.seeds, value: `~${data.seedGrams} ${t.value.unitGram}` });
+  }
+  if (m === "fertilizer" && data.fertilizerGrams !== null) {
+    rows.push({
+      label: t.value.fertilizer,
+      value: `~${data.fertilizerGrams} ${t.value.unitGram}`,
+    });
+  }
+  if (data.packs?.length) {
+    rows.push({ label: t.value.packs, value: packsLabel(m) });
+  }
+
+  rows.push(...modeInfoFor(m));
   return rows;
 };
 
@@ -456,25 +484,20 @@ const faqGroupId = useId();
 
 type Purpose = GardenPurpose;
 const purposeGroups = computed(() => {
-  const groups: Record<Purpose, GardenProduct[]> = {
-    seeds: [],
-    seedlings: [],
-    fertilizer: [],
-    other: [],
-  };
+  // Группы по назначениям — из реестра (порядок, подписи, иконки)
+  const groups = Object.fromEntries(
+    GARDEN_PURPOSES.map((item) => [item.id, [] as GardenProduct[]]),
+  ) as Record<Purpose, GardenProduct[]>;
   for (const p of products.value ?? []) {
     const purpose: Purpose = p.purpose ?? "other";
     (groups[purpose] ?? groups.other).push(p);
   }
-  const label: Record<Purpose, string> = {
-    seeds: t.value.purposeSeeds,
-    seedlings: t.value.purposeSeedlings,
-    fertilizer: t.value.purposeFertilizer,
-    other: t.value.purposeOther,
-  };
-  return (["seeds", "seedlings", "fertilizer", "other"] as Purpose[])
-    .map((id) => ({ id, label: label[id], icon: PURPOSE_ICONS[id], items: groups[id] }))
-    .filter((g) => g.items.length);
+  return GARDEN_PURPOSES.map((item) => ({
+    id: item.id,
+    label: t.value[item.key],
+    icon: item.icon,
+    items: groups[item.id],
+  })).filter((group) => group.items.length);
 });
 </script>
 
@@ -622,47 +645,11 @@ const purposeGroups = computed(() => {
             {{ t.noData }}
           </p>
 
-          <dl v-else class="hamburger-garden__result">
-            <div
-              v-if="resultFor(slide.id).plants !== null"
-              class="hamburger-garden__result-row"
-            >
-              <dt>{{ slide.id === "seedlings" ? t.modeSeedlings : t.plants }}</dt>
-              <dd>{{ resultFor(slide.id).plants }}</dd>
-            </div>
-            <div
-              v-if="slide.id === 'seeds' && resultFor('seeds').seedGrams !== null"
-              class="hamburger-garden__result-row"
-            >
-              <dt>{{ t.seeds }}</dt>
-              <dd>~{{ resultFor("seeds").seedGrams }} {{ t.unitGram }}</dd>
-            </div>
-            <div
-              v-if="
-                slide.id === 'fertilizer' &&
-                resultFor('fertilizer').fertilizerGrams !== null
-              "
-              class="hamburger-garden__result-row"
-            >
-              <dt>{{ t.fertilizer }}</dt>
-              <dd>~{{ resultFor("fertilizer").fertilizerGrams }} {{ t.unitGram }}</dd>
-            </div>
-            <div
-              v-if="resultFor(slide.id).packs?.length"
-              class="hamburger-garden__result-row"
-            >
-              <dt>{{ t.packs }}</dt>
-              <dd>{{ packsLabel(slide.id) }}</dd>
-            </div>
-            <div
-              v-for="row in modeInfoFor(slide.id)"
-              :key="row.label"
-              class="hamburger-garden__result-row"
-            >
-              <dt>{{ row.label }}</dt>
-              <dd>{{ row.value }}</dd>
-            </div>
-          </dl>
+          <UValueTable
+            v-else
+            :rows="resultRowsFor(slide.id)"
+            :caption="t.calcHeading"
+          />
         </template>
       </USlider>
     </section>
@@ -1169,69 +1156,6 @@ const purposeGroups = computed(() => {
       opacity: 1;
       background-color: var(--primary-color);
     }
-  }
-
-  // Результат
-  // Таблица результата: grid, колонка значений — по самому широкому значению
-  // (max-content) → вертикальные линии во всех строках в одной плоскости;
-  // значение идёт сразу за линией (небольшой отступ)
-  &__result {
-    display: grid;
-    grid-template-columns: 1fr max-content;
-    padding: toEm(4) toEm(12);
-    border-radius: toRem(8);
-    background-color: var(--light-color-transparent);
-  }
-
-  // Обёртка строки растворяется: dt/dd становятся ячейками grid
-  &__result-row {
-    display: contents;
-  }
-
-  &__result-row dt,
-  &__result-row dd {
-    display: flex;
-    align-items: center;
-    padding-block: toEm(6);
-    // Горизонтальная «канавка» между строками — эталон: разделитель секций
-    // в диалоге фильтров (тёмная линия + внутренняя тень + светлый блик)
-    border-bottom: toRem(1) solid rgba(0, 0, 0, 0.3);
-    box-shadow:
-      inset 0 toRem(-1) 0 rgba(0, 0, 0, 0.08),
-      0 toRem(1) 0 rgba(255, 255, 255, 0.6);
-  }
-
-  &__result-row dt {
-    color: var(--gray-color);
-  }
-
-  &__result-row dd {
-    // Значения — по правому краю
-    justify-content: flex-end;
-    // Небольшой отступ между вертикальной линией и колонкой значений
-    padding-inline-start: toEm(8);
-    // Вертикальная «канавка»: одна плоскость во всех строках
-    border-inline-start: toRem(1) solid rgba(0, 0, 0, 0.3);
-    box-shadow:
-      inset 0 toRem(-1) 0 rgba(0, 0, 0, 0.08),
-      0 toRem(1) 0 rgba(255, 255, 255, 0.6),
-      inset toRem(1) 0 0 rgba(0, 0, 0, 0.08),
-      toRem(1) 0 0 rgba(255, 255, 255, 0.6);
-    font-weight: 700;
-    color: var(--primary-color);
-  }
-
-  // Последняя строка — без горизонтальной канавки
-  &__result-row:last-child dt {
-    border-bottom: none;
-    box-shadow: none;
-  }
-
-  &__result-row:last-child dd {
-    border-bottom: none;
-    box-shadow:
-      inset toRem(1) 0 0 rgba(0, 0, 0, 0.08),
-      toRem(1) 0 0 rgba(255, 255, 255, 0.6);
   }
 
   // Товары: группы — аккордеоны проекта (UAccordion). Промежуток даёт сам
