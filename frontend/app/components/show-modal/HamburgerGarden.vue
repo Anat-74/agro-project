@@ -487,7 +487,10 @@ const purposeGroups = computed(() => {
 
     <!-- Что сажаем? -->
     <section class="hamburger-garden__section">
-      <h3 class="hamburger-garden__question">{{ t.question }}</h3>
+      <h3 class="hamburger-garden__question">
+        <Icon name="mdi:sprout-outline" class="hamburger-garden__question-icon" />
+        {{ t.question }}
+      </h3>
 
       <!-- Растения. Данные приходят только на клиенте, поэтому во время загрузки
            показываем общий индикатор проекта (ULoader показывает себя сам) -->
@@ -531,7 +534,10 @@ const purposeGroups = computed(() => {
       @touchend="onCalcSwipeEnd"
       @touchcancel="onCalcSwipeCancel"
     >
-      <h3 class="hamburger-garden__question">{{ t.calcHeading }}</h3>
+      <h3 class="hamburger-garden__question">
+        <Icon name="mingcute:calculator-line" class="hamburger-garden__question-icon" />
+        {{ t.calcHeading }}
+      </h3>
 
       <div
         class="hamburger-garden__modes"
@@ -866,13 +872,7 @@ const purposeGroups = computed(() => {
     display: flex;
     flex-direction: column;
     row-gap: toEm(2);
-    // Разделитель ПОД шапкой (у самого блока «Что сажаем?» бордера нет вообще).
-    // Раньше линия висела как border-top первого блока — у него унаследован
-    // border-radius: 4px, отчего концы линии скруглялись («признак закругления»).
-    // У шапки радиуса нет — линия строго горизонтальная, от края до края.
-    padding-block-end: toEm(16);
-    border-bottom: toRem(1) solid rgba(0, 0, 0, 0.25);
-    box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+    // Отдельной линии над «Что сажаем?» нет: верх блока даёт общая рамка группы
   }
 
   &__title {
@@ -905,13 +905,26 @@ const purposeGroups = computed(() => {
     touch-action: pan-y;
   }
 
-  // Первый блок («Что сажаем?») — без рамки вообще: разделитель живёт под шапкой
-  // слайда (`&__head`, border-bottom). border-radius сбрасываем явно: у базового
-  // `&__section` он 4px и скругляет концы линий («признак закругления»)
+  // «Что сажаем?» + «Калькулятор расчёта» — один визуальный блок: общая рамка,
+  // между секциями — пунктирный разделитель (низ и нижние углы замыкает
+  // секция расчёта, поэтому у верхней части низа нет)
   &__section:first-of-type {
-    padding: 0;
-    border: none;
-    border-radius: 0;
+    border-bottom: none;
+    border-radius: toRem(4) toRem(4) 0 0;
+  }
+
+  // Растение не выбрано — секции расчёта нет, рамка «Что сажаем?» замыкается
+  &__section:first-of-type:not(:has(+ .hamburger-garden__section_calc)) {
+    border-bottom: toRem(1) solid rgba(0, 0, 0, 0.25);
+    border-radius: toRem(4);
+  }
+
+  // Секция расчёта прижата к верхней части группы (margin гасит row-gap
+  // карточки), сверху — пунктирный разделитель
+  &__section:first-of-type + &__section_calc {
+    margin-block-start: calc(-1 * toEm(16));
+    border-top: toRem(1) dashed rgba(0, 0, 0, 0.25);
+    border-radius: 0 0 toRem(4) toRem(4);
   }
 
   &__question {
@@ -1134,20 +1147,26 @@ const purposeGroups = computed(() => {
   }
 
   // Результат
+  // Таблица результата: grid, колонка значений — по самому длинному значению
+  // (max-content), поэтому вертикальные линии совпадают во всех строках и стоят
+  // сразу слева от значений (зазор задаёт padding-inline-start)
   &__result {
-    display: flex;
-    flex-direction: column;
-    // Без отступа между строками: строки разделяются «канавкой» (см. ниже)
-    row-gap: 0;
+    display: grid;
+    grid-template-columns: 1fr max-content;
     padding: toEm(4) toEm(12);
     border-radius: toRem(8);
     background-color: var(--light-color-transparent);
   }
 
+  // Обёртка строки растворяется: dt/dd становятся ячейками grid
   &__result-row {
+    display: contents;
+  }
+
+  &__result-row dt,
+  &__result-row dd {
     display: flex;
-    align-items: stretch;
-    justify-content: space-between;
+    align-items: center;
     padding-block: toEm(6);
     // Горизонтальная «канавка» между строками — эталон: разделитель секций
     // в диалоге фильтров (тёмная линия + внутренняя тень + светлый блик)
@@ -1155,35 +1174,38 @@ const purposeGroups = computed(() => {
     box-shadow:
       inset 0 toRem(-1) 0 rgba(0, 0, 0, 0.08),
       0 toRem(1) 0 rgba(255, 255, 255, 0.6);
+  }
 
-    &:last-child {
-      border-bottom: none;
-      box-shadow: none;
-    }
+  &__result-row dt {
+    color: var(--gray-color);
+  }
 
-    dt {
-      display: flex;
-      align-items: center;
-      color: var(--gray-color);
-    }
+  &__result-row dd {
+    justify-content: flex-end;
+    // Зазор между вертикальной линией и самим значением
+    padding-inline-start: toEm(12);
+    // Вертикальная «канавка» слева от колонки значений
+    border-inline-start: toRem(1) solid rgba(0, 0, 0, 0.3);
+    box-shadow:
+      inset 0 toRem(-1) 0 rgba(0, 0, 0, 0.08),
+      0 toRem(1) 0 rgba(255, 255, 255, 0.6),
+      inset toRem(1) 0 0 rgba(0, 0, 0, 0.08),
+      toRem(1) 0 0 rgba(255, 255, 255, 0.6);
+    font-weight: 700;
+    color: var(--primary-color);
+  }
 
-    dd {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      // Фиксированная ширина колонки значений: тогда вертикальные линии
-      // во всех строках совпадают (раньше шли «вразнобой»)
-      flex: 0 0 toRem(110);
-      // Вертикальная «канавка» перед колонкой значений
-      margin-inline-start: toEm(12);
-      padding-inline-start: toEm(12);
-      border-inline-start: toRem(1) solid rgba(0, 0, 0, 0.3);
-      box-shadow:
-        inset toRem(1) 0 0 rgba(0, 0, 0, 0.08),
-        toRem(1) 0 0 rgba(255, 255, 255, 0.6);
-      font-weight: 700;
-      color: var(--primary-color);
-    }
+  // Последняя строка — без горизонтальной канавки
+  &__result-row:last-child dt {
+    border-bottom: none;
+    box-shadow: none;
+  }
+
+  &__result-row:last-child dd {
+    border-bottom: none;
+    box-shadow:
+      inset toRem(1) 0 0 rgba(0, 0, 0, 0.08),
+      toRem(1) 0 0 rgba(255, 255, 255, 0.6);
   }
 
   // Товары: группы — аккордеоны проекта (UAccordion). Промежуток даёт сам
