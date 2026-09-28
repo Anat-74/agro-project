@@ -8,28 +8,22 @@ interface Characteristic {
   value: string
 }
 
-defineProps<{
+const props = defineProps<{
   specs: Characteristic[]
 }>()
+
+// Строки для единой таблицы «подпись → значение» (UValueTable)
+const rows = computed(() =>
+  props.specs.map((spec) => ({ label: spec.param, value: spec.value })),
+)
 </script>
 
 <template>
-   <div v-if="specs?.length" class="product-characteristics">
+   <div v-if="props.specs?.length" class="product-characteristics">
      <h3 class="product-characteristics__title">
       {{ t.title }}
      </h3>
-     <table class="product-characteristics__table">
-       <tbody>
-         <tr 
-           v-for="(spec, index) in specs" 
-           :key="index"
-           class="product-characteristics__row"
-         >
-           <td class="product-characteristics__param">{{ spec.param }}</td>
-           <td class="product-characteristics__value">{{ spec.value }}</td>
-         </tr>
-       </tbody>
-     </table>
+     <UValueTable :rows="rows" :caption="t.title" />
    </div>
  </template>
  
@@ -44,31 +38,6 @@ defineProps<{
    padding-block: toEm(4);
    border-radius: toEm(4);
    background-color: var(--whitesmoke-color);
-}
-
-&__table {
-   width: 100%;
-   // border-collapse: collapse;
-}
-
-&__row {
-   border-bottom: 1px solid var(--light-color);
-   background-color: var(--whitesmoke-color);
-
-   &:last-child {
-    border-bottom: none;
-  }
-}
-
-&__param {
-   width: 60%;
-   padding-inline: toEm(8);
-   padding-block: toEm(8);
-   font-weight: 600;
-}
-
-&__value {
-   padding-inline: toEm(8);
 }
 }
 
