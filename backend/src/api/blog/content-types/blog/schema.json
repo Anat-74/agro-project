@@ -56,6 +56,12 @@
       "relation": "manyToMany",
       "target": "api::crop.crop",
       "mappedBy": "blogs"
+    },
+    "preserves": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::preserve.preserve",
+      "mappedBy": "blogs"
     }
   }
 }

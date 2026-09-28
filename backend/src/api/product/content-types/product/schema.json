@@ -141,6 +141,8 @@
         "seedlings",
         "fertilizer",
         "fruitveg",
+        "ingredients",
+        "jars",
         "other"
       ],
       "default": "fruitveg"
@@ -149,6 +151,11 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::crop.crop"
+    },
+    "preserve": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::preserve.preserve"
     },
     "packaging": {
       "type": "component",

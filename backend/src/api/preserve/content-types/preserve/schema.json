@@ -1,0 +1,93 @@
+{
+  "kind": "collectionType",
+  "collectionName": "preserves",
+  "info": {
+    "singularName": "preserve",
+    "pluralName": "preserves",
+    "displayName": "Preserve",
+    "description": "Продукт раздела «Заготовки»: ягода, фрукт, овощ, гриб с нормами по режимам"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "shortDescription": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "description": {
+      "type": "richtext",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "jam": {
+      "type": "component",
+      "component": "preserve.norms",
+      "repeatable": false
+    },
+    "canning": {
+      "type": "component",
+      "component": "preserve.norms",
+      "repeatable": false
+    },
+    "salting": {
+      "type": "component",
+      "component": "preserve.norms",
+      "repeatable": false
+    },
+    "seo": {
+      "type": "component",
+      "component": "seo.seo",
+      "repeatable": false
+    },
+    "products": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::product.product",
+      "mappedBy": "preserve"
+    },
+    "blogs": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::blog.blog",
+      "inversedBy": "preserves"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

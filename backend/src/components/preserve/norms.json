@@ -1,0 +1,34 @@
+{
+  "collectionName": "components_preserve_norms",
+  "info": {
+    "displayName": "Preserve norms",
+    "description": "Нормы заготовки на 1 кг продукта: сахар, соль, уксус, вода, выход"
+  },
+  "options": {},
+  "attributes": {
+    "sugarPerKg": {
+      "type": "decimal",
+      "description": "Сахар, г на 1 кг продукта"
+    },
+    "saltPerKg": {
+      "type": "decimal",
+      "description": "Соль, г на 1 кг продукта"
+    },
+    "vinegarPerKg": {
+      "type": "decimal",
+      "description": "Уксус, мл на 1 кг продукта"
+    },
+    "waterPerKg": {
+      "type": "decimal",
+      "description": "Вода, мл на 1 кг продукта"
+    },
+    "yieldPerKg": {
+      "type": "decimal",
+      "description": "Выход готового продукта, л на 1 кг"
+    },
+    "note": {
+      "type": "text",
+      "description": "Особенности рецепта (примечание)"
+    }
+  }
+}
