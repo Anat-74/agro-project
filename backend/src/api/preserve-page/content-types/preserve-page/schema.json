@@ -5,7 +5,7 @@
     "singularName": "preserve-page",
     "pluralName": "preserve-pages",
     "displayName": "Preserve page",
-    "description": "Content and settings for the preserves section"
+    "description": "Content and settings for the preserves section (jam, canning, salting)"
   },
   "options": {
     "draftAndPublish": true
