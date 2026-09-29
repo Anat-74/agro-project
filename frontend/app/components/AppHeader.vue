@@ -4,6 +4,7 @@ import ShowHamburger from '~/components/show-modal/ShowHamburger.vue'
 import ShowModalCartDialog from '~/components/show-modal/ShowModalCartDialog.vue'
 import ShowModalProduct from '~/components/show-modal/ShowModalProduct.vue'
 import MoreMenuPopover from '~/components/popover/MoreMenuPopover.vue'
+import { usePreservesDialog } from '~/composables/useGardenDialog'
 
 const { currentLocale } = useLocale()
 
@@ -82,6 +83,10 @@ watch(cartDialogRequest, () => cartDialogRef.value?.open?.())
 const hamburgerMobileRef = useTemplateRef<InstanceType<typeof ShowHamburger>>('hamburger-mobile')
 const { requestId: gardenDialogRequest } = useGardenDialog()
 watch(gardenDialogRequest, () => hamburgerMobileRef.value?.openGarden?.())
+
+// Запрос «открыть панель на вкладке Заготовки» — CTA со страницы раздела заготовок
+const { requestId: preservesDialogRequest } = usePreservesDialog()
+watch(preservesDialogRequest, () => hamburgerMobileRef.value?.openPreserves?.())
 
 // Превью товара из корзины — модалка живёт на уровне Header, как в личном кабинете
 const previewProduct = ref<Product | null>(null)

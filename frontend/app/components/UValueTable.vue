@@ -57,13 +57,10 @@ const props = withDefaults(defineProps<Props>(), {
 .value-table {
   width: 100%;
 
+  // Разделители строк — не border у <tr>: в табличной модели separate (по умолчанию)
+  // границы строк не рисуются. Строки разделяют фон и зазоры между ячейками
   &__row {
-    border-bottom: toRem(1) solid var(--light-color);
     background-color: var(--whitesmoke-color);
-
-    &:last-child {
-      border-bottom: none;
-    }
   }
 
   // text-align: left — потому что th по умолчанию центрируется
@@ -76,15 +73,18 @@ const props = withDefaults(defineProps<Props>(), {
 
   &__value {
     padding-inline: toEm(8);
-    text-align: left;
   }
 
-  // Вариант для калькулятора: светлый фон строк и тёмный разделитель 1px
-  // (в характеристиках товара — приглушённый фон и светлый разделитель)
+  // Вариант для калькулятора: светлый фон строк (зазоры-разделители на нём
+  // не видны) и увеличенные вертикальные отступы ячеек
   &_plain {
     .value-table__row {
-      border-bottom-color: var(--color);
       background-color: var(--light-color);
+    }
+
+    .value-table__label,
+    .value-table__value {
+      padding-block: toEm(13);
     }
   }
 }

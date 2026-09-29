@@ -226,3 +226,75 @@ export const calcPlanting = (input: CalcInput): CalcResult => {
     packs: calcPacks(base, input.packagings, plants),
   };
 };
+
+// ===== Заготовки (варенье / консервация / засолка) =====
+
+/** Нормы заготовки на 1 кг продукта */
+export interface CalcPreserveNorms {
+  sugarPerKg?: number | null;
+  saltPerKg?: number | null;
+  vinegarPerKg?: number | null;
+  waterPerKg?: number | null;
+  yieldPerKg?: number | null;
+  note?: string | null;
+}
+
+export interface CalcPreservesInput {
+  /** Вес продукта, кг */
+  weightKg?: number | null;
+  /** Нормы выбранного режима (на 1 кг продукта) */
+  norms?: CalcPreserveNorms | null;
+  /** Фасовки товаров (для перевода ингредиентов в пачки) */
+  packagings?: CalcPackaging[] | null;
+}
+
+export interface CalcPreservesResult {
+  /** Вес продукта, кг */
+  weightKg: number;
+  /** Сахар, г */
+  sugarGrams: number | null;
+  /** Соль, г */
+  saltGrams: number | null;
+  /** Уксус, мл */
+  vinegarMl: number | null;
+  /** Вода, мл */
+  waterMl: number | null;
+  /** Выход готового продукта, л */
+  yieldLiters: number | null;
+  /** Варианты фасовок под потребность (сейчас — от суммарных сыпучих) */
+  packs: CalcPack[] | null;
+}
+
+/** Норма на 1 кг → количество на вес продукта (0/отрицательные игнорируем) */
+const perKg = (rate: number | null | undefined, weightKg: number): number | null =>
+  rate && rate > 0 && weightKg > 0 ? rate * weightKg : null;
+
+/**
+ * Расчёт заготовки: вес продукта × нормы на 1 кг → сахар, соль, уксус, вода, выход.
+ * Режим (варенье / консервация / засолка) выбирает набор норм — это делает раздел.
+ */
+export const calcPreserves = (input: CalcPreservesInput): CalcPreservesResult => {
+  const weightKg = input.weightKg && input.weightKg > 0 ? input.weightKg : 0;
+  const norms = input.norms ?? null;
+
+  const sugarGrams = perKg(norms?.sugarPerKg, weightKg);
+  const saltGrams = perKg(norms?.saltPerKg, weightKg);
+  const vinegarMl = perKg(norms?.vinegarPerKg, weightKg);
+  const waterMl = perKg(norms?.waterPerKg, weightKg);
+  const yieldLiters = perKg(norms?.yieldPerKg, weightKg);
+
+  // Пачки пока считаем от суммарных сыпучих (сахар + соль): точная привязка
+  // «товар → ингредиент» требует отдельного поля у продукта
+  const bulk = (sugarGrams ?? 0) + (saltGrams ?? 0);
+  const packs = calcPacks(bulk > 0 ? bulk : null, input.packagings, null);
+
+  return {
+    weightKg: round2(weightKg),
+    sugarGrams: sugarGrams === null ? null : round2(sugarGrams),
+    saltGrams: saltGrams === null ? null : round2(saltGrams),
+    vinegarMl: vinegarMl === null ? null : round2(vinegarMl),
+    waterMl: waterMl === null ? null : round2(waterMl),
+    yieldLiters: yieldLiters === null ? null : round2(yieldLiters),
+    packs,
+  };
+};

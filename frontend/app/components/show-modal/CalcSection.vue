@@ -1,103 +1,53 @@
 <script setup lang="ts">
-import { gardenTranslations } from "~/locales/garden";
 import { buttonTranslations } from "~/locales/button";
 import ShowModalArticle from "~/components/show-modal/ShowModalArticle.vue";
 import ShowModalProduct from "~/components/show-modal/ShowModalProduct.vue";
-import { calcPacks, calcPlantsOf, calcPlanting } from "~~/shared/utils/calc";
-import {
-  GARDEN_MODES,
-  GARDEN_PURPOSES,
-  gardenMode,
-  gardenPurposeIcon,
-  type GardenMode,
-  type GardenPurpose,
-} from "~~/shared/utils/garden-modes";
+import { useGardenCalculator } from "~/composables/useGardenCalculator";
+import { GARDEN_SECTION, type CalcSectionConfig } from "~/utils/calcSections";
+import type {
+  CalcPurpose,
+  GardenCrop,
+  GardenProduct,
+} from "~~/shared/types/garden";
 
-// Слайд «Посадка» панели каталога: «Что сажаем?» → расчёт (площадь → растения →
-// семена/рассада/удобрение) и товары для выбранного растения.
+// Секция-калькулятор раздела: выбор предмета → расчёт (поле ввода → значения →
+// таблица) и товары выбранного предмета. Конкретный раздел, его режимы, расчёт,
+// запросы, поле ввода и тексты приходят конфигурацией (см. calcSections)
 interface Props {
   // Показывать блок «Частые вопросы». На странице калькулятора вопросы выводятся
   // отдельным блоком страницы (виден и на телефоне), чтобы не было дубля
   showFaq?: boolean;
+  // Конфигурация раздела (по умолчанию — «Посадка»)
+  section?: CalcSectionConfig<any, any, any>;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   showFaq: true,
+  section: () => GARDEN_SECTION,
 });
+
+const config = computed(() => props.section);
 
 const { currentLocale } = useLocale();
 const { getProductLink } = useProductLink();
 const cartStore = useCartStore();
 
-const t = computed(() => gardenTranslations[currentLocale.value]);
+const t = computed(() => config.value.locales[currentLocale.value]);
 const buttonT = computed(() => buttonTranslations[currentLocale.value]);
 
-// Тип растения из Strapi (локально — глобального типа Crop нет)
-interface GardenPlanting {
-  rowSpacing?: number | null;
-  plantSpacing?: number | null;
-  seedsPerHole?: number | null;
-  seedRatePerSqM?: number | null;
-  seedRatePerPlant?: number | null;
-  germination?: number | null;
-  seedingDepth?: number | null;
-}
-interface GardenSeedling {
-  plantsPerSqM?: number | null;
-  growingDays?: number | null;
-  sowingPeriod?: string | null;
-  transplantPeriod?: string | null;
-}
-interface GardenFertilizing {
-  ratePerSqM?: number | null;
-  applications?: number | null;
-  npk?: string | null;
-  kind?: "mineral" | "organic" | string | null;
-}
-interface GardenCrop {
-  documentId: string;
-  name: string;
-  slug?: string;
-  image?: { url?: string; alternativeText?: string } | null;
-  planting?: GardenPlanting | null;
-  seedling?: GardenSeedling | null;
-  fertilizing?: GardenFertilizing | null;
-}
-
-// Тип товара растения: глобальный Product + наше поле purpose
-// (у глобального Product нет purpose, поэтому расширяем пересечением).
-// GardenPurpose импортируется из реестра режимов
-type GardenPackaging = { label?: string | null; amount?: number | null; unit?: string | null };
-type GardenProduct = Product & {
-  purpose?: GardenPurpose | null;
-  packaging?: GardenPackaging[] | null;
-  category?: { slug?: string } | null;
-  subcategory?: { slug?: string } | null;
-};
-
-// ===== Растения (crop) =====
-const cropKey = computed(() => `garden-crops-${currentLocale.value}`);
+// ===== Предметы раздела (растения «Посадки», позже — продукты «Заготовок») =====
+const itemsKey = computed(() => `${config.value.id}-items-${currentLocale.value}`);
 const { data: crops, pending: pendingCrops } = useCachedAsyncData(
-  cropKey,
+  itemsKey,
   async () => {
     const { find } = useStrapi();
-    const response = await find<GardenCrop>("crops", {
-      filters: {
-        locale: { $eq: currentLocale.value },
-        isActive: { $eq: true },
-      },
-      sort: ["name:asc"],
-      pagination: { pageSize: 100 } as PaginationMeta,
-      populate: {
-        planting: true,
-        seedling: true,
-        fertilizing: true,
-        image: { fields: ["alternativeText", "url"] },
-      },
-    } as any);
+    const response = await find<GardenCrop>(
+      config.value.items.endpoint,
+      config.value.items.query(currentLocale.value) as any,
+    );
     return response.data || [];
   },
-  { watch: [cropKey], server: false, ttl: 600_000 },
+  { watch: [itemsKey], server: false, ttl: 600_000 },
 );
 
 // ===== Выбор растения =====
@@ -151,24 +101,17 @@ const onProductClick = (product: GardenProduct, event: MouseEvent) => {
 };
 
 const articlesKey = computed(
-  () => `garden-articles-${currentLocale.value}-${selectedId.value ?? "none"}`,
+  () => `${config.value.id}-articles-${currentLocale.value}-${selectedId.value ?? "none"}`,
 );
 const { data: articles } = useCachedAsyncData(
   articlesKey,
   async () => {
-    if (!selectedId.value) return [];
+    const itemId = selectedId.value;
+    if (!itemId) return [];
     const { find } = useStrapi();
     const response = await find<{ documentId: string; title: string; slug: string; date?: string }>(
-      "blogs",
-      {
-        filters: {
-          locale: { $eq: currentLocale.value },
-          crops: { documentId: { $eq: selectedId.value } },
-        },
-        sort: ["date:desc"],
-        pagination: { pageSize: 10 } as PaginationMeta,
-        fields: ["title", "slug", "date"],
-      } as any,
+      config.value.articles.endpoint,
+      config.value.articles.query(currentLocale.value, itemId) as any,
     );
     return response.data || [];
   },
@@ -189,10 +132,10 @@ const { data: faqItems } = useCachedAsyncData(
     // На странице калькулятора вопросы выводятся самой страницей — запрос не нужен
     if (!props.showFaq) return [];
     const { find } = useStrapi();
-    const response = await find<{ faq?: GardenFaqItem[] }>("calculator-page", {
-      filters: { locale: { $eq: currentLocale.value } },
-      populate: { faq: true },
-    } as any);
+    const response = await find<{ faq?: GardenFaqItem[] }>(
+      config.value.page.endpoint,
+      config.value.page.query(currentLocale.value) as any,
+    );
     const entry: any = Array.isArray(response.data)
       ? response.data[0]
       : response.data;
@@ -201,82 +144,74 @@ const { data: faqItems } = useCachedAsyncData(
   { server: false, ttl: 600_000 },
 );
 
-// ===== Товары растения (по purpose) =====
+// ===== Товары предмета (по назначению) =====
 const productsKey = computed(
-  () => `garden-products-${currentLocale.value}-${selectedId.value ?? "none"}`,
+  () => `${config.value.id}-products-${currentLocale.value}-${selectedId.value ?? "none"}`,
 );
 const { data: products, pending: pendingProducts } = useCachedAsyncData(
   productsKey,
   async () => {
-    if (!selectedId.value) return [];
+    const itemId = selectedId.value;
+    if (!itemId) return [];
     const { find } = useStrapi();
-    const response = await find<GardenProduct>("products", {
-      filters: {
-        locale: { $eq: currentLocale.value },
-        crop: { documentId: { $eq: selectedId.value } },
-      },
-      pagination: { pageSize: 100 } as PaginationMeta,
-      populate: {
-        mainImage: { fields: ["alternativeText", "url"] },
-        image: { fields: ["alternativeText", "url"] },
-        packaging: true,
-        // нужны для getProductLink (категория/подкатегория → URL товара)
-        category: { fields: ["slug"] },
-        subcategory: {
-          fields: ["slug"],
-          populate: { category: { fields: ["slug"] } },
-        },
-      },
-    } as any);
+    const response = await find<GardenProduct>(
+      config.value.products.endpoint,
+      config.value.products.query(currentLocale.value, itemId) as any,
+    );
     return response.data || [];
   },
   { watch: [productsKey], server: false, ttl: 300_000 },
 );
 
-// ===== Калькулятор: режимы «Семена / Рассада / Удобрение» =====
-// Состав режимов, иконки и подписи — в реестре shared/utils/garden-modes.ts
-const mode = ref<GardenMode>("seeds");
-// ===== Площадь: храним всегда в м², а показываем в выбранной единице =====
-// 1 сотка = 100 м². Пользователь вводит значение в выбранной единице,
-// в расчёт всегда уходит м²
-type AreaUnit = "sqm" | "sotka";
-const AREA_UNIT_FACTOR: Record<AreaUnit, number> = { sqm: 1, sotka: 100 };
-const areaUnit = ref<AreaUnit>("sqm");
-const areaSqm = ref(1);
+// ===== Калькулятор: режим и поле ввода — всё из конфигурации раздела =====
+const mode = ref<string>(config.value.modes[0]?.id ?? "");
+// Значение поля храним в базовых единицах, а показываем в выбранной
+const unitId = ref<string>(config.value.input.units[0]?.id ?? "");
+const value = ref(1);
 
-const areaUnitTabs = computed<{ id: AreaUnit; label: string }[]>(() => [
-  { id: "sqm", label: t.value.areaUnitSqm },
-  // В табе — «сотки», а рядом с полем подпись «соток» (например, «5 соток»)
-  { id: "sotka", label: t.value.areaUnitSotkaTab },
-]);
+const unitFactor = computed(
+  () => config.value.input.units.find((u) => u.id === unitId.value)?.factor ?? 1,
+);
 
-// Подпись единицы рядом с полем (м² / соток)
-const areaUnitLabel = computed(() =>
-  areaUnit.value === "sotka" ? t.value.areaUnitSotka : t.value.areaUnitSqm,
+const unitTabs = computed<{ id: string; label: string }[]>(() =>
+  config.value.input.units.map((u) => ({ id: u.id, label: t.value[u.labelKey] })),
+);
+
+// Подпись единицы рядом с полем (например, «соток» / «грамм»)
+const unitLabel = computed(
+  () => t.value[config.value.input.units.find((u) => u.id === unitId.value)?.labelKey ?? "areaUnit"],
 );
 
 // Значение для поля ввода: показываем в выбранной единице
-const areaInput = computed<number>({
-  get: () => areaSqm.value / AREA_UNIT_FACTOR[areaUnit.value],
-  set: (value) => {
-    const num = Number(value);
-    areaSqm.value = Number.isFinite(num) && num > 0 ? num * AREA_UNIT_FACTOR[areaUnit.value] : 0;
+const inputValue = computed<number>({
+  get: () => value.value / unitFactor.value,
+  set: (newValue) => {
+    const num = Number(newValue);
+    value.value = Number.isFinite(num) && num > 0 ? num * unitFactor.value : 0;
   },
 });
 
-const modeTabs = computed<{ id: GardenMode; label: string; icon: string }[]>(() =>
-  GARDEN_MODES.map((item) => ({
-    id: item.id,
-    label: t.value[item.key],
-    icon: gardenPurposeIcon(item.purpose),
-  })),
-);
+// Расчётная логика (режимы, строки результата, пачки) — в composable, общем
+// для разделов; вся специфика приходит конфигурацией
+const {
+  modeTabs,
+  hasModeDataFor,
+  resultRowsFor,
+  packCountFor,
+} = useGardenCalculator({
+  config,
+  selectedItem: selectedCrop,
+  products,
+  value,
+  mode,
+  t,
+});
 
 // Слайдер расчёта: табы = слайды. Клик по табу переключает слайд,
 // свайп слайдера обновляет активный таб (как в слайдере панели)
 const calcSlider = useTemplateRef("calc-slider");
 
-const selectMode = (id: GardenMode) => {
+const selectMode = (id: string) => {
   mode.value = id;
   const index = modeTabs.value.findIndex((tab) => tab.id === id);
   if (index >= 0) calcSlider.value?.go(index + 1);
@@ -315,143 +250,6 @@ const onCalcSwipeCancel = () => {
   calcSwipeY.value = null;
 };
 
-// Подписи фасовок для слайда: в шаблоне обращаться к packs напрямую небезопасно
-// (тип допускает undefined — редактор подчёркивал выражение)
-const packsLabel = (m: GardenMode) =>
-  (resultFor(m).packs ?? [])
-    .map((pack) => `${pack.label} × ${pack.count}`)
-    .join(", ");
-
-// Фасовки товаров растения по назначению → пачки для активного режима
-const packagingsByPurpose = computed<Record<GardenMode, GardenPackaging[]>>(() => {
-  const pick = (purpose: GardenPurpose) =>
-    (products.value ?? [])
-      .filter((p) => p.purpose === purpose)
-      .flatMap((p) => p.packaging ?? [])
-      .filter((pk) => pk?.amount)
-      .map((pk) => ({ label: pk.label ?? "", amount: pk.amount ?? 0, unit: pk.unit ?? "g" }));
-  // Раскладываем по режимам из реестра: режим сам знает своё назначение
-  const out = {} as Record<GardenMode, GardenPackaging[]>;
-  for (const item of GARDEN_MODES) out[item.id] = pick(item.purpose);
-  return out;
-});
-
-// Расчёт по КОНКРЕТНОМУ режиму — нужен слайдам (каждый слайд = режим расчёта)
-const resultFor = (m: GardenMode) =>
-  calcPlanting({
-    mode: m,
-    areaSqm: areaSqm.value,
-    planting: selectedCrop.value?.planting ?? null,
-    seedling: selectedCrop.value?.seedling ?? null,
-    fertilizing: selectedCrop.value?.fertilizing ?? null,
-    packagings: packagingsByPurpose.value[m],
-  });
-
-// Расчёт активного режима (для товаров и логики вне слайдера)
-const result = computed(() => resultFor(mode.value));
-
-// Есть ли данные растения под конкретный режим
-const hasModeDataFor = (m: GardenMode) => {
-  const crop = selectedCrop.value;
-  const config = gardenMode(m);
-  if (!crop || !config) return false;
-  return !!crop[config.dataField];
-};
-
-// Есть ли данные растения под активный режим — считаем по слайду (см. шаблон)
-
-// Дополнительные сведения КОНКРЕТНОГО режима: сроки рассады / формула и вид удобрения
-const modeInfoFor = (m: GardenMode): { label: string; value: string }[] => {
-  const crop = selectedCrop.value;
-  if (!crop) return [];
-  const rows: { label: string; value: string }[] = [];
-
-  if (m === "seedlings" && crop.seedling) {
-    const { growingDays, sowingPeriod, transplantPeriod } = crop.seedling;
-    if (growingDays) {
-      rows.push({
-        label: t.value.growingDays,
-        value: `${growingDays} ${t.value.unitDay}`,
-      });
-    }
-    if (sowingPeriod) {
-      rows.push({ label: t.value.sowingLabel, value: sowingPeriod });
-    }
-    if (transplantPeriod) {
-      rows.push({ label: t.value.transplantLabel, value: transplantPeriod });
-    }
-  }
-
-  if (m === "fertilizer" && crop.fertilizing) {
-    const { npk, kind } = crop.fertilizing;
-    if (npk) rows.push({ label: t.value.npkLabel, value: npk });
-    if (kind) {
-      rows.push({
-        label: t.value.kindLabel,
-        value: kind === "organic" ? t.value.kindOrganic : t.value.kindMineral,
-      });
-    }
-  }
-
-  return rows;
-};
-
-// Строки таблицы результата для слайда — единая таблица проекта (UValueTable)
-const resultRowsFor = (m: GardenMode): { label: string; value: string | number }[] => {
-  const rows: { label: string; value: string | number }[] = [];
-  const data = resultFor(m);
-
-  if (data.plants !== null) {
-    rows.push({
-      label: m === "seedlings" ? t.value.modeSeedlings : t.value.plants,
-      value: data.plants,
-    });
-  }
-  if (m === "seeds" && data.seedGrams !== null) {
-    rows.push({ label: t.value.seeds, value: `~${data.seedGrams} ${t.value.unitGram}` });
-  }
-  if (m === "fertilizer" && data.fertilizerGrams !== null) {
-    rows.push({
-      label: t.value.fertilizer,
-      value: `~${data.fertilizerGrams} ${t.value.unitGram}`,
-    });
-  }
-  if (data.packs?.length) {
-    rows.push({ label: t.value.packs, value: packsLabel(m) });
-  }
-
-  rows.push(...modeInfoFor(m));
-  return rows;
-};
-
-// Сведения активного режима считаются по слайду (см. шаблон)
-
-// Растений для штучных фасовок рассады: считаем по плотности рассады
-// (независимо от активного режима), иначе — по схеме посева
-const seedlingPlants = computed(() =>
-  calcPlantsOf({
-    mode: "seedlings",
-    areaSqm: areaSqm.value,
-    planting: selectedCrop.value?.planting ?? null,
-    seedling: selectedCrop.value?.seedling ?? null,
-  }),
-);
-
-// Сколько пачек этого товара нужно по расчёту. Основа — НАЗНАЧЕНИЕ товара
-// (а не активный режим): семена считаем по граммам семян, удобрение — по
-// граммам удобрения, рассаду — по растениям (штучные фасовки).
-const packCountFor = (product: GardenProduct): number => {
-  const base =
-    product.purpose === "fertilizer"
-      ? result.value.fertilizerGrams
-      : product.purpose === "seedlings"
-        ? null
-        : result.value.seedGrams;
-  const plants = product.purpose === "seedlings" ? seedlingPlants.value : result.value.plants;
-  const packs = calcPacks(base, product.packaging ?? null, plants);
-  return packs?.[0]?.count ?? 1;
-};
-
 // Сколько единиц этого товара уже лежит в корзине (для состояния кнопки и счётчика)
 const cartQtyFor = (documentId: string): number =>
   cartStore.items.find((item) => item.product.documentId === documentId)?.quantity ?? 0;
@@ -482,36 +280,38 @@ const toggleGroupProducts = (index: number) => {
 
 const faqGroupId = useId();
 
-type Purpose = GardenPurpose;
+type Purpose = CalcPurpose;
 const purposeGroups = computed(() => {
-  // Группы по назначениям — из реестра (порядок, подписи, иконки)
+  // Группы по назначениям — из конфигурации раздела (порядок, подписи, иконки)
   const groups = Object.fromEntries(
-    GARDEN_PURPOSES.map((item) => [item.id, [] as GardenProduct[]]),
-  ) as Record<Purpose, GardenProduct[]>;
+    config.value.purposes.map((item) => [item.id, [] as GardenProduct[]]),
+  ) as Record<string, GardenProduct[]>;
   for (const p of products.value ?? []) {
     const purpose: Purpose = p.purpose ?? "other";
-    (groups[purpose] ?? groups.other).push(p);
+    (groups[purpose] ?? groups.other ?? []).push(p);
   }
-  return GARDEN_PURPOSES.map((item) => ({
-    id: item.id,
-    label: t.value[item.key],
-    icon: item.icon,
-    items: groups[item.id],
-  })).filter((group) => group.items.length);
+  return config.value.purposes
+    .map((item) => ({
+      id: item.id,
+      label: t.value[item.key],
+      icon: item.icon,
+      items: groups[item.id] ?? [],
+    }))
+    .filter((group) => group.items.length);
 });
 </script>
 
 <template>
-  <div class="hamburger-garden">
-    <header class="hamburger-garden__head">
-      <h2 class="hamburger-garden__title">{{ t.title }}</h2>
-      <p class="hamburger-garden__subtitle">{{ t.subtitle }}</p>
+  <div class="calc-section">
+    <header class="calc-section__head">
+      <h2 class="calc-section__title">{{ t.title }}</h2>
+      <p class="calc-section__subtitle">{{ t.subtitle }}</p>
     </header>
 
     <!-- Что сажаем? -->
-    <section class="hamburger-garden__section">
-      <h3 class="hamburger-garden__question">
-        <Icon name="mdi:sprout-outline" class="hamburger-garden__question-icon" />
+    <section class="calc-section__section">
+      <h3 class="calc-section__question">
+        <Icon name="mdi:sprout-outline" class="calc-section__question-icon" />
         {{ t.question }}
       </h3>
 
@@ -519,14 +319,14 @@ const purposeGroups = computed(() => {
            показываем общий индикатор проекта (ULoader показывает себя сам) -->
       <ULoader v-show="pendingCrops" />
 
-      <div v-if="crops?.length" class="hamburger-garden__chips">
+      <div v-if="crops?.length" class="calc-section__chips">
         <UButton
           v-for="crop in crops"
           :key="crop.documentId"
           variant="plain"
           :class="[
-            'hamburger-garden__chip',
-            { 'hamburger-garden__chip_is-active': crop.documentId === selectedId },
+            'calc-section__chip',
+            { 'calc-section__chip_is-active': crop.documentId === selectedId },
           ]"
           :aria-pressed="crop.documentId === selectedId"
           @click="selectedId = crop.documentId"
@@ -535,7 +335,7 @@ const purposeGroups = computed(() => {
             v-if="crop.image?.url"
             :src="crop.image.url"
             :alt="crop.image.alternativeText || ''"
-            class="hamburger-garden__chip-image"
+            class="calc-section__chip-image"
             width="24"
             height="24"
             type="icon"
@@ -544,7 +344,7 @@ const purposeGroups = computed(() => {
         </UButton>
       </div>
 
-      <p v-else-if="!pendingCrops" class="hamburger-garden__empty">
+      <p v-else-if="!pendingCrops" class="calc-section__empty">
         {{ t.emptyCrops }}
       </p>
     </section>
@@ -552,18 +352,18 @@ const purposeGroups = computed(() => {
     <!-- Калькулятор -->
     <section
       v-if="selectedCrop"
-      class="hamburger-garden__section hamburger-garden__section_calc"
+      class="calc-section__section calc-section__section_calc"
       @touchstart.passive="onCalcSwipeStart"
       @touchend="onCalcSwipeEnd"
       @touchcancel="onCalcSwipeCancel"
     >
-      <h3 class="hamburger-garden__question">
-        <Icon name="mdi:calculator-variant-outline" class="hamburger-garden__question-icon" />
+      <h3 class="calc-section__question">
+        <Icon name="mdi:calculator-variant-outline" class="calc-section__question-icon" />
         {{ t.calcHeading }}
       </h3>
 
       <div
-        class="hamburger-garden__modes"
+        class="calc-section__modes"
         role="tablist"
         :aria-label="t.calcModes"
       >
@@ -573,8 +373,8 @@ const purposeGroups = computed(() => {
           variant="plain"
           role="tab"
           :class="[
-            'hamburger-garden__mode',
-            { 'hamburger-garden__mode_is-active': mode === tab.id },
+            'calc-section__mode',
+            { 'calc-section__mode_is-active': mode === tab.id },
           ]"
           :aria-selected="mode === tab.id"
           @click="selectMode(tab.id)"
@@ -584,47 +384,47 @@ const purposeGroups = computed(() => {
         </UButton>
       </div>
 
-      <!-- Площадь: подпись с иконкой слева, единицы (м² / сотки) справа -->
-      <div class="hamburger-garden__units-row">
-        <span class="hamburger-garden__field-label">
-          <Icon name="mdi:ruler-square" class="hamburger-garden__label-icon" />
-          {{ t.areaLabel }}
+      <!-- Поле ввода: подпись с иконкой слева, единицы измерения справа -->
+      <div class="calc-section__units-row">
+        <span class="calc-section__field-label">
+          <Icon :name="config.input.icon" class="calc-section__label-icon" />
+          {{ t[config.input.labelKey] }}
         </span>
 
         <div
-          class="hamburger-garden__units"
+          class="calc-section__units"
           role="radiogroup"
           :aria-label="t.areaUnits"
         >
           <UButton
-            v-for="unit in areaUnitTabs"
-            :key="unit.id"
+            v-for="tab in unitTabs"
+            :key="tab.id"
             variant="plain"
             role="radio"
             :class="[
-              'hamburger-garden__unit',
-              { 'hamburger-garden__unit_is-active': areaUnit === unit.id },
+              'calc-section__unit',
+              { 'calc-section__unit_is-active': unitId === tab.id },
             ]"
-            :aria-checked="areaUnit === unit.id"
-            @click="areaUnit = unit.id"
+            :aria-checked="unitId === tab.id"
+            @click="unitId = tab.id"
           >
-            {{ unit.label }}
+            {{ tab.label }}
           </UButton>
         </div>
       </div>
 
-      <!-- Поле ввода площади (справа) и единица измерения -->
-      <div class="hamburger-garden__field">
+      <!-- Поле ввода значения (справа) и единица измерения -->
+      <div class="calc-section__field">
         <UInput
-          v-model.number="areaInput"
+          v-model.number="inputValue"
           type="number"
           :min="0.1"
           :step="0.1"
           clear-on-focus
-          :aria-label="`${t.areaLabel}, ${areaUnitLabel}`"
-          class="hamburger-garden__input"
+          :aria-label="`${t[config.input.labelKey]}, ${unitLabel}`"
+          class="calc-section__input"
         />
-        <span class="hamburger-garden__field-unit">{{ areaUnitLabel }}</span>
+        <span class="calc-section__field-unit">{{ unitLabel }}</span>
       </div>
 
       <!-- Расчёт: слайдер по режимам — тот же паттерн, что у слайдера панели
@@ -637,11 +437,11 @@ const purposeGroups = computed(() => {
         variant="background"
         height="auto"
         :show-navigation="false"
-        class="hamburger-garden__calc-slider"
+        class="calc-section__calc-slider"
         @update:active="onCalcSlide"
       >
         <template #default="{ slide }">
-          <p v-if="!hasModeDataFor(slide.id)" class="hamburger-garden__empty">
+          <p v-if="!hasModeDataFor(slide.id)" class="calc-section__empty">
             {{ t.noData }}
           </p>
 
@@ -656,49 +456,49 @@ const purposeGroups = computed(() => {
     </section>
 
     <!-- Товары растения -->
-    <section v-if="selectedCrop" class="hamburger-garden__section">
-      <div class="hamburger-garden__section-head">
-        <h3 class="hamburger-garden__question">
-          <Icon name="mingcute:basket-line" class="hamburger-garden__question-icon" />
+    <section v-if="selectedCrop" class="calc-section__section">
+      <div class="calc-section__section-head">
+        <h3 class="calc-section__question">
+          <Icon name="mingcute:basket-line" class="calc-section__question-icon" />
           {{ t.productsTitle }}
         </h3>
         <!-- Правый слот: в панели сюда приходит кнопка корзины; на странице раздела — пусто -->
         <slot name="products-action" />
       </div>
 
-      <div v-if="purposeGroups.length" class="hamburger-garden__groups">
+      <div v-if="purposeGroups.length" class="calc-section__groups">
         <UAccordion
           v-for="(group, index) in purposeGroups"
           :key="group.id"
           open
         >
           <template #header>
-            <span class="hamburger-garden__group-label">
-              <Icon :name="group.icon" class="hamburger-garden__group-icon" />
-              <span class="hamburger-garden__group-title">{{ group.label }}</span>
+            <span class="calc-section__group-label">
+              <Icon :name="group.icon" class="calc-section__group-icon" />
+              <span class="calc-section__group-title">{{ group.label }}</span>
             </span>
             <!-- Пунктирный лидер: растягивается между названием и шевроном -->
-            <span class="hamburger-garden__group-leader" aria-hidden="true" />
+            <span class="calc-section__group-leader" aria-hidden="true" />
           </template>
 
           <!-- Тело группы: обёртка с overflow: hidden нужна для схлопывания -->
-          <div class="hamburger-garden__group-body">
-            <ul class="hamburger-garden__list">
+          <div class="calc-section__group-body">
+            <ul class="calc-section__list">
               <li
                 v-for="(prod, itemIndex) in group.items"
                 :key="prod.documentId"
                 :class="[
-                  'hamburger-garden__product-item',
+                  'calc-section__product-item',
                   {
-                    'hamburger-garden__product-item_extra': itemIndex >= GROUP_PREVIEW,
-                    'hamburger-garden__product-item_extra_is-open':
+                    'calc-section__product-item_extra': itemIndex >= GROUP_PREVIEW,
+                    'calc-section__product-item_extra_is-open':
                       itemIndex >= GROUP_PREVIEW && expandedGroups.has(index),
                   },
                 ]"
                 @click.capture="onProductClick(prod, $event)"
               >
                 <NuxtLink
-                  class="hamburger-garden__product accordion__summary"
+                  class="calc-section__product accordion__summary"
                   :to="getProductLink(prod)"
                 >
                   <UImage
@@ -713,9 +513,9 @@ const purposeGroups = computed(() => {
                   <Icon
                     v-if="!(prod.mainImage?.url || prod.image?.length)"
                     name="mingcute:shopping-bag-2-line"
-                    class="hamburger-garden__product-icon"
+                    class="calc-section__product-icon"
                   />
-                  <span class="hamburger-garden__product-name">{{ prod.name }}</span>
+                  <span class="calc-section__product-name">{{ prod.name }}</span>
                 </NuxtLink>
                 <!-- Кнопка добавления: иконка корзины, поверх неё — крупный плюс
                      с эффектом втиснения. Количество — счётчиком НАД кнопкой справа
@@ -723,8 +523,8 @@ const purposeGroups = computed(() => {
                 <UButton
                   variant="plain"
                   :class="[
-                    'hamburger-garden__add',
-                    { 'hamburger-garden__add_in-cart': cartQtyFor(prod.documentId) > 0 },
+                    'calc-section__add',
+                    { 'calc-section__add_in-cart': cartQtyFor(prod.documentId) > 0 },
                   ]"
                   :aria-label="
                     cartQtyFor(prod.documentId) > 0
@@ -741,7 +541,7 @@ const purposeGroups = computed(() => {
                   <span
                     v-if="cartQtyFor(prod.documentId) > 0"
                     :key="cartQtyFor(prod.documentId)"
-                    class="hamburger-garden__add-count"
+                    class="calc-section__add-count"
                   >{{ cartQtyFor(prod.documentId) }}</span>
                 </UButton>
               </li>
@@ -752,8 +552,8 @@ const purposeGroups = computed(() => {
               v-if="group.items.length > GROUP_PREVIEW"
               variant="plain"
               :class="[
-                'hamburger-garden__show-all',
-                { 'hamburger-garden__show-all_is-open': expandedGroups.has(index) },
+                'calc-section__show-all',
+                { 'calc-section__show-all_is-open': expandedGroups.has(index) },
               ]"
               :aria-label="
                 expandedGroups.has(index)
@@ -770,18 +570,18 @@ const purposeGroups = computed(() => {
 
       <ULoader v-show="pendingProducts" />
 
-      <p v-if="!pendingProducts && !purposeGroups.length" class="hamburger-garden__empty">
+      <p v-if="!pendingProducts && !purposeGroups.length" class="calc-section__empty">
         {{ t.emptyProducts }}
       </p>
     </section>
 
     <!-- Статьи блога по растению -->
-    <section v-if="selectedCrop && articles?.length" class="hamburger-garden__section">
-      <h3 class="hamburger-garden__question">
-        <Icon name="mdi:book-open-outline" class="hamburger-garden__question-icon" />
+    <section v-if="selectedCrop && articles?.length" class="calc-section__section">
+      <h3 class="calc-section__question">
+        <Icon name="mdi:book-open-outline" class="calc-section__question-icon" />
         {{ t.articlesTitle }}
       </h3>
-      <ul class="hamburger-garden__list">
+      <ul class="calc-section__list">
         <!-- Клик перехватываем на li (фаза перехвата): на телефоне откроется
              модалка, на десктопе ссылка сработает как обычно -->
         <li
@@ -792,7 +592,7 @@ const purposeGroups = computed(() => {
           @click.capture="onArticleClick(article, $event)"
         >
           <NuxtLink
-            class="hamburger-garden__article"
+            class="calc-section__article"
             :to="`/${currentLocale}/blog/${article.slug}`"
             itemprop="url"
           >
@@ -810,9 +610,9 @@ const purposeGroups = computed(() => {
     </section>
 
     <!-- Частые вопросы: тот же источник (calculator-page.faq), что и на странице -->
-    <section v-if="showFaq && faqItems?.length" class="hamburger-garden__section">
-      <h3 class="hamburger-garden__question">
-        <Icon name="mingcute:question-line" class="hamburger-garden__question-icon" />
+    <section v-if="showFaq && faqItems?.length" class="calc-section__section">
+      <h3 class="calc-section__question">
+        <Icon name="mingcute:question-line" class="calc-section__question-icon" />
         {{ t.faqTitle }}
       </h3>
       <UAccordion
@@ -821,10 +621,10 @@ const purposeGroups = computed(() => {
         :name="`garden-faq-${faqGroupId}-${index}`"
       >
         <template #header>
-          <h4 class="hamburger-garden__faq-question">{{ item.question }}</h4>
+          <h4 class="calc-section__faq-question">{{ item.question }}</h4>
         </template>
-        <div class="hamburger-garden__faq-answer">
-          <div class="hamburger-garden__faq-text">
+        <div class="calc-section__faq-answer">
+          <div class="calc-section__faq-text">
             <MDC :value="item.answer" />
           </div>
         </div>
@@ -850,7 +650,7 @@ const purposeGroups = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-.hamburger-garden {
+.calc-section {
   display: flex;
   flex-direction: column;
   row-gap: toEm(16);
@@ -913,7 +713,7 @@ const purposeGroups = computed(() => {
   }
 
   // Растение не выбрано — секции расчёта нет, рамка «Что сажаем?» замыкается
-  &__section:first-of-type:not(:has(+ .hamburger-garden__section_calc)) {
+  &__section:first-of-type:not(:has(+ .calc-section__section_calc)) {
     border-bottom: toRem(1) solid rgba(0, 0, 0, 0.25);
     border-radius: toRem(4);
   }
@@ -1132,15 +932,11 @@ const purposeGroups = computed(() => {
   // Внизу — только точки, без подложки
   &__calc-slider {
     // Отключение нативного скролла, snap и column-gap даёт USlider в режиме
-    // nested — здесь только оформление пагинации и компактные отступы:
-    // поле → таблица ближе на 5px (компенсируем row-gap карточки)
-    margin-block-start: toEm(-5);
+    // nested — здесь только оформление пагинации
 
     // Пагинация: точки в правом углу (остальное — из базы USlider)
     :deep(.slider__pagination) {
       justify-content: flex-end;
-      // Таблица → точки ближе на 5px (базовые 8px из варианта background)
-      margin-block-start: toRem(3);
       column-gap: toRem(8);
     }
 
@@ -1278,7 +1074,7 @@ const purposeGroups = computed(() => {
 
     // Ссылка — по своему контенту (как было во flex), иначе её внутренний
     // space-between разнёс бы картинку и название по краям колонки
-    .hamburger-garden__product {
+    .calc-section__product {
       justify-self: start;
     }
   }
@@ -1391,7 +1187,7 @@ const purposeGroups = computed(() => {
     // Подсказка, что по товару можно кликнуть (на телефоне откроется окно товара):
     // при наведении подчёркивание становится ярче, а текст — цвета warning-hover
     @include hover {
-      .hamburger-garden__product-name {
+      .calc-section__product-name {
         color: var(--warning-hover);
         text-decoration-color: currentColor;
       }

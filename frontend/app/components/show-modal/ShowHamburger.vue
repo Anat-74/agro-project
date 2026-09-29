@@ -4,7 +4,8 @@ import { buttonTranslations } from "~/locales/button";
 import { showHamburgerTranslations } from "~/locales/showHamburger";
 import VoiceInput from "~/components/chat-assistant/VoiceInput.vue";
 import HamburgerCatalog from "~/components/show-modal/HamburgerCatalog.vue";
-import HamburgerGarden from "~/components/show-modal/HamburgerGarden.vue";
+import CalcSection from "~/components/show-modal/CalcSection.vue";
+import { PRESERVES_SECTION } from "~/utils/calcSections";
 import HamburgerMenu from "~/components/show-modal/HamburgerMenu.vue";
 import ContactsPopover from "~/components/popover/ContactsPopover.vue";
 import SocialsPopover from "~/components/popover/SocialsPopover.vue";
@@ -126,11 +127,12 @@ const onVoiceSearch = (text: string) => {
   searchStore.filters.name = text;
 };
 
-// ===== Табы «Категории | Посадка | Меню» — пагинация слайдера (≤ $tablet) =====
+// ===== Табы «Категории | Посадка | Заготовки | Меню» — пагинация слайдера (≤ $tablet) =====
 // Табы управляют USlider (go), а активный таб следует за свайпом (update:active).
 const panelSlides = [
   { id: "categories" },
   { id: "garden" },
+  { id: "preserves" },
   { id: "menu" },
 ];
 const panelSlider = useTemplateRef<{ go: (n: number) => void }>("panel-slider");
@@ -146,10 +148,18 @@ const openGarden = () => {
   nextTick(() => goTab(2));
 };
 
-defineExpose({ open, close, isOpen, toggle, openGarden });
+// Открыть панель сразу на слайде «Заготовки» (вкладка 3) — CTA со страницы раздела
+const openPreserves = () => {
+  open();
+  activeTab.value = 3;
+  nextTick(() => goTab(3));
+};
+
+defineExpose({ open, close, isOpen, toggle, openGarden, openPreserves });
 const tabLabels = computed(() => [
   showHamburgerT.value.tabCategories,
   showHamburgerT.value.tabGarden,
+  showHamburgerT.value.tabPreserves,
   showHamburgerT.value.tabMenu,
 ]);
 
@@ -342,11 +352,22 @@ const toggleHamburger = () => {
             v-else-if="slide.id === 'garden'"
             class="dialog-hamburger__garden"
           >
-            <HamburgerGarden>
+            <CalcSection>
               <template #products-action>
                 <CartPanelButton class="dialog-hamburger__cart" />
               </template>
-            </HamburgerGarden>
+            </CalcSection>
+          </div>
+          <!-- Слайд «Заготовки»: тот же движок секции с конфигурацией заготовок -->
+          <div
+            v-else-if="slide.id === 'preserves'"
+            class="dialog-hamburger__garden"
+          >
+            <CalcSection :section="PRESERVES_SECTION">
+              <template #products-action>
+                <CartPanelButton class="dialog-hamburger__cart" />
+              </template>
+            </CalcSection>
           </div>
           <HamburgerMenu
             v-else
@@ -694,7 +715,7 @@ const toggleHamburger = () => {
       // Горизонтальный скролл внутри слайда не нужен — и он не должен появляться
       // сам: при появлении ВЕРТИКАЛЬНОГО скролла (контент выше слайда) браузер
       // сужает полосу контента на ширину скроллбара, а карточка слайда
-      // (`.hamburger-garden`, width: auto) остаётся на 1–2px шире → overflow-x
+      // (`.calc-section`, width: auto) остаётся на 1–2px шире → overflow-x
       // становился auto и внизу слайда вылезал горизонтальный скроллбар.
       // overflow-x: hidden снимает его совсем (контент слайда вписывается
       // в ширину панели, вертикальный скролл работает как раньше).

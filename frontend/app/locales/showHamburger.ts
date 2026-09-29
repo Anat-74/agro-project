@@ -5,6 +5,7 @@ export const showHamburgerTranslations: Record<LocaleCode, {
   retry: string
   tabCategories: string
   tabGarden: string
+  tabPreserves: string
   tabMenu: string
   menuProfileLogin: string
 }> = {
@@ -15,6 +16,7 @@ export const showHamburgerTranslations: Record<LocaleCode, {
     retry: 'Повторить',
     tabCategories: 'Категории',
     tabGarden: 'Посадка',
+    tabPreserves: 'Заготовки',
     tabMenu: 'Меню',
     menuProfileLogin: 'Логин / Регистрация',
   },
@@ -25,6 +27,7 @@ export const showHamburgerTranslations: Record<LocaleCode, {
     retry: 'Паўтарыць',
     tabCategories: 'Катэгорыі',
     tabGarden: 'Пасадка',
+    tabPreserves: 'Загатоўкі',
     tabMenu: 'Меню',
     menuProfileLogin: 'Уваход / Рэгістрацыя',
   }

@@ -8,9 +8,7 @@
  * добавляет свой реестр, не дублируя компонент калькулятора.
  */
 import type { CalcMode } from "./calc";
-
-/** Назначение товара (поле `purpose` у Product) */
-export type GardenPurpose = "seeds" | "seedlings" | "fertilizer" | "other";
+import type { GardenPurpose } from "../types/garden";
 
 /** Режим калькулятора (пока совпадает с типом расчёта) */
 export type GardenMode = CalcMode;
@@ -28,6 +26,8 @@ export interface GardenModeConfig {
   id: GardenMode;
   purpose: GardenPurpose;
   key: "modeSeeds" | "modeSeedlings" | "modeFertilizer";
+  /** Иконка режима (табы и слайды) */
+  icon: string;
   /** Поле норм растения, без которого режим не считается */
   dataField: GardenCropField;
 }
@@ -45,9 +45,9 @@ export const GARDEN_PURPOSES: GardenPurposeConfig[] = [
 
 /** Режимы расчёта: порядок задаёт порядок табов и слайдов */
 export const GARDEN_MODES: GardenModeConfig[] = [
-  { id: "seeds", purpose: "seeds", key: "modeSeeds", dataField: "planting" },
-  { id: "seedlings", purpose: "seedlings", key: "modeSeedlings", dataField: "seedling" },
-  { id: "fertilizer", purpose: "fertilizer", key: "modeFertilizer", dataField: "fertilizing" },
+  { id: "seeds", purpose: "seeds", key: "modeSeeds", icon: "mdi:seed-outline", dataField: "planting" },
+  { id: "seedlings", purpose: "seedlings", key: "modeSeedlings", icon: "mdi:sprout-outline", dataField: "seedling" },
+  { id: "fertilizer", purpose: "fertilizer", key: "modeFertilizer", icon: "mingcute:flask-2-line", dataField: "fertilizing" },
 ];
 
 /** Иконка назначения (иконки режимов берутся по их назначению) */
