@@ -24,5 +24,6 @@ const modeKeys = GARDEN_MODES.map((mode) => mode.key);
     articles-relation="crops"
     :mode-keys="modeKeys"
     :request-panel="requestOpen"
+    items-link-base="/posadka-i-urozhay"
   />
 </template>

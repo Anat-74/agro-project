@@ -64,6 +64,7 @@ export const gardenTranslations: Record<LocaleCode, {
   unitG: string
   unitMl: string
   unitL: string
+  otherPlants: string
 }> = {
   ru: {
     title: 'Собери свою грядку',
@@ -135,6 +136,7 @@ export const gardenTranslations: Record<LocaleCode, {
     unitG: 'г',
     unitMl: 'мл',
     unitL: 'л',
+    otherPlants: 'Другие растения',
   },
   be: {
     title: 'Збяры сваю градку',
@@ -206,6 +208,7 @@ export const gardenTranslations: Record<LocaleCode, {
     unitG: 'г',
     unitMl: 'мл',
     unitL: 'л',
+    otherPlants: 'Іншыя расліны',
   }
 }
 

@@ -26,9 +26,14 @@ interface Props {
   modeKeys: CalcTextKey[];
   /** Запрос открытия панели на слайде раздела (≤ $tablet) */
   requestPanel: () => void;
+  /** Базовый путь страниц предметов (напр. `/posadka-i-urozhay`) — если задан,
+   *  предметы в скрытом блоке рендерятся ссылками */
+  itemsLinkBase?: string;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  itemsLinkBase: "",
+});
 const t = computed(() => props.texts);
 
 const { find } = useStrapi();
@@ -292,7 +297,15 @@ useSchemaOrg(schemaOrgNodes);
         <h3>{{ t.seoPlantsTitle }}</h3>
         <ul>
           <li v-for="item in seoSection?.items" :key="item.documentId">
-            {{ item.name }}
+            <!-- Если у предметов раздела есть свои страницы (например, растения
+                 «Посадки»), отдаём настоящие ссылки — для индексации -->
+            <NuxtLink
+              v-if="props.itemsLinkBase && item.slug"
+              :to="`/${currentLocale}${props.itemsLinkBase}/${item.slug}`"
+            >
+              {{ item.name }}
+            </NuxtLink>
+            <template v-else>{{ item.name }}</template>
           </li>
         </ul>
 

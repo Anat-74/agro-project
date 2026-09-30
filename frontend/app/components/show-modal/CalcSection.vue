@@ -19,11 +19,14 @@ interface Props {
   showFaq?: boolean;
   // Конфигурация раздела (по умолчанию — «Посадка»)
   section?: CalcSectionConfig<any, any, any>;
+  // Предвыбранный предмет раздела (documentId) — для страниц растения/продукта
+  initialItemId?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   showFaq: true,
   section: () => GARDEN_SECTION,
+  initialItemId: "",
 });
 
 const config = computed(() => props.section);
@@ -60,8 +63,14 @@ const selectedCrop = computed(
 watch(
   crops,
   (list) => {
-    const first = list?.[0];
-    if (!selectedId.value && first) selectedId.value = first.documentId;
+    if (!list?.length || selectedId.value) return;
+    // Предварительный выбор: страница растения/продукта передаёт initialItemId,
+    // иначе берём первый предмет раздела
+    const preferred = props.initialItemId
+      ? list.find((item) => item.documentId === props.initialItemId)
+      : undefined;
+    const target = preferred ?? list[0];
+    if (target) selectedId.value = target.documentId;
   },
   { immediate: true },
 );
