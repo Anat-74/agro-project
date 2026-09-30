@@ -62,6 +62,16 @@
       "relation": "manyToMany",
       "target": "api::preserve.preserve",
       "mappedBy": "blogs"
+    },
+    "mode": {
+      "type": "enumeration",
+      "enum": [
+        "jam",
+        "canning",
+        "salting",
+        "compote"
+      ],
+      "description": "Режим заготовки, к которому относится статья (для приоритета в списке статей раздела)"
     }
   }
 }

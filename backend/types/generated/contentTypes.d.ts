@@ -570,6 +570,9 @@ export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
     image: Schema.Attribute.Media<'images'>;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::blog.blog'>;
+    mode: Schema.Attribute.Enumeration<
+      ['jam', 'canning', 'salting', 'compote']
+    >;
     preserves: Schema.Attribute.Relation<
       'manyToMany',
       'api::preserve.preserve'
@@ -1088,6 +1091,7 @@ export interface ApiPreservePreserve extends Struct.CollectionTypeSchema {
   attributes: {
     blogs: Schema.Attribute.Relation<'manyToMany', 'api::blog.blog'>;
     canning: Schema.Attribute.Component<'preserve.norms', false>;
+    compote: Schema.Attribute.Component<'preserve.norms', false>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

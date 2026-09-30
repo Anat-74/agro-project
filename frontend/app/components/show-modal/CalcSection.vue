@@ -109,7 +109,13 @@ const { data: articles } = useCachedAsyncData(
     const itemId = selectedId.value;
     if (!itemId) return [];
     const { find } = useStrapi();
-    const response = await find<{ documentId: string; title: string; slug: string; date?: string }>(
+    const response = await find<{
+      documentId: string;
+      title: string;
+      slug: string;
+      date?: string;
+      mode?: string | null;
+    }>(
       config.value.articles.endpoint,
       config.value.articles.query(currentLocale.value, itemId) as any,
     );
@@ -118,13 +124,23 @@ const { data: articles } = useCachedAsyncData(
   { watch: [articlesKey], server: false, ttl: 600_000 },
 );
 
+// Статьи, относящиеся к активному режиму («компот», «варенье»…), идут первыми:
+// так при переключении режима пользователь сразу видит профильные материалы
+const articlesSorted = computed(() => {
+  const list = [...(articles.value ?? [])];
+  const active = mode.value;
+  return list.sort(
+    (a, b) => Number(b.mode === active) - Number(a.mode === active),
+  );
+});
+
 // ===== FAQ раздела (calculator-page.faq) =====
 // Один источник для страницы калькулятора и для слайда «Посадка» (≤ $tablet)
 type GardenFaqItem = { question: string; answer: string };
 // Ключ кэша разный для страницы и панели: на странице вопросы не грузим (их
 // выводит сама страница), иначе пустой ответ из кэша попал бы и в панель
 const faqKey = computed(
-  () => `garden-faq-${currentLocale.value}-${props.showFaq ? "panel" : "page"}`,
+  () => `${config.value.id}-faq-${currentLocale.value}-${props.showFaq ? "panel" : "page"}`,
 );
 const { data: faqItems } = useCachedAsyncData(
   faqKey,
@@ -207,47 +223,42 @@ const {
   t,
 });
 
-// Слайдер расчёта: табы = слайды. Клик по табу переключает слайд,
-// свайп слайдера обновляет активный таб (как в слайдере панели)
-const calcSlider = useTemplateRef("calc-slider");
-
+// Режимы: таблица активного режима рендерится напрямую (без слайдов), поэтому
+// высота блока — по контенту. Переключение: табы выше и свайп по блоку таблицы
 const selectMode = (id: string) => {
   mode.value = id;
-  const index = modeTabs.value.findIndex((tab) => tab.id === id);
-  if (index >= 0) calcSlider.value?.go(index + 1);
 };
 
-const onCalcSlide = (n: number) => {
-  const tab = modeTabs.value[n - 1];
-  if (tab) mode.value = tab.id;
+const modeIndex = computed(() => modeTabs.value.findIndex((tab) => tab.id === mode.value));
+
+const stepMode = (delta: number) => {
+  const target = modeTabs.value[modeIndex.value + delta];
+  if (target) mode.value = target.id;
 };
 
-// Свайп по блоку расчёта: зона шире самого слайдера (табы, поле площади,
-// таблица). Механику даёт USlider (nested + swipeBy) — здесь только жест
-const calcSwipeX = ref<number | null>(null);
-const calcSwipeY = ref<number | null>(null);
+// Свайп только по блоку таблицы (порог 40px, доминирующая горизонтальная ось):
+// вертикальный скролл не перехватываем, рядом с табами/полем жест не срабатывает
+const swipeStart = ref<{ x: number; y: number } | null>(null);
 
-const onCalcSwipeStart = (e: TouchEvent) => {
-  calcSwipeX.value = e.touches[0]?.clientX ?? null;
-  calcSwipeY.value = e.touches[0]?.clientY ?? null;
+const onTableSwipeStart = (e: TouchEvent) => {
+  const touch = e.touches[0];
+  swipeStart.value = touch ? { x: touch.clientX, y: touch.clientY } : null;
 };
 
-const onCalcSwipeEnd = (e: TouchEvent) => {
-  const startX = calcSwipeX.value;
-  const startY = calcSwipeY.value;
-  calcSwipeX.value = null;
-  calcSwipeY.value = null;
-  if (startX === null || startY === null) return;
+const onTableSwipeEnd = (e: TouchEvent) => {
+  const start = swipeStart.value;
+  swipeStart.value = null;
+  if (!start) return;
   const touch = e.changedTouches[0];
-  calcSlider.value?.swipeBy(
-    (touch?.clientX ?? startX) - startX,
-    (touch?.clientY ?? startY) - startY,
-  );
+  if (!touch) return;
+  const dx = touch.clientX - start.x;
+  const dy = touch.clientY - start.y;
+  if (Math.abs(dx) < 40 || Math.abs(dx) <= Math.abs(dy)) return;
+  stepMode(dx < 0 ? 1 : -1);
 };
 
-const onCalcSwipeCancel = () => {
-  calcSwipeX.value = null;
-  calcSwipeY.value = null;
+const onTableSwipeCancel = () => {
+  swipeStart.value = null;
 };
 
 // Сколько единиц этого товара уже лежит в корзине (для состояния кнопки и счётчика)
@@ -311,7 +322,7 @@ const purposeGroups = computed(() => {
     <!-- Что сажаем? -->
     <section class="calc-section__section">
       <h3 class="calc-section__question">
-        <Icon name="mdi:sprout-outline" class="calc-section__question-icon" />
+        <Icon :name="config.itemsIcon" class="calc-section__question-icon" />
         {{ t.question }}
       </h3>
 
@@ -353,12 +364,9 @@ const purposeGroups = computed(() => {
     <section
       v-if="selectedCrop"
       class="calc-section__section calc-section__section_calc"
-      @touchstart.passive="onCalcSwipeStart"
-      @touchend="onCalcSwipeEnd"
-      @touchcancel="onCalcSwipeCancel"
     >
       <h3 class="calc-section__question">
-        <Icon name="mdi:calculator-variant-outline" class="calc-section__question-icon" />
+        <Icon :name="config.calcIcon" class="calc-section__question-icon" />
         {{ t.calcHeading }}
       </h3>
 
@@ -427,32 +435,25 @@ const purposeGroups = computed(() => {
         <span class="calc-section__field-unit">{{ unitLabel }}</span>
       </div>
 
-      <!-- Расчёт: слайдер по режимам — тот же паттерн, что у слайдера панели
-           (USlider). Табы выше переключают слайды, внизу по центру — точки -->
-      <USlider
-        ref="calc-slider"
-        nested
-        :slides="modeTabs"
-        slide-key="id"
-        variant="background"
-        height="auto"
-        :show-navigation="false"
-        class="calc-section__calc-slider"
-        @update:active="onCalcSlide"
+      <!-- Расчёт активного режима: таблица без слайдов — высота блока по контенту.
+           Свайп по этому блоку переключает режим (табы выше — то же действие) -->
+      <div
+        class="calc-section__result"
+        @touchstart.passive="onTableSwipeStart"
+        @touchend="onTableSwipeEnd"
+        @touchcancel="onTableSwipeCancel"
       >
-        <template #default="{ slide }">
-          <p v-if="!hasModeDataFor(slide.id)" class="calc-section__empty">
-            {{ t.noData }}
-          </p>
+        <p v-if="!hasModeDataFor(mode)" class="calc-section__empty">
+          {{ t.noData }}
+        </p>
 
-          <UValueTable
-            v-else
-            variant="plain"
-            :rows="resultRowsFor(slide.id)"
-            :caption="t.calcHeading"
-          />
-        </template>
-      </USlider>
+        <UValueTable
+          v-else
+          variant="plain"
+          :rows="resultRowsFor(mode)"
+          :caption="t.calcHeading"
+        />
+      </div>
     </section>
 
     <!-- Товары растения -->
@@ -575,8 +576,8 @@ const purposeGroups = computed(() => {
       </p>
     </section>
 
-    <!-- Статьи блога по растению -->
-    <section v-if="selectedCrop && articles?.length" class="calc-section__section">
+    <!-- Статьи блога по предмету (статьи активного режима — первыми) -->
+    <section v-if="selectedCrop && articlesSorted?.length" class="calc-section__section">
       <h3 class="calc-section__question">
         <Icon name="mdi:book-open-outline" class="calc-section__question-icon" />
         {{ t.articlesTitle }}
@@ -585,7 +586,7 @@ const purposeGroups = computed(() => {
         <!-- Клик перехватываем на li (фаза перехвата): на телефоне откроется
              модалка, на десктопе ссылка сработает как обычно -->
         <li
-          v-for="article in articles"
+          v-for="article in articlesSorted"
           :key="article.documentId"
           itemscope
           itemtype="https://schema.org/Article"
@@ -813,7 +814,9 @@ const purposeGroups = computed(() => {
   // Режимы расчёта (семена / рассада / удобрение)
   &__modes {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    // Колонок столько, сколько помещается (обычно 2–4): при 4+ режимах табы
+    // переносятся, а не вылезают за пределы блока
+    grid-template-columns: repeat(auto-fit, minmax(toRem(140), 1fr));
     gap: toEm(4);
     padding: toEm(4);
     border-radius: toRem(10);
@@ -821,6 +824,7 @@ const purposeGroups = computed(() => {
   }
 
   &__mode {
+    min-width: 0;
     // Делитель 14 — собственный шрифт кнопки (ниже font-size)
     padding: toEm(6, 14) toEm(8, 14);
     border-radius: toRem(8);
@@ -926,37 +930,10 @@ const purposeGroups = computed(() => {
     color: var(--gray-color);
   }
 
-  // Слайдер расчёта: слайды по режимам — тот же паттерн, что у слайдера панели
-  // (USlider, вариант background). Внизу — только точки, без подложки
-  // Слайдер расчёта: слайды по режимам (USlider, вариант background).
-  // Внизу — только точки, без подложки
-  &__calc-slider {
-    // Отключение нативного скролла, snap и column-gap даёт USlider в режиме
-    // nested — здесь только оформление пагинации
-
-    // Пагинация: точки в правом углу (остальное — из базы USlider)
-    :deep(.slider__pagination) {
-      justify-content: flex-end;
-      column-gap: toRem(8);
-    }
-
-    // Точки видимы на светлой карточке: неактивные серые, активная — зелёная
-    :deep(.slider__pagination-dot) {
-      width: toRem(7);
-      height: toRem(7);
-      border: none;
-      outline: none;
-      background-color: var(--gray-color);
-      opacity: 0.35;
-      transition:
-        opacity var(--transition-duration),
-        background-color var(--transition-duration);
-    }
-
-    :deep(.slider__pagination-dot_active) {
-      opacity: 1;
-      background-color: var(--primary-color);
-    }
+  // Блок результата активного режима: таблица без слайдов — высота по контенту.
+  // Свайп по блоку меняет режим; вертикальный скролл сохраняем (pan-y)
+  &__result {
+    touch-action: pan-y;
   }
 
   // Товары: группы — аккордеоны проекта (UAccordion). Промежуток даёт сам

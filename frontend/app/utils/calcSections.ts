@@ -111,6 +111,10 @@ export interface CalcSectionConfig<
     labelKey: CalcTextKey;
     units: { id: string; labelKey: CalcTextKey; factor: number }[];
   };
+  /** Иконка заголовка блока предметов («Что сажаем?» / «Что заготавливаем?») */
+  itemsIcon: string;
+  /** Иконка заголовка блока калькулятора */
+  calcIcon: string;
   /** Режимы расчёта (табы и слайды) */
   modes: CalcModeConfig[];
   /** Назначения товаров (группы товаров) */
@@ -287,7 +291,7 @@ export const GARDEN_SECTION: CalcSectionConfig = {
       },
       sort: ["date:desc"],
       pagination: { pageSize: 10 },
-      fields: ["title", "slug", "date"],
+      fields: ["title", "slug", "date", "mode"],
     }),
   },
   page: {
@@ -305,6 +309,8 @@ export const GARDEN_SECTION: CalcSectionConfig = {
       { id: "sotka", labelKey: "areaUnitSotkaTab", factor: 100 },
     ],
   },
+  itemsIcon: "mdi:sprout-outline",
+  calcIcon: "mdi:calculator-variant-outline",
   modes: GARDEN_MODES,
   purposes: GARDEN_PURPOSES,
   buildInput: gardenInput,
@@ -431,7 +437,7 @@ export const PRESERVES_SECTION: CalcSectionConfig<Preserve, CalcPreservesResult,
       },
       sort: ["date:desc"],
       pagination: { pageSize: 10 },
-      fields: ["title", "slug", "date"],
+      fields: ["title", "slug", "date", "mode"],
     }),
   },
   page: {
@@ -449,6 +455,8 @@ export const PRESERVES_SECTION: CalcSectionConfig<Preserve, CalcPreservesResult,
       { id: "g", labelKey: "unitG", factor: 0.001 },
     ],
   },
+  itemsIcon: "mdi:pot-steam-outline",
+  calcIcon: "mdi:calculator-variant-outline",
   modes: PRESERVES_MODES,
   purposes: PRESERVES_PURPOSES,
   buildInput: preservesInput,
