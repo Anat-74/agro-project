@@ -15,9 +15,9 @@ interface PreservePurposeConfig {
 interface PreserveModeConfig {
   id: PreserveMode;
   icon: string;
-  key: "modeJam" | "modeCanning" | "modeSalting";
+  key: "modeJam" | "modeCanning" | "modeSalting" | "modeCompote";
   /** Поле норм продукта, без которого режим не считается */
-  dataField: "jam" | "canning" | "salting";
+  dataField: "jam" | "canning" | "salting" | "compote";
   /** Назначение товаров, фасовки которых участвуют в расчёте пачек */
   purpose: PreservePurpose;
 }
@@ -53,6 +53,13 @@ export const PRESERVES_MODES: PreserveModeConfig[] = [
     icon: "mdi:shaker-outline",
     key: "modeSalting",
     dataField: "salting",
+    purpose: "ingredients",
+  },
+  {
+    id: "compote",
+    icon: "mdi:cup-water",
+    key: "modeCompote",
+    dataField: "compote",
     purpose: "ingredients",
   },
 ];

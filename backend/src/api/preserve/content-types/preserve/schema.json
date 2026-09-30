@@ -68,6 +68,11 @@
       "component": "preserve.norms",
       "repeatable": false
     },
+    "compote": {
+      "type": "component",
+      "component": "preserve.norms",
+      "repeatable": false
+    },
     "seo": {
       "type": "component",
       "component": "seo.seo",

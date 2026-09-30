@@ -56,6 +56,7 @@ export const gardenTranslations: Record<LocaleCode, {
   modeJam: string
   modeCanning: string
   modeSalting: string
+  modeCompote: string
   purposeIngredients: string
   purposeJars: string
   weightLabel: string
@@ -126,6 +127,7 @@ export const gardenTranslations: Record<LocaleCode, {
     modeJam: 'Варенье',
     modeCanning: 'Консервация',
     modeSalting: 'Засолка',
+    modeCompote: 'Компот',
     purposeIngredients: 'Ингредиенты',
     purposeJars: 'Тара и крышки',
     weightLabel: 'Вес продукта',
@@ -196,6 +198,7 @@ export const gardenTranslations: Record<LocaleCode, {
     modeJam: 'Варэнне',
     modeCanning: 'Кансерваванне',
     modeSalting: 'Засолка',
+    modeCompote: 'Камрот',
     purposeIngredients: 'Інгрэдыенты',
     purposeJars: 'Тара і вечкі',
     weightLabel: 'Вага прадукту',

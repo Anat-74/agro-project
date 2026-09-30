@@ -77,7 +77,7 @@ export interface PreserveNorms {
 }
 
 /** Режим раздела «Заготовки» */
-export type PreserveMode = "jam" | "canning" | "salting";
+export type PreserveMode = "jam" | "canning" | "salting" | "compote";
 
 /** Продукт раздела «Заготовки» (preserve) */
 export interface Preserve {
@@ -91,4 +91,5 @@ export interface Preserve {
   jam?: PreserveNorms | null;
   canning?: PreserveNorms | null;
   salting?: PreserveNorms | null;
+  compote?: PreserveNorms | null;
 }
