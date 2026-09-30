@@ -144,7 +144,10 @@ const handleAddToCart = () => {
        Teleport в body — изоляция от места открытия: иначе панель «Посадка» своими
        deep-правилами для .slider (height: 100%, pointer-events: none) протекает
        внутрь модалки. Из-за height: 100% ломается расчёт высоты галереи, и
-       миниатюры вылезают на блок с заголовком -->
+       миниатюры вылезают на блок с заголовком.
+       ClientOnly: иначе Teleport даёт разное положение узла на сервере и клиенте
+       и Vue сообщает hydration mismatch -->
+  <ClientOnly>
   <Teleport to="body">
   <dialog ref="product-dialog" class="product-modal">
     <!-- Крестик: общий компонент кнопки (вид задан в UButton, здесь только позиция) -->
@@ -233,6 +236,7 @@ const handleAddToCart = () => {
     </div>
   </dialog>
   </Teleport>
+  </ClientOnly>
 </template>
 
 <style lang="scss" scoped>
@@ -356,9 +360,6 @@ const handleAddToCart = () => {
     gap: toRem(24);
     height: 100%;
     padding: toRem(28);
-    // Верхний отступ не меньше зоны крестика (14 + 36), иначе на узкой
-    // раскладке крестик ложился на галерею и «перекрывал контент»
-    padding-block-start: toRem(60);
     overflow-y: auto;
     align-content: start;
 

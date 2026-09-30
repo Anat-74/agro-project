@@ -249,10 +249,17 @@
 
 10. **Hydration mismatch на страницах разделов (общее, 30.09).** В консоли прода на обеих страницах
     (`/ru/posadka-i-urozhay` и `/ru/zagotovki`) есть ошибка Vue «Hydration completed but contains
-    mismatches». К калькулятору не относится (есть и там, и там), но это риск для надёжности
-    обработчиков — нужно найти источник (вероятные кандидаты: клиентские условия по `useViewport`,
-    различия панелей mobile/desktop в `AppHeader`, кэшированные данные в SSR) и устранить отдельной
-    задачей.
+    mismatches». **Разобрано частично (30.09):**
+    - главный источник — `<Teleport to="body">` в модалках товара/статьи **без** `disabled`:
+      на SSR узел остаётся на месте, на клиенте переносится в `body` → mismatch. **Исправлено:**
+      `ClientOnly` вокруг Teleport (`ShowModalProduct`, `ShowModalArticle`);
+    - второй источник — `ChatAssistant` (клиентское состояние/история расходятся с SSR).
+      **Исправлено:** `ClientOnly` вокруг `ChatAssistant` в `AppHeader`;
+    - результат в dev: предупреждения гидратации **21 → 5**;
+    - **остаток:** `CalcSection` (`server node` vs `client comment`) — структурное расхождение
+      секций калькулятора (на SSR нет данных из-за `server: false`, на клиенте появляются), плюс
+      предупреждение `[nuxt] Could not access toJSON` (runtime config) и axe-контраст (a11y, не mismatch).
+      Требует отдельного разбора (вероятно, `useCachedAsyncData` + условный рендер секций по данным).
 
 ## Справочно
 

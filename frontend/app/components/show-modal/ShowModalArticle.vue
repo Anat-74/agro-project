@@ -97,7 +97,10 @@ defineExpose({ openModal, close, isOpen });
 <template>
   <!-- Диалог смонтирован всегда: кнопки-триггера нет, открывается через ref.
        Teleport в body — изоляция от места открытия (как у модалки товара):
-       иначе deep-правила панели/карточек протекают внутрь диалога -->
+       иначе deep-правила панели/карточек протекают внутрь диалога.
+       ClientOnly: Teleport на сервере и клиенте даёт разное положение узла —
+       без этого Vue сообщает hydration mismatch -->
+  <ClientOnly>
   <Teleport to="body">
   <dialog ref="article-dialog" class="article-modal">
     <!-- Крестик: общий компонент кнопки (вид задан в UButton, здесь только позиция) -->
@@ -151,6 +154,7 @@ defineExpose({ openModal, close, isOpen });
     </article>
   </dialog>
   </Teleport>
+  </ClientOnly>
 </template>
 
 <style lang="scss" scoped>

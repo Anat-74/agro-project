@@ -124,7 +124,11 @@ function openPreview(product: Product) {
         </ClientOnly>
       </div>
       <ProductFilter class="header__search" />
-      <ChatAssistant />
+      <!-- Чат — клиентский виджет (состояние/история в рантайме): на сервере и
+           клиенте разметка расходится, поэтому рендерим только на клиенте -->
+      <ClientOnly>
+        <ChatAssistant />
+      </ClientOnly>
       <UCartButton class="header__cart" @open="cartDialogRef?.open?.()" />
       <ProfileLink />
     </div>
