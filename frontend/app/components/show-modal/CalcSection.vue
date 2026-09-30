@@ -233,41 +233,10 @@ const {
 });
 
 // Режимы: таблица активного режима рендерится напрямую (без слайдов), поэтому
-// высота блока — по контенту. Переключение: табы выше и свайп по блоку таблицы
+// высота блока — по контенту. Переключение: табы выше и точки под таблицей.
+// Свой свайп внутри блока не нужен — жест уходит главному слайдеру (панели)
 const selectMode = (id: string) => {
   mode.value = id;
-};
-
-const modeIndex = computed(() => modeTabs.value.findIndex((tab) => tab.id === mode.value));
-
-const stepMode = (delta: number) => {
-  const target = modeTabs.value[modeIndex.value + delta];
-  if (target) mode.value = target.id;
-};
-
-// Свайп только по блоку таблицы (порог 40px, доминирующая горизонтальная ось):
-// вертикальный скролл не перехватываем, рядом с табами/полем жест не срабатывает
-const swipeStart = ref<{ x: number; y: number } | null>(null);
-
-const onTableSwipeStart = (e: TouchEvent) => {
-  const touch = e.touches[0];
-  swipeStart.value = touch ? { x: touch.clientX, y: touch.clientY } : null;
-};
-
-const onTableSwipeEnd = (e: TouchEvent) => {
-  const start = swipeStart.value;
-  swipeStart.value = null;
-  if (!start) return;
-  const touch = e.changedTouches[0];
-  if (!touch) return;
-  const dx = touch.clientX - start.x;
-  const dy = touch.clientY - start.y;
-  if (Math.abs(dx) < 40 || Math.abs(dx) <= Math.abs(dy)) return;
-  stepMode(dx < 0 ? 1 : -1);
-};
-
-const onTableSwipeCancel = () => {
-  swipeStart.value = null;
 };
 
 // Сколько единиц этого товара уже лежит в корзине (для состояния кнопки и счётчика)
@@ -369,13 +338,10 @@ const purposeGroups = computed(() => {
       </p>
     </section>
 
-    <!-- Калькулятор: свайп по всему блоку переключает режим (табы — то же) -->
+    <!-- Калькулятор: переключение режимов — табы и точки, свайп уходит панели -->
     <section
       v-if="selectedCrop"
       class="calc-section__section calc-section__section_calc"
-      @touchstart.passive="onTableSwipeStart"
-      @touchend="onTableSwipeEnd"
-      @touchcancel="onTableSwipeCancel"
     >
       <h3 class="calc-section__question">
         <Icon :name="config.calcIcon" class="calc-section__question-icon" />
@@ -720,12 +686,6 @@ const purposeGroups = computed(() => {
     box-shadow: inset 0 toRem(1) 0 rgba(255, 255, 255, 0.4);
   }
 
-  // Секция расчёта: горизонтальный свайп обрабатываем сами, вертикальный
-  // отдаём прокрутке контента (иначе панель листается на «Меню»)
-  &__section_calc {
-    touch-action: pan-y;
-  }
-
   // «Что сажаем?» + «Калькулятор расчёта» — один визуальный блок: общая рамка,
   // между секциями — пунктирный разделитель (низ и нижние углы замыкает
   // секция расчёта, поэтому у верхней части низа нет)
@@ -959,7 +919,8 @@ const purposeGroups = computed(() => {
   &__dots {
     display: flex;
     justify-content: flex-end;
-    column-gap: toRem(8);
+    // Отступ между точками увеличен на 2px (8 → 10)
+    column-gap: toRem(10);
     margin-block-start: toEm(8);
   }
 

@@ -84,6 +84,20 @@ export default defineEventHandler(async (): Promise<SitemapUrl[]> => {
       });
     }
 
+    // ===== Страницы растений раздела «Посадка» =====
+    // Динамический маршрут /{lang}/posadka-i-urozhay/{cropSlug} сам в карту не
+    // попадает — берём активные растения из Strapi
+    const crops = await get(
+      `/api/crops?locale=${lang}&fields[0]=slug&fields[1]=updatedAt&filters[isActive][$eq]=true&pagination[pageSize]=200`,
+    );
+    for (const crop of crops) {
+      if (!crop?.slug) continue;
+      urls.push({
+        loc: `/${lang}/posadka-i-urozhay/${crop.slug}`,
+        lastmod: crop.updatedAt || now,
+      });
+    }
+
     // ===== Блог: список + статьи локали =====
     urls.push({ loc: `/${lang}/blog`, lastmod: now });
 
