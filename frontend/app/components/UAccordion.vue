@@ -59,7 +59,7 @@ withDefaults(defineProps<Props>(), {
 
   &__details[open] {
     .accordion__summary {
-      color: var(--danger-color);
+      color: var(--warning-hover);
 
       // Анимируется ТОЛЬКО шеврон (иконка процентов у «Акций» — статична)
       .accordion__chevron {
@@ -130,11 +130,11 @@ withDefaults(defineProps<Props>(), {
     }
 
     &_is-active {
-      color: var(--danger-color);
+      color: var(--warning-hover);
       font-weight: 700;
 
       svg {
-        color: var(--danger-color);
+        color: var(--warning-hover);
       }
     }
 
@@ -202,7 +202,7 @@ withDefaults(defineProps<Props>(), {
     }
 
     &_is-active {
-      color: var(--danger-color);
+      color: var(--warning-hover);
       font-weight: 700;
     }
 
@@ -223,7 +223,7 @@ withDefaults(defineProps<Props>(), {
     @include adaptiveValue("font-size", 20, 18);
 
     &_is-active {
-      color: var(--danger-color);
+      color: var(--warning-hover);
     }
   }
 }

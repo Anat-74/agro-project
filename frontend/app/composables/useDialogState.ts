@@ -1,4 +1,4 @@
-import { onMounted, onUnmounted } from "vue"
+import { onUnmounted, watch } from "vue"
 
 export interface UseDialogOptions {
   useShowMethod?: boolean; // Если true, используем show() вместо showModal()
@@ -83,20 +83,26 @@ export const useDialog = (
     if (isOpen.value) close();
   };
 
-  // Добавление обработчика событий
-  onMounted(() => {
-    const el = getElement();
-    if (!el) return;
-
-    if (useShowMethod) {
+  // Обработчики навешиваем/снимаем РЕАКТИВНО на элемент диалога: он может
+  // появиться позже setup (например, содержимое диалога обёрнуто в ClientOnly,
+  // или элемент рендерится условно). При навешивании в onMounted элемент мог
+  // быть ещё null, и клик по бэкдропу переставал закрывать диалог.
+  watch(
+    dialogElement,
+    (el, prev) => {
+      if (prev) {
+        if (useShowMethod) document.removeEventListener("keydown", closeOnEscape, true);
+        else prev.removeEventListener("click", closeOnBackdropClick);
+      }
+      if (!el) return;
       // Для show() слушатель на document в capture-фазе: фокус не передаётся
-      // внутрь диалога, поэтому keydown на самом элементе ловил Escape только
-      // при фокусе внутри. document ловит Escape откуда угодно.
-      document.addEventListener("keydown", closeOnEscape, true);
-    } else {
-      el.addEventListener("click", closeOnBackdropClick);
-    }
-  });
+      // внутрь диалога, поэтому keydown на элементе ловил Escape только при
+      // фокусе внутри — document ловит Escape откуда угодно
+      if (useShowMethod) document.addEventListener("keydown", closeOnEscape, true);
+      else el.addEventListener("click", closeOnBackdropClick);
+    },
+    { immediate: true, flush: "post" },
+  );
 
   // Удаление обработчика при размонтировании
   onUnmounted(() => {
