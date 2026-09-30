@@ -360,10 +360,13 @@ const purposeGroups = computed(() => {
       </p>
     </section>
 
-    <!-- Калькулятор -->
+    <!-- Калькулятор: свайп по всему блоку переключает режим (табы — то же) -->
     <section
       v-if="selectedCrop"
       class="calc-section__section calc-section__section_calc"
+      @touchstart.passive="onTableSwipeStart"
+      @touchend="onTableSwipeEnd"
+      @touchcancel="onTableSwipeCancel"
     >
       <h3 class="calc-section__question">
         <Icon :name="config.calcIcon" class="calc-section__question-icon" />
@@ -436,13 +439,8 @@ const purposeGroups = computed(() => {
       </div>
 
       <!-- Расчёт активного режима: таблица без слайдов — высота блока по контенту.
-           Свайп по этому блоку переключает режим (табы выше — то же действие) -->
-      <div
-        class="calc-section__result"
-        @touchstart.passive="onTableSwipeStart"
-        @touchend="onTableSwipeEnd"
-        @touchcancel="onTableSwipeCancel"
-      >
+           Свайп по блоку калькулятора (выше) переключает режим -->
+      <div class="calc-section__result">
         <p v-if="!hasModeDataFor(mode)" class="calc-section__empty">
           {{ t.noData }}
         </p>
@@ -452,6 +450,22 @@ const purposeGroups = computed(() => {
           variant="plain"
           :rows="resultRowsFor(mode)"
           :caption="t.calcHeading"
+        />
+      </div>
+
+      <!-- Точки режимов: показывают, что режимов несколько, и переключают их -->
+      <div v-if="modeTabs.length > 1" class="calc-section__dots">
+        <button
+          v-for="tab in modeTabs"
+          :key="tab.id"
+          type="button"
+          :class="[
+            'calc-section__dot',
+            { 'calc-section__dot_is-active': tab.id === mode },
+          ]"
+          :aria-label="tab.label"
+          :aria-current="tab.id === mode ? 'true' : undefined"
+          @click="selectMode(tab.id)"
         />
       </div>
     </section>
@@ -932,8 +946,35 @@ const purposeGroups = computed(() => {
 
   // Блок результата активного режима: таблица без слайдов — высота по контенту.
   // Свайп по блоку меняет режим; вертикальный скролл сохраняем (pan-y)
-  &__result {
-    touch-action: pan-y;
+  // Точки режимов: показывают их количество и переключают (как в прежнем слайдере)
+  &__dots {
+    display: flex;
+    justify-content: flex-end;
+    column-gap: toRem(8);
+    margin-block-start: toEm(8);
+  }
+
+  &__dot {
+    width: toRem(7);
+    height: toRem(7);
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--gray-color);
+    opacity: 0.35;
+    cursor: pointer;
+    transition:
+      opacity var(--transition-duration),
+      background-color var(--transition-duration);
+
+    @include hover {
+      opacity: 0.7;
+    }
+  }
+
+  &__dot_is-active {
+    opacity: 1;
+    background-color: var(--primary-color);
   }
 
   // Товары: группы — аккордеоны проекта (UAccordion). Промежуток даёт сам

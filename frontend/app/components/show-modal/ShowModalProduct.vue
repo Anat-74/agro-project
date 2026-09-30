@@ -356,6 +356,9 @@ const handleAddToCart = () => {
     gap: toRem(24);
     height: 100%;
     padding: toRem(28);
+    // Верхний отступ не меньше зоны крестика (14 + 36), иначе на узкой
+    // раскладке крестик ложился на галерею и «перекрывал контент»
+    padding-block-start: toRem(60);
     overflow-y: auto;
     align-content: start;
 
