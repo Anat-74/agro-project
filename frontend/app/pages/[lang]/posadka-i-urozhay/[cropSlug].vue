@@ -2,6 +2,7 @@
 import { breadcrumbsTranslations } from "~/locales/breadcrumbs";
 import { gardenTranslations } from "~/locales/garden";
 import { GARDEN_SECTION } from "~/utils/calcSections";
+import { useBreadcrumbsBackground } from "~/composables/useBreadcrumbsBackground";
 import CalcSection from "~/components/show-modal/CalcSection.vue";
 
 // Страница растения раздела «Посадка»: описание культуры, калькулятор с
@@ -32,16 +33,20 @@ interface GardenCropPage {
 const cropKey = computed(() => `crop-page-${currentLocale.value}-${cropSlug.value}`);
 // await: странице нужны данные до рендера (404 для несуществующего slug, SEO-мета)
 const { data: crop } = await useAsyncData(cropKey, async () => {
-  const response = await find<GardenCropPage>("crops", {
-    filters: {
-      locale: { $eq: currentLocale.value },
-      slug: { $eq: cropSlug.value },
-      isActive: { $eq: true },
-    },
-    populate: { image: { fields: ["alternativeText", "url"] }, seo: true },
-    pagination: { pageSize: 1 },
-  } as any);
-  return (response?.data?.[0] as GardenCropPage) || null;
+  const load = async (locale: string) => {
+    const response = await find<GardenCropPage>("crops", {
+      filters: {
+        locale: { $eq: locale },
+        slug: { $eq: cropSlug.value },
+        isActive: { $eq: true },
+      },
+      populate: { image: { fields: ["alternativeText", "url"] }, seo: true },
+      pagination: { pageSize: 1 },
+    } as any);
+    return (response?.data?.[0] as GardenCropPage) || null;
+  };
+  // Сначала текущая локаль; если перевода растения ещё нет — отдаём ru-версию
+  return (await load(currentLocale.value)) ?? (await load("ru"));
 });
 
 if (!crop.value) {
@@ -124,15 +129,18 @@ useSchemaOrg(schemaOrgNodes);
 
 // ≤ $tablet: калькулятор открывается в панели каталога на вкладке «Посадка»
 const { requestOpen } = useGardenDialog();
+
+// Фон хлебных крошек — как на странице товаров (global.breadcrumbs.background)
+const breadcrumbsBackground = useBreadcrumbsBackground();
 </script>
 
 <template>
   <section v-if="crop" class="crop-page" aria-labelledby="crop-page-title">
     <div class="crop-page__container">
-      <UBreadcrumbs :items="breadcrumbItems" />
+      <UBreadcrumbs :items="breadcrumbItems" :background="breadcrumbsBackground" />
 
       <div class="crop-page__hero">
-        <NuxtPicture
+        <UImage
           v-if="crop.image?.url"
           :src="crop.image.url"
           :alt="crop.image.alternativeText || crop.name"
