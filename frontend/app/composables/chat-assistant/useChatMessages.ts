@@ -7,6 +7,8 @@ export interface ChatMessage {
   content: string
   timestamp: string
   clientInstruction?: any // Инструкция для клиента (например, добавление в корзину)
+  sources?: Array<{ title: string; url: string }> // Источники ответа (материалы проекта)
+  basis?: 'project' | 'general' // Ответ по материалам проекта или по общим знаниям
 }
 
 export interface UseChatMessagesOptions {
@@ -148,12 +150,19 @@ export function useChatMessages(options: UseChatMessagesOptions = {}) {
   }
 
   // Добавление сообщения ассистента
-  const addAssistantMessage = (content: string, clientInstruction?: any) => {
+  const addAssistantMessage = (
+    content: string,
+    clientInstruction?: any,
+    sources?: Array<{ title: string; url: string }>,
+    basis?: 'project' | 'general',
+  ) => {
     const message: ChatMessage = {
       role: 'assistant',
       content,
       timestamp: new Date().toISOString(),
-      clientInstruction
+      clientInstruction,
+      sources: sources?.length ? sources : undefined,
+      basis
     }
     addMessage(message)
   }

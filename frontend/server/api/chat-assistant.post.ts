@@ -60,6 +60,23 @@ async function searchProductsTool(
   }
 }
 
+// Инструмент поиска по материалам проекта (блог, растения, заготовки, FAQ).
+// Возвращает фрагменты-опоры и ссылки, которые ассистент использует в ответе.
+async function contentSearchTool(
+  query: string,
+  limit: number,
+  strapiUrl?: string,
+  locale?: string,
+) {
+  try {
+    const { searchContent } = await import("../utils/content-search");
+    return await searchContent(query, locale || "ru", limit || 5, strapiUrl);
+  } catch (error) {
+    console.error("Error in contentSearchTool:", error);
+    return { success: false, results: [], error: String(error) };
+  }
+}
+
 // Вспомогательная функция для работы с Strapi API
 async function callStrapiTool(toolName: string, args: any, strapiUrl?: string, locale?: string): Promise<any> {
   if (toolName === "strapi_products") {
@@ -344,6 +361,29 @@ const AVAILABLE_TOOLS = [
       },
     },
   },
+  {
+    type: "function",
+    function: {
+      name: "content_search",
+      description:
+        "Поиск по материалам проекта: статьи блога, страницы растений, продукты «Заготовок», FAQ разделов. Используй ПЕРЕД ответом на консультационные вопросы (выращивание, уход, хранение, заготовки, рецепты), чтобы опереться на материалы магазина и дать ссылки-источники.",
+      parameters: {
+        type: "object",
+        properties: {
+          query: {
+            type: "string",
+            description:
+              "Короткий поисковый запрос — 2–4 ключевых слова по теме (например: «варенье яблоки», «посадка томатов»), а не целая фраза вопроса",
+          },
+          limit: {
+            type: "number",
+            description: "Сколько фрагментов вернуть (по умолчанию: 5, макс: 8)",
+          },
+        },
+        required: ["query"],
+      },
+    },
+  },
 ];
 
 export default defineEventHandler(async (event) => {
@@ -353,7 +393,7 @@ export default defineEventHandler(async (event) => {
       throw new Error("DEEPSEEK_API_KEY is not configured");
     }
     const body = await readBody(event);
-    const { message, sessionId, useTools = true, lastSearchResults, locale = "ru" } = body;
+    const { message, sessionId, useTools = true, lastSearchResults, locale = "ru", context } = body;
 
     if (!message) {
       throw new Error("Сообщение обязательно");
@@ -402,10 +442,23 @@ ${JSON.stringify(lastSearchResults, null, 2)}
 `;
     }
 
+    // Контекст раздела (кнопка «Спросить AI» из «Посадки»/«Заготовок»)
+    let sectionContext = "";
+    if (context && (context.section || context.item)) {
+      const sectionName =
+        context.section === "preserves"
+          ? "Заготовки"
+          : context.section === "garden"
+            ? "Посадка и урожай"
+            : context.section;
+      const itemPart = context.item ? `, выбранный элемент — «${context.item}»` : "";
+      sectionContext = `\nКОНТЕКСТ: вопрос задан из раздела «${sectionName}»${itemPart}. Учитывай раздел и элемент в ответе.`;
+    }
+
     // Формируем системный промпт — краткий, без хардкода и примеров
     const systemPrompt = {
       role: "system",
-      content: `Ты AI-ассистент интернет-магазина "Агро-Маркет". Помогаешь с поиском товаров и корзиной.${contextBlock}
+      content: `Ты AI-ассистент интернет-магазина "Агро-Маркет". Помогаешь с поиском товаров и корзиной.${contextBlock}${sectionContext}
 Отвечай на языке: ${locale}.
 
 ПРАВИЛА РАБОТЫ С ИНСТРУМЕНТАМИ — ТЫ ОБЯЗАН вызвать инструмент для любого запроса, подходящего под правило. НЕЛЬЗЯ отвечать текстом, если подходит инструмент.
@@ -425,6 +478,14 @@ ${JSON.stringify(lastSearchResults, null, 2)}
    - cropSlug: tomat | ogurec | perec-sladkij | morkov | ukrop (по названию растения из запроса)
    - mode: seedlings (рассада), fertilizer (удобрение), иначе seeds
    - areaSqm, если названа площадь; иначе bedLengthM
+
+КОНСУЛЬТАЦИИ (выращивание, уход, хранение, заготовки, рецепты):
+10. На консультационный вопрос СНАЧАЛА вызови content_search и опирайся на найденные материалы магазина. Ссылки-источники показываются автоматически — в тексте их не дублируй.
+11. Если материалы найдены — отвечай по ним; можно дополнить общими рекомендациями, но без выдуманных цифр.
+12. Если материалов нет — ответь по общим агро-знаниям и ЯВНО укажи, что в материалах магазина этого нет, добавив оговорку: «рекомендации справочные, точные нормы — в калькуляторе раздела».
+13. ЧИСЛА И НОРМЫ (сахар, соль, уксус, удобрения, всхожесть, г/м² и т. п.) НЕ ВЫДУМЫВАЙ. Точные значения бери только из инструментов (calcPlanting, strapi_products) или направляй в калькулятор раздела.
+14. «Опасные» темы (пестициды, обработка химией, дозировки препаратов) — только по материалам проекта; если их нет — прямо скажи и направь в раздел или к специалисту.
+15. Приветствие и общие вопросы без данных — отвечай текстом, инструмент не обязателен.
 
 ФОРМАТ ОТВЕТА:
 - Для вызова инструмента: tool_calls массив, content пустой. НИКОГДА не отвечай текстом когда нужно вызвать инструмент. Даже если тебе кажется, что данных нет — вызови инструмент, я проверю.
@@ -474,6 +535,10 @@ ${JSON.stringify(lastSearchResults, null, 2)}
     const toolResults = [];
     let clientInstruction = undefined;
     let searchResultsOutput: any[] = [];
+    // Источники (из content_search) — для блока «Источники» в ответе
+    const contentSources: Array<{ title: string; url: string }> = [];
+    // Был ли вызван content_search (чтобы отличать консультацию от поиска товаров)
+    let contentSearchUsed = false;
 
     const toolCallsToProcess = assistantMessage.tool_calls || [];
 
@@ -653,6 +718,19 @@ ${JSON.stringify(lastSearchResults, null, 2)}
             }
           } else if (functionName === "calcPlanting") {
             result = await calcPlantingTool(args, strapiUrl, locale);
+          } else if (functionName === "content_search") {
+            contentSearchUsed = true;
+            result = await contentSearchTool(args.query, args.limit, strapiUrl, locale);
+            // До 3 источников — под ответом и в истории чата
+            if (result.success && Array.isArray(result.results)) {
+              for (const hit of result.results) {
+                if (contentSources.length >= 3) break;
+                const exists = contentSources.some(
+                  (s) => s.url === hit.url && s.title === hit.title,
+                );
+                if (!exists) contentSources.push({ title: hit.title, url: hit.url });
+              }
+            }
           } else {
             result = {
               error: `Инструмент ${functionName} не реализован`,
@@ -720,6 +798,12 @@ ${JSON.stringify(lastSearchResults, null, 2)}
       tool_calls: toolCallsToProcess,
       clientInstruction,
       searchResults: searchResultsOutput.length > 0 ? searchResultsOutput : undefined,
+      sources: contentSources.length > 0 ? contentSources : undefined,
+      basis: contentSources.length > 0
+        ? "project"
+        : contentSearchUsed
+          ? "general"
+          : undefined,
       timestamp: new Date().toISOString(),
     };
   } catch (error) {

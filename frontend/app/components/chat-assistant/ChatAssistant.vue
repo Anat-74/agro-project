@@ -4,6 +4,10 @@ import { useChatMessages } from "../../composables/chat-assistant/useChatMessage
 import { useChatCart } from "../../composables/chat-assistant/useChatCart";
 import { parseAIResponse } from "../../composables/chat-assistant/useChatAssistant";
 import { chatAssistantTranslations } from "../../locales/chat-assistant";
+import {
+  useChatRequest,
+  type ChatRequestContext,
+} from "../../composables/chat-assistant/useChatRequest";
 import VoiceInput from "./VoiceInput.vue";
 
 // Карточка товара в сообщениях чата — загружается лениво (только при открытом чате)
@@ -12,6 +16,10 @@ const { currentLocale } = useLocale();
 const chatMessages = useChatMessages();
 const chatCart = useChatCart();
 const t = computed(() => chatAssistantTranslations[currentLocale.value]);
+
+// Запрос на открытие чата с контекстом раздела (кнопки «Спросить AI»)
+const { request, consumeRequest } = useChatRequest();
+const chatContext = ref<ChatRequestContext | null>(null);
 
 // Реактивные переменные
 const inputMessage = ref("");
@@ -55,6 +63,17 @@ const closeChat = () => {
   close?.();
 };
 
+// Открытие чата по внешнему запросу (из раздела) с передачей контекста
+watch(
+  () => request.value.open,
+  (flag) => {
+    if (!flag) return;
+    const current = consumeRequest();
+    chatContext.value = current.context ?? null;
+    openChat();
+  },
+);
+
 const sendQuickMessage = async (message: string) => {
   addUserMessage(message);
   inputMessage.value = "";
@@ -71,6 +90,7 @@ const sendQuickMessage = async (message: string) => {
         cartState: cartStore.items.length,
         lastSearchResults: lastSearchResults.value,
         locale: currentLocale.value,
+        context: chatContext.value || undefined,
       }),
     });
 
@@ -103,6 +123,7 @@ const sendMessage = async () => {
         cartState: cartStore.items.length,
         lastSearchResults: lastSearchResults.value,
         locale: currentLocale.value,
+        context: chatContext.value || undefined,
       }),
     });
 
@@ -130,7 +151,12 @@ const processAIResponse = (response: any) => {
     lastSearchResults.value = response.searchResults;
   }
 
-  addAssistantMessage(response.message, response.clientInstruction);
+  addAssistantMessage(
+    response.message,
+    response.clientInstruction,
+    response.sources,
+    response.basis,
+  );
 
   if (response.tool_calls && response.tool_calls.length > 0) {
     console.debug("Tool calls received:", response.tool_calls);
@@ -375,6 +401,31 @@ onMounted(() => {
                   :product="product"
                 />
               </div>
+              <!-- Источники: материалы проекта, на которые опирался ответ -->
+              <div
+                v-if="message.role === 'assistant' && message.sources?.length"
+                class="message__sources"
+              >
+                <p class="message__sources-title">{{ t.sourcesTitle }}</p>
+                <ul class="message__sources-list">
+                  <li v-for="source in message.sources" :key="source.url">
+                    <NuxtLink
+                      class="message__source-link"
+                      :to="source.url"
+                      @click="closeChat"
+                    >
+                      {{ source.title }}
+                    </NuxtLink>
+                  </li>
+                </ul>
+              </div>
+              <!-- Ответ по общим рекомендациям (материалов магазина не нашлось) -->
+              <p
+                v-else-if="message.role === 'assistant' && message.basis === 'general'"
+                class="message__basis-note"
+              >
+                {{ t.generalBasisNote }}
+              </p>
             </div>
           </div>
 
@@ -672,6 +723,40 @@ onMounted(() => {
   flex-direction: column;
   gap: toRem(8);
   margin-top: toRem(8);
+}
+
+.message__sources {
+  padding-inline: toRem(16);
+  padding-block-end: toRem(8);
+}
+
+.message__sources-title {
+  margin-block-end: toRem(4);
+  font-weight: 600;
+  @include adaptiveValue("font-size", 12, 11);
+}
+
+.message__sources-list {
+  display: grid;
+  row-gap: toRem(2);
+}
+
+.message__source-link {
+  color: var(--active-color);
+  text-decoration: underline;
+  @include adaptiveValue("font-size", 13, 12);
+
+  @include hover {
+    color: var(--warning-hover);
+  }
+}
+
+.message__basis-note {
+  padding-inline: toRem(16);
+  padding-block-end: toRem(8);
+  color: var(--gray-color);
+  font-style: italic;
+  @include adaptiveValue("font-size", 12, 11);
 }
 
 .message__typing {

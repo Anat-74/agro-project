@@ -21,6 +21,9 @@ export const chatAssistantTranslations: Record<LocaleCode, {
   closeChat: string
   clearHistoryTitle: string
   closeChatTitle: string
+  sourcesTitle: string
+  generalBasisNote: string
+  askAi: string
 }> = {
   ru: {
     title: "AI",
@@ -44,7 +47,10 @@ export const chatAssistantTranslations: Record<LocaleCode, {
     clearHistory: "Очистить историю чата",
     closeChat: "Закрыть чат",
     clearHistoryTitle: "Очистить историю",
-    closeChatTitle: "Закрыть"
+    closeChatTitle: "Закрыть",
+    sourcesTitle: "Источники",
+    generalBasisNote: "Ответ по общим рекомендациям. Точные нормы — в калькуляторе раздела.",
+    askAi: "Спросить AI"
   },
   be: {
     title: "AI",
@@ -68,6 +74,9 @@ export const chatAssistantTranslations: Record<LocaleCode, {
     clearHistory: "Ачысціць гісторыю чата",
     closeChat: "Закрыць чат",
     clearHistoryTitle: "Ачысціць гісторыю",
-    closeChatTitle: "Закрыць"
+    closeChatTitle: "Закрыць",
+    sourcesTitle: "Крыніцы",
+    generalBasisNote: "Адказ па агульных рэкамендацыях. Дакладныя нормы — у калькулятары раздзела.",
+    askAi: "Спытаць AI"
   }
 }

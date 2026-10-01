@@ -24,6 +24,10 @@ export interface ChatAssistantResponse {
     calls?: any[];
   };
   searchResults?: any[];
+  /** Ссылки-источники (из content_search): блог, растения, заготовки, FAQ */
+  sources?: Array<{ title: string; url: string }>;
+  /** "project" — ответ по материалам проекта; "general" — по общим знаниям */
+  basis?: "project" | "general";
   error?: string;
   timestamp?: string;
 }

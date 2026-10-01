@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { buttonTranslations } from "~/locales/button";
+import { chatAssistantTranslations } from "~/locales/chat-assistant";
+import { useChatRequest } from "~/composables/chat-assistant/useChatRequest";
 import ShowModalArticle from "~/components/show-modal/ShowModalArticle.vue";
 import ShowModalProduct from "~/components/show-modal/ShowModalProduct.vue";
 import { useGardenCalculator } from "~/composables/useGardenCalculator";
@@ -37,6 +39,15 @@ const cartStore = useCartStore();
 
 const t = computed(() => config.value.locales[currentLocale.value]);
 const buttonT = computed(() => buttonTranslations[currentLocale.value]);
+const chatT = computed(() => chatAssistantTranslations[currentLocale.value]);
+
+// «Спросить AI» — открыть чат с контекстом текущего раздела и элемента
+const { requestChat } = useChatRequest();
+const askAi = () =>
+  requestChat({
+    section: config.value.id,
+    item: selectedCrop.value?.name,
+  });
 
 // ===== Предметы раздела (растения «Посадки», позже — продукты «Заготовок») =====
 const itemsKey = computed(() => `${config.value.id}-items-${currentLocale.value}`);
@@ -295,6 +306,14 @@ const purposeGroups = computed(() => {
     <header class="calc-section__head">
       <h2 class="calc-section__title">{{ t.title }}</h2>
       <p class="calc-section__subtitle">{{ t.subtitle }}</p>
+      <UButton
+        variant="plain"
+        class="calc-section__ask-ai"
+        @click="askAi"
+      >
+        <Icon name="material-symbols:chat" />
+        {{ chatT.askAi }}
+      </UButton>
     </header>
 
     <!-- Что сажаем? -->
@@ -671,6 +690,21 @@ const purposeGroups = computed(() => {
   &__subtitle {
     font-size: toEm(15);
     color: var(--gray-color);
+  }
+
+  // Кнопка «Спросить AI» — открывает чат с контекстом раздела и элемента
+  &__ask-ai {
+    align-self: start;
+    display: inline-flex;
+    align-items: center;
+    column-gap: toEm(6);
+    margin-block-start: toEm(6);
+    color: var(--active-color);
+    font-size: toEm(14);
+
+    @include hover {
+      color: var(--warning-hover);
+    }
   }
 
   // Блоки — каждый в рамке-«канавке» (эталон: рамка langSwitcher): 1px рамка,
