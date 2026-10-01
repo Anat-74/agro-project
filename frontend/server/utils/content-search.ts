@@ -19,6 +19,25 @@ export interface ContentHit {
   type: "article" | "crop" | "preserve" | "faq";
 }
 
+// Короткий кэш результатов в рамках процесса Nitro: одинаковые частые запросы
+// не бьют по Strapi повторно (content_search делает 4+ запроса за вызов).
+const CACHE_TTL = 5 * 60_000;
+const CACHE_MAX = 100;
+const cache = new Map<string, { data: ContentHit[]; expiresAt: number }>();
+
+const sweepCache = () => {
+  const now = Date.now();
+  for (const [key, entry] of cache) {
+    if (entry.expiresAt < now) cache.delete(key);
+  }
+  if (cache.size > CACHE_MAX) {
+    for (const key of cache.keys()) {
+      if (cache.size <= CACHE_MAX) break;
+      cache.delete(key);
+    }
+  }
+};
+
 // Частые слова, которые не несут смысла для поиска
 const STOP_WORDS = new Set([
   "как", "что", "где", "когда", "зачем", "почему", "какой", "какая", "какие",
@@ -73,6 +92,12 @@ export async function searchContent(
 
   const tokens = tokenize(q);
   if (tokens.length === 0) tokens.push(q.toLowerCase());
+
+  const cacheKey = `${locale}|${tokens.join(",")}|${limit}`;
+  const cached = cache.get(cacheKey);
+  if (cached && Date.now() < cached.expiresAt) {
+    return { success: true, results: cached.data };
+  }
 
   const {
     strapi: { url: cfgUrl, token },
@@ -193,5 +218,9 @@ export async function searchContent(
     return true;
   });
 
-  return { success: true, results: results.slice(0, limit) };
+  const limited = results.slice(0, limit);
+  cache.set(cacheKey, { data: limited, expiresAt: Date.now() + CACHE_TTL });
+  sweepCache();
+
+  return { success: true, results: limited };
 }
