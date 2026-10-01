@@ -60,7 +60,7 @@ export async function searchProducts(
       if (searchTerms.length > 0) {
         // Используем только первый (самый релевантный) термин
         const mainTerm = searchTerms[0];
-        filters.name = { $contains: mainTerm };
+        filters.name = { $containsi: mainTerm };
       }
     }
     
@@ -89,14 +89,13 @@ export async function searchProducts(
       "sort": "name:asc"
     };
 
-    if (locale) {
-      params["locale"] = locale;
-    }
-    
+    // Локаль обязательна для корректного поиска при i18n
+    params["locale"] = locale || "ru";
+
     // Добавляем фильтры для Strapi v5 в плоском формате
-    if (filters.name && filters.name.$contains) {
-      // Фильтр по имени: filters[name][$contains]=значение
-      params["filters[name][$contains]"] = filters.name.$contains;
+    if (filters.name && filters.name.$containsi) {
+      // Фильтр по имени: filters[name][$containsi]=значение (регистронезависимо)
+      params["filters[name][$containsi]"] = filters.name.$containsi;
     }
     
     if (filters.category && filters.category.documentId && filters.category.documentId.$eq) {
@@ -191,8 +190,8 @@ export async function searchProducts(
       const altMainTerm = searchTerms[1];
       console.log("Retrying with alternative term:", altMainTerm);
 
-      delete params["filters[name][$contains]"];
-      params["filters[name][$contains]"] = altMainTerm;
+      delete params["filters[name][$containsi]"];
+      params["filters[name][$containsi]"] = altMainTerm;
 
       try {
         const altResponse = await $fetch(`${baseUrl}/api/products`, {
@@ -257,8 +256,8 @@ export async function searchProducts(
         const synonymSearch = capitalizeFirst(synonym);
         console.log("Retrying with synonym:", synonymSearch);
 
-        delete params["filters[name][$contains]"];
-        params["filters[name][$contains]"] = synonymSearch;
+        delete params["filters[name][$containsi]"];
+        params["filters[name][$containsi]"] = synonymSearch;
 
         try {
           const synResponse = await $fetch(`${baseUrl}/api/products`, {
@@ -393,7 +392,7 @@ export async function searchProducts(
         if (catResults.length === 0) {
           const containsResponse = await $fetch(`${baseUrl}/api/categories`, {
             params: {
-              "filters[name][$contains]": mainTerm,
+              "filters[name][$containsi]": mainTerm,
               "fields[0]": "documentId",
               "fields[1]": "name",
               "locale": locale || "ru",
@@ -472,7 +471,7 @@ export async function searchProducts(
       try {
         const subResponse = await $fetch(`${baseUrl}/api/subcategories`, {
           params: {
-            "filters[name][$contains]": mainTerm,
+            "filters[name][$containsi]": mainTerm,
             "fields[0]": "documentId",
             "fields[1]": "name",
             "locale": locale || "ru",
