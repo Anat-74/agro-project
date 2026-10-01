@@ -65,7 +65,12 @@ const { data, pending, error, refresh } = useCachedAsyncData(
           ],
           locale: { $eq: currentLocale.value },
         },
-        fields: ["id"],
+        // Для рендера карточки нужны name/slug и картинка
+        // (documentId Strapi отдаёт всегда — используется как :key)
+        fields: ["name", "slug"],
+        populate: {
+          image: { fields: ["alternativeText", "url"] },
+        },
         pagination: {
           page: page.value,
           pageSize: pageSize,
