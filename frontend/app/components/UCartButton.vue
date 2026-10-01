@@ -29,7 +29,7 @@ onMounted(() => {
     :aria-label="t.ariaLabelBasket"
     @click="handleClick"
   >
-    <span class="cart-link__price">{{ cartStore.totalItems }}</span>
+    <span v-if="cartStore.totalItems" class="cart-link__price">{{ cartStore.totalItems }}</span>
     <Icon
       name="cil:cart"
       width="30"

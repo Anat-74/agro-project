@@ -228,11 +228,15 @@ useSchemaOrg(schemaOrgNodes);
            единый сценарий без дублирования (кнопка ниже).
            Вопросы в компоненте выключены: они выводятся отдельным блоком ниже,
            чтобы были видны и на телефоне, и поисковым системам -->
-      <CalcSection
-        class="calc-page__section hidden-tablet"
-        :section="section"
-        :show-faq="false"
-      />
+      <!-- Секция работает на клиентских данных (server: false), поэтому SSR и
+           гидратация разходятся по разметке — рендерим только на клиенте -->
+      <ClientOnly>
+        <CalcSection
+          class="calc-page__section hidden-tablet"
+          :section="section"
+          :show-faq="false"
+        />
+      </ClientOnly>
 
       <!-- ≤ $tablet: открываем панель сразу на вкладке раздела -->
       <UButton

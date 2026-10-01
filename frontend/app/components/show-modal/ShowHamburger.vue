@@ -352,22 +352,26 @@ const toggleHamburger = () => {
             v-else-if="slide.id === 'garden'"
             class="dialog-hamburger__garden"
           >
-            <CalcSection>
-              <template #products-action>
-                <CartPanelButton class="dialog-hamburger__cart" />
-              </template>
-            </CalcSection>
+            <ClientOnly>
+              <CalcSection>
+                <template #products-action>
+                  <CartPanelButton class="dialog-hamburger__cart" />
+                </template>
+              </CalcSection>
+            </ClientOnly>
           </div>
           <!-- Слайд «Заготовки»: тот же движок секции с конфигурацией заготовок -->
           <div
             v-else-if="slide.id === 'preserves'"
             class="dialog-hamburger__garden"
           >
-            <CalcSection :section="PRESERVES_SECTION">
-              <template #products-action>
-                <CartPanelButton class="dialog-hamburger__cart" />
-              </template>
-            </CalcSection>
+            <ClientOnly>
+              <CalcSection :section="PRESERVES_SECTION">
+                <template #products-action>
+                  <CartPanelButton class="dialog-hamburger__cart" />
+                </template>
+              </CalcSection>
+            </ClientOnly>
           </div>
           <HamburgerMenu
             v-else
