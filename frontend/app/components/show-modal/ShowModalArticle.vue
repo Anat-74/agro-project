@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { gardenTranslations } from "~/locales/garden";
 import { buttonTranslations } from "~/locales/button";
+import { chatAssistantTranslations } from "~/locales/chat-assistant";
+import { useChatRequest } from "~/composables/chat-assistant/useChatRequest";
 
 // Модальное окно статьи блога — мобильный сценарий: вместо перехода на страницу
 // статьи показываем текст прямо в диалоге. Страница остаётся «домом» контента
@@ -76,6 +78,17 @@ const {
 const articleTitle = computed(() => details.value?.title || props.title || "");
 const articleDate = computed(() => details.value?.date || props.date || null);
 
+// «Спросить AI» по текущей статье: открывает чат с контекстом статьи
+const chatT = computed(() => chatAssistantTranslations[currentLocale.value]);
+const { requestChat } = useChatRequest();
+const askAi = () => {
+  const title = articleTitle.value;
+  const summary = title
+    ? `Статья блога: «${title}»${props.slug ? ` (/${currentLocale.value}/blog/${props.slug})` : ""}`
+    : undefined;
+  requestChat({ summary });
+};
+
 // Открытие — только программное (клик по статье перехватываем в списке)
 const openModal = () => {
   execute();
@@ -135,6 +148,14 @@ defineExpose({ openModal, close, isOpen });
             {{ details.author }}
           </span>
         </div>
+        <UButton
+          variant="plain"
+          class="article-modal__ask-ai"
+          @click="askAi"
+        >
+          <Icon name="material-symbols:chat" />
+          {{ chatT.askAi }}
+        </UButton>
       </header>
 
       <div v-if="details?.content" class="article-modal__content">
@@ -242,6 +263,20 @@ defineExpose({ openModal, close, isOpen });
     column-gap: toEm(10, 14);
     color: var(--gray-color);
     font-size: toEm(14);
+  }
+
+  // «Спросить AI» по текущей статье — открывает чат с контекстом статьи
+  &__ask-ai {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    column-gap: toEm(6);
+    color: var(--active-color);
+    font-size: toEm(14);
+
+    @include hover {
+      color: var(--warning-hover);
+    }
   }
 
   &__content {

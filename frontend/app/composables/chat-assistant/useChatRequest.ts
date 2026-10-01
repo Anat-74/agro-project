@@ -11,6 +11,11 @@ export interface ChatRequestContext {
   section?: string;
   /** Название выбранного элемента (растение / продукт заготовки) */
   item?: string;
+  /**
+   * Произвольная текстовая сводка контекста: текущий расчёт калькулятора
+   * (режим, площадь, значения) или открытая статья блога.
+   */
+  summary?: string;
 }
 
 interface ChatRequest {

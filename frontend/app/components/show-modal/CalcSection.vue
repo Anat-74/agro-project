@@ -43,11 +43,27 @@ const chatT = computed(() => chatAssistantTranslations[currentLocale.value]);
 
 // «Спросить AI» — открыть чат с контекстом текущего раздела и элемента
 const { requestChat } = useChatRequest();
-const askAi = () =>
+const askAi = () => {
+  // Сводка текущего состояния калькулятора — чтобы ответ не противоречил UI
+  const parts: string[] = [`Раздел: ${t.value.title}`];
+  if (selectedCrop.value) parts.push(`Элемент: ${selectedCrop.value.name}`);
+  const activeMode = modeTabs.value.find((tab) => tab.id === mode.value);
+  if (activeMode) parts.push(`Режим: ${activeMode.label}`);
+  if (inputValue.value) {
+    parts.push(
+      `${t.value[config.value.input.labelKey]}: ${inputValue.value} ${unitLabel.value}`,
+    );
+  }
+  const rows = resultRowsFor(mode.value);
+  if (rows.length) {
+    parts.push(`Расчёт: ${rows.map((row) => `${row.label} — ${row.value}`).join("; ")}`);
+  }
   requestChat({
     section: config.value.id,
     item: selectedCrop.value?.name,
+    summary: parts.join(". "),
   });
+};
 
 // ===== Предметы раздела (растения «Посадки», позже — продукты «Заготовок») =====
 const itemsKey = computed(() => `${config.value.id}-items-${currentLocale.value}`);

@@ -416,6 +416,9 @@ onMounted(() => {
                     >
                       {{ source.title }}
                     </NuxtLink>
+                    <p v-if="source.snippet" class="message__source-snippet">
+                      {{ source.snippet }}
+                    </p>
                   </li>
                 </ul>
               </div>
@@ -710,6 +713,41 @@ onMounted(() => {
   padding: toRem(12) toRem(16);
   line-height: 1.5;
   word-wrap: break-word;
+
+  // Мини-Markdown ответов ассистента (см. renderMarkdown в useChatMessages.ts)
+  :deep(p) {
+    margin-block-end: toEm(6);
+
+    &:last-child {
+      margin-block-end: 0;
+    }
+  }
+
+  :deep(ul),
+  :deep(ol) {
+    margin-block: toEm(4) toEm(6);
+    padding-inline-start: toEm(18);
+  }
+
+  :deep(li) {
+    margin-block-end: toEm(2);
+  }
+
+  :deep(strong) {
+    font-weight: 700;
+  }
+
+  :deep(code) {
+    padding-inline: toEm(4);
+    background: var(--whitesmoke-color);
+    border-radius: toEm(4);
+  }
+
+  :deep(a) {
+    color: var(--active-color);
+    text-decoration: underline;
+  }
+
   @include adaptiveValue("font-size", 14, 13);
 }
 
@@ -738,7 +776,13 @@ onMounted(() => {
 
 .message__sources-list {
   display: grid;
-  row-gap: toRem(2);
+  row-gap: toRem(4);
+}
+
+.message__source-snippet {
+  margin-block-start: toRem(2);
+  color: var(--gray-color);
+  @include adaptiveValue("font-size", 12, 11);
 }
 
 .message__source-link {

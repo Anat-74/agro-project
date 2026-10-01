@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import { gardenTranslations } from "~/locales/garden";
+import { chatAssistantTranslations } from "~/locales/chat-assistant";
+import { useChatRequest } from "~/composables/chat-assistant/useChatRequest";
 
 const route = useRoute()
 const { find } = useStrapi()
@@ -53,6 +55,17 @@ useSeoMeta({
   ogDescription: seo.value?.metaDescription || "",
 })
 
+// «Спросить AI» по текущей статье — чат открывается с контекстом статьи
+const chatT = computed(() => chatAssistantTranslations[currentLocale.value])
+const { requestChat } = useChatRequest()
+const askAi = () => {
+  const title = post.value?.title
+  const summary = title
+    ? `Статья блога: «${title}» (/${currentLocale.value}/blog/${route.params.slug})`
+    : undefined
+  requestChat({ summary })
+}
+
 useHead({
   script: seo.value?.structuredData
     ? [
@@ -75,6 +88,14 @@ useHead({
           <h1 class="blog-post__title">{{ post.title }}</h1>
           <time class="blog-post__date">{{ post.date }}</time>
           <span v-if="post.author" class="blog-post__author">{{ post.author }}</span>
+          <UButton
+            variant="plain"
+            class="blog-post__ask-ai"
+            @click="askAi"
+          >
+            <Icon name="material-symbols:chat" />
+            {{ chatT.askAi }}
+          </UButton>
         </header>
         <MDC v-if="post.content" :value="post.content" class="blog-post__content" />
 
@@ -130,6 +151,21 @@ useHead({
     font-size: toEm(14);
     color: var(--gray-color);
     margin-inline-end: toRem(16);
+  }
+
+  // «Спросить AI» по текущей статье
+  &__ask-ai {
+    display: flex;
+    width: fit-content;
+    align-items: center;
+    column-gap: toEm(6);
+    margin-block-start: toRem(8);
+    color: var(--active-color);
+    font-size: toEm(14);
+
+    @include hover {
+      color: var(--warning-hover);
+    }
   }
 
   &__empty {
