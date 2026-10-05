@@ -1,0 +1,119 @@
+// @vitest-environment node
+import { createServer, type Server } from "node:http";
+import { afterAll, describe, expect, it } from "vitest";
+import { setup } from "@nuxt/test-utils/e2e";
+
+// Локальный мок: DeepSeek (chat/completions) + Strapi (любой /api/*).
+// Позволяет проверить обработчик /api/chat-assistant целиком без сети и ключей.
+let deepseekCalls = 0;
+let lastDeepseekBody: any = null;
+
+const json = (res: any, payload: unknown) => {
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify(payload));
+};
+
+const mock = createServer((req, res) => {
+  const url = req.url || "";
+
+  // DeepSeek: 1-й вызов — tool_call content_search, 2-й (после tool-result) — текст
+  if (url.includes("/v1/chat/completions")) {
+    let body = "";
+    req.on("data", (chunk) => (body += chunk));
+    req.on("end", () => {
+      deepseekCalls += 1;
+      const parsed = JSON.parse(body || "{}");
+      lastDeepseekBody = parsed;
+      const hasToolResult = (parsed.messages || []).some((m: any) => m.role === "tool");
+
+      if (hasToolResult) {
+        return json(res, {
+          choices: [{ message: { role: "assistant", content: "Есть статья про варенье." } }],
+        });
+      }
+      return json(res, {
+        choices: [
+          {
+            message: {
+              role: "assistant",
+              content: null,
+              tool_calls: [
+                {
+                  id: "call_1",
+                  type: "function",
+                  function: {
+                    name: "content_search",
+                    arguments: JSON.stringify({ query: "варенье яблоки" }),
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      });
+    });
+    return;
+  }
+
+  // Strapi: материалы проекта
+  if (url.startsWith("/api/blogs")) {
+    return json(res, {
+      data: [
+        {
+          title: "Варенье из яблок: пропорции и секреты",
+          slug: "varenie-iz-yablok",
+          content: "<p>Классика: 700–800 г сахара на 1 кг яблок.</p>",
+        },
+      ],
+    });
+  }
+  if (url.startsWith("/api/calculator-page") || url.startsWith("/api/preserve-page")) {
+    return json(res, { data: { faq: [] } });
+  }
+  if (url.startsWith("/api/")) return json(res, { data: [] });
+  return json(res, {});
+});
+
+await new Promise<void>((resolve) => mock.listen(0, "127.0.0.1", resolve));
+const address = mock.address() as { port: number };
+const base = `http://127.0.0.1:${address.port}`;
+
+// Env для runtimeConfig — до старта Nuxt-сервера
+process.env.DEEPSEEK_API_URL = `${base}/v1/chat/completions`;
+process.env.NUXT_DEEPSEEK_API_KEY = "test-key";
+process.env.NUXT_STRAPI_URL = base;
+process.env.NUXT_STRAPI_TOKEN = "test-token";
+
+await setup({ server: true, dev: true });
+
+afterAll(() => {
+  mock.close();
+});
+
+describe("POST /api/chat-assistant", () => {
+  it("консультация: отдаёт basis=project и источники с выдержкой", async () => {
+    const response: any = await $fetch("/api/chat-assistant", {
+      method: "POST",
+      body: { message: "Как варить варенье из яблок?", locale: "ru" },
+    });
+
+    expect(response.success).toBe(true);
+    expect(response.basis).toBe("project");
+    expect(response.sources?.[0]?.title).toBe("Варенье из яблок: пропорции и секреты");
+    expect(response.sources?.[0]?.url).toBe("/ru/blog/varenie-iz-yablok");
+    expect(response.sources?.[0]?.snippet).toBeTruthy();
+  });
+
+  it("опасная тема: в системный промпт добавляется блок безопасности", async () => {
+    deepseekCalls = 0;
+    lastDeepseekBody = null;
+
+    await $fetch("/api/chat-assistant", {
+      method: "POST",
+      body: { message: "Сколько мл инсектицида на литр воды?", locale: "ru" },
+    });
+
+    const system = (lastDeepseekBody?.messages || []).find((m: any) => m.role === "system");
+    expect(system?.content).toContain("БЕЗОПАСНОСТЬ");
+  });
+});
