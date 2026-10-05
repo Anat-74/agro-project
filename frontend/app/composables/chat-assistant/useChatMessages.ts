@@ -1,6 +1,7 @@
 /**
  * Composable для управления сообщениями и историей чата
  */
+import { escapeHtml, renderMarkdown } from "~/utils/chatMarkdown"
 
 export interface ChatMessage {
   role: 'user' | 'assistant' | 'system'
@@ -24,71 +25,6 @@ export function useChatMessages(options: UseChatMessagesOptions = {}) {
 
   const messages = ref<ChatMessage[]>([])
   const sessionId = ref<string | null>(null)
-
-  // Экранируем HTML в тексте сообщения (защита от XSS),
-  // кнопки действий добавляются ниже собственным безопасным HTML
-  const escapeHtml = (text: string): string =>
-    text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;')
-
-  // Инлайновая разметка (применяется к уже экранированному тексту):
-  // **bold**, *italic*, `code`, [ссылка](url)
-  const renderInline = (text: string): string =>
-    text
-      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-      .replace(/__([^_]+)__/g, '<strong>$1</strong>')
-      .replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>')
-      .replace(/`([^`]+)`/g, '<code>$1</code>')
-      .replace(
-        /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
-        '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>',
-      )
-
-  // Мини-Markdown для ответов ассистента: абзацы, списки, заголовки (как <strong>).
-  // Вход уже экранирован escapeHtml — здесь добавляются только «свои» безопасные теги.
-  const renderMarkdown = (escaped: string): string => {
-    const lines = escaped.split('\n')
-    let html = ''
-    let listTag: 'ul' | 'ol' | null = null
-    const closeList = () => {
-      if (listTag) {
-        html += `</${listTag}>`
-        listTag = null
-      }
-    }
-
-    for (const raw of lines) {
-      const line = raw.replace(/\s+$/, '')
-      const bullet = line.match(/^\s*[-*•]\s+(.+)$/)
-      const ordered = line.match(/^\s*\d+[.)]\s+(.+)$/)
-      const heading = line.match(/^\s*#{1,6}\s+(.+)$/)
-
-      if (bullet || ordered) {
-        const tag = bullet ? 'ul' : 'ol'
-        if (listTag !== tag) {
-          closeList()
-          html += `<${tag}>`
-          listTag = tag
-        }
-        html += `<li>${renderInline((bullet || ordered)![1])}</li>`
-      } else if (heading) {
-        closeList()
-        html += `<p><strong>${renderInline(heading[1])}</strong></p>`
-      } else if (line.trim() === '') {
-        closeList()
-      } else {
-        closeList()
-        html += `<p>${renderInline(line)}</p>`
-      }
-    }
-
-    closeList()
-    return html
-  }
 
   // Форматирование сообщения с добавлением кнопок действий
   const formatMessage = (text: string, clientInstruction?: any): string => {

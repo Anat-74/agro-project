@@ -58,7 +58,7 @@ const cut = (value: string, max = 180): string =>
   value.length > max ? `${value.slice(0, max).trim()}…` : value;
 
 /** Ключевые слова запроса (до 3), по которым ищем материалы */
-const tokenize = (query: string): string[] => {
+export const tokenize = (query: string): string[] => {
   const words = (query || "")
     .toLowerCase()
     .replace(/[^\p{L}\p{N}\s-]/gu, " ")
@@ -69,7 +69,7 @@ const tokenize = (query: string): string[] => {
 };
 
 /** Плоские параметры `filters[$or][i][field][$containsi]` для набора полей и слов */
-const orFilterParams = (fields: string[], tokens: string[]) => {
+export const orFilterParams = (fields: string[], tokens: string[]) => {
   const params: Record<string, string> = {};
   let index = 0;
   for (const field of fields) {
