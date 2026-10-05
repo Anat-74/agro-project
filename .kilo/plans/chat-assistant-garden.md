@@ -92,9 +92,16 @@
 
 **Приоритет 4 — качество**
 6. **Тесты — ✅ весь набор зелёный (05.10).** `vitest ^4.1.9`, `@nuxt/test-utils ^4.0.3` + установлен
-   `happy-dom`. Скрипты `test`/`test:watch`. `npx vitest run`: **4 файла, 17 тестов — pass**:
-   - новые: `test/chat-markdown.test.ts`, `test/content-search.test.ts` (13);
-   - существующие: `useDebounce.spec.ts` (2), `useDialog.spec.ts` (2).
+   `happy-dom`. Скрипты `test`/`test:watch`. `npx vitest run`: **5 файлов, 21 тест — pass**:
+   - новые: `chat-markdown` (7), `content-search` (6), `safety` (4);
+   - существующие: `useDebounce` (2), `useDialog` (2);
+   - предохранитель вынесен в `server/utils/safety.ts` (`isDangerousTopic`/`dangerousTopicNote`).
+     Тест нашёл реальный баг: `\w` в JS не матчит кириллицу → «обработать химией» не ловилось
+     (исправлено на `\S*`);
+   - `chat-assistant.post.ts`: URL DeepSeek переопределяется `DEEPSEEK_API_URL` (для тестов);
+   - **API-тест `/api/chat-assistant` — черновик отключён** (`test/chat-assistant.api.test.ts.disabled`):
+     e2e-сервер `@nuxt/test-utils` падает на `require()` ESM в цикле (`magic-string` ←
+     `@vue/compiler-sfc`, Node 22) — инфраструктурный блокер, не логика теста.
    Правки инфраструктуры:
    - `vitest.config.ts`: `hookTimeout 120s`, `testTimeout 30s` (nuxt-окружение поднимается дольше 10с);
    - `nuxt.config.ts`: `@vite-pwa/nuxt` подключается условно (`process.env.VITEST ? [] : [...]`) —
