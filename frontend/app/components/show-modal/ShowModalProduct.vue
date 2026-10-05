@@ -371,11 +371,8 @@ const handleAddToCart = () => {
 
   &__gallery {
     min-width: 0;
-    // Контейнер productImage — как в UProductGallery (единообразно)
     @include containerParent(productImage, inline-size);
 
-    // Блок главного изображения: фон убран, вместо него — рамка со скруглением.
-    // Само изображение уже закруглено UImage (type="product").
     :deep(.slider) {
       background: transparent;
       border: toRem(1) solid var(--border-color);
@@ -384,19 +381,14 @@ const handleAddToCart = () => {
     }
   }
 
-  // Пагинация — отдельный блок вне слайдера, без фона: просто миниатюры
-  // с тонкой рамкой и скруглением.
+  // Пагинация — отдельный блок вне слайдера
   &__thumbs {
-    // Именованный контейнер для миниатюр: без него правило в UImage
-    // (@container productThumbImage → max-width: 80px) мёртвое, и миниатюры
-    // подчинялись правилам productImage — размер зависел от того, какой
-    // productImage-контейнер оказался ближайшим предком при открытии модалки
-    @include containerParent(productThumbImage, inline-size);
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
     gap: toRem(8);
     margin-block-start: toRem(14);
+   @include containerParent(productThumbImage, inline-size);
   }
 
   &__thumb {
@@ -419,7 +411,6 @@ const handleAddToCart = () => {
   }
 
   &__thumb-img {
-    // Квадратные миниатюры (40×40): переопределяем aspect-ratio 4/3 у product-типа
     &.app-image_product {
       width: toRem(40);
       height: toRem(40);
@@ -439,7 +430,7 @@ const handleAddToCart = () => {
 
   &__title {
     margin: 0;
-    padding-inline-end: toRem(48);   // не залезает под крестик
+    padding-inline-end: toRem(48);
     @include adaptiveValue("font-size", 26, 20);
   }
 
@@ -456,7 +447,6 @@ const handleAddToCart = () => {
   }
 
   &__add {
-    // Ширина по контенту, выравнивание по концу flex-колонки (правый край)
     align-self: flex-end;
   }
 }
