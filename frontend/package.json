@@ -11,6 +11,8 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "generate-sitemap": "npx tsx scripts/generate-sitemap.ts"
   },
   "dependencies": {
@@ -55,6 +57,7 @@
     "@nuxt/test-utils": "^4.0.3",
     "@types/node": "^24.9.1",
     "@types/sharp": "^0.31.1",
+    "happy-dom": "^20.14.5",
     "sass": "^1.84.0",
     "vitest": "^4.1.9"
   }

@@ -27,7 +27,8 @@ export default defineNuxtConfig({
     "@nuxtjs/strapi",
     "@nuxtjs/mdc",
     "@nuxtjs/seo",
-    "@vite-pwa/nuxt",
+    // В тестах (vitest) PWA-виртуальный модуль конфликтует с @nuxt/test-utils
+    ...(process.env.VITEST ? [] : ["@vite-pwa/nuxt"]),
     "@nuxtjs/mcp-toolkit",
     "nuxt-spyglass",
     "@nuxt/fonts",

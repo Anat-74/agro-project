@@ -8,9 +8,11 @@ describe("useDialog", () => {
     expect(isOpen.value).toBe(false)
   })
 
-  it("reuses same isOpen for same id", () => {
+  it("shares isOpen state for same id", () => {
     const { isOpen: a } = useDialog("shared")
     const { isOpen: b } = useDialog("shared")
-    expect(a).toBe(b)
+    // useState возвращает разные ref-обёртки на один ключ, но состояние общее
+    a.value = true
+    expect(b.value).toBe(true)
   })
 })
