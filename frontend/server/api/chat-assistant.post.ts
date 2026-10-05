@@ -1,8 +1,11 @@
 import { defineEventHandler, readBody, getCookie, setCookie } from "h3";
 import { $fetch } from "ofetch";
+import { dangerousTopicNote } from "../utils/safety";
 
-// DeepSeek API endpoint (OpenAI-compatible)
-const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
+// DeepSeek API endpoint (OpenAI-compatible). Переопределяется через DEEPSEEK_API_URL
+// (удобно для тестов с мок-сервером), по умолчанию — прод-адрес DeepSeek.
+const DEEPSEEK_API_URL =
+  process.env.DEEPSEEK_API_URL || "https://api.deepseek.com/v1/chat/completions";
 
 // Имя модели — из окружения (DEEPSEEK_MODEL), чтобы переименования модели на
 // стороне DeepSeek не требовали правок кода (достаточно обновить .env / env прода).
@@ -462,12 +465,9 @@ ${JSON.stringify(lastSearchResults, null, 2)}
       }
     }
 
-    // Предохранитель: потенциально опасные темы (препараты/яды/дозировки)
-    const DANGEROUS_TOPIC_RE =
-      /(пестицид|гербицид|инсектицид|фунгицид|ядохимикат|отрав|дозиров|концентрац|опрыск|обработк\w*\s+хим|мл\s+на\s+литр)/i;
-    const safetyNote = DANGEROUS_TOPIC_RE.test(message)
-      ? "\nБЕЗОПАСНОСТЬ: запрос касается потенциально опасной темы (препараты/дозировки). НЕ давай дозировок и инструкций по применению химии. Скажи, что таких материалов нет, и направь к профильному специалисту или официальной инструкции препарата."
-      : "";
+    // Предохранитель: потенциально опасные темы (препараты/яды/дозировки).
+    // Сама проверка — в server/utils/safety.ts (покрыта тестами).
+    const safetyNote = dangerousTopicNote(message);
 
     // Формируем системный промпт — краткий, без хардкода и примеров
     const systemPrompt = {
