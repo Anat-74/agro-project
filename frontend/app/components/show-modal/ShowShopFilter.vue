@@ -473,9 +473,11 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   top: toRem(12);
   height: calc(100dvh - toRem(24));
 
-  // mobile: липнет к самому верху вьюпорта (при скролле шапка сайта скрыта) и на всю высоту
+  // mobile: страница сдвинута вверх на --header-h (компенсация уехавшей шапки),
+  // поэтому sticky-панель ставим на ту же величину — визуально она у самого верха.
+  // Высота — во весь вьюпорт.
   @media (max-width: $mobile) {
-    top: 0;
+    top: var(--header-h, 0px);
     height: 100dvh;
   }
 

@@ -17,6 +17,21 @@ const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopF
 // (products-page_filter-open: раскладка «панель + карточки» и одна колонка карточек).
 const { isOpen: filterDialogOpen } = useDialog("shopFilterDialog")
 
+// Подъём контента на место уехавшей шапки (mobile): шапка скрывается transform'ом
+// (её высота в layout остаётся → была пустая зона). Сдвигаем страницу вверх на высоту
+// шапки (--header-h, меряем JS). Панель фильтров компенсирует это своим sticky
+// `top: var(--header-h)` (см. ShowShopFilter) и остаётся у самого верха вьюпорта.
+useMeasureToVar("--header-h", {
+  enabled: () => filterDialogOpen.value,
+  active: filterDialogOpen,
+  observe: () => document.querySelector(".header"),
+  measure: () => {
+    const header = document.querySelector<HTMLElement>(".header")
+    if (!header) return null
+    return `${header.offsetHeight}px`
+  },
+})
+
 // При уходе со страницы (например, клик «Главное» в breadcrumbs) закрываем диалог:
 // иначе isOpen остаётся true (глобальный Map).
 onBeforeRouteLeave(() => {
@@ -295,9 +310,16 @@ useSeoMeta({
     }
   }
 
-  // (mobile) Подъём контента через transform УБРАН: при панели в потоке (вариант 2)
-  // он «уводил» sticky-панель выше вьюпорта (rect.top < 0) и ломал прилипание.
-  // Теперь mobile = desktop: панель sticky сверху, карточки справа — поднимать нечего.
+  // (mobile) Подъём контента на место уехавшей шапки: шапка скрывается transform'ом,
+  // её высота в layout остаётся → сдвигаем страницу вверх на --header-h. Панель
+  // фильтров компенсирует это своим sticky `top: var(--header-h)` и остаётся сверху.
+  @media (max-width: $mobile) {
+    transition: transform var(--transition-duration-fast);
+
+    &_filter-open {
+      transform: translateY(calc(-1 * var(--header-h, 0px)));
+    }
+  }
 
   &__header {
     // Крошки + панель. Sticky-эксперимент (mobile): продуктовый header липнет ПОД
