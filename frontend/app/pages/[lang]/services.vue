@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { seoTranslations } from '~/locales/seo'
+import type { SitePage } from '~~/shared/types/site-page'
 
 const { find } = useStrapi()
 const { currentLocale } = useLocale()
@@ -7,11 +8,13 @@ const route = useRoute()
 const config = useRuntimeConfig()
 const t = computed(() => seoTranslations[currentLocale.value])
 
-const { data: page } = useAsyncData(
+const { data: page } = useAsyncData<SitePage | null>(
   `services-page-${currentLocale.value}`,
   async () => {
     const response = await find("services-page")
-    return response.data?.[0] || response.data
+    // Single type: Strapi отдаёт объект, `find` типизирует как массив — нормализуем
+    const data = response.data as unknown as SitePage | SitePage[]
+    return Array.isArray(data) ? data[0] ?? null : data ?? null
   }
 )
 

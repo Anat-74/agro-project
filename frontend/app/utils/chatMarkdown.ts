@@ -41,17 +41,18 @@ export const renderMarkdown = (escaped: string): string => {
     const ordered = line.match(/^\s*\d+[.)]\s+(.+)$/)
     const heading = line.match(/^\s*#{1,6}\s+(.+)$/)
 
-    if (bullet || ordered) {
+    const listMatch = bullet || ordered
+    if (listMatch) {
       const tag = bullet ? "ul" : "ol"
       if (listTag !== tag) {
         closeList()
         html += `<${tag}>`
         listTag = tag
       }
-      html += `<li>${renderInline((bullet || ordered)![1])}</li>`
+      html += `<li>${renderInline(listMatch[1] ?? "")}</li>`
     } else if (heading) {
       closeList()
-      html += `<p><strong>${renderInline(heading[1])}</strong></p>`
+      html += `<p><strong>${renderInline(heading[1] ?? "")}</strong></p>`
     } else if (line.trim() === "") {
       closeList()
     } else {

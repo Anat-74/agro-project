@@ -1,13 +1,15 @@
 <script lang="ts" setup>
+import type { NewsArticle } from '~~/shared/types/news'
+
 const route = useRoute()
 const { find } = useStrapi()
 const { currentLocale } = useLocale()
 
-const { data: item } = useAsyncData(
+const { data: item } = useAsyncData<NewsArticle | null>(
   `news-${route.params.slug}-${currentLocale.value}`,
   async () => {
-    const response = await find("news-articles", {
-      filters: { slug: { $eq: route.params.slug } },
+    const response = await find<NewsArticle>("news-articles", {
+      filters: { slug: { $eq: String(route.params.slug) } },
     })
     return response.data?.[0] || null
   }

@@ -13,7 +13,12 @@ const strapiUrl = (url: string) => `${config.public.strapi.url}${url}`
 const slides = computed(() => props.product?.image || [])
 
 // Управление слайдером извне: пагинация-миниатюры вынесены отдельным блоком слева
-const sliderRef = useTemplateRef<InstanceType<typeof USlider>>("slider")
+// USlider — generic-компонент (`<script setup generic>`), поэтому InstanceType
+// не подходит: типизируем только нужное нам поле `active`.
+const sliderRef = useTemplateRef<{
+  active?: number | { value: number };
+  go?: (index: number) => void;
+}>("slider")
 
 const sliderActive = computed<number>(() => {
   const active = (sliderRef.value as any)?.active
@@ -55,7 +60,7 @@ const sliderActive = computed<number>(() => {
         class="product-gallery__thumb"
         :class="{ 'product-gallery__thumb_active': sliderActive === i + 1 }"
         :aria-label="`Изображение ${i + 1}`"
-        @click="sliderRef?.go(i + 1)"
+        @click="sliderRef?.go?.(i + 1)"
       >
         <UImage
           :src="strapiUrl(img.url)"

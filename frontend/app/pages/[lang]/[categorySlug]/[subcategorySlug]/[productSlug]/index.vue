@@ -53,7 +53,7 @@ const characteristics = computed(() => {
   } catch {
     return [];
   }
-}, { ttl: 300_000 });
+});
 
 useSeoMeta({
   title:

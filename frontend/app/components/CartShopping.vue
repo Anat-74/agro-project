@@ -42,7 +42,9 @@ const buildModalProduct = (item: CartItem): Product => ({
   price: item.product.price,
   description: '',
   characteristics: '',
-  image: item.product.mainImage ? [{ url: item.product.mainImage }] : [],
+  image: item.product.mainImage
+    ? ([{ url: item.product.mainImage }] as unknown as Product["image"])
+    : [],
   isDiscount: item.product.isDiscount,
 })
 

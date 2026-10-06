@@ -35,7 +35,9 @@ const modalProduct = computed<Product>(() => ({
   price: props.product.price,
   description: '',
   characteristics: '',
-  image: props.product.image ? [{ url: props.product.image }] : [],
+  image: props.product.image
+    ? ([{ url: props.product.image }] as unknown as Product["image"])
+    : [],
   isDiscount: props.product.isDiscount,
 }))
 

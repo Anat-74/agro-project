@@ -86,7 +86,7 @@ onMounted(() => {
   if (!wrapperRef.value) return
   prefetchObserver = new IntersectionObserver(
     ([entry]) => {
-      if (entry.isIntersecting) {
+      if (entry?.isIntersecting) {
         execute()
         prefetchObserver?.disconnect()
       }

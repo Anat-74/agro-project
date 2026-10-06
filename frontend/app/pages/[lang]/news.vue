@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { seoTranslations } from '~/locales/seo'
+import type { NewsArticle } from '~~/shared/types/news'
 
 const { find } = useStrapi()
 const { currentLocale } = useLocale()
@@ -7,12 +8,12 @@ const route = useRoute()
 const config = useRuntimeConfig()
 const t = computed(() => seoTranslations[currentLocale.value])
 
-const { data: items } = useAsyncData(
+const { data: items } = useAsyncData<NewsArticle[]>(
   `news-list-${currentLocale.value}`,
   async () => {
-    const response = await find("news-articles", {
+    const response = await find<NewsArticle>("news-articles", {
       sort: "date:desc",
-      pagination: { pageSize: 50 },
+      pagination: { page: 1, pageSize: 50 },
     })
     return response.data || []
   }
@@ -39,7 +40,7 @@ useSeoMeta({
       </div>
 
       <ul v-else class="news-page__list">
-        <li v-for="item in items || []" :key="item.documentId || item.id" class="news-page__item">
+        <li v-for="item in items || []" :key="item.documentId ?? item.id ?? item.slug ?? ''" class="news-page__item">
           <NuxtLink
             :to="`/${currentLocale}/news/${item.slug}`"
             class="news-page__link"

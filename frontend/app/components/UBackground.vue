@@ -57,10 +57,13 @@ const BG_EFFECTS = ["none", "press", "zoom", "focus"] as const
 
 const bgEffectIndex = ref(0)
 const bgEffectClass = computed(() => {
-  const effect = BG_EFFECTS[bgEffectIndex.value]
+  const effect = BG_EFFECTS[bgEffectIndex.value] ?? "none"
   return effect === "none" ? "" : `bgfx-${effect}`
 })
-const effectName = computed(() => effectT.value.effectNames[BG_EFFECTS[bgEffectIndex.value]])
+const effectName = computed(() => {
+  const effect = BG_EFFECTS[bgEffectIndex.value] ?? "none"
+  return effect === "none" ? "" : effectT.value.effectNames[effect]
+})
 
 const cycleBgEffect = () => {
   bgEffectIndex.value = (bgEffectIndex.value + 1) % BG_EFFECTS.length
