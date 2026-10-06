@@ -41,7 +41,7 @@
   // Ширина сайдбара фильтров (ShowShopFilter): desktop — адаптив 280→180,
   // mobile — фикс (--filter-drawer-w), чтобы справа оставалась колонка товаров
   @include adaptiveValue("--filter-width", 280, 180);
-  --filter-drawer-w: #{toRem(170)};
+  --filter-drawer-w: #{toRem(165)};
 }
  
 // Светлая тема (на основе цветов из Figma)

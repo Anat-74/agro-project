@@ -69,8 +69,10 @@ defineExpose({ open, close, isOpen, toggle })
 const viewportReady = ref(false)
 const isMobile = computed(() => viewportReady.value && width.value <= 767.98)
 const toolbarGone = ref(false)
+// Плавашка: при закрытом фильтре появляется по скроллу (тулбар уехал), при открытом —
+// видна всегда и служит кнопкой закрытия (иконка анимируется filter ↔ close, как в тулбаре).
 const floatVisible = computed(
-  () => isMobile.value && !isOpen.value && toolbarGone.value,
+  () => isMobile.value && (toolbarGone.value || isOpen.value),
 )
 
 let observer: IntersectionObserver | undefined
@@ -383,7 +385,12 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
         aria-controls="dialogShopFilter"
         @click="toggle"
       >
-        <Icon name="mingcute:filter-line" />
+        <span class="show-shop-filter__float-icon">
+          <Transition name="filter-icon" mode="out-in">
+            <Icon v-if="isOpen" key="close" name="mingcute:close-line" />
+            <Icon v-else key="filter" name="mingcute:filter-line" />
+          </Transition>
+        </span>
         <span>{{ t.filterTitle }}</span>
       </button>
     </Teleport>
@@ -438,11 +445,13 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   // поэтому sticky-панель ставим на ту же величину — визуально она у самого верха.
   // Высота — во весь вьюпорт.
   @media (max-width: $mobile) {
-    // Верх — сразу под липким тулбаром (страница сдвинута вверх на --header-h,
-    // поэтому в координатах страницы это --header-h + высота тулбара; визуально —
-    // высота тулбара). Высота — остаток вьюпорта.
-    top: calc(var(--header-h, 0px) + var(--toolbar-h, 0px));
-    height: calc(100dvh - var(--toolbar-h, 0px));
+    // Верх — сразу под липким тулбаром. Высота — низ выравниваем по товарной
+    // колонке (--list-h), но не выше остатка вьюпорта.
+    top: var(--toolbar-h, 0px);
+    height: min(
+      calc(100dvh - var(--filter-top, var(--toolbar-h, 0px))),
+      var(--list-h, 100dvh)
+    );
   }
 
   // ===== Диалог сайдбара (на desktop — в потоке; на mobile — drawer в body) =====
@@ -813,17 +822,17 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   position: fixed;
   left: toRem(16);
   bottom: toRem(16);
-  z-index: 9998; // ниже оверлея диалога (9999) — при открытом окне скрыта
+  z-index: 9998;
   display: inline-flex;
   align-items: center;
-  gap: toRem(8);
-  height: toRem(44);
-  padding: 0 toRem(18);
+  gap: toRem(6);
+  height: toRem(36);
+  padding: 0 toRem(12);
   background-color: var(--green-color);
   color: var(--light-color);
   border: toRem(1) solid var(--border-color);
-  border-radius: toRem(22);
-  font-size: toEm(15);
+  border-radius: toRem(18);
+  font-size: toEm(14);
   font-weight: 600;
   box-shadow: 0 toRem(4) toRem(18) rgba(0, 0, 0, 0.18);
   cursor: pointer;
@@ -839,9 +848,31 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
 
   svg {
     color: var(--light-color);
-    width: toRem(18);
-    height: toRem(18);
+    width: toRem(16);
+    height: toRem(16);
     flex-shrink: 0;
+  }
+
+  // Анимация иконки filter ↔ close (как у кнопки в тулбаре страницы)
+  &-icon {
+    display: inline-flex;
+
+    .filter-icon-enter-active,
+    .filter-icon-leave-active {
+      transition:
+        opacity var(--transition-duration),
+        transform var(--transition-duration);
+    }
+
+    .filter-icon-enter-from {
+      opacity: 0;
+      transform: rotate(-90deg) scale(0.5);
+    }
+
+    .filter-icon-leave-to {
+      opacity: 0;
+      transform: rotate(90deg) scale(0.5);
+    }
   }
 
   &_visible {

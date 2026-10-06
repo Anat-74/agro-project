@@ -44,6 +44,46 @@ useMeasureToVar("--toolbar-h", {
   },
 })
 
+// Высота товарной колонки: панель фильтров выравнивается по низу товаров
+// (для коротких списков — по последней карточке), но не выше вьюпорта.
+useMeasureToVar("--list-h", {
+  enabled: () => filterDialogOpen.value,
+  active: filterDialogOpen,
+  observe: () => document.querySelector(".products-page__card-list"),
+  measure: () => {
+    const el = document.querySelector<HTMLElement>(".products-page__card-list")
+    return el ? `${el.offsetHeight}px` : null
+  },
+})
+
+// Текущий отступ панели/товаров от верха вьюпорта (--filter-top): при скролле крошки
+// уезжают, тулбар липнет, отступ уменьшается. Панель считает от него высоту — всегда
+// целиком влезает во вьюпорт. Обновляем на скролл/ресайз и при открытии.
+const filterTop = ref(0)
+const updateFilterTop = () => {
+  // Верх панели фильтров (при закрытом фильтре панель скрыта → 0, значение не используется)
+  const el = document.querySelector<HTMLElement>(".show-shop-filter")
+  filterTop.value = el ? Math.max(0, Math.round(el.getBoundingClientRect().top)) : 0
+}
+let filterTopTimer: ReturnType<typeof setTimeout> | undefined
+const scheduleFilterTop = (delay = 0) => {
+  if (filterTopTimer) clearTimeout(filterTopTimer)
+  filterTopTimer = setTimeout(updateFilterTop, delay)
+}
+onMounted(() => {
+  window.addEventListener("scroll", updateFilterTop, { passive: true })
+  window.addEventListener("resize", updateFilterTop)
+  scheduleFilterTop()
+})
+onBeforeUnmount(() => {
+  window.removeEventListener("scroll", updateFilterTop)
+  window.removeEventListener("resize", updateFilterTop)
+  if (filterTopTimer) clearTimeout(filterTopTimer)
+})
+// После открытия/закрытия ждём завершения сдвига (margin/transition), затем меряем
+watch(filterDialogOpen, () => scheduleFilterTop(350))
+watch(() => route.fullPath, () => scheduleFilterTop(350))
+
 // При уходе со страницы (например, клик «Главное» в breadcrumbs) закрываем диалог:
 // иначе isOpen остаётся true (глобальный Map).
 onBeforeRouteLeave(() => {
@@ -179,6 +219,7 @@ useSeoMeta({
 <template>
   <section
     :class="['products-page', { 'products-page_filter-open': filterDialogOpen }]"
+    :style="{ '--filter-top': `${filterTop}px` }"
     aria-labelledby="products-page-title"
   >
     <!-- Скрытый H1: на странице нет видимого главного заголовка,
@@ -322,14 +363,15 @@ useSeoMeta({
     }
   }
 
-  // (mobile) Подъём контента на место уехавшей шапки: шапка скрывается transform'ом,
-  // её высота в layout остаётся → сдвигаем страницу вверх на --header-h. Панель
-  // фильтров компенсирует это своим sticky `top: var(--header-h)` и остаётся сверху.
+  // (mobile) Подъём контента на место уехавшей шапки: вместо transform используем
+  // отрицательный margin — место шапки СХЛОПЫВАЕТСЯ (иначе transform оставлял бы
+  // дыру в --header-h перед подвалом). Layout меняется, но sticky-координаты
+  // остаются обычными (не смещаются transform'ом).
   @media (max-width: $mobile) {
-    transition: transform var(--transition-duration-fast);
+    transition: margin-block-start var(--transition-duration-fast);
 
     &_filter-open {
-      transform: translateY(calc(-1 * var(--header-h, 0px)));
+      margin-block-start: calc(-1 * var(--header-h, 0px));
     }
   }
 
@@ -424,35 +466,25 @@ useSeoMeta({
 }
 
 @media (max-width: $mobile) {
-  // Фильтр открыт (mobile): крошки скрываем — тулбар встаёт на самый верх, панель
-  // фильтров и товары начинаются сразу под ним и целиком помещаются во вьюпорт.
-  .products-page_filter-open .breadcrumbs {
-    display: none;
+  // «Коробку» header убираем (display: contents): крошки и тулбар становятся детьми
+  // .products-page. Тогда sticky-тулбара родителем становится сама страница (высокая),
+  // и он липнет на всю высоту. Крошки при этом остаются и уезжают при скролле.
+  .products-page__header {
+    display: contents;
   }
 
-  // Тулбар (Фильтр/сортировка/результат) — липкий сверху, всегда доступен
-  // (шапка сайта при открытом фильтре скрыта).
-  // Липким делаем весь header (= тулбар, крошки скрыты), а не сам тулбар: sticky
-  // ограничен родителем, и тулбар внутри header не «прилипал» (родитель = его высота).
-  .products-page_filter-open .products-page__header {
-    position: sticky;
-    // Страница сдвинута вверх на --header-h, поэтому sticky-top тоже = --header-h
-    // (иначе визуально header уезжает выше вьюпорта).
-    top: var(--header-h, 0px);
-  }
-
+  // Тулбар (Фильтр/сортировка/результат) — липкий сверху (шапка сайта при открытом
+  // фильтре скрыта). Без нижнего отступа — панель/товары начинаются ровно под ним.
   .products-page_filter-open .products-page__container-top {
-    // Без нижнего отступа — панель/товары начинаются ровно под тулбаром
-    // (иначе их низ на 10px уходит за вьюпорт).
+    position: sticky;
+    top: 0;
+    z-index: 20;
     margin-block-end: 0;
   }
 
-  // Товарная колонка: одна колонка без минимальной ширины (карточка — по ширине
-  // колонки) + минимум во весь вьюпорт (за вычетом тулбара) — чтобы низ товаров
-  // выравнивался с низом панели фильтров и не было пустой зоны снизу.
+  // Товарная колонка при открытом фильтре — одна колонка (карточка по ширине колонки).
   .products-page_filter-open .products-page__card-list {
     grid-template-columns: 1fr;
-    min-height: calc(100dvh - var(--toolbar-h, 0px));
   }
 }
 
