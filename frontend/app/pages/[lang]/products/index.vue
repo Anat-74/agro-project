@@ -13,24 +13,9 @@ const vh = computed(() => visuallyHiddenTranslations[currentLocale.value])
 
 const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopFilter")
 
-// Глобальное состояние диалога фильтров — нужен классу на странице
-// (products-page_filter-open для подъёма контента на место скрытой шапки).
+// Глобальное состояние диалога фильтров — нужно классу на странице
+// (products-page_filter-open: раскладка «панель + карточки» и одна колонка карточек).
 const { isOpen: filterDialogOpen } = useDialog("shopFilterDialog")
-
-// Подъём контента на освободившееся место после скрытия шапки (менее 100% оверлей):
-// --header-h меряем JS (useMeasureToVar) и используем в .products-page_filter-open
-// transform: translateY(-header-h). Только transform — высота документа НЕ меняется,
-// поэтому scrollY не сбрасывается (скролл-нейтральность сохраняется).
-useMeasureToVar("--header-h", {
-  enabled: () => filterDialogOpen.value,
-  active: filterDialogOpen,
-  observe: () => document.querySelector(".header"),
-  measure: () => {
-    const header = document.querySelector<HTMLElement>(".header")
-    if (!header) return null
-    return `${header.offsetHeight}px`
-  },
-})
 
 // При уходе со страницы (например, клик «Главное» в breadcrumbs) закрываем диалог:
 // иначе isOpen остаётся true (глобальный Map).
@@ -283,6 +268,10 @@ useSeoMeta({
 
 <style lang="scss" scoped>
 .products-page {
+  // Открытие/закрытие фильтра меняет число колонок карточек (2↔1) → браузерный
+  // scroll-anchoring «дёргает» позицию скролла. Отключаем якорение на странице.
+  overflow-anchor: none;
+
   // Mobile: flex-колонка ВСЕГДА (при закрытом диалоге auto-высота = обычный поток).
   // display:flex не «перещёлкивается» при открытии. Высота страницы НЕ анимируется
   // (кламп мгновенный): анимация height + height шапки вместе давали overshoot —
@@ -306,22 +295,9 @@ useSeoMeta({
     }
   }
 
-  // Подъём контента при открытом диалоге фильтров (mobile) — JS-вариант:
-  // контент поднимается на высоту скрытой шапки через transform (GPU), чтобы
-  // заполнить освободившееся место (диалог теперь ~75% ширины — левая панель,
-  // справа видна страница). ТОЛЬКО transform — высоту документа не меняет,
-  // поэтому scrollY не сбрасывается (скролл-нейтральность сохраняется).
-  // НЕ используем height:100dvh/overflow:hidden (они и давали сброс скролла).
-  @media (max-width: $mobile) {
-    // Плавный подъём/опускание контента при открытии/закрытии фильтра: иначе
-    // transform применялся МГНОВЕННО (страница «прыгала» на высоту шапки,
-    // пока диалог ещё едет — отсюда «скачок» при открытии).
-    transition: transform var(--transition-duration-fast);
-
-    &_filter-open {
-      transform: translateY(calc(-1 * var(--header-h, 0px)));
-    }
-  }
+  // (mobile) Подъём контента через transform УБРАН: при панели в потоке (вариант 2)
+  // он «уводил» sticky-панель выше вьюпорта (rect.top < 0) и ломал прилипание.
+  // Теперь mobile = desktop: панель sticky сверху, карточки справа — поднимать нечего.
 
   &__header {
     // Крошки + панель. Sticky-эксперимент (mobile): продуктовый header липнет ПОД

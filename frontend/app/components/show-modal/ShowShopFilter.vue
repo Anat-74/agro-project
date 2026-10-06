@@ -41,10 +41,21 @@ const emit = defineEmits<{
 // на mobile. На desktop панель открывает СТРАНИЦА после загрузки товаров
 // (O2, plan.md §1: watcher на status === 'success' в products/index.vue).
 const dialogElement = useTemplateRef<HTMLDialogElement>("dialog-shop-filter");
-const { open, close, isOpen, toggle } = useDialog("shopFilterDialog", dialogElement, {
+const { close, isOpen } = useDialog("shopFilterDialog", dialogElement, {
   useShowMethod: true,
   initialOpen: false,
 })
+
+// Панель фильтров теперь В ПОТОКЕ (вариант 2). Не вызываем dialog.show(): он
+// прокручивает документ к диалогу и сбивает позицию скролла при открытии.
+// Открытие — только реактивным :open (isOpen). close() (el.close + isOpen=false) оставляем.
+const open = () => {
+  isOpen.value = true
+}
+const toggle = () => {
+  if (isOpen.value) close()
+  else open()
+}
 
 // width нужен для sale-секции (запрос только на desktop) и кнопки-логики
 const { width } = useViewport()
@@ -461,6 +472,12 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   position: sticky;
   top: toRem(12);
   height: calc(100dvh - toRem(24));
+
+  // mobile: липнет к самому верху вьюпорта (при скролле шапка сайта скрыта) и на всю высоту
+  @media (max-width: $mobile) {
+    top: 0;
+    height: 100dvh;
+  }
 
   // ===== Диалог сайдбара (на desktop — в потоке; на mobile — drawer в body) =====
   &__dialog {
