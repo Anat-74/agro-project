@@ -1,0 +1,83 @@
+# План: мобильный фильтр на странице продуктов (вариант 2)
+
+> Решение 06.10.2026. **Реализовано 06.10.2026** (бэкап старой реализации — git-тег
+> `backup-mobile-filter-2026-10-06`; удалить после приёмки).
+> Связанное: `frontend-plan.md`, `show-hamburger-plan.md` (паттерн «кнопка + панель»).
+
+## ✅ Реализовано (06.10)
+
+- `ShowShopFilter`: телепорт стал `disabled` (панель в потоке), mobile-fixed-оверлей удалён;
+  ширина `--filter-drawer-w` (mobile, фикс), desktop — `--filter-width`; скролл на панели
+  (`height: 100%`, `overflow-y: auto`, `scrollbar-gutter: stable`).
+- `products/index.vue`: mobile `container-body` — flex-row (как desktop), `gap: toRem(10)`;
+  при открытом фильтре список — 1 колонка без min-ширины (`grid-template-columns: 1fr`);
+  `overflow-x: clip` на списке (служебный grid-вариант карточки вылезал на ~20px).
+- `_globals.scss`: `.show-shop-filter__dialog[open]` исключён из `body:has(…) overflow:hidden`.
+- Подобрано: `--filter-drawer-w: toRem(170)` (mobile).
+- **Проверено (dev, прод-API, 390px):** панель 170 слева, карточка 171 справа — целиком в
+  вьюпорте; страница скроллится (`body overflow: visible`); горизонтального переполнения нет;
+  закрыто — 2 колонки; десктоп (1280) — панель 264 sticky, 4 колонки, без переполнения.
+  `typecheck` = 0, eslint чисто.
+- **Осталось:** визуальная приёмка пользователем; подстроить `--filter-drawer-w` при желании
+  (например, на iPhone; 170–180px). Возможно убрать `translateY(-header-h)` при открытом
+  фильтре (сейчас оставлен; при разрешённом скролле может пригодиться/мешать — по факту).
+
+## Цель
+
+На mobile при открытом фильтре товары видны **справа, полностью, в одну колонку** и с ними можно
+взаимодействовать; страница **скроллится**; смена раскладки **анимирована**. При закрытии — снова
+две колонки, как сейчас.
+
+## Причины текущего поведения
+
+1. Drawer `width: 50%; min-width: 280px` → на экране ~375–390px `min-width` побеждает → панель ≈280px
+   (~72%), товарам остаётся ~100px → карточки обрезаны.
+2. Панель `position: fixed` (телепорт в body) → товары **не сдвигаются**, лежат под панелью.
+3. В `app/assets/scss/base/_globals.scss`: `body:has(.show-shop-filter__dialog[open], …) { overflow: hidden }`
+   (mobile) → **блокировка скролла** страницы.
+4. Скроллбар панели (`scrollbar-width: thin`) у правого края **наезжает** на выровненные вправо счётчики.
+
+## Решение (вариант 2): mobile = как desktop (панель в потоке)
+
+Панель на mobile — **колонка в потоке**, а не fixed-оверлей. Mobile переиспользует desktop-механику:
+корень `.show-shop-filter` анимирует **width** (`0` ↔ ширина панели), панель — sticky с внутренним
+скроллом. Телепорт/fixed/blur/translate для drawer на mobile больше не нужны → **кода меньше**.
+
+## Изменения
+
+### `app/components/show-modal/ShowShopFilter.vue`
+- **Убрать телепорт** `<Teleport to="body" :disabled="!isMobile">` → диалог всегда в потоке.
+- **Удалить mobile-блок `&__dialog`** (`position: fixed; inset; width: 50%; min-width: 280px;
+  height: 100dvh; z-index: 9999; backdrop-filter; visibility/translate`) — оставить in-flow
+  (`position: static`), sticky + внутренний скролл на всех ширинах.
+- **Ширина панели:** mobile — фикс `--filter-drawer-w` (подобрать ~`toRem(220–240)`),
+  desktop — прежний `--filter-width`.
+- **Скроллбар:** `scrollbar-gutter: stable` + `padding-inline-end`, чтобы не наезжал на счётчики.
+- Убрать ставшие ненужными `isMobile`/`viewportReady`/drawer-анимации, если не используются.
+
+### `app/pages/[lang]/products/index.vue`
+- `container-body` на mobile: **flex-row как на desktop** (убрать `flex-direction: column`).
+- Правило «2 карточки в ряд» (`@media (max-width: $mobileSmall) { card-list { repeat(2,1fr) } }`)
+  применять только при **закрытом** фильтре (`:not(.products-page_filter-open)`), либо перевести на
+  container-query (`cards`) — тогда при сужении правой колонки карточки сами уходят в 1 колонку.
+- `products-page_filter-open { transform: translateY(-header-h) }` — **перепроверить/убрать**:
+  при разрешённом скролле может давать двойной сдвиг.
+- Анимация раскладки — через `width` панели (flex), как на desktop. (`grid-template-columns`
+  `0px 1fr ↔ 240px 1fr` тоже анимируется px↔px, если понадобится grid-вариант.)
+
+### `app/assets/scss/base/_globals.scss`
+- Исключить `.show-shop-filter__dialog[open]` из `body:has(…) { overflow: hidden }`
+  (лок оставить для корзины/чата/гамбургера).
+
+## Проверки
+
+- mobile (375/390/414): при открытом фильтре — панель слева, товары справа полностью в 1 колонку,
+  скролл страницы работает; при закрытии — 2 колонки; анимация плавная;
+- desktop не сломан (рейл + карточки, сдвиг как сейчас);
+- скроллбар панели не поверх счётчиков;
+- нет hydration-mismatch; `typecheck` = 0; eslint чисто.
+
+## Открыто
+
+- Точная ширина `--filter-drawer-w` (подобрать по месту, 220–240px).
+- Нужна ли sticky-панель на mobile (остаётся видимой при скролле товаров) — по факту.
