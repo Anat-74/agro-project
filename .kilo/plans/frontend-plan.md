@@ -6,16 +6,15 @@
 
 ## Открытые задачи
 
-### 1. Типизация (`vue-tsc --noEmit`)
+### 1. Типизация — ✅ сделано (05.10)
 
-- **Состояние:** ~37 предсуществующих ошибок TS (в новых агро-файлах — 0).
-- **Топ:** `blog.vue`, `blog/[slug].vue`, `news.vue`, `news/[slug].vue`, страницы about/contacts/services.
-- **Причины:** `find`/`useAsyncData` без обобщений (`data` выводится как `{}`); фильтры (`$eq`,
-  `StrapiPrimitiveOperators<unknown>`); `PaginationMeta` (нужен `page` вместе с `pageSize`); единично
-  `useCachedAsyncData`.
-- **Подход:** генерики (`find<Product>` и т.п.), тип `PaginationMeta`, точечно `filters as any`;
-  ввести `nuxi typecheck` в проверку.
-- **Запуск:** `npx -y -p vue-tsc -p typescript vue-tsc --noEmit`.
+- Установлен `vue-tsc ^3.3.12` (dev) + скрипт **`typecheck`** (`nuxt typecheck`); `typescript` 6.0.3.
+- **`typecheck` = 0 ошибок** (было 39).
+- Исправлено по категориям: обобщения `find<T>`/`useAsyncData<T>` (`about`/`contacts`/`services`/`news`),
+  типы `SitePage`/`NewsArticle` (`shared/types/*`), `pagination { page, pageSize }`, фильтры
+  (`String(route.params.slug)`), точечные касты `Product["image"]`, `entry?.isIntersecting`, индекс
+  `BG_EFFECTS[...] ?? "none"`, реф-тип `USlider` (generic-компонент), убран лишний `{ ttl }` у `computed`.
+- **Опционально дальше:** добавить `typecheck` в деплой-скрипт (блокировать выкладку при ошибках).
 
 ### 2. Локализация ru → be
 
