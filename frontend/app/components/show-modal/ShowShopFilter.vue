@@ -192,14 +192,11 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
 
 <template>
   <div class="show-shop-filter">
-    <!-- На mobile диалог (drawer) телепортируем в body: иначе он лежит ВНУТРИ
-         .products-page, которая при открытии получает transform (подъём на
-         --header-h) — transform предка «ломает» position:fixed, и окно уезжает/
-         исчезает при скролле. В body position:fixed считается от вьюпорта.
-         На desktop/SSR (isMobile=false) телепорт выключен — диалог остаётся
-         в потоке (рейл) и честно сдвигает карточки (как показано в образце
-         ShowHamburger: телепортируется только сам dialog, корень — обычный div). -->
-    <Teleport to="body" :disabled="!isMobile">
+    <!-- Панель фильтров — в потоке и на desktop, и на mobile (вариант 2): mobile
+         работает как desktop — колонка слева с анимируемой шириной, карточки
+         сдвигаются вправо. Телепорт в body больше не нужен, поэтому Teleport
+         оставлен `disabled` (рендер на месте), fixed-оверлея на mobile нет. -->
+    <Teleport to="body" disabled>
       <dialog id="dialogShopFilter" ref="dialog-shop-filter" class="show-shop-filter__dialog" :aria-label="t.filterTitle" :open="isOpen">
       <!-- Шапка диалога (semantic <header>): сортировка слева + кнопка закрытия
            справа. Sticky — всегда видна при внутреннем скролле списка фильтров.
@@ -439,56 +436,31 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     display 0s var(--transition-duration-fast) allow-discrete,
     width var(--transition-duration-fast);
 
-  // Сайдбар в потоке только пока диалог открыт. Закрытый — полностью убираем
-  // из потока, чтобы не оставалась пустая колонка фиксированной ширины
-  // (flex-gap в products__body тоже схлопывается вместе с ним).
-  &:has(.show-shop-filter__dialog[open]) {
-    // Ширина диалога — единый источник --filter-width (styles.scss)
-    width: var(--filter-width);
+  // Ширина панели: mobile — фикс (--filter-drawer-w, styles.scss), desktop —
+  // адаптив (--filter-width). Поток одинаковый для обеих ширин (вариант 2).
+  --filter-panel-w: var(--filter-width);
 
-    // Mobile (≤768): ширина области body (перебивает --filter-width)
-    @media (max-width: $mobile) {
-      width: 100%;
-    }
+  @media (max-width: $mobile) {
+    --filter-panel-w: var(--filter-drawer-w);
+  }
+
+  // Сайдбар в потоке только пока диалог открыт: закрытый схлопываем в 0
+  // (переход width выше), затем display:none (с задержкой) — пустой колонки нет.
+  &:has(.show-shop-filter__dialog[open]) {
+    width: var(--filter-panel-w);
   }
 
   &:not(:has(.show-shop-filter__dialog[open])) {
-    display: none;
-    // desktop: явный 0 для плавного схлопывания (transition: width выше);
-    // mobile — НЕ трогаем ширину (полноэкранный оверлей)
-    @media (min-width: $mobile) {
-      width: 0;
-    }
-  }
-
-  // Mobile (≤768): корень — просто пустой контейнер. Сам диалог (drawer)
-  // телепортируется в body (<Teleport> в шаблоне), поэтому в потоке панель
-  // на телефоне не нужна. Телепорт в body и решает проблему: раньше корень
-  // был position:fixed ВНУТРИ .products-page (у неё transform при открытии) —
-  // transform предка «ломал» fixed, и окно уезжало/пропадало при скролле.
-  @media (max-width: $mobile) {
+    width: 0;
     display: none;
   }
 
-  // Desktop/планшет: панель НЕ растягиваем по вертикали. Список фильтров
-  // длинный (категории+цена+теги+акционный блок с картинками ~1700px) —
-  // если он остаётся «самым высоким» flex-элементом, container-body тянется
-  // к его высоте, а ul (карточки, flex:1) принудительно надувается (grid-ряды
-  // 518px при карточке 305px → большие пустоты между рядами).
-  // Решение: панель вьюпорт-высоты + внутренний скролл (после «Акционных
-  // товаров» список скроллится внутри диалога). Высота задана ЯВНО (не через
-  // max-height по 100% родителя — из-за областей это давало 0).
-  @media (min-width: $mobile) {
-    align-self: flex-start;
-    position: sticky;
-    top: toRem(12);
-    height: calc(100dvh - toRem(24));
-
-    &__dialog {
-      height: 100%;
-      overflow-y: auto;
-    }
-  }
+  // Панель НЕ растягиваем по высоте: длинный список фильтров иначе «надувал» бы
+  // карточки. Вьюпорт-высота + внутренний скролл диалога — на всех ширинах.
+  align-self: flex-start;
+  position: sticky;
+  top: toRem(12);
+  height: calc(100dvh - toRem(24));
 
   // ===== Диалог сайдбара (на desktop — в потоке; на mobile — drawer в body) =====
   &__dialog {
@@ -505,10 +477,17 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     margin: 0;
     background: transparent;
     max-width: none;
-    // Внутренний вертикальный скролл — НА ВСЕХ ширинах (список фильтров длинный
-    // и там, и там). Ограниченная высота приходит из контекста (desktop — height
-    // 100% от панели; mobile — 100dvh).
+    // Внутренний вертикальный скролл — на всех ширинах: высота 100% от sticky-панели.
+    // scrollbar-gutter — место под полосу, чтобы она не наезжала на выровненные
+    // вправо счётчики («(31)»).
+    height: 100%;
     overflow-y: auto;
+    scrollbar-gutter: stable;
+
+    // Внутренние боковые отступы — как были у mobile-оверлея (кнопка/сортировка)
+    @media (max-width: $mobile) {
+      padding-inline: toRem(9);
+    }
 
     // Анимация: desktop — слева направо (translate -100%). Mobile — БЕЗ
     // translate (только opacity): translate:0 100% ломал скролл — при открытии
@@ -519,34 +498,6 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
       translate var(--transition-duration-fast),
       opacity var(--transition-duration-fast);
 
-    // Mobile (≤768): dialog — это и есть drawer (телепорт в body, см. шаблон).
-    // position:fixed от вьюпорта (не зависит от transform-а страницы). blur
-    // появляется МГНОВЕННО: opacity всегда 1 (нет фейда), открытие — выезд
-    // translate, в закрытом — за экраном + visibility:hidden.
-    @media (max-width: $mobile) {
-      position: fixed;
-      inset: 0 auto 0 0;   // слева, во всю высоту
-      width: 50%;
-      // max-width: 50%;
-      min-width: toRem(280);
-      height: 100dvh;
-      z-index: 9999;
-      padding-inline: toRem(9); // внутренний отступ справа/слева (кнопка, сортировка)
-      backdrop-filter: blur(22px);
-      opacity: 1;
-      translate: -100%;
-      visibility: hidden;
-      transition:
-        translate var(--transition-duration-fast),
-        visibility 0s var(--transition-duration-fast) allow-discrete;
-
-      &[open] {
-        visibility: visible;
-        translate: 0;
-        opacity: 1;
-      }
-    }
-
     &[open] {
       translate: 0;
       opacity: 1;
@@ -556,11 +507,6 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
       &[open] {
         translate: -100%;
         opacity: 0;
-
-        @media (max-width: $mobile) {
-          translate: -100%;
-          opacity: 1;
-        }
       }
     }
   }
@@ -860,13 +806,8 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
 
   // ==== Адаптив ====
   @media (max-width: $mobile) {
-    width: 100%;
-    // Заполняет fixed-оверлей (100dvh): скролл внутри вьюпорта, низ не обрезается
-    height: 100%;
-    // Внутренний скролл — как .dialog-hamburger__items в ShowHamburger
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--success-color) var(--whitesmoke-color);
+    // Скролл — на самой панели (.show-shop-filter__dialog), как на desktop;
+    // здесь остаются только мобильные нюансы контента.
     padding-block-end: toRem(30);
 
     &__tags {

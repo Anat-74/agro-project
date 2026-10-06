@@ -38,9 +38,10 @@
   --catalog-shift: calc(
     var(--container-edge) + 15px + var(--catalog-width) + var(--catalog-gap)
   );
-  // Ширина сайдбара фильтров (ShowShopFilter) — desktop 280→180,
-  // на mobile ограничивается 50vw (см. ShowShopFilter)
+  // Ширина сайдбара фильтров (ShowShopFilter): desktop — адаптив 280→180,
+  // mobile — фикс (--filter-drawer-w), чтобы справа оставалась колонка товаров
   @include adaptiveValue("--filter-width", 280, 180);
+  --filter-drawer-w: #{toRem(170)};
 }
  
 // Светлая тема (на основе цветов из Figma)

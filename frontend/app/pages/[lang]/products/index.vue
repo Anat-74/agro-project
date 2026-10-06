@@ -338,24 +338,17 @@ useSeoMeta({
   &__container-body {
     display: flex;
     gap: toRem(30);
-    align-items: stretch;
-    // Якорь для mobile-оверлея сайдбара фильтров (ShowShopFilter position:absolute)
+    // Дети держат натуральную высоту: карточки (flex:1) не «надуваются» под
+    // длинный список фильтров. Кап/скролл сайдбара — внутри ShowShopFilter.
+    align-items: flex-start;
+    // Якорь для пагинации (absolute)
     position: relative;
     // Имя __container → глобальный [class*="__container"]: max-width 1420 + центр
-    // + боковые паддинги. На desktop это БЛОК-ребёнок section → центрирование
-    // работает. На mobile — flex-ребёнок колонки (margin-inline нейтрализован выше).
-
-    // Desktop/планшет: НЕ растягиваем детей по высоте. Иначе ul (карточки, flex:1)
-    // принудительно тянулся к высоте самого высокого flex-элемента — длинного
-    // сайдбара фильтров (~1700px), и grid-ряды «надувались» до 518px при карточке
-    // 305px → большие пустоты между рядами. С align-items:start каждый держит свою
-    // натуральную высоту (ряды всегда 305px). Кап/скролл сайдбара — в ShowShopFilter.
-    @media (min-width: $mobile) {
-      align-items: flex-start;
-    }
-
+    // + боковые паддинги.
+    // mobile (вариант 2): остаётся flex-row — панель фильтров слева, карточки справа.
     @media (max-width: $mobile) {
-      flex-direction: column;
+      // Узкий экран: уменьшаем зазор, чтобы правой колонке хватило на карточку
+      gap: toRem(10);
     }
   }
 
@@ -376,6 +369,10 @@ useSeoMeta({
     // Запас под флоатящую пагинацию (absolute) — она не занимает место в потоке,
     // поэтому последний ряд карточек не должен ложиться под неё
     padding-block-end: toRem(64);
+    // В узкой колонке (mobile при открытом фильтре) у карточки есть служебный
+    // grid-вариант контента, выступающий на несколько px → горизонтальный скролл.
+    // Клип по X убирает его, не трогая видимый контент.
+    overflow-x: clip;
   }
 
   &__pagination {
@@ -409,8 +406,18 @@ useSeoMeta({
 // теперь на самом ul, а ul не может стилизовать сам себя (self-query не работает).
 // На широком блоке 2+ колонки даёт сам auto-fit (gridCards fit, min 180px).
 @media (max-width: $mobileSmall) {
-  .products-page__card-list {
+  // Две карточки в ряд — только когда фильтр закрыт: при открытом панель слева
+  // сужает правую колонку, и там одна карточка (видна целиком).
+  .products-page:not(.products-page_filter-open) .products-page__card-list {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: $mobile) {
+  // Фильтр открыт: одна колонка без минимальной ширины — карточка занимает всю
+  // ширину правой колонки (gridCards даёт min 180px и вылезала бы за край).
+  .products-page_filter-open .products-page__card-list {
+    grid-template-columns: 1fr;
   }
 }
 
