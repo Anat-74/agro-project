@@ -363,15 +363,14 @@ useSeoMeta({
     }
   }
 
-  // (mobile) Подъём контента на место уехавшей шапки: вместо transform используем
-  // отрицательный margin — место шапки СХЛОПЫВАЕТСЯ (иначе transform оставлял бы
-  // дыру в --header-h перед подвалом). Layout меняется, но sticky-координаты
-  // остаются обычными (не смещаются transform'ом).
+  // (mobile) Подъём контента на место уехавшей шапки — через transform (GPU, плавно;
+  // margin давал layout-джанк и «лomал» плавность скрытия шапки). «Дыру» в --header-h
+  // перед подвалом закрываем сдвигом подвала (см. _globals.scss).
   @media (max-width: $mobile) {
-    transition: margin-block-start var(--transition-duration-fast);
+    transition: transform var(--transition-duration-fast);
 
     &_filter-open {
-      margin-block-start: calc(-1 * var(--header-h, 0px));
+      transform: translateY(calc(-1 * var(--header-h, 0px)));
     }
   }
 
@@ -477,14 +476,19 @@ useSeoMeta({
   // фильтре скрыта). Без нижнего отступа — панель/товары начинаются ровно под ним.
   .products-page_filter-open .products-page__container-top {
     position: sticky;
-    top: 0;
+    // Страница сдвинута transform'ом на --header-h → sticky-top тоже = --header-h
+    // (визуально тулбар остаётся у самого верха).
+    top: var(--header-h, 0px);
     z-index: 20;
     margin-block-end: 0;
   }
 
-  // Товарная колонка при открытом фильтре — одна колонка (карточка по ширине колонки).
+  // Товарная колонка при открытом фильтре — одна колонка (карточка по ширине колонки)
+  // и минимум во весь остаток вьюпорта: панель фильтров тогда «гармоничной» высоты
+  // (во весь вьюпорт), а её низ совпадает с низом товаров.
   .products-page_filter-open .products-page__card-list {
     grid-template-columns: 1fr;
+    min-height: calc(100dvh - var(--filter-top, 0px));
   }
 }
 

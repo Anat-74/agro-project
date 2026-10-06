@@ -69,10 +69,10 @@ defineExpose({ open, close, isOpen, toggle })
 const viewportReady = ref(false)
 const isMobile = computed(() => viewportReady.value && width.value <= 767.98)
 const toolbarGone = ref(false)
-// Плавашка: при закрытом фильтре появляется по скроллу (тулбар уехал), при открытом —
-// видна всегда и служит кнопкой закрытия (иконка анимируется filter ↔ close, как в тулбаре).
+// Плавашка: появляется только когда фильтр ЗАКРЫТ и нативный тулбар уехал за верх
+// (при открытом фильтре тулбар липкий и всегда доступен — плавашку скрываем).
 const floatVisible = computed(
-  () => isMobile.value && (toolbarGone.value || isOpen.value),
+  () => isMobile.value && toolbarGone.value && !isOpen.value,
 )
 
 let observer: IntersectionObserver | undefined
@@ -447,7 +447,7 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   @media (max-width: $mobile) {
     // Верх — сразу под липким тулбаром. Высота — низ выравниваем по товарной
     // колонке (--list-h), но не выше остатка вьюпорта.
-    top: var(--toolbar-h, 0px);
+    top: calc(var(--header-h, 0px) + var(--toolbar-h, 0px));
     height: min(
       calc(100dvh - var(--filter-top, var(--toolbar-h, 0px))),
       var(--list-h, 100dvh)
@@ -533,18 +533,11 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     }
   }
 
-  // Первая секция («Все категории»): на mobile — такой же бордер «втиснение»
-  // сверху, как снизу, и такой же отступ от верха (32px = margin summary 8 +
-  // padding 24 снизу) — при закрытом details название по центру между бордерами.
+  // Первая секция («Все категории») на mobile: без верхнего бордера и с минимальным
+  // отступом сверху (верх списка фильтров начинается сразу).
   &__section:first-of-type {
     @media (max-width: $mobile) {
-      padding-block-start: toRem(32);
-      border-top: toRem(1) solid rgba(0, 0, 0, 0.3);
-      box-shadow:
-        inset 0 toRem(1) 0 rgba(0, 0, 0, 0.08),
-        0 toRem(-1) 0 rgba(255, 255, 255, 0.6),
-        inset 0 toRem(-1) 0 rgba(0, 0, 0, 0.08),
-        0 toRem(1) 0 rgba(255, 255, 255, 0.6);
+      padding-block-start: toRem(4);
     }
   }
 
