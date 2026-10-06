@@ -32,6 +32,18 @@ useMeasureToVar("--header-h", {
   },
 })
 
+// Высота липкого тулбара (Фильтр/сортировка/результат): панель фильтров встаёт
+// под ним и на неё же уменьшается её высота, чтобы всё влезало во вьюпорт.
+useMeasureToVar("--toolbar-h", {
+  enabled: () => filterDialogOpen.value,
+  active: filterDialogOpen,
+  observe: () => document.querySelector(".products-page__container-top"),
+  measure: () => {
+    const el = document.querySelector<HTMLElement>(".products-page__container-top")
+    return el ? `${el.offsetHeight}px` : null
+  },
+})
+
 // При уходе со страницы (например, клик «Главное» в breadcrumbs) закрываем диалог:
 // иначе isOpen остаётся true (глобальный Map).
 onBeforeRouteLeave(() => {
@@ -412,10 +424,35 @@ useSeoMeta({
 }
 
 @media (max-width: $mobile) {
-  // Фильтр открыт: одна колонка без минимальной ширины — карточка занимает всю
-  // ширину правой колонки (gridCards даёт min 180px и вылезала бы за край).
+  // Фильтр открыт (mobile): крошки скрываем — тулбар встаёт на самый верх, панель
+  // фильтров и товары начинаются сразу под ним и целиком помещаются во вьюпорт.
+  .products-page_filter-open .breadcrumbs {
+    display: none;
+  }
+
+  // Тулбар (Фильтр/сортировка/результат) — липкий сверху, всегда доступен
+  // (шапка сайта при открытом фильтре скрыта).
+  // Липким делаем весь header (= тулбар, крошки скрыты), а не сам тулбар: sticky
+  // ограничен родителем, и тулбар внутри header не «прилипал» (родитель = его высота).
+  .products-page_filter-open .products-page__header {
+    position: sticky;
+    // Страница сдвинута вверх на --header-h, поэтому sticky-top тоже = --header-h
+    // (иначе визуально header уезжает выше вьюпорта).
+    top: var(--header-h, 0px);
+  }
+
+  .products-page_filter-open .products-page__container-top {
+    // Без нижнего отступа — панель/товары начинаются ровно под тулбаром
+    // (иначе их низ на 10px уходит за вьюпорт).
+    margin-block-end: 0;
+  }
+
+  // Товарная колонка: одна колонка без минимальной ширины (карточка — по ширине
+  // колонки) + минимум во весь вьюпорт (за вычетом тулбара) — чтобы низ товаров
+  // выравнивался с низом панели фильтров и не было пустой зоны снизу.
   .products-page_filter-open .products-page__card-list {
     grid-template-columns: 1fr;
+    min-height: calc(100dvh - var(--toolbar-h, 0px));
   }
 }
 
