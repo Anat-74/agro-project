@@ -18,9 +18,8 @@ const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopF
 const { isOpen: filterDialogOpen } = useDialog("shopFilterDialog")
 
 // Подъём контента на место уехавшей шапки (mobile): шапка скрывается transform'ом
-// (её высота в layout остаётся → была пустая зона). Сдвигаем страницу вверх на высоту
-// шапки (--header-h, меряем JS). Панель фильтров компенсирует это своим sticky
-// `top: var(--header-h)` (см. ShowShopFilter) и остаётся у самого верха вьюпорта.
+// (её высота в layout остаётся) — сдвигаем страницу вверх на --header-h (меряем JS),
+// а «дыру» перед подвалом закрываем сдвигом подвала (см. _globals.scss).
 useMeasureToVar("--header-h", {
   enabled: () => filterDialogOpen.value,
   active: filterDialogOpen,
@@ -29,21 +28,6 @@ useMeasureToVar("--header-h", {
     const header = document.querySelector<HTMLElement>(".header")
     if (!header) return null
     return `${header.offsetHeight}px`
-  },
-})
-
-// Высота липкого тулбара (Фильтр/сортировка/результат): панель фильтров встаёт
-// под ним и на неё же уменьшается её высота, чтобы всё влезало во вьюпорт.
-// Высота липкого блока крошек при открытом фильтре (постоянная, пока фильтр открыт):
-// от неё считаем высоту панели фильтров и минимум товарной колонки — детерминированно,
-// без замеров, зависящих от скролла.
-useMeasureToVar("--crumb-h", {
-  enabled: () => filterDialogOpen.value,
-  active: filterDialogOpen,
-  observe: () => document.querySelector(".products-page__header"),
-  measure: () => {
-    const el = document.querySelector<HTMLElement>(".products-page__header")
-    return el ? `${el.offsetHeight}px` : null
   },
 })
 
@@ -427,26 +411,21 @@ useSeoMeta({
 }
 
 @media (max-width: $mobile) {
-  // При открытом фильтре тулбар страницы скрыт: его контролы (сортировка + закрытие)
-  // теперь в шапке панели фильтров. Крошки остаются и ЛИПНУТ сверху — поэтому отступ
-  // над панелью постоянный (высота крошек) и высоты считаются детерминированно.
+  // При открытом фильтре тулбар страницы скрыт: его контролы (кнопка закрытия + селект)
+  // теперь в шапке панели фильтров. Крошки — обычные (скроллятся со страницей).
   .products-page_filter-open .products-page__container-top {
     display: none;
   }
 
-  .products-page_filter-open .products-page__header {
-    position: sticky;
-    // Страница сдвинута transform'ом на --header-h → sticky-top тоже = --header-h
-    // (визуально крошки остаются у самого верха).
-    top: var(--header-h, 0px);
-    z-index: 20;
+  // Колонки равной высоты: панель фильтров растягивается по высоте товаров →
+  // низ панели совпадает с низом товаров (панель — в потоке, без sticky).
+  .products-page_filter-open .products-page__container-body {
+    align-items: stretch;
   }
 
-  // Товарная колонка при открытом фильтре — одна колонка (карточка по ширине колонки)
-  // и минимум во весь остаток вьюпорта (за вычетом липких крошек): низ совпадает с низом панели.
+  // Товарная колонка при открытом фильтре — одна колонка (карточка по ширине колонки).
   .products-page_filter-open .products-page__card-list {
     grid-template-columns: 1fr;
-    min-height: calc(100dvh - var(--crumb-h, 0px));
   }
 }
 

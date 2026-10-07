@@ -213,16 +213,7 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
       <!-- Шапка панели: сортировка + закрытие. При открытом фильтре тулбар страницы
            скрыт — его контролы берёт эта шапка (крестик закрывает, Escape тоже). -->
       <header class="shop-filters__header">
-        <USelect
-          v-model="sortLocal"
-          class="shop-filters__sort"
-          :label="t.sortLabel"
-          :options="[
-            { value: 'name:asc', label: pf.optionName },
-            { value: 'price:asc', label: pf.optionPrice },
-            { value: 'price:desc', label: pf.optionPriceDesc },
-          ]"
-        />
+        <!-- Порядок: кнопка слева, селект справа -->
         <UButton
           class="shop-filters__close"
           :aria-label="bt.ariaLabelDialogClosed"
@@ -237,6 +228,16 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
             </Transition>
           </span>
         </UButton>
+        <USelect
+          v-model="sortLocal"
+          class="shop-filters__sort"
+          :label="t.sortLabel"
+          :options="[
+            { value: 'name:asc', label: pf.optionName },
+            { value: 'price:asc', label: pf.optionPrice },
+            { value: 'price:desc', label: pf.optionPriceDesc },
+          ]"
+        />
       </header>
 
       <aside class="shop-filters">
@@ -471,21 +472,20 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     display: none;
   }
 
-  // Панель НЕ растягиваем по высоте: длинный список фильтров иначе «надувал» бы
-  // карточки. Вьюпорт-высота + внутренний скролл диалога — на всех ширинах.
+  // Desktop/планшет: панель sticky, вьюпорт-высота + внутренний скролл диалога.
   align-self: flex-start;
   position: sticky;
   top: toRem(12);
   height: calc(100dvh - toRem(24));
 
-  // mobile: страница сдвинута вверх на --header-h (компенсация уехавшей шапки),
-  // поэтому sticky-панель ставим на ту же величину — визуально она у самого верха.
-  // Высота — во весь вьюпорт.
+  // Mobile: панель — обычная колонка В ПОТОКЕ (без sticky): скроллится со страницей
+  // вместе с шапкой панели; высота растягивается по высоте товаров (см. карточки),
+  // поэтому низ панели совпадает с низом товаров и верх всегда доступен.
   @media (max-width: $mobile) {
-    // Верх — сразу под липкими крошками (постоянный отступ, пока фильтр открыт),
-    // высота — до низа вьюпорта. Детерминированно: панель всегда влезает целиком.
-    top: calc(var(--header-h, 0px) + var(--crumb-h, 0px));
-    height: calc(100dvh - var(--crumb-h, 0px));
+    position: static;
+    align-self: stretch;
+    height: auto;
+    top: auto;
   }
 
   // ===== Диалог сайдбара (на desktop — в потоке; на mobile — drawer в body) =====
@@ -849,20 +849,18 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   display: none;
 
   @media (max-width: $mobile) {
-    position: sticky;
-    top: 0;
-    z-index: 2;
+    // Без sticky: шапка панели скроллится вместе с содержимым
     display: flex;
     align-items: center;
     gap: toRem(10);
     padding: toRem(10) 0 toRem(12);
     border-bottom: toRem(1) solid rgba(0, 0, 0, 0.08);
-    // Непрозрачный фон: при скролле фильтры уходят под шапку панели
-    background-color: var(--bg);
 
     .shop-filters__sort {
+      // Селект — справа (кнопка закрытия слева)
+      margin-inline-start: auto;
       width: fit-content;
-      flex: 1 1 auto;
+      flex: 0 1 auto;
       min-width: 0;
     }
 
