@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { shopFiltersTranslations } from '~/locales/shopFilters'
+import { productFilterTranslations } from '~/locales/productFilter'
+import { buttonTranslations } from '~/locales/button'
 
 const { find } = useStrapi();
 const { currentLocale } = useLocale();
 const t = computed(() => shopFiltersTranslations[currentLocale.value])
+const pf = computed(() => productFilterTranslations[currentLocale.value])
+const bt = computed(() => buttonTranslations[currentLocale.value])
 
 interface Props {
   category?: string
@@ -183,6 +187,12 @@ const onRangeChange = (range: [number, number]) => {
 // :model-value="[localMin, localMax]" → onRangeChange.
 const clampPrice = (v: number) => Math.min(PRICE_MAX, Math.max(0, Math.round(v || 0)))
 
+// Сортировка в шапке панели: USelect через v-model (прокси) — эмитим update:sort.
+const sortLocal = computed<string>({
+  get: () => props.sort ?? "name:asc",
+  set: (v) => emit("update:sort", v),
+})
+
 const onPriceInput = (key: "min" | "max", e: Event) => {
   const raw = Number((e.target as HTMLInputElement).value)
   if (Number.isNaN(raw)) return
@@ -200,8 +210,35 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
          оставлен `disabled` (рендер на месте), fixed-оверлея на mobile нет. -->
     <Teleport to="body" disabled>
       <dialog id="dialogShopFilter" ref="dialog-shop-filter" class="show-shop-filter__dialog" :aria-label="t.filterTitle" :open="isOpen">
-      <!-- Шапку панели (селект сортировки + кнопка закрытия) убрали: и то и другое
-           дублирует липкий тулбар страницы (Фильтр/сортировка/результат). -->
+      <!-- Шапка панели: сортировка + закрытие. При открытом фильтре тулбар страницы
+           скрыт — его контролы берёт эта шапка (крестик закрывает, Escape тоже). -->
+      <header class="shop-filters__header">
+        <USelect
+          v-model="sortLocal"
+          class="shop-filters__sort"
+          :label="t.sortLabel"
+          :options="[
+            { value: 'name:asc', label: pf.optionName },
+            { value: 'price:asc', label: pf.optionPrice },
+            { value: 'price:desc', label: pf.optionPriceDesc },
+          ]"
+        />
+        <UButton
+          class="shop-filters__close"
+          :aria-label="bt.ariaLabelDialogClosed"
+          :aria-expanded="isOpen"
+          aria-controls="dialogShopFilter"
+          @click="close?.()"
+        >
+          <span class="shop-filters__filter-icon">
+            <Transition name="filter-icon" mode="out-in">
+              <Icon v-if="isOpen" key="close" name="mingcute:close-line" />
+              <Icon v-else key="filter" name="mingcute:filter-line" />
+            </Transition>
+          </span>
+        </UButton>
+      </header>
+
       <aside class="shop-filters">
             <!-- Категории: скрытый заголовок (у section обязан быть) -->
             <section
@@ -445,13 +482,10 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   // поэтому sticky-панель ставим на ту же величину — визуально она у самого верха.
   // Высота — во весь вьюпорт.
   @media (max-width: $mobile) {
-    // Верх — сразу под липким тулбаром. Высота — низ выравниваем по товарной
-    // колонке (--list-h), но не выше остатка вьюпорта.
-    top: calc(var(--header-h, 0px) + var(--toolbar-h, 0px));
-    height: min(
-      calc(100dvh - var(--filter-top, var(--toolbar-h, 0px))),
-      var(--list-h, 100dvh)
-    );
+    // Верх — сразу под липкими крошками (постоянный отступ, пока фильтр открыт),
+    // высота — до низа вьюпорта. Детерминированно: панель всегда влезает целиком.
+    top: calc(var(--header-h, 0px) + var(--crumb-h, 0px));
+    height: calc(100dvh - var(--crumb-h, 0px));
   }
 
   // ===== Диалог сайдбара (на desktop — в потоке; на mobile — drawer в body) =====
@@ -805,6 +839,75 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
       min-height: toRem(100);
       padding: toRem(18) toRem(16);
     }
+  }
+}
+
+// ===== Шапка панели (mobile): сортировка + закрытие =====
+// Скрыта на desktop (там сортировка/кнопка в тулбаре страницы). Sticky — всегда видна
+// при внутреннем скролле списка фильтров.
+.shop-filters__header {
+  display: none;
+
+  @media (max-width: $mobile) {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: toRem(10);
+    padding: toRem(10) 0 toRem(12);
+    border-bottom: toRem(1) solid rgba(0, 0, 0, 0.08);
+    // Непрозрачный фон: при скролле фильтры уходят под шапку панели
+    background-color: var(--bg);
+
+    .shop-filters__sort {
+      width: fit-content;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .shop-filters__close {
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      height: toRem(30);
+      padding: 0 toRem(12);
+      background-color: var(--green-color);
+      color: var(--light-color);
+      border: toRem(1) solid var(--border-color);
+      border-radius: toRem(6);
+      cursor: pointer;
+
+      svg {
+        color: var(--light-color);
+        width: toRem(20);
+        height: toRem(20);
+        flex-shrink: 0;
+      }
+    }
+  }
+}
+
+// Иконка filter ↔ крестик (тот же Transition, что у кнопки в тулбаре).
+.shop-filters__filter-icon {
+  display: inline-flex;
+
+  .filter-icon-enter-active,
+  .filter-icon-leave-active {
+    transition:
+      opacity var(--transition-duration),
+      transform var(--transition-duration);
+  }
+
+  .filter-icon-enter-from {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.5);
+  }
+
+  .filter-icon-leave-to {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.5);
   }
 }
 
