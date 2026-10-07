@@ -417,6 +417,15 @@ useSeoMeta({
     display: none;
   }
 
+  // Крошки липнут сверху при открытом фильтре (панель в потоке — геометрию не ломает).
+  // top = --header-h: страница сдвинута transform'ом на ту же величину, поэтому визуально
+  // крошки остаются у самого верха.
+  .products-page_filter-open .products-page__header {
+    position: sticky;
+    top: var(--header-h, 0px);
+    z-index: 20;
+  }
+
   // Колонки равной высоты: панель фильтров растягивается по высоте товаров →
   // низ панели совпадает с низом товаров (панель — в потоке, без sticky).
   .products-page_filter-open .products-page__container-body {
