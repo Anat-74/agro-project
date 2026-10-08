@@ -478,14 +478,18 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   top: toRem(12);
   height: calc(100dvh - toRem(24));
 
-  // Mobile: панель — sticky на высоту вьюпорта со СВОИМ внутренним скроллом
-  // (диалог скроллится): фильтры всегда видны и прокручиваются независимо от товаров.
-  // Верх — под липкими крошками (--crumb-h), страница сдвинута на --header-h (transform).
+  // Mobile: панель FIXED — фильтры всегда на виду и НЕ зависят от скролла карточек.
+  // Сдвиг уехавшей шапки теперь на header/списке карточек (не на .products-page),
+  // поэтому у панели нет трансформированного предка → fixed честно от вьюпорта.
+  // Верх — под липкими крошками, низ — по низу вьюпорта; скролл — внутри диалога.
   @media (max-width: $mobile) {
-    position: sticky;
-    top: calc(var(--header-h, 0px) + var(--crumb-h, 0px));
-    align-self: flex-start;
+    position: fixed;
+    top: var(--crumb-h, 0px);
+    left: toRem(12); // = контейнерный padding-inline на mobile
+    z-index: 40;
     height: calc(100dvh - var(--crumb-h, 0px));
+    overflow: hidden; // для анимации ширины (сам скролл — у диалога)
+    background-color: var(--bg);
   }
 
   // ===== Диалог сайдбара (на desktop — в потоке; на mobile — drawer в body) =====
@@ -851,16 +855,12 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   display: none;
 
   @media (max-width: $mobile) {
-    // Sticky внутри скроллящегося диалога: шапка (кнопка + селект) всегда сверху
-    position: sticky;
-    top: 0;
-    z-index: 2;
+    // Не липкая: шапка панели прокручивается вместе с содержимым фильтров
     display: flex;
     align-items: center;
     gap: toRem(10);
     padding: toRem(10) 0 toRem(12);
     border-bottom: toRem(1) solid rgba(0, 0, 0, 0.08);
-    background-color: var(--bg);
 
     .shop-filters__sort {
       // Селект — справа (кнопка закрытия слева)

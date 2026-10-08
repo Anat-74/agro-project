@@ -321,14 +321,17 @@ useSeoMeta({
     }
   }
 
-  // (mobile) Подъём контента на место уехавшей шапки — через transform (GPU, плавно;
-  // margin давал layout-джанк и «лomал» плавность скрытия шапки). «Дыру» в --header-h
-  // перед подвалом закрываем сдвигом подвала (см. _globals.scss).
+  // (mobile) Подъём контента на место уехавшей шапки. ВАЖНО: сдвигаем НЕ всю страницу,
+  // а только header (крошки) и список карточек — тогда панель фильтров НЕ внутри
+  // трансформированного предка и может быть position: fixed (независима от скролла).
+  // «Дыру» в --header-h перед подвалом закрываем сдвигом подвала (см. _globals.scss).
   @media (max-width: $mobile) {
-    transition: transform var(--transition-duration-fast);
-
     &_filter-open {
-      transform: translateY(calc(-1 * var(--header-h, 0px)));
+      .products-page__header,
+      .products-page__card-list {
+        transition: transform var(--transition-duration-fast);
+        transform: translateY(calc(-1 * var(--header-h, 0px)));
+      }
     }
   }
 
@@ -443,12 +446,17 @@ useSeoMeta({
     margin-block-end: 0;
   }
 
-  // Товарная колонка при открытом фильтре — одна колонка (карточка по ширине колонки)
-  // и минимум на остаток вьюпорта (за вычетом липких крошек): если товаров мало,
-  // колонка заполняет экран → низ совпадает с низом sticky-панели.
+  // Панель фильтров — position: fixed (вне потока, слева). Товарную колонку сдвигаем
+  // вправо на ширину панели + зазор (12 — контейнерный padding на mobile).
+  .products-page_filter-open .products-page__container-body {
+    padding-inline-start: calc(
+      toRem(12) + var(--filter-drawer-w, 0px) + toRem(10)
+    );
+  }
+
+  // Товарная колонка при открытом фильтре — одна колонка (карточка по ширине колонки).
   .products-page_filter-open .products-page__card-list {
     grid-template-columns: 1fr;
-    min-height: calc(100dvh - var(--crumb-h, 0px));
   }
 }
 
