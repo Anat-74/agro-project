@@ -451,7 +451,10 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   // сдвигаются синхронно со слайдом диалога (без задержки)
   transition:
     display 0s var(--transition-duration-fast) allow-discrete,
-    width var(--transition-duration-fast);
+    width var(--transition-duration-fast),
+    opacity var(--transition-duration-fast),
+    transform var(--transition-duration-fast),
+    visibility 0s var(--transition-duration-fast) allow-discrete;
 
   // Ширина панели: mobile — фикс (--filter-drawer-w, styles.scss), desktop —
   // адаптив (--filter-width). Поток одинаковый для обеих ширин (вариант 2).
@@ -487,9 +490,9 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     top: var(--crumb-h, 0px);
     left: toRem(12); // = контейнерный padding-inline на mobile
     z-index: 40;
-    // Высота = остаток вьюпорта МИНУС перекрытие подвала (--panel-bottom) — низ панели
-    // останавливается на подвале, а не накрывает его.
-    height: calc(100dvh - var(--crumb-h, 0px) - var(--panel-bottom, 0px));
+    // Постоянная высота (без ресайза при скролле). У подвала панель плавно скрывается
+    // (класс products-page_footer-visible на странице) — см. products/index.vue.
+    height: calc(100dvh - var(--crumb-h, 0px));
     overflow: hidden; // для анимации ширины (сам скролл — у диалога)
     background-color: var(--bg);
   }
