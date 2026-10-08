@@ -29,25 +29,9 @@ useMeasureToVar("--crumb-h", {
   },
 })
 
-// Панель фильтров — постоянной высоты; у подвала она ПЛАВНО скрывается (без ресайза,
-// чтобы не дёргалось). Здесь только флаг «подвал виден».
-const footerVisible = ref(false)
-const updateFooterVisible = () => {
-  const footer = document.querySelector<HTMLElement>(".base-footer")
-  footerVisible.value = footer
-    ? footer.getBoundingClientRect().top < window.innerHeight
-    : false
-}
-onMounted(() => {
-  window.addEventListener("scroll", updateFooterVisible, { passive: true })
-  window.addEventListener("resize", updateFooterVisible)
-  updateFooterVisible()
-})
-onBeforeUnmount(() => {
-  window.removeEventListener("scroll", updateFooterVisible)
-  window.removeEventListener("resize", updateFooterVisible)
-})
-watch(filterDialogOpen, () => nextTick(updateFooterVisible))
+// Подвал при открытом фильтре (mobile) скрывается через CSS
+// (body:has(.products-page_filter-open) .base-footer — см. _globals.scss),
+// поэтому панель фильтров фиксированной высоты никого не перекрывает.
 
 // При уходе со страницы (например, клик «Главное» в breadcrumbs) закрываем диалог:
 // иначе isOpen остаётся true (глобальный Map).
@@ -183,13 +167,7 @@ useSeoMeta({
 
 <template>
   <section
-    :class="[
-      'products-page',
-      {
-        'products-page_filter-open': filterDialogOpen,
-        'products-page_footer-visible': footerVisible,
-      },
-    ]"
+    :class="['products-page', { 'products-page_filter-open': filterDialogOpen }]"
     aria-labelledby="products-page-title"
   >
     <!-- Скрытый H1: на странице нет видимого главного заголовка,
@@ -459,14 +437,6 @@ useSeoMeta({
     grid-template-columns: 1fr;
   }
 
-  // Подвал входит в вьюпорт → панель фильтров плавно уходит (не перекрывает подвал;
-  // высота панели постоянная — ресайза нет, поэтому нет дёрганья).
-  .products-page_footer-visible .show-shop-filter {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transform: translateX(-100%);
-  }
 }
 
 // ===== Хлебные крошки =====
