@@ -487,7 +487,9 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     top: var(--crumb-h, 0px);
     left: toRem(12); // = контейнерный padding-inline на mobile
     z-index: 40;
-    height: calc(100dvh - var(--crumb-h, 0px));
+    // Высота = остаток вьюпорта МИНУС перекрытие подвала (--panel-bottom) — низ панели
+    // останавливается на подвале, а не накрывает его.
+    height: calc(100dvh - var(--crumb-h, 0px) - var(--panel-bottom, 0px));
     overflow: hidden; // для анимации ширины (сам скролл — у диалога)
     background-color: var(--bg);
   }

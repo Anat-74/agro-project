@@ -29,6 +29,26 @@ useMeasureToVar("--crumb-h", {
   },
 })
 
+// Низ fixed-панели фильтров не должен заходить на подвал: считаем перекрытие подвала
+// с вьюпортом и уменьшаем высоту панели на эту величину (--panel-bottom).
+const panelBottom = ref(0)
+const updatePanelBottom = () => {
+  const footer = document.querySelector<HTMLElement>(".base-footer")
+  panelBottom.value = footer
+    ? Math.max(0, Math.round(window.innerHeight - footer.getBoundingClientRect().top))
+    : 0
+}
+onMounted(() => {
+  window.addEventListener("scroll", updatePanelBottom, { passive: true })
+  window.addEventListener("resize", updatePanelBottom)
+  updatePanelBottom()
+})
+onBeforeUnmount(() => {
+  window.removeEventListener("scroll", updatePanelBottom)
+  window.removeEventListener("resize", updatePanelBottom)
+})
+watch(filterDialogOpen, () => nextTick(updatePanelBottom))
+
 // При уходе со страницы (например, клик «Главное» в breadcrumbs) закрываем диалог:
 // иначе isOpen остаётся true (глобальный Map).
 onBeforeRouteLeave(() => {
@@ -164,6 +184,7 @@ useSeoMeta({
 <template>
   <section
     :class="['products-page', { 'products-page_filter-open': filterDialogOpen }]"
+    :style="{ '--panel-bottom': `${panelBottom}px` }"
     aria-labelledby="products-page-title"
   >
     <!-- Скрытый H1: на странице нет видимого главного заголовка,
