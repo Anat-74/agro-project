@@ -271,13 +271,12 @@ function openPreview(product: Product) {
     translate: 0 toRem(3);
   }
 
-  // Открытый диалог фильтров (mobile): шапка уезжает transform'ом (translateY -100%),
-  // высота не меняется → layout-рефлоу нет, скролл сохраняется.
+  // Открытый диалог фильтров (mobile): шапка СХЛОПЫВАЕТСЯ (убирается из потока) —
+  // тогда не остаётся «дыры» на её высоту и ничего не нужно компенсировать сдвигом
+  // (это позволяет панели фильтров быть position: fixed без transform-предка).
   @media (max-width: $mobile) {
-    transition: transform var(--transition-duration-fast);
-
     &_filter-open {
-      transform: translateY(-100%);
+      display: none;
     }
   }
 

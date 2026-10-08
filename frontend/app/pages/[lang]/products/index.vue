@@ -17,22 +17,8 @@ const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopF
 // (products-page_filter-open: раскладка «панель + карточки» и одна колонка карточек).
 const { isOpen: filterDialogOpen } = useDialog("shopFilterDialog")
 
-// Подъём контента на место уехавшей шапки (mobile): шапка скрывается transform'ом
-// (её высота в layout остаётся) — сдвигаем страницу вверх на --header-h (меряем JS),
-// а «дыру» перед подвалом закрываем сдвигом подвала (см. _globals.scss).
-useMeasureToVar("--header-h", {
-  enabled: () => filterDialogOpen.value,
-  active: filterDialogOpen,
-  observe: () => document.querySelector(".header"),
-  measure: () => {
-    const header = document.querySelector<HTMLElement>(".header")
-    if (!header) return null
-    return `${header.offsetHeight}px`
-  },
-})
-
 // Высота липких крошек при открытом фильтре (постоянная, пока фильтр открыт) — от неё
-// считаем отступ/высоту sticky-панели фильтров и минимум товарной колонки.
+// считаем отступ/высоту fixed-панели фильтров.
 useMeasureToVar("--crumb-h", {
   enabled: () => filterDialogOpen.value,
   active: filterDialogOpen,
@@ -321,19 +307,9 @@ useSeoMeta({
     }
   }
 
-  // (mobile) Подъём контента на место уехавшей шапки. ВАЖНО: сдвигаем НЕ всю страницу,
-  // а только header (крошки) и список карточек — тогда панель фильтров НЕ внутри
-  // трансформированного предка и может быть position: fixed (независима от скролла).
-  // «Дыру» в --header-h перед подвалом закрываем сдвигом подвала (см. _globals.scss).
-  @media (max-width: $mobile) {
-    &_filter-open {
-      .products-page__header,
-      .products-page__card-list {
-        transition: transform var(--transition-duration-fast);
-        transform: translateY(calc(-1 * var(--header-h, 0px)));
-      }
-    }
-  }
+  // (mobile) Ничего не сдвигаем: шапку сайта при открытом фильтре прячем схлопыванием
+  // (см. AppHeader → display:none), поэтому «дыры» нет и компенсация не нужна.
+  // Это позволяет панели фильтров быть position: fixed вне transform-предка.
 
   &__header {
     // Крошки + панель. Sticky-эксперимент (mobile): продуктовый header липнет ПОД
@@ -432,12 +408,10 @@ useSeoMeta({
     display: none;
   }
 
-  // Крошки липнут сверху при открытом фильтре (панель в потоке — геометрию не ломает).
-  // top = --header-h: страница сдвинута transform'ом на ту же величину, поэтому визуально
-  // крошки остаются у самого верха.
+  // Крошки липнут к самому верху при открытом фильтре (шапка сайта схлопнута → сдвига нет).
   .products-page_filter-open .products-page__header {
     position: sticky;
-    top: var(--header-h, 0px);
+    top: 0;
     z-index: 20;
   }
 
