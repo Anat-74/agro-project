@@ -489,8 +489,9 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     z-index: 40;
     // Постоянная высота (без ресайза при скролле). Подвал при открытом фильтре скрыт
     // (CSS body:has(.products-page_filter-open) .base-footer), поэтому панель никого
-    // не перекрывает и не требует скрытия/сжатия.
-    height: calc(100dvh - var(--crumb-h, 0px));
+    // не перекрывает и не требует скрытия/сжатия. Небольшой отступ снизу (16px) —
+    // панель не «прилипает» к краю и не упирается в системную зону жестов.
+    height: calc(100dvh - var(--crumb-h, 0px) - toRem(16));
     overflow: hidden; // для анимации ширины (сам скролл — у диалога)
     background-color: var(--bg);
   }
