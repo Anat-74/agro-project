@@ -31,6 +31,18 @@ useMeasureToVar("--header-h", {
   },
 })
 
+// Высота липких крошек при открытом фильтре (постоянная, пока фильтр открыт) — от неё
+// считаем отступ/высоту sticky-панели фильтров и минимум товарной колонки.
+useMeasureToVar("--crumb-h", {
+  enabled: () => filterDialogOpen.value,
+  active: filterDialogOpen,
+  observe: () => document.querySelector(".products-page__header"),
+  measure: () => {
+    const el = document.querySelector<HTMLElement>(".products-page__header")
+    return el ? `${el.offsetHeight}px` : null
+  },
+})
+
 // При уходе со страницы (например, клик «Главное» в breadcrumbs) закрываем диалог:
 // иначе isOpen остаётся true (глобальный Map).
 onBeforeRouteLeave(() => {
@@ -426,15 +438,17 @@ useSeoMeta({
     z-index: 20;
   }
 
-  // Колонки равной высоты: панель фильтров растягивается по высоте товаров →
-  // низ панели совпадает с низом товаров (панель — в потоке, без sticky).
-  .products-page_filter-open .products-page__container-body {
-    align-items: stretch;
+  // Убираем нижний отступ крошек (22px) — контент начинается сразу под ними
+  .products-page_filter-open .breadcrumbs {
+    margin-block-end: 0;
   }
 
-  // Товарная колонка при открытом фильтре — одна колонка (карточка по ширине колонки).
+  // Товарная колонка при открытом фильтре — одна колонка (карточка по ширине колонки)
+  // и минимум на остаток вьюпорта (за вычетом липких крошек): если товаров мало,
+  // колонка заполняет экран → низ совпадает с низом sticky-панели.
   .products-page_filter-open .products-page__card-list {
     grid-template-columns: 1fr;
+    min-height: calc(100dvh - var(--crumb-h, 0px));
   }
 }
 

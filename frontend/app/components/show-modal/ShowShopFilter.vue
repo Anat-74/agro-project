@@ -478,17 +478,14 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   top: toRem(12);
   height: calc(100dvh - toRem(24));
 
-  // Mobile: панель — обычная колонка В ПОТОКЕ (без sticky): скроллится со страницей
-  // вместе с шапкой панели; растягивается по высоте товаров → низ совпадает с низом
-  // товаров, верх всегда доступен.
-  // ВАЖНО: overflow: visible — иначе (при overflow:hidden) авто-минимальная высота
-  // флекс-элемента = 0, панель сжимается ниже своего контента и ОБРЕЗАЕТ фильтры.
+  // Mobile: панель — sticky на высоту вьюпорта со СВОИМ внутренним скроллом
+  // (диалог скроллится): фильтры всегда видны и прокручиваются независимо от товаров.
+  // Верх — под липкими крошками (--crumb-h), страница сдвинута на --header-h (transform).
   @media (max-width: $mobile) {
-    position: static;
-    align-self: stretch;
-    height: auto;
-    top: auto;
-    overflow: visible;
+    position: sticky;
+    top: calc(var(--header-h, 0px) + var(--crumb-h, 0px));
+    align-self: flex-start;
+    height: calc(100dvh - var(--crumb-h, 0px));
   }
 
   // ===== Диалог сайдбара (на desktop — в потоке; на mobile — drawer в body) =====
@@ -510,7 +507,9 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     // scrollbar-gutter — место под полосу, чтобы она не наезжала на выровненные
     // вправо счётчики («(31)»).
     height: 100%;
-    overflow-y: auto;
+    // x — hidden: широкие элементы внутри (бегущая строка промо-баннера) иначе дают
+    // горизонтальный скроллбар у панели; y — auto (внутренний вертикальный скролл).
+    overflow: hidden auto;
     scrollbar-gutter: stable;
     // Скролл фильтров не «пробрасывается» на страницу: пока в панели есть что
     // скроллить — страница стоит; дошёл до края — страница не уезжает сразу.
@@ -852,12 +851,16 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   display: none;
 
   @media (max-width: $mobile) {
-    // Без sticky: шапка панели скроллится вместе с содержимым
+    // Sticky внутри скроллящегося диалога: шапка (кнопка + селект) всегда сверху
+    position: sticky;
+    top: 0;
+    z-index: 2;
     display: flex;
     align-items: center;
     gap: toRem(10);
     padding: toRem(10) 0 toRem(12);
     border-bottom: toRem(1) solid rgba(0, 0, 0, 0.08);
+    background-color: var(--bg);
 
     .shop-filters__sort {
       // Селект — справа (кнопка закрытия слева)
