@@ -463,8 +463,8 @@ useSeoMeta({
     bottom: toRem(-53);
   }
 
-  // Декоративный разделитель: развёрнут по ширине товарной колонки и вертикально
-  // центрирован в зазоре «последняя карточка → пагинация» (в базовом резерве 64px).
+  // Декоративный разделитель: развёрнут по ширине товарной колонки, смещён НИЖЕ
+  // центра зазора «последняя карточка → пагинация» (ближе к пагинации).
   // Чисто декор — absolute, раскладку не трогает; клики не перехватывает.
   .products-page_filter-open .products-page__divider {
     display: flex;
@@ -472,11 +472,11 @@ useSeoMeta({
     column-gap: toEm(10);
     position: absolute;
     inset-inline: 0;
-    bottom: toRem(18);
+    bottom: toRem(8);
     color: var(--green-color);
     pointer-events: none;
-    // font-size задаёт размер иконки (Nuxt Icon рисует svg в 1em)
-    font-size: toEm(18);
+    // font-size задаёт размер иконки (Nuxt Icon рисует svg в 1em): 18 → 23 (+30%)
+    font-size: toEm(23);
 
     &::before,
     &::after {

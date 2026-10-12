@@ -28,12 +28,16 @@
   - **10.10:** пробовали убрать резерв (`padding-block-end: 0`) ради зазора 10px — но тогда пагинация ушла
     на 64px выше низа панели, и **пользователь предпочёл выравнивание по панели** → резерв возвращён (зазор 74).
 - **Декоративный разделитель (12.10):** в зоне резерва между последней карточкой и пагинацией —
-  линия + иконка-росток (`mdi:sprout`), по ширине товарной колонки, вертикально по центру зазора.
+  линия + иконка-росток (`mdi:sprout`), по ширине товарной колонки, **смещён ниже центра** зазора.
   - Разметка: `<li class="products-page__divider" aria-hidden="true">` внутри `ul` (декор; `v-if="pageCount > 1"`).
   - Стили: `.products-page__card-list { position: relative }`; `&__divider { display: none }` (десктоп/закрыт);
-    на mobile при `_filter-open` — `display: flex; position: absolute; inset-inline: 0; bottom: toRem(18)`,
-    цвет `--green-color`, линии `::before/::after` (`--border-color`), `pointer-events: none`.
-  - Проверено (390×800): разделитель `695→720` в зазоре (`674→748`), ширина = товарной колонке (`187→363`).
+    на mobile при `_filter-open` — `display: flex; position: absolute; inset-inline: 0; bottom: toRem(8)`,
+    иконка `font-size: toEm(23)` (+30% от 18), цвет `--green-color`, линии `::before/::after`
+    (`--border-color`), `pointer-events: none`.
+  - **Ревью 12.10:** `bottom` 18→8 (ниже), иконка 18→23px (+30%) — по скриншоту пользователя.
+- **Нижний отступ баннера в панели фильтров (mobile, 12.10):** баннер «Скидка 79%» — последний блок
+  (sale-section скрыта) → убрали его `margin-block-end` (24px) и уменьшили `padding-block-end`
+  контента `.shop-filters` 30→12px (под баннером была пустота).
 - **Подвал** — `display: none` (CSS `body:has(.products-page_filter-open) .base-footer`).
 - **Плавающая кнопка** — при открытом скрыта; при закрытом появляется по скроллу (иконка анимируется
   filter ↔ close, уменьшена до 36px).

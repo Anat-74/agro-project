@@ -839,7 +839,8 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   @media (max-width: $mobile) {
     // Скролл — на самой панели (.show-shop-filter__dialog), как на desktop;
     // здесь остаются только мобильные нюансы контента.
-    padding-block-end: toRem(30);
+    // Небольшой нижний отступ контента (был 30px — под баннером оставалась пустота).
+    padding-block-end: toRem(12);
 
     &__tags {
       gap: toRem(6);
@@ -848,6 +849,9 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     &__banner {
       min-height: toRem(100);
       padding: toRem(18) toRem(16);
+      // Баннер — последний блок на mobile (sale-section скрыта): убираем его
+      // margin-bottom (24px), чтобы снизу не было двойного отступа.
+      margin-block-end: 0;
     }
   }
 }
