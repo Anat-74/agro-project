@@ -458,8 +458,9 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   --filter-panel-w: var(--filter-width);
 
   @media (max-width: $mobile) {
-    // На 2px уже (просьба по ширине диалога на мобильном) — увеличивает зазор до карточек
-    --filter-panel-w: calc(var(--filter-drawer-w) - toRem(2));
+    // На 2px уже (просьба по ширине диалога на мобильном) — увеличивает зазор до карточек.
+    // ВАЖНО: внутри custom-property SCSS-функции не вычисляются — нужна интерполяция #{}.
+    --filter-panel-w: calc(var(--filter-drawer-w) - #{toRem(2)});
   }
 
   // Сайдбар в потоке только пока диалог открыт: закрытый схлопываем в 0
