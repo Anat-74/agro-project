@@ -2,6 +2,7 @@
 import { shopFiltersTranslations } from '~/locales/shopFilters'
 import { productFilterTranslations } from '~/locales/productFilter'
 import { visuallyHiddenTranslations } from '~/locales/visuallyHidden'
+import { buttonTranslations } from '~/locales/button'
 import ShowShopFilter from '~/components/show-modal/ShowShopFilter.vue'
 
 const { find } = useStrapi();
@@ -10,12 +11,19 @@ const route = useRoute();
 const t = computed(() => shopFiltersTranslations[currentLocale.value])
 const pf = computed(() => productFilterTranslations[currentLocale.value])
 const vh = computed(() => visuallyHiddenTranslations[currentLocale.value])
+const bt = computed(() => buttonTranslations[currentLocale.value])
 
 const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopFilter")
 
 // Глобальное состояние диалога фильтров — нужно классу на странице
 // (products-page_filter-open: раскладка «панель + карточки» и одна колонка карточек).
 const { isOpen: filterDialogOpen } = useDialog("shopFilterDialog")
+
+// Кнопка-гамбургер в крошках (mobile): переиспользуем панель ШАПКИ (запрос →
+// AppHeader переключает свой экземпляр ShowHamburger — без дублирования/повторной
+// загрузки global). Состояние открытия — из общего useDialog('hamburgerDialog').
+const { requestToggle: toggleHamburger } = useHamburgerDialog()
+const { isOpen: hamburgerOpen } = useDialog("hamburgerDialog")
 
 // Высота липких крошек при открытом фильтре (постоянная, пока фильтр открыт) — от неё
 // считаем отступ/высоту fixed-панели фильтров.
@@ -183,6 +191,19 @@ useSeoMeta({
         :background="breadcrumbsBackground"
       />
 
+      <!-- Кнопка-гамбургер — в строке крошек справа (mobile). Переиспользует
+           панель ШАПКИ сайта (запрос → AppHeader), без текста; анимация
+           «линии ↔ крестик» как в шапке (через :is-open). -->
+      <UButton
+        variant="hamburger"
+        class="products-page__hamburger"
+        :is-open="hamburgerOpen"
+        :aria-label="
+          hamburgerOpen ? bt.ariaLabelDialogClosed : bt.ariaLabelDialogOpen
+        "
+        @click="toggleHamburger()"
+      />
+
       <!-- Панель (бывший top-bar): имя __container даёт автоматический констрейнт
            1420 (конвенция _utils.scss [class*="__container"]). Элементы — сразу,
            без лишних обёрток -->
@@ -336,6 +357,26 @@ useSeoMeta({
     }
   }
 
+  // Кнопка-гамбургер в строке крошек (mobile): переиспользует панель шапки.
+  // Центрируется по вертикали крошек, справа. Иконка/анимация — UButton
+  // variant="hamburger" (линии ↔ крестик через :is-open).
+  &__hamburger {
+    display: none;
+
+    @media (max-width: $mobile) {
+      position: absolute;
+      right: toRem(12);
+      top: 50%;
+      translate: 0 -50%;
+      z-index: 15;
+      display: inline-flex;
+      width: toRem(34);
+      height: toRem(30);
+      padding-inline: 0;
+      border-radius: toRem(6);
+    }
+  }
+
   &__container-body {
     display: flex;
     gap: toRem(30);
@@ -441,14 +482,27 @@ useSeoMeta({
     margin-block-end: 0;
   }
 
+  // При открытом фильтре паддинги контейнеров (класс __container) компактнее — 7px
+  // (крошки и контент). Панель фильтров тоже смещаем на 7px (см. ShowShopFilter).
+  .products-page_filter-open .products-page__container-top,
+  .products-page_filter-open .products-page__container-body {
+    padding-inline: toRem(7);
+  }
+
+  // Контейнер внутри UBreadcrumbs (:deep) — тоже 7px при открытом фильтре
+  .products-page_filter-open :deep(.breadcrumbs__container) {
+    padding-inline: toRem(7);
+  }
+
   // Панель фильтров — position: fixed (вне потока, слева). Товарную колонку сдвигаем
-  // вправо на контейнерный padding (12) + ширину панели. Колонка flex:1 → её ширина =
+  // вправо на контейнерный padding (7) + ширину панели. Колонка flex:1 → её ширина =
   // оставшееся место, поэтому чем меньше сдвиг, тем шире карточки.
-  // Зазор до панели = сдвиг − правый край панели = 2px (панель 163px: сдвиг 12+165=177,
-  // правый край панели 175).
+  // Зазор до панели = сдвиг − правый край панели = 2px (панель 163px: сдвиг 7+165=172,
+  // правый край панели 7+163=170). Объявлено ПОСЛЕ padding-inline выше — перебивает
+  // start-сторону у container-body.
   .products-page_filter-open .products-page__container-body {
     padding-inline-start: calc(
-      toRem(12) + var(--filter-drawer-w, 0px)
+      toRem(7) + var(--filter-drawer-w, 0px)
     );
   }
 

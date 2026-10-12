@@ -88,6 +88,12 @@ watch(gardenDialogRequest, () => hamburgerMobileRef.value?.openGarden?.())
 const { requestId: preservesDialogRequest } = usePreservesDialog()
 watch(preservesDialogRequest, () => hamburgerMobileRef.value?.openPreserves?.())
 
+// Запрос «переключить панель-гамбургер» извне шапки (напр. кнопка в крошках
+// страницы товаров, где при открытом фильтре шапка сайта скрыта). Переключаем
+// СВОЙ мобильный экземпляр ShowHamburger — компонент не дублируется.
+const { requestId: hamburgerDialogRequest } = useHamburgerDialog()
+watch(hamburgerDialogRequest, () => hamburgerMobileRef.value?.toggle?.())
+
 // Превью товара из корзины — модалка живёт на уровне Header, как в личном кабинете
 const previewProduct = ref<Product | null>(null)
 const previewModalRef = useTemplateRef<InstanceType<typeof ShowModalProduct>>('preview-modal')

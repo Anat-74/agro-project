@@ -81,6 +81,13 @@
   `font-size: calc(1em + 1px)`; текущая страница — «тусклая» плашка `rgba(255,255,255,.16)`.
   Разделитель: линии `2px`, радиус `25px`, `padding-inline: 10px`, «канавка» градиентом
   (тёмный верх → светлый низ, т.к. белый блик на белом не виден), иконка `43px`.
+- **Ревью 12.10 (третья волна):** гамбургер в крошках (mobile) — ПЕРЕИСПОЛЬЗУЕТ панель шапки:
+  `useHamburgerDialog` (счётчик запросов) → AppHeader `hamburgerMobileRef.toggle()`; состояние для
+  анимации — `useDialog('hamburgerDialog').isOpen`; кнопка `UButton variant="hamburger"` без текста
+  (`products-page__hamburger`, absolute справа по центру крошек). При открытом фильтре паддинги
+  контейнеров (`__container`: `container-top`/`container-body` + `:deep(.breadcrumbs__container)`) = 7px;
+  панель сдвинута на `left: toRem(7)`; сдвиг колонки `calc(toRem(7) + var(--filter-drawer-w))` →
+  зазор панель→карточки 2px сохранён, карточка шире (201→211). Проверено инъекцией на проде.
 - **Подвал** — `display: none` (CSS `body:has(.products-page_filter-open) .base-footer`).
 - **Плавающая кнопка** — при открытом скрыта; при закрытом появляется по скроллу (иконка анимируется
   filter ↔ close, уменьшена до 36px).

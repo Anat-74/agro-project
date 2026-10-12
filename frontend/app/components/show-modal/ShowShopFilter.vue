@@ -488,7 +488,7 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   @media (max-width: $mobile) {
     position: fixed;
     top: var(--crumb-h, 0px);
-    left: toRem(12); // = контейнерный padding-inline на mobile
+    left: toRem(7); // = контейнерный padding-inline на mobile (при открытом фильтре)
     z-index: 40;
     // Постоянная высота (без ресайза при скролле). Подвал при открытом фильтре скрыт
     // (CSS body:has(.products-page_filter-open) .base-footer), поэтому панель никого
