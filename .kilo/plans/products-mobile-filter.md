@@ -32,9 +32,11 @@
   - Разметка: `<li class="products-page__divider" aria-hidden="true">` внутри `ul` (декор; `v-if="pageCount > 1"`).
   - Стили: `.products-page__card-list { position: relative }`; `&__divider { display: none }` (десктоп/закрыт);
     на mobile при `_filter-open` — `display: flex; align-items: center; position: absolute;
-    inset-inline: 0; bottom: toRem(-9); height: toRem(73)` (бокс = зазор «низ последней карточки →
-    верх пагинации»; `align-items: center` центрирует иконку ЛЮБОГО размера без подгонок),
-    цвет `--green-color`, линии `::before/::after` (`--border-color`), `pointer-events: none`.
+    inset-inline: 0; bottom: toRem(-11); height: toRem(73); padding-inline: toRem(10)` (бокс = зазор
+    «низ последней карточки → верх пагинации», сдвинут на 2px ниже центра; `padding-inline` — отступ
+    от краёв колонки, чтобы были видны закруглённые концы). Иконка `--green-color`, `font-size: toRem(43)`.
+    Линии `::before/::after`: `height: toRem(2)`, `border-radius: toRem(25)`, «вдавленный» эффект —
+    `background: rgba(0,0,0,0.28)` + `box-shadow: 0 toRem(1) 0 rgba(255,255,255,0.7)`. `pointer-events: none`.
   - ⚠️ **Грабли (12.10):** размер иконки задавать НА САМОМ `svg` (`svg { font-size: toRem(30) }`), а НЕ на обёртке:
     глобальное `.iconify { font-size: toRem(25) }` (`base/_utils.scss`) задаёт font-size svg, а `width/height` svg = `1em`
     = его собственный font-size → `font-size` на обёртке иконку НЕ менял (прошлые +30%/+20% были no-op, иконка была 25px).
@@ -62,11 +64,16 @@
   контента `.shop-filters` 30→12px (под баннером была пустота).
 - **Кнопка закрытия → в крошки (12.10):** крестик фильтров переехал в строку крошек
   (`.products-page__close-filter`, mobile-only, `absolute; right:12; top:50%`, зовёт `shopFilterRef.close()`,
-  `aria-label` = `bt.ariaLabelCloseFilters`). В шапке панели вместо кнопки — декоративная иконка
-  `mdi:filter-variant` (`aria-hidden`, `pointer-events:none`) + select справа. Бордер шапки панели =
-  «втиснутый» разделитель секций, `padding-block-end: 24px`; первая секция `padding-block-start: 24px`
-  (единый вид сверху/снизу). Проверено симуляцией DOM+CSS на проде (390×800): крестик `348→378` (30px,
-  центр по вертикали крошек), панель-шапка `39→104`.
+  `aria-label` = `bt.ariaLabelCloseFilters`). Анимация крестика при открытии окна сохранена
+  (`<Transition name="filter-icon" appear>` — rotate/scale, как у плавашки/тулбара). В шапке панели
+  вместо кнопки — декоративная иконка `mdi:filter-variant` (`aria-hidden`, `pointer-events:none`) + select
+  справа. Бордер шапки панели = «втиснутый» разделитель секций, `padding-block-end: 24px`; первая секция
+  `padding-block-start: 24px` (единый вид сверху/снизу). Проверено симуляцией DOM+CSS на проде (390×800):
+  крестик `348→378` (30px, центр по вертикали крошек), панель-шапка `39→104`.
+  - **Кнопка (12.10):** светлый фон `var(--bg)` (#fff), крестик тёмный `var(--color)` (#274c5b),
+    22px (было 20) и толще на 1px — `:deep(path) { stroke-width: 3 }` (иконка `mingcute:close-line`
+    штриховая, `stroke-width=2` в viewBox 24). `variant="plain"` (иначе `btn_primary`). Анимация
+    появления — `<Transition name="filter-icon" appear>`.
 - **Подвал** — `display: none` (CSS `body:has(.products-page_filter-open) .base-footer`).
 - **Плавающая кнопка** — при открытом скрыта; при закрытом появляется по скроллу (иконка анимируется
   filter ↔ close, уменьшена до 36px).

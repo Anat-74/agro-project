@@ -190,13 +190,19 @@ useSeoMeta({
            при открытом фильтре → крестик всегда на виду при скролле. Без текста. -->
       <UButton
         v-if="filterDialogOpen"
+        variant="plain"
         class="products-page__close-filter"
         :aria-label="bt.ariaLabelCloseFilters"
         aria-controls="dialogShopFilter"
         aria-expanded="true"
         @click="shopFilterRef?.close?.()"
       >
-        <Icon name="mingcute:close-line" />
+        <!-- Анимация крестика при открытии окна: тот же Transition `filter-icon`
+             (rotate/scale), что у плавашки и кнопки в тулбаре. `appear` — чтобы
+             анимация играла при появлении кнопки (она v-if по открытию фильтра). -->
+        <Transition name="filter-icon" appear>
+          <Icon name="mingcute:close-line" />
+        </Transition>
       </UButton>
 
       <!-- Панель (бывший top-bar): имя __container даёт автоматический констрейнт
@@ -370,16 +376,38 @@ useSeoMeta({
       width: toRem(30);
       height: toRem(30);
       padding: 0;
-      background-color: var(--green-color);
-      color: var(--light-color);
+      // Фон кнопки светлый (как у панели фильтров). Крестик — тёмный: буквально
+      // прозрачный на светлой кнопке был бы невидим; тёмный читается как «просвет»
+      // сквозь кнопку. Плюс толще на 1px и больше на 2px (20 → 22px).
+      background-color: var(--bg);
+      color: var(--color);
       border: toRem(1) solid var(--border-color);
       border-radius: toRem(6);
       cursor: pointer;
 
       svg {
-        width: toRem(20);
-        height: toRem(20);
-        color: var(--light-color);
+        width: toRem(22);
+        height: toRem(22);
+        color: var(--color);
+
+        // «Толще на 1px»: иконка штриховая (stroke-width=2 в viewBox 24) → 3
+        // (в рендере ≈ +1px). `:deep` — у path нет scoped-атрибута (это дочерний
+        // компонент Icon), обычный потомок-селектор со scoped его не поймает.
+        :deep(path) {
+          stroke-width: 3;
+        }
+      }
+
+      // Анимация появления крестика (Transition filter-icon, как у плавашки/тулбара)
+      .filter-icon-enter-active {
+        transition:
+          opacity var(--transition-duration),
+          transform var(--transition-duration);
+      }
+
+      .filter-icon-enter-from {
+        opacity: 0;
+        transform: rotate(-90deg) scale(0.5);
       }
     }
   }
@@ -524,36 +552,42 @@ useSeoMeta({
     padding-block-end: toRem(65);
   }
 
-  // Декоративный разделитель: по ширине товарной колонки, иконка — РОВНО по центру
-  // зазора «последняя карточка → пагинация». Бокс растянут от низа резерва
-  // (listBottom − 64, т.е. низ последней карточки) до верха пагинации
-  // (listBottom + 9) → height 73px; align-items:center центрирует иконку ЛЮБОГО
-  // размера без магических подгонок. Чисто декор — absolute, клики не перехватывает.
+  // Декоративный разделитель: по ширине товарной колонки, иконка — по центру зазора
+  // «последняя карточка → пагинация», сдвинута на 2px ниже центра. Бокс растянут от
+  // низа резерва (listBottom − 64) до верха пагинации (listBottom + 9) → height 73px;
+  // `bottom: -11` (вместо -9) опускает бокс (и иконку) на 2px. align-items:center
+  // центрирует иконку любого размера. Чисто декор — клики не перехватывает.
   .products-page_filter-open .products-page__divider {
     display: flex;
     align-items: center;
     column-gap: toEm(10);
     position: absolute;
     inset-inline: 0;
-    bottom: toRem(-9);
+    bottom: toRem(-11);
     height: toRem(73);
     color: var(--green-color);
     pointer-events: none;
+    // Отступ от краёв колонки — чтобы были видны закруглённые концы линий
+    padding-inline: toRem(10);
 
+    // Линии: толще на 1px (2px), скругление 25px, усиленный «вдавленный» эффект
+    // (тёмная линия + светлый блик под ней — как у разделителей секций фильтров)
     &::before,
     &::after {
       content: "";
       flex: 1;
-      height: toRem(1);
-      background-color: var(--border-color);
+      height: toRem(2);
+      border-radius: toRem(25);
+      background-color: rgba(0, 0, 0, 0.28);
+      box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.7);
     }
 
     // Размер иконки задаём НА САМОМ svg: глобальное `.iconify { font-size: toRem(25) }`
     // (_utils.scss) задаёт font-size svg, а width/height svg = 1em = его собственный
-    // font-size — поэтому `font-size` на обёртке иконку не менял. 35 → 40px (+5px).
+    // font-size — поэтому `font-size` на обёртке иконку не менял. 40 → 43px (+3px).
     svg {
       flex-shrink: 0;
-      font-size: toRem(40);
+      font-size: toRem(43);
     }
   }
 }
