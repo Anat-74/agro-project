@@ -499,10 +499,10 @@ useSeoMeta({
 
     // Размер иконки задаём НА САМОМ svg: глобальное `.iconify { font-size: toRem(25) }`
     // (_utils.scss) задаёт font-size svg, а width/height svg = 1em = его собственный
-    // font-size — поэтому `font-size` на обёртке иконку не менял. 25 → 30px (+5px).
+    // font-size — поэтому `font-size` на обёртке иконку не менял. 30 → 35px (+5px).
     svg {
       flex-shrink: 0;
-      font-size: toRem(30);
+      font-size: toRem(35);
     }
   }
 }
