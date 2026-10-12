@@ -32,9 +32,20 @@
   - Разметка: `<li class="products-page__divider" aria-hidden="true">` внутри `ul` (декор; `v-if="pageCount > 1"`).
   - Стили: `.products-page__card-list { position: relative }`; `&__divider { display: none }` (десктоп/закрыт);
     на mobile при `_filter-open` — `display: flex; position: absolute; inset-inline: 0; bottom: toRem(8)`,
-    иконка `font-size: toEm(23)` (+30% от 18), цвет `--green-color`, линии `::before/::after`
+    иконка `font-size: toEm(28)` (18→23→28), цвет `--green-color`, линии `::before/::after`
     (`--border-color`), `pointer-events: none`.
-  - **Ревью 12.10:** `bottom` 18→8 (ниже), иконка 18→23px (+30%) — по скриншоту пользователя.
+  - **Ревью 12.10:** `bottom` 18→8 (ниже), иконка 18→23 (+30%), затем 23→28 (+20%) — по скриншотам пользователя.
+- **Нижний запас под пагинацией (mobile, фильтр открыт, 12.10):** пагинация `absolute` (`bottom: -53`)
+  переполняет `container-body` на 53px и является самым низким элементом документа → без запаса
+  прилипала к самому низу экрана (отступа не было ни на одной странице; на 1-й «отступ» был виден
+  из-за положения скролла). Решение: `.products-page_filter-open { padding-block-end: toRem(65) }`
+  (падинг секции > 53px) → под пагинацией ровно 12px. Проверено инъекцией CSS на проде (390×800):
+  `pagBottom 800→788`, `gapViewport 0→12`, зазор разделитель→пагинация без изменений (18px).
+- **Верхний отступ карточек (mobile, фильтр открыт, 12.10):** первая карточка прилипала к крошкам
+  (`gapCrumbCard 0`) → `.products-page_filter-open .products-page__card-list { padding-block-start: toRem(12) }`.
+- **Зазор панель→карточки (12.10):** сдвиг колонки `calc(toRem(12) + var(--filter-drawer-w) + toRem(12))`
+  (был `+10`), плюс ширина панели на mobile `--filter-panel-w: calc(var(--filter-drawer-w) − toRem(2))`
+  (163px вместо 165) → зазор панель→карточки `10 → 14px` (проверено инъекцией на проде).
 - **Нижний отступ баннера в панели фильтров (mobile, 12.10):** баннер «Скидка 79%» — последний блок
   (sale-section скрыта) → убрали его `margin-block-end` (24px) и уменьшили `padding-block-end`
   контента `.shop-filters` 30→12px (под баннером была пустота).

@@ -442,18 +442,21 @@ useSeoMeta({
   }
 
   // Панель фильтров — position: fixed (вне потока, слева). Товарную колонку сдвигаем
-  // вправо на ширину панели + зазор (12 — контейнерный padding на mobile).
+  // вправо на ширину панели + зазор (12 — контейнерный padding на mobile, 12 — зазор
+  // между панелью и карточками).
   .products-page_filter-open .products-page__container-body {
     padding-inline-start: calc(
-      toRem(12) + var(--filter-drawer-w, 0px) + toRem(10)
+      toRem(12) + var(--filter-drawer-w, 0px) + toRem(12)
     );
   }
 
   // Товарная колонка при открытом фильтре — одна колонка (карточка по ширине колонки).
   // padding-block-end базовый (64px) НЕ трогаем: он делает низ товарной зоны ниже, и
   // пагинация (`bottom: toRem(-53)`) встаёт ровно на уровень низа панели фильтров.
+  // padding-block-start — верхний отступ первой карточки от липких крошек.
   .products-page_filter-open .products-page__card-list {
     grid-template-columns: 1fr;
+    padding-block-start: toRem(12);
   }
 
   // Выравниваем пагинацию с низом панели фильтров: внизу страницы под товарной зоной
@@ -461,6 +464,15 @@ useSeoMeta({
   // чтобы внизу страницы низ пагинации совпал с низом панели (панель — screen − 9px).
   .products-page_filter-open .products-page__pagination {
     bottom: toRem(-53);
+  }
+
+  // Нижний запас страницы при открытом фильтре. Пагинация — absolute, переполняет
+  // container-body на 53px и оказывается САМЫМ низким элементом документа → без
+  // запаса она прилипает к самому низу экрана (отступа нет ни на одной странице).
+  // Паддинг секции (> 53px) добавляет под пагинацией ровно 12px, и её низ совпадает
+  // с низом панели фильтров на ЛЮБОЙ странице пагинации (была видна только на 1-й).
+  .products-page_filter-open {
+    padding-block-end: toRem(65);
   }
 
   // Декоративный разделитель: развёрнут по ширине товарной колонки, смещён НИЖЕ
@@ -475,8 +487,8 @@ useSeoMeta({
     bottom: toRem(8);
     color: var(--green-color);
     pointer-events: none;
-    // font-size задаёт размер иконки (Nuxt Icon рисует svg в 1em): 18 → 23 (+30%)
-    font-size: toEm(23);
+    // font-size задаёт размер иконки (Nuxt Icon рисует svg в 1em): 23 → 28 (+20%)
+    font-size: toEm(28);
 
     &::before,
     &::after {

@@ -458,7 +458,8 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   --filter-panel-w: var(--filter-width);
 
   @media (max-width: $mobile) {
-    --filter-panel-w: var(--filter-drawer-w);
+    // На 2px уже (просьба по ширине диалога на мобильном) — увеличивает зазор до карточек
+    --filter-panel-w: calc(var(--filter-drawer-w) - toRem(2));
   }
 
   // Сайдбар в потоке только пока диалог открыт: закрытый схлопываем в 0
