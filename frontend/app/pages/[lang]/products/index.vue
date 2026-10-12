@@ -261,6 +261,15 @@ useSeoMeta({
           :product="prod"
           :index="index"
         />
+        <!-- Декоративный разделитель в зазор «последняя карточка → пагинация»
+             (только mobile при открытом фильтре; см. стили). Чисто декоративный -->
+        <li
+          v-if="pageCount > 1"
+          class="products-page__divider"
+          aria-hidden="true"
+        >
+          <Icon name="mdi:sprout" />
+        </li>
       </ul>
 
       <!-- Пусто — <span> с display:block: короткое сообщение без сильной смысловой
@@ -365,6 +374,14 @@ useSeoMeta({
     // grid-вариант контента, выступающий на несколько px → горизонтальный скролл.
     // Клип по X убирает его, не трогая видимый контент.
     overflow-x: clip;
+    // Якорь для декоративного разделителя (absolute) в зазоре под карточками
+    position: relative;
+  }
+
+  // Декоративный разделитель «последняя карточка → пагинация»: по умолчанию скрыт,
+  // показывается только на mobile при открытом фильтре (см. медиа-блок ниже).
+  &__divider {
+    display: none;
   }
 
   &__pagination {
@@ -433,11 +450,10 @@ useSeoMeta({
   }
 
   // Товарная колонка при открытом фильтре — одна колонка (карточка по ширине колонки).
-  // padding-block-end = 0: пагинация при открытом фильтре лежит НИЖЕ контейнера
-  // (её резерв под «плавающую» пагинацию не нужен) → пустоты перед ней нет.
+  // padding-block-end базовый (64px) НЕ трогаем: он делает низ товарной зоны ниже, и
+  // пагинация (`bottom: toRem(-53)`) встаёт ровно на уровень низа панели фильтров.
   .products-page_filter-open .products-page__card-list {
     grid-template-columns: 1fr;
-    padding-block-end: 0;
   }
 
   // Выравниваем пагинацию с низом панели фильтров: внизу страницы под товарной зоной
@@ -445,6 +461,34 @@ useSeoMeta({
   // чтобы внизу страницы низ пагинации совпал с низом панели (панель — screen − 9px).
   .products-page_filter-open .products-page__pagination {
     bottom: toRem(-53);
+  }
+
+  // Декоративный разделитель: развёрнут по ширине товарной колонки и вертикально
+  // центрирован в зазоре «последняя карточка → пагинация» (в базовом резерве 64px).
+  // Чисто декор — absolute, раскладку не трогает; клики не перехватывает.
+  .products-page_filter-open .products-page__divider {
+    display: flex;
+    align-items: center;
+    column-gap: toEm(10);
+    position: absolute;
+    inset-inline: 0;
+    bottom: toRem(18);
+    color: var(--green-color);
+    pointer-events: none;
+    // font-size задаёт размер иконки (Nuxt Icon рисует svg в 1em)
+    font-size: toEm(18);
+
+    &::before,
+    &::after {
+      content: "";
+      flex: 1;
+      height: toEm(1);
+      background-color: var(--border-color);
+    }
+
+    svg {
+      flex-shrink: 0;
+    }
   }
 }
 
