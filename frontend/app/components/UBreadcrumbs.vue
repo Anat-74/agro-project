@@ -38,7 +38,11 @@ const hasBackground = computed(() =>
     <div class="breadcrumbs__container">
       <ol class="breadcrumbs__list">
         <li class="breadcrumbs__item">
-          <NuxtLink class="breadcrumbs__link" :to="`/${currentLocale}`">
+          <NuxtLink
+            class="breadcrumbs__link breadcrumbs__link_home"
+            :to="`/${currentLocale}`"
+          >
+            <Icon name="mdi:home" class="breadcrumbs__home-icon" aria-hidden="true" />
             {{ t.home }}
           </NuxtLink>
         </li>
@@ -109,9 +113,33 @@ const hasBackground = computed(() =>
     }
   }
 
+  // «Главная»: иконка слева, светлый цвет, шрифт на 1px больше
+  // (calc(1em + 1px) — от размера крошек, без компаундинга em по брейкпоинтам)
+  &__link_home {
+    display: inline-flex;
+    align-items: center;
+    gap: toRem(6);
+    color: var(--light-color);
+    font-size: calc(1em + 1px);
+
+    @include hover {
+      color: var(--warning-color);
+    }
+  }
+
+  &__home-icon {
+    width: toRem(18);
+    height: toRem(18);
+    flex-shrink: 0;
+  }
+
   &__current {
     color: var(--color);
     font-weight: 600;
+    // «Тусклый фон» — маркер, что текущая страница не кликабельна
+    padding: toRem(3) toRem(10);
+    border-radius: toRem(6);
+    background-color: rgba(255, 255, 255, 0.16);
   }
 
   // ==== Адаптив ====

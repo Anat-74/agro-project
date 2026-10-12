@@ -2,7 +2,6 @@
 import { shopFiltersTranslations } from '~/locales/shopFilters'
 import { productFilterTranslations } from '~/locales/productFilter'
 import { visuallyHiddenTranslations } from '~/locales/visuallyHidden'
-import { buttonTranslations } from '~/locales/button'
 import ShowShopFilter from '~/components/show-modal/ShowShopFilter.vue'
 
 const { find } = useStrapi();
@@ -11,7 +10,6 @@ const route = useRoute();
 const t = computed(() => shopFiltersTranslations[currentLocale.value])
 const pf = computed(() => productFilterTranslations[currentLocale.value])
 const vh = computed(() => visuallyHiddenTranslations[currentLocale.value])
-const bt = computed(() => buttonTranslations[currentLocale.value])
 
 const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopFilter")
 
@@ -185,26 +183,6 @@ useSeoMeta({
         :background="breadcrumbsBackground"
       />
 
-      <!-- Кнопка закрытия фильтров — в строке крошек справа (только mobile при
-           открытом фильтре; на desktop панель-рейл, кнопка не нужна). Шапка липкая
-           при открытом фильтре → крестик всегда на виду при скролле. Без текста. -->
-      <UButton
-        v-if="filterDialogOpen"
-        variant="plain"
-        class="products-page__close-filter"
-        :aria-label="bt.ariaLabelCloseFilters"
-        aria-controls="dialogShopFilter"
-        aria-expanded="true"
-        @click="shopFilterRef?.close?.()"
-      >
-        <!-- Анимация крестика при открытии окна: тот же Transition `filter-icon`
-             (rotate/scale), что у плавашки и кнопки в тулбаре. `appear` — чтобы
-             анимация играла при появлении кнопки (она v-if по открытию фильтра). -->
-        <Transition name="filter-icon" appear>
-          <Icon name="mingcute:close-line" />
-        </Transition>
-      </UButton>
-
       <!-- Панель (бывший top-bar): имя __container даёт автоматический констрейнт
            1420 (конвенция _utils.scss [class*="__container"]). Элементы — сразу,
            без лишних обёрток -->
@@ -355,60 +333,6 @@ useSeoMeta({
       // top: toRem(125);
       z-index: 10;
       background-color: var(--bg);
-    }
-  }
-
-  // Кнопка закрытия фильтров в строке крошек (справа). Только mobile: на desktop
-  // панель — sticky-рейл, крестик не нужен. Позиционируется относительно header
-  // (sticky при открытом фильтре = высота крошек), по вертикали центр, `right: 12`.
-  &__close-filter {
-    display: none;
-
-    @media (max-width: $mobile) {
-      position: absolute;
-      right: toRem(12);
-      top: 50%;
-      translate: 0 -50%;
-      z-index: 15;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: toRem(30);
-      height: toRem(30);
-      padding: 0;
-      // Фон кнопки светлый (как у панели фильтров). Крестик — тёмный: буквально
-      // прозрачный на светлой кнопке был бы невидим; тёмный читается как «просвет»
-      // сквозь кнопку. Плюс толще на 1px и больше на 2px (20 → 22px).
-      background-color: var(--bg);
-      color: var(--color);
-      border: toRem(1) solid var(--border-color);
-      border-radius: toRem(6);
-      cursor: pointer;
-
-      svg {
-        width: toRem(22);
-        height: toRem(22);
-        color: var(--color);
-
-        // «Толще на 1px»: иконка штриховая (stroke-width=2 в viewBox 24) → 3
-        // (в рендере ≈ +1px). `:deep` — у path нет scoped-атрибута (это дочерний
-        // компонент Icon), обычный потомок-селектор со scoped его не поймает.
-        :deep(path) {
-          stroke-width: 3;
-        }
-      }
-
-      // Анимация появления крестика (Transition filter-icon, как у плавашки/тулбара)
-      .filter-icon-enter-active {
-        transition:
-          opacity var(--transition-duration),
-          transform var(--transition-duration);
-      }
-
-      .filter-icon-enter-from {
-        opacity: 0;
-        transform: rotate(-90deg) scale(0.5);
-      }
     }
   }
 
@@ -570,16 +494,22 @@ useSeoMeta({
     // Отступ от краёв колонки — чтобы были видны закруглённые концы линий
     padding-inline: toRem(10);
 
-    // Линии: толще на 1px (2px), скругление 25px, усиленный «вдавленный» эффект
-    // (тёмная линия + светлый блик под ней — как у разделителей секций фильтров)
+    // Линии: 2px, скругление 25px. «Вдавленная канавка»: верх линии тёмный, низ
+    // светлый (свет сверху). На белом фоне блик снизу почти не виден, поэтому
+    // контраст задаём градиентом самой линии, а не box-shadow.
     &::before,
     &::after {
       content: "";
       flex: 1;
       height: toRem(2);
       border-radius: toRem(25);
-      background-color: rgba(0, 0, 0, 0.28);
-      box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.7);
+      background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.45),
+        rgba(0, 0, 0, 0.22) 50%,
+        rgba(255, 255, 255, 0.95) 50%,
+        rgba(255, 255, 255, 0.5)
+      );
     }
 
     // Размер иконки задаём НА САМОМ svg: глобальное `.iconify { font-size: toRem(25) }`

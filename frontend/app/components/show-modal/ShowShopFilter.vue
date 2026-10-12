@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { shopFiltersTranslations } from '~/locales/shopFilters'
 import { productFilterTranslations } from '~/locales/productFilter'
+import { buttonTranslations } from '~/locales/button'
 
 const { find } = useStrapi();
 const { currentLocale } = useLocale();
 const t = computed(() => shopFiltersTranslations[currentLocale.value])
 const pf = computed(() => productFilterTranslations[currentLocale.value])
+const bt = computed(() => buttonTranslations[currentLocale.value])
 
 interface Props {
   category?: string
@@ -211,12 +213,22 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
       <!-- Шапка панели: сортировка + закрытие. При открытом фильтре тулбар страницы
            скрыт — его контролы берёт эта шапка (крестик закрывает, Escape тоже). -->
       <header class="shop-filters__header">
-        <!-- Кнопка закрытия переехала в строку крошек (products-page__close-filter).
-             Здесь — декоративная иконка-маркер: не интерактивная (aria-hidden),
-             для визуального баланса с select справа. -->
-        <span class="shop-filters__header-icon" aria-hidden="true">
-          <Icon name="mdi:filter-variant" />
-        </span>
+        <!-- Кнопка закрытия фильтров — на своём месте (шапка панели). Тёмный фон
+             (как цвет фонового изображения), крестик белый; пропорции как раньше
+             (22px, «+1px» толщина). Анимация filter↔close сохранена. -->
+        <UButton
+          class="shop-filters__close"
+          variant="plain"
+          :aria-label="bt.ariaLabelDialogClosed"
+          :aria-expanded="isOpen"
+          aria-controls="dialogShopFilter"
+          @click="close?.()"
+        >
+          <Transition name="filter-icon" mode="out-in">
+            <Icon v-if="isOpen" key="close" name="mingcute:close-line" />
+            <Icon v-else key="filter" name="mingcute:filter-line" />
+          </Transition>
+        </UButton>
         <USelect
           v-model="sortLocal"
           class="shop-filters__sort"
@@ -865,22 +877,54 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
       inset 0 toRem(-1) 0 rgba(0, 0, 0, 0.08),
       0 toRem(1) 0 rgba(255, 255, 255, 0.6);
 
-    // Декоративная иконка-маркер слева (не интерактивная — pointer-events: none)
-    .shop-filters__header-icon {
+    // Кнопка закрытия (тёмный фон «как фоновое изображение», белый крестик).
+    // :deep(path) — у path нет scoped-атрибута (внутри дочернего Icon).
+    .shop-filters__close {
       display: inline-flex;
-      align-items: center;
       flex-shrink: 0;
-      color: var(--gray-color);
-      pointer-events: none;
+      align-items: center;
+      justify-content: center;
+      height: toRem(30);
+      padding: 0 toRem(12);
+      background-color: var(--color);
+      color: var(--light-color);
+      border: toRem(1) solid var(--border-color);
+      border-radius: toRem(6);
+      cursor: pointer;
 
       svg {
-        width: toRem(20);
-        height: toRem(20);
+        color: var(--light-color);
+        width: toRem(22);
+        height: toRem(22);
+        flex-shrink: 0;
+
+        // «+1px» толщина (иконка штриховая, stroke-width=2 → 3)
+        :deep(path) {
+          stroke-width: 3;
+        }
+      }
+
+      // Анимация filter ↔ close (тот же Transition, что у тулбара/плавашки)
+      .filter-icon-enter-active,
+      .filter-icon-leave-active {
+        transition:
+          opacity var(--transition-duration),
+          transform var(--transition-duration);
+      }
+
+      .filter-icon-enter-from {
+        opacity: 0;
+        transform: rotate(-90deg) scale(0.5);
+      }
+
+      .filter-icon-leave-to {
+        opacity: 0;
+        transform: rotate(90deg) scale(0.5);
       }
     }
 
     .shop-filters__sort {
-      // Селект — справа (иконка-маркер слева)
+      // Селект — справа (кнопка закрытия слева)
       margin-inline-start: auto;
       width: fit-content;
       flex: 0 1 auto;

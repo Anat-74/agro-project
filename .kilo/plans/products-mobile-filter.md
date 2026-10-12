@@ -74,6 +74,13 @@
     22px (было 20) и толще на 1px — `:deep(path) { stroke-width: 3 }` (иконка `mingcute:close-line`
     штриховая, `stroke-width=2` в viewBox 24). `variant="plain"` (иначе `btn_primary`). Анимация
     появления — `<Transition name="filter-icon" appear>`.
+- **Ревью 12.10 (вторая волна):** кнопку закрытия вернули в шапку панели (тёмный фон `var(--color)`,
+  белый крестик `22px`, `stroke-width: 3` через `:deep(path)`); из крошек кнопку убрали (её место →
+  под `ShowHamburger`, уточняется). Крошки (`UBreadcrumbs`, глобально; 2 страницы — products, posadka,
+  обе с тёмным фоном): «Главная» — иконка `mdi:home`, светлый цвет `var(--light-color)`,
+  `font-size: calc(1em + 1px)`; текущая страница — «тусклая» плашка `rgba(255,255,255,.16)`.
+  Разделитель: линии `2px`, радиус `25px`, `padding-inline: 10px`, «канавка» градиентом
+  (тёмный верх → светлый низ, т.к. белый блик на белом не виден), иконка `43px`.
 - **Подвал** — `display: none` (CSS `body:has(.products-page_filter-open) .base-footer`).
 - **Плавающая кнопка** — при открытом скрыта; при закрытом появляется по скроллу (иконка анимируется
   filter ↔ close, уменьшена до 36px).
