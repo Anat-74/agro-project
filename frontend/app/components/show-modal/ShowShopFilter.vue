@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { shopFiltersTranslations } from '~/locales/shopFilters'
 import { productFilterTranslations } from '~/locales/productFilter'
-import { buttonTranslations } from '~/locales/button'
 
 const { find } = useStrapi();
 const { currentLocale } = useLocale();
 const t = computed(() => shopFiltersTranslations[currentLocale.value])
 const pf = computed(() => productFilterTranslations[currentLocale.value])
-const bt = computed(() => buttonTranslations[currentLocale.value])
 
 interface Props {
   category?: string
@@ -213,21 +211,12 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
       <!-- Шапка панели: сортировка + закрытие. При открытом фильтре тулбар страницы
            скрыт — его контролы берёт эта шапка (крестик закрывает, Escape тоже). -->
       <header class="shop-filters__header">
-        <!-- Порядок: кнопка слева, селект справа -->
-        <UButton
-          class="shop-filters__close"
-          :aria-label="bt.ariaLabelDialogClosed"
-          :aria-expanded="isOpen"
-          aria-controls="dialogShopFilter"
-          @click="close?.()"
-        >
-          <span class="shop-filters__filter-icon">
-            <Transition name="filter-icon" mode="out-in">
-              <Icon v-if="isOpen" key="close" name="mingcute:close-line" />
-              <Icon v-else key="filter" name="mingcute:filter-line" />
-            </Transition>
-          </span>
-        </UButton>
+        <!-- Кнопка закрытия переехала в строку крошек (products-page__close-filter).
+             Здесь — декоративная иконка-маркер: не интерактивная (aria-hidden),
+             для визуального баланса с select справа. -->
+        <span class="shop-filters__header-icon" aria-hidden="true">
+          <Icon name="mdi:filter-variant" />
+        </span>
         <USelect
           v-model="sortLocal"
           class="shop-filters__sort"
@@ -579,11 +568,11 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     }
   }
 
-  // Первая секция («Все категории») на mobile: без верхнего бордера и с минимальным
-  // отступом сверху (верх списка фильтров начинается сразу).
+  // Первая секция («Все категории») на mobile: тот же отступ сверху (24px), что и
+  // между секциями после «втиснутого» разделителя (шапка панели даёт такой же бордер).
   &__section:first-of-type {
     @media (max-width: $mobile) {
-      padding-block-start: toRem(4);
+      padding-block-start: toRem(24);
     }
   }
 
@@ -869,59 +858,34 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     display: flex;
     align-items: center;
     gap: toRem(10);
-    padding: toRem(10) 0 toRem(12);
-    border-bottom: toRem(1) solid rgba(0, 0, 0, 0.08);
+    padding: toRem(10) 0 toRem(24);
+    // Тот же «втиснутый» разделитель, что у секций фильтров ниже — единый вид
+    border-bottom: toRem(1) solid rgba(0, 0, 0, 0.3);
+    box-shadow:
+      inset 0 toRem(-1) 0 rgba(0, 0, 0, 0.08),
+      0 toRem(1) 0 rgba(255, 255, 255, 0.6);
+
+    // Декоративная иконка-маркер слева (не интерактивная — pointer-events: none)
+    .shop-filters__header-icon {
+      display: inline-flex;
+      align-items: center;
+      flex-shrink: 0;
+      color: var(--gray-color);
+      pointer-events: none;
+
+      svg {
+        width: toRem(20);
+        height: toRem(20);
+      }
+    }
 
     .shop-filters__sort {
-      // Селект — справа (кнопка закрытия слева)
+      // Селект — справа (иконка-маркер слева)
       margin-inline-start: auto;
       width: fit-content;
       flex: 0 1 auto;
       min-width: 0;
     }
-
-    .shop-filters__close {
-      display: inline-flex;
-      flex-shrink: 0;
-      align-items: center;
-      justify-content: center;
-      height: toRem(30);
-      padding: 0 toRem(12);
-      background-color: var(--green-color);
-      color: var(--light-color);
-      border: toRem(1) solid var(--border-color);
-      border-radius: toRem(6);
-      cursor: pointer;
-
-      svg {
-        color: var(--light-color);
-        width: toRem(20);
-        height: toRem(20);
-        flex-shrink: 0;
-      }
-    }
-  }
-}
-
-// Иконка filter ↔ крестик (тот же Transition, что у кнопки в тулбаре).
-.shop-filters__filter-icon {
-  display: inline-flex;
-
-  .filter-icon-enter-active,
-  .filter-icon-leave-active {
-    transition:
-      opacity var(--transition-duration),
-      transform var(--transition-duration);
-  }
-
-  .filter-icon-enter-from {
-    opacity: 0;
-    transform: rotate(-90deg) scale(0.5);
-  }
-
-  .filter-icon-leave-to {
-    opacity: 0;
-    transform: rotate(90deg) scale(0.5);
   }
 }
 

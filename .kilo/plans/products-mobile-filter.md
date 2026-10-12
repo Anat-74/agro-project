@@ -31,12 +31,15 @@
   линия + иконка-росток (`mdi:sprout`), по ширине товарной колонки, **смещён ниже центра** зазора.
   - Разметка: `<li class="products-page__divider" aria-hidden="true">` внутри `ul` (декор; `v-if="pageCount > 1"`).
   - Стили: `.products-page__card-list { position: relative }`; `&__divider { display: none }` (десктоп/закрыт);
-    на mobile при `_filter-open` — `display: flex; position: absolute; inset-inline: 0; bottom: toRem(8)`,
+    на mobile при `_filter-open` — `display: flex; align-items: center; position: absolute;
+    inset-inline: 0; bottom: toRem(-9); height: toRem(73)` (бокс = зазор «низ последней карточки →
+    верх пагинации»; `align-items: center` центрирует иконку ЛЮБОГО размера без подгонок),
     цвет `--green-color`, линии `::before/::after` (`--border-color`), `pointer-events: none`.
   - ⚠️ **Грабли (12.10):** размер иконки задавать НА САМОМ `svg` (`svg { font-size: toRem(30) }`), а НЕ на обёртке:
     глобальное `.iconify { font-size: toRem(25) }` (`base/_utils.scss`) задаёт font-size svg, а `width/height` svg = `1em`
     = его собственный font-size → `font-size` на обёртке иконку НЕ менял (прошлые +30%/+20% были no-op, иконка была 25px).
-  - **Ревью 12.10:** `bottom` 18→8 (ниже); иконка реально 25px (`.iconify`) → 30px, затем **35px** (+5px, через `svg`).
+  - **Ревью 12.10:** иконка реально 25px (`.iconify`) → 30 → 35 → **40px** (+5px, через `svg`); разделитель
+    центрируется боксом (`bottom: -9; height: 73`), а не подгонкой `bottom`.
 - **Нижний запас под пагинацией (mobile, фильтр открыт, 12.10):** пагинация `absolute` (`bottom: -53`)
   переполняет `container-body` на 53px и является самым низким элементом документа → без запаса
   прилипала к самому низу экрана (отступа не было ни на одной странице; на 1-й «отступ» был виден
@@ -57,6 +60,13 @@
 - **Нижний отступ баннера в панели фильтров (mobile, 12.10):** баннер «Скидка 79%» — последний блок
   (sale-section скрыта) → убрали его `margin-block-end` (24px) и уменьшили `padding-block-end`
   контента `.shop-filters` 30→12px (под баннером была пустота).
+- **Кнопка закрытия → в крошки (12.10):** крестик фильтров переехал в строку крошек
+  (`.products-page__close-filter`, mobile-only, `absolute; right:12; top:50%`, зовёт `shopFilterRef.close()`,
+  `aria-label` = `bt.ariaLabelCloseFilters`). В шапке панели вместо кнопки — декоративная иконка
+  `mdi:filter-variant` (`aria-hidden`, `pointer-events:none`) + select справа. Бордер шапки панели =
+  «втиснутый» разделитель секций, `padding-block-end: 24px`; первая секция `padding-block-start: 24px`
+  (единый вид сверху/снизу). Проверено симуляцией DOM+CSS на проде (390×800): крестик `348→378` (30px,
+  центр по вертикали крошек), панель-шапка `39→104`.
 - **Подвал** — `display: none` (CSS `body:has(.products-page_filter-open) .base-footer`).
 - **Плавающая кнопка** — при открытом скрыта; при закрытом появляется по скроллу (иконка анимируется
   filter ↔ close, уменьшена до 36px).

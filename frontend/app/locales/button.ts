@@ -9,6 +9,7 @@ export const buttonTranslations: Record<LocaleCode, {
    ariaLabelClosedSuccess: string
    ariaLabelDialogOpen: string
    ariaLabelDialogClosed: string
+   ariaLabelCloseFilters: string
    ariaLabelCopyLink: string
    ariaLabelReduceQuantity: string
    ariaLabelIncreaseQuantity: string
@@ -33,6 +34,7 @@ export const buttonTranslations: Record<LocaleCode, {
        ariaLabelClosedSuccess: "Закрыть сообщение",
        ariaLabelDialogOpen: "Открытое модальное окно",
        ariaLabelDialogClosed: "Закрыть модальное окно",
+       ariaLabelCloseFilters: "Закрыть фильтры",
        ariaLabelCopyLink: "Скопировать ссылку на продукт",
        ariaLabelReduceQuantity: "Уменьшить количества",
        ariaLabelIncreaseQuantity: "Увеличить количество",
@@ -54,9 +56,10 @@ export const buttonTranslations: Record<LocaleCode, {
       ariaLabelGoForward: "Ідзі наперад",
       ariaLabelPagination: "Перайсці на наступную старонку",
       ariaLabelClosedSuccess: "Закрыць паведамленне",
-      ariaLabelDialogOpen: "Адкрыць мадальнае акно",
-      ariaLabelDialogClosed: "Зачыніць мадальнае акно",
-      ariaLabelCopyLink: "Скапіяваць спасылку на прадукт",
+       ariaLabelDialogOpen: "Адкрыць мадальнае акно",
+       ariaLabelDialogClosed: "Зачыніць мадальнае акно",
+       ariaLabelCloseFilters: "Зачыніць фільтры",
+       ariaLabelCopyLink: "Скапіяваць спасылку на прадукт",
       ariaLabelReduceQuantity: "Зменшыць колькасці",
       ariaLabelIncreaseQuantity: "Павялічыць колькасць",
        ariaLabelRemoveItemFromCart: "Выдаліць тавар з кошыка",

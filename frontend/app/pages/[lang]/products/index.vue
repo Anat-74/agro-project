@@ -2,6 +2,7 @@
 import { shopFiltersTranslations } from '~/locales/shopFilters'
 import { productFilterTranslations } from '~/locales/productFilter'
 import { visuallyHiddenTranslations } from '~/locales/visuallyHidden'
+import { buttonTranslations } from '~/locales/button'
 import ShowShopFilter from '~/components/show-modal/ShowShopFilter.vue'
 
 const { find } = useStrapi();
@@ -10,6 +11,7 @@ const route = useRoute();
 const t = computed(() => shopFiltersTranslations[currentLocale.value])
 const pf = computed(() => productFilterTranslations[currentLocale.value])
 const vh = computed(() => visuallyHiddenTranslations[currentLocale.value])
+const bt = computed(() => buttonTranslations[currentLocale.value])
 
 const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopFilter")
 
@@ -183,6 +185,20 @@ useSeoMeta({
         :background="breadcrumbsBackground"
       />
 
+      <!-- Кнопка закрытия фильтров — в строке крошек справа (только mobile при
+           открытом фильтре; на desktop панель-рейл, кнопка не нужна). Шапка липкая
+           при открытом фильтре → крестик всегда на виду при скролле. Без текста. -->
+      <UButton
+        v-if="filterDialogOpen"
+        class="products-page__close-filter"
+        :aria-label="bt.ariaLabelCloseFilters"
+        aria-controls="dialogShopFilter"
+        aria-expanded="true"
+        @click="shopFilterRef?.close?.()"
+      >
+        <Icon name="mingcute:close-line" />
+      </UButton>
+
       <!-- Панель (бывший top-bar): имя __container даёт автоматический констрейнт
            1420 (конвенция _utils.scss [class*="__container"]). Элементы — сразу,
            без лишних обёрток -->
@@ -336,6 +352,38 @@ useSeoMeta({
     }
   }
 
+  // Кнопка закрытия фильтров в строке крошек (справа). Только mobile: на desktop
+  // панель — sticky-рейл, крестик не нужен. Позиционируется относительно header
+  // (sticky при открытом фильтре = высота крошек), по вертикали центр, `right: 12`.
+  &__close-filter {
+    display: none;
+
+    @media (max-width: $mobile) {
+      position: absolute;
+      right: toRem(12);
+      top: 50%;
+      translate: 0 -50%;
+      z-index: 15;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: toRem(30);
+      height: toRem(30);
+      padding: 0;
+      background-color: var(--green-color);
+      color: var(--light-color);
+      border: toRem(1) solid var(--border-color);
+      border-radius: toRem(6);
+      cursor: pointer;
+
+      svg {
+        width: toRem(20);
+        height: toRem(20);
+        color: var(--light-color);
+      }
+    }
+  }
+
   &__container-body {
     display: flex;
     gap: toRem(30);
@@ -476,16 +524,19 @@ useSeoMeta({
     padding-block-end: toRem(65);
   }
 
-  // Декоративный разделитель: развёрнут по ширине товарной колонки, смещён НИЖЕ
-  // центра зазора «последняя карточка → пагинация» (ближе к пагинации).
-  // Чисто декор — absolute, раскладку не трогает; клики не перехватывает.
+  // Декоративный разделитель: по ширине товарной колонки, иконка — РОВНО по центру
+  // зазора «последняя карточка → пагинация». Бокс растянут от низа резерва
+  // (listBottom − 64, т.е. низ последней карточки) до верха пагинации
+  // (listBottom + 9) → height 73px; align-items:center центрирует иконку ЛЮБОГО
+  // размера без магических подгонок. Чисто декор — absolute, клики не перехватывает.
   .products-page_filter-open .products-page__divider {
     display: flex;
     align-items: center;
     column-gap: toEm(10);
     position: absolute;
     inset-inline: 0;
-    bottom: toRem(8);
+    bottom: toRem(-9);
+    height: toRem(73);
     color: var(--green-color);
     pointer-events: none;
 
@@ -499,10 +550,10 @@ useSeoMeta({
 
     // Размер иконки задаём НА САМОМ svg: глобальное `.iconify { font-size: toRem(25) }`
     // (_utils.scss) задаёт font-size svg, а width/height svg = 1em = его собственный
-    // font-size — поэтому `font-size` на обёртке иконку не менял. 30 → 35px (+5px).
+    // font-size — поэтому `font-size` на обёртке иконку не менял. 35 → 40px (+5px).
     svg {
       flex-shrink: 0;
-      font-size: toRem(35);
+      font-size: toRem(40);
     }
   }
 }
