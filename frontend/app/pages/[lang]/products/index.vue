@@ -442,11 +442,13 @@ useSeoMeta({
   }
 
   // Панель фильтров — position: fixed (вне потока, слева). Товарную колонку сдвигаем
-  // вправо на ширину панели + зазор (12 — контейнерный padding на mobile, 12 — зазор
-  // между панелью и карточками).
+  // вправо на контейнерный padding (12) + ширину панели. Колонка flex:1 → её ширина =
+  // оставшееся место, поэтому чем меньше сдвиг, тем шире карточки.
+  // Зазор до панели = сдвиг − правый край панели = 2px (панель 163px: сдвиг 12+165=177,
+  // правый край панели 175).
   .products-page_filter-open .products-page__container-body {
     padding-inline-start: calc(
-      toRem(12) + var(--filter-drawer-w, 0px) + toRem(12)
+      toRem(12) + var(--filter-drawer-w, 0px)
     );
   }
 
@@ -459,9 +461,8 @@ useSeoMeta({
     padding-block-start: toRem(12);
   }
 
-  // Выравниваем пагинацию с низом панели фильтров: внизу страницы под товарной зоной
-  // есть запас (~62px), поэтому пагинация «выше» панели. Сдвигаем её ниже на этот запас,
-  // чтобы внизу страницы низ пагинации совпал с низом панели (панель — screen − 9px).
+  // Опускаем пагинацию ниже товарной зоны на запас резерва, чтобы её низ (вместе с
+  // паддингом секции ниже, 65px) встал на 12px выше низа экрана, ровно как у панели.
   .products-page_filter-open .products-page__pagination {
     bottom: toRem(-53);
   }
@@ -487,19 +488,21 @@ useSeoMeta({
     bottom: toRem(8);
     color: var(--green-color);
     pointer-events: none;
-    // font-size задаёт размер иконки (Nuxt Icon рисует svg в 1em): 23 → 28 (+20%)
-    font-size: toEm(28);
 
     &::before,
     &::after {
       content: "";
       flex: 1;
-      height: toEm(1);
+      height: toRem(1);
       background-color: var(--border-color);
     }
 
+    // Размер иконки задаём НА САМОМ svg: глобальное `.iconify { font-size: toRem(25) }`
+    // (_utils.scss) задаёт font-size svg, а width/height svg = 1em = его собственный
+    // font-size — поэтому `font-size` на обёртке иконку не менял. 25 → 30px (+5px).
     svg {
       flex-shrink: 0;
+      font-size: toRem(30);
     }
   }
 }

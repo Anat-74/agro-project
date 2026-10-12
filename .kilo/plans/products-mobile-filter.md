@@ -32,9 +32,11 @@
   - Разметка: `<li class="products-page__divider" aria-hidden="true">` внутри `ul` (декор; `v-if="pageCount > 1"`).
   - Стили: `.products-page__card-list { position: relative }`; `&__divider { display: none }` (десктоп/закрыт);
     на mobile при `_filter-open` — `display: flex; position: absolute; inset-inline: 0; bottom: toRem(8)`,
-    иконка `font-size: toEm(28)` (18→23→28), цвет `--green-color`, линии `::before/::after`
-    (`--border-color`), `pointer-events: none`.
-  - **Ревью 12.10:** `bottom` 18→8 (ниже), иконка 18→23 (+30%), затем 23→28 (+20%) — по скриншотам пользователя.
+    цвет `--green-color`, линии `::before/::after` (`--border-color`), `pointer-events: none`.
+  - ⚠️ **Грабли (12.10):** размер иконки задавать НА САМОМ `svg` (`svg { font-size: toRem(30) }`), а НЕ на обёртке:
+    глобальное `.iconify { font-size: toRem(25) }` (`base/_utils.scss`) задаёт font-size svg, а `width/height` svg = `1em`
+    = его собственный font-size → `font-size` на обёртке иконку НЕ менял (прошлые +30%/+20% были no-op, иконка была 25px).
+  - **Ревью 12.10:** `bottom` 18→8 (ниже); иконка реально 25px (`.iconify`) → **30px** (+5px, через `svg`).
 - **Нижний запас под пагинацией (mobile, фильтр открыт, 12.10):** пагинация `absolute` (`bottom: -53`)
   переполняет `container-body` на 53px и является самым низким элементом документа → без запаса
   прилипала к самому низу экрана (отступа не было ни на одной странице; на 1-й «отступ» был виден
@@ -43,9 +45,11 @@
   `pagBottom 800→788`, `gapViewport 0→12`, зазор разделитель→пагинация без изменений (18px).
 - **Верхний отступ карточек (mobile, фильтр открыт, 12.10):** первая карточка прилипала к крошкам
   (`gapCrumbCard 0`) → `.products-page_filter-open .products-page__card-list { padding-block-start: toRem(12) }`.
-- **Зазор панель→карточки (12.10):** сдвиг колонки `calc(toRem(12) + var(--filter-drawer-w) + toRem(12))`
-  (был `+10`), плюс ширина панели на mobile `--filter-panel-w: calc(var(--filter-drawer-w) − toRem(2))`
-  (163px вместо 165) → зазор панель→карточки `10 → 14px` (проверено инъекцией на проде).
+- **Зазор панель→карточки = 2px (12.10, финал):** ширина панели на mobile
+  `--filter-panel-w: calc(var(--filter-drawer-w) − #{toRem(2)})` (163px вместо 165); сдвиг колонки
+  `calc(toRem(12) + var(--filter-drawer-w))` (без доп. слагаемого) → карточки начинаются на `177`,
+  правый край панели `175` → зазор **2px**. Колонка `flex:1` → карточка стала шире: `189 → 201px`
+  (проверено инъекцией на проде).
   - ⚠️ **Грабли (12.10):** в SCSS внутри **custom-property** (`--x: …`) функции НЕ вычисляются — нужна
     интерполяция: `calc(var(--filter-drawer-w) - #{toRem(2)})`. Без `#{}` Sass оставлял `toRem(2)` как есть
     → невалидный CSS → `width: var(--filter-panel-w)` отбрасывался → панель растягивалась на всю ширину
