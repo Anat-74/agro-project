@@ -119,6 +119,13 @@
   (`flex:1`); **при фокусе число исчезает** (паттерн `clearOnFocus`, как в категориях Посадки/Заготовок),
   при уходе пустым — прежнее значение. Кнопка закрытия `padding: 10.5px` (ширина 45px). Бордер
   гамбургера в фильтрах — `2px`.
+- **Ревью 13.10 (7):** `ScrollToTop` → **`UScrollNav`** (rename+extend): props `target` (контейнер, по
+  умолчанию окно), `mode: 'up' | 'toggle'`, `threshold`, `variant`, `iconDown/iconUp`. Футер — `mode="up"`
+  (окно, порог 2200, как было). Панель — `mode="toggle"` (скролл ДИАЛОГА): виден пока контент не влезает;
+  тап вниз → скролл на `clientHeight` (на экран); у низа → иконка/`aria-label` вверх, тап → `top: 0`.
+  Панель: нативный скроллбар **скрыт** (`scrollbar-width: none`), sticky-шеврон
+  `mdi:chevron-double-down ↔ mdi:chevron-double-up` внизу по центру. Локаль `ariaLabelScrollDown`.
+  Плюс: гэп категории `8→10px`; активная иконка — круглый `outline`-ореол.
 - **Подвал** — `display: none` (CSS `body:has(.products-page_filter-open) .base-footer`).
 - **Плавающая кнопка** — при открытом скрыта; при закрытом появляется по скроллу (иконка анимируется
   filter ↔ close, уменьшена до 36px).

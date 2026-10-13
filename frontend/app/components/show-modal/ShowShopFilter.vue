@@ -541,6 +541,17 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
               </ul>
             </section>
           </aside>
+
+        <!-- Кнопка-шеврон прокрутки панели: sticky внизу диалога. Скрыта, когда
+             весь контент виден; внизу переворачивается вверх (см. UScrollNav). -->
+        <UScrollNav
+          mode="toggle"
+          variant="plain"
+          :target="dialogElement"
+          icon-down="mdi:chevron-double-down"
+          icon-up="mdi:chevron-double-up"
+          class="shop-filters__scroll-nav"
+        />
       </dialog>
     </Teleport>
 
@@ -657,8 +668,8 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     // горизонтальный скроллбар у панели; y — auto (внутренний вертикальный скролл).
     overflow: hidden auto;
     scrollbar-gutter: stable;
-    // Тонкая полоса скролла
-    scrollbar-width: thin;
+    // Полосу скролла скрываем: индикатор прокрутки — шеврон-кнопка внизу панели
+    scrollbar-width: none;
     // Скролл фильтров не «пробрасывается» на страницу: пока в панели есть что
     // скроллить — страница стоит; дошёл до края — страница не уезжает сразу.
     overscroll-behavior: contain;
@@ -804,7 +815,7 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     position: relative;
     display: flex;
     align-items: center;
-    gap: toRem(8);
+    gap: toRem(10);
 
     // Точку радио скрываем — вместо неё иконка категории. input остаётся в DOM
     // (фокус/a11y), но не занимает места и невидим; фокус показываем на строке.
@@ -824,9 +835,11 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
       align-items: center;
     }
 
+    // Подпись категории: toEm считается от размера body (adaptiveValue ≈14px на
+    // мобильном), поэтому 2-й аргумент 14 → на 390px получается ≈15px (было 13.24px).
     :deep(.u-input__radio-label) {
       flex: 1;
-      font-size: toEm(15);
+      font-size: toEm(15, 14);
       transition: color var(--transition-duration);
     }
 
@@ -840,10 +853,15 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     // Активная категория: иконка СОХРАНЯЕТ свой цвет (задан inline), но чуть толще;
     // текст жирнее; галочка и счётчик — зелёные.
     &_is-active {
+      // Круглый мягкий «ореол» вокруг иконки: outline НЕ влияет на лэйаут (иконка
+      // не сжимается), но визуально делает элемент чуть крупнее. border-radius 50% →
+      // ореол круглый.
       .shop-filters__category-icon {
-        // «чуть толще»: обводка тем же цветом утолщает filled-иконку
         stroke: currentColor;
         stroke-width: 0.8;
+        border-radius: 50%;
+        outline: toRem(1) solid color-mix(in srgb, var(--color) 22%, transparent);
+        outline-offset: toRem(1);
       }
 
       :deep(.u-input__radio-label) {
@@ -974,6 +992,39 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
 
   &__tag-item {
     margin: 0;
+  }
+
+  // Кнопка-шеврон прокрутки панели: sticky внизу диалога, по центру. Показывается
+  // через UScrollNav (mode="toggle") — только пока контент не помещается целиком.
+  &__scroll-nav {
+    position: sticky;
+    bottom: toRem(8);
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: toRem(34);
+    height: toRem(34);
+    margin-inline: auto;
+    padding: 0;
+    background-color: var(--bg);
+    color: var(--color);
+    border: toRem(1) solid var(--border-color);
+    border-radius: 50%;
+    box-shadow: 0 toRem(2) toRem(10) rgba(0, 0, 0, 0.18);
+    cursor: pointer;
+    transition:
+      transform var(--transition-duration),
+      background-color var(--transition-duration);
+
+    svg {
+      width: toRem(20);
+      height: toRem(20);
+    }
+
+    @include hover {
+      background-color: var(--bg-product);
+    }
   }
 
   // ==== Баннер «Скидка 79%» ====

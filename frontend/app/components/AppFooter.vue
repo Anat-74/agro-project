@@ -91,7 +91,7 @@ defineProps<Props>();
         footer.copyright
       }}</span>
     </div>
-    <ScrollToTop />
+    <UScrollNav />
   </footer>
 </template>
 
