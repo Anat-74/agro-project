@@ -376,14 +376,16 @@ useSeoMeta({
         height: toRem(30);
         padding-inline: 0;
         border-radius: toRem(6);
-        // Светлый фон; полосы — ПОЛНОСТЬЮ ПРОЗРАЧНЫЕ (просьба). Всё это — ТОЛЬКО
-        // для этой кнопки (.products-page__hamburger); гамбургер в шапке не затронут.
-        background-color: var(--bg);
+        // «Призрачная» кнопка на тёмном фоне крошек: прозрачный фон, светлые полосы
+        // и тонкий бордер того же цвета. ТОЛЬКО для этой кнопки
+        // (.products-page__hamburger); гамбургер в шапке не затронут.
+        background-color: var(--transparent-color);
+        border: toRem(1) solid var(--light-color);
 
         &::before,
         &::after,
         :deep(span) {
-          background-color: transparent;
+          background-color: var(--light-color);
         }
 
         // Линии — от высоты САМОЙ кнопки (в базовом variant позиции заданы через
@@ -521,14 +523,14 @@ useSeoMeta({
   }
 
   // Панель фильтров — position: fixed (вне потока, слева). Товарную колонку сдвигаем
-  // вправо на контейнерный padding (5) + ширину панели. Колонка flex:1 → её ширина =
-  // оставшееся место, поэтому чем меньше сдвиг, тем шире карточки.
-  // Зазор до панели = сдвиг − правый край панели = 2px (панель 163px: сдвиг 5+165=170,
-  // правый край панели 5+163=168). Объявлено ПОСЛЕ padding-inline выше — перебивает
-  // start-сторону у container-body.
+  // вправо на контейнерный padding (5) + ширину панели + 2px зазора. Колонка flex:1 →
+  // её ширина = оставшееся место.
+  // Панель 165px (5→170), колонка 5+165+2=172 → зазор 2px; полоса скролла панели
+  // встаёт у правого края (170) — на границе с карточками. Объявлено ПОСЛЕ
+  // padding-inline выше — перебивает start-сторону у container-body.
   .products-page_filter-open .products-page__container-body {
     padding-inline-start: calc(
-      toRem(5) + var(--filter-drawer-w, 0px)
+      toRem(7) + var(--filter-drawer-w, 0px)
     );
   }
 
@@ -557,7 +559,7 @@ useSeoMeta({
   }
 
   // Декоративный разделитель: по ширине товарной колонки, иконка — по центру зазора
-  // «последняя карточка → пагинация», сдвинута вниз (bottom: -15 = на 6px ниже центра).
+  // «последняя карточка → пагинация», сдвинута вниз (bottom: -19 = на ~10px ниже центра).
   // Бокс: от низа резерва (listBottom − 64) до верха пагинации (listBottom + 9) — height 73px;
   // align-items:center центрирует иконку любого размера. Чисто декор — клики не перехватывает.
   .products-page_filter-open .products-page__divider {
@@ -566,7 +568,7 @@ useSeoMeta({
     column-gap: toEm(10);
     position: absolute;
     inset-inline: 0;
-    bottom: toRem(-15);
+    bottom: toRem(-19);
     height: toRem(73);
     color: var(--green-color);
     pointer-events: none;

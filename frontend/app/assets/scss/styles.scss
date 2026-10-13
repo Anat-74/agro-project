@@ -75,6 +75,19 @@
   --sky-blue: #afeeee;
   --transparent-color: transparent;
   --whitesmoke-color: whitesmoke;
+  // Палитра иконок категорий фильтра (мэппинг slug→цвет — в ShowShopFilter)
+  --cat-fruit: #e0533d;
+  --cat-veg: #6ba539;
+  --cat-greens: #55a630;
+  --cat-root: #e08a2b;
+  --cat-berry: #b0479a;
+  --cat-legume: #a1793f;
+  --cat-nut: #8d6e63;
+  --cat-garden: #2e9e4f;
+  --cat-preserve: #009688;
+  --cat-jam: #c0392b;
+  --cat-drink: #1e88e5;
+  --cat-all: #7eb693;
    --light-color-transparent: color-mix( in srgb,
     #ffffff 72%,
     transparent

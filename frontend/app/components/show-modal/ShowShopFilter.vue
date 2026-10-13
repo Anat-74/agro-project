@@ -9,25 +9,29 @@ const t = computed(() => shopFiltersTranslations[currentLocale.value])
 const pf = computed(() => productFilterTranslations[currentLocale.value])
 const bt = computed(() => buttonTranslations[currentLocale.value])
 
-// Иконка категории по slug — мэппинг в КОДЕ (без нового поля в Strapi).
-// Ключи — реальные slug'и категорий проекта (взяты из API). Неизвестный slug →
-// нейтральная иконка, чтобы ничего не ломалось.
-const CATEGORY_ICONS: Record<string, string> = {
-  frukty: "mdi:food-apple",
-  ovoshhi: "mdi:corn",
-  zelen: "mdi:leaf",
-  korneplody: "mdi:carrot",
-  yagody: "mdi:fruit-cherries",
-  bobovye: "mdi:seed-outline",
-  "orehi-i-suhofrukty": "mdi:peanut",
-  "posadka-i-urozhay": "mdi:sprout",
-  zagotovki: "mdi:package-variant",
-  "varenie-dzhem": "mdi:pot",
-  "kompoty-soki": "mdi:bottle-soda-outline",
+// Иконка И цвет категории по slug — мэппинг в КОДЕ (без нового поля в Strapi).
+// Цвета — из палитры --cat-* (styles.scss). Неизвестный slug → нейтральная иконка.
+type CategoryVisual = { icon: string; color: string };
+const CATEGORY_VISUALS: Record<string, CategoryVisual> = {
+  frukty: { icon: "mdi:food-apple", color: "var(--cat-fruit)" },
+  ovoshhi: { icon: "mdi:corn", color: "var(--cat-veg)" },
+  zelen: { icon: "mdi:leaf", color: "var(--cat-greens)" },
+  korneplody: { icon: "mdi:carrot", color: "var(--cat-root)" },
+  yagody: { icon: "mdi:fruit-cherries", color: "var(--cat-berry)" },
+  bobovye: { icon: "mdi:seed-outline", color: "var(--cat-legume)" },
+  "orehi-i-suhofrukty": { icon: "mdi:peanut", color: "var(--cat-nut)" },
+  "posadka-i-urozhay": { icon: "mdi:sprout", color: "var(--cat-garden)" },
+  zagotovki: { icon: "mdi:package-variant", color: "var(--cat-preserve)" },
+  "varenie-dzhem": { icon: "mdi:pot", color: "var(--cat-jam)" },
+  "kompoty-soki": { icon: "mdi:bottle-soda-outline", color: "var(--cat-drink)" },
 };
-// Иконка пункта «Все товары»
-const ALL_PRODUCTS_ICON = "mdi:basket-outline";
-const categoryIcon = (slug: string) => CATEGORY_ICONS[slug] ?? "mdi:food-variant";
+// Пункт «Все товары»
+const ALL_PRODUCTS_VISUAL: CategoryVisual = {
+  icon: "mdi:basket-outline",
+  color: "var(--cat-all)",
+};
+const categoryVisual = (slug: string): CategoryVisual =>
+  CATEGORY_VISUALS[slug] ?? { icon: "mdi:food-variant", color: "var(--gray-color)" };
 
 interface Props {
   category?: string
@@ -285,7 +289,8 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
                     :class="{ 'shop-filters__category_is-active': category === '' }"
                   >
                     <Icon
-                      :name="ALL_PRODUCTS_ICON"
+                      :name="ALL_PRODUCTS_VISUAL.icon"
+                      :style="{ color: ALL_PRODUCTS_VISUAL.color }"
                       class="shop-filters__category-icon"
                       aria-hidden="true"
                     />
@@ -313,7 +318,8 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
                     :class="{ 'shop-filters__category_is-active': category === cat.slug }"
                   >
                     <Icon
-                      :name="categoryIcon(cat.slug)"
+                      :name="categoryVisual(cat.slug).icon"
+                      :style="{ color: categoryVisual(cat.slug).color }"
                       class="shop-filters__category-icon"
                       aria-hidden="true"
                     />
@@ -509,9 +515,9 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   --filter-panel-w: var(--filter-width);
 
   @media (max-width: $mobile) {
-    // На 2px уже (просьба по ширине диалога на мобильном) — увеличивает зазор до карточек.
-    // ВАЖНО: внутри custom-property SCSS-функции не вычисляются — нужна интерполяция #{}.
-    --filter-panel-w: calc(var(--filter-drawer-w) - #{toRem(2)});
+    // Ширина панели = полная ширина drawer (165px): полоса скролла встаёт у правого
+    // края панели — ровно на границе с полем карточек (колонка сдвинута на 7+165).
+    --filter-panel-w: var(--filter-drawer-w);
   }
 
   // Сайдбар в потоке только пока диалог открыт: закрытый схлопываем в 0
@@ -572,6 +578,8 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     // горизонтальный скроллбар у панели; y — auto (внутренний вертикальный скролл).
     overflow: hidden auto;
     scrollbar-gutter: stable;
+    // Тонкая полоса скролла
+    scrollbar-width: thin;
     // Скролл фильтров не «пробрасывается» на страницу: пока в панели есть что
     // скроллить — страница стоит; дошёл до края — страница не уезжает сразу.
     overscroll-behavior: contain;
@@ -750,15 +758,21 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
       border-radius: toRem(4);
     }
 
-    // Активная категория: иконка и текст — ЖЁЛТЫЙ (--yellow-color, НЕ warning)
+    // Активная категория: иконка СОХРАНЯЕТ свой цвет (задан inline), но чуть толще;
+    // текст жирнее; галочка и счётчик — зелёные.
     &_is-active {
       .shop-filters__category-icon {
-        color: var(--yellow-color);
+        // «чуть толще»: обводка тем же цветом утолщает filled-иконку
+        stroke: currentColor;
+        stroke-width: 0.8;
       }
 
       :deep(.u-input__radio-label) {
-        color: var(--yellow-color);
         font-weight: 600;
+      }
+
+      .shop-filters__category-count {
+        color: var(--green-color);
       }
     }
   }
@@ -779,7 +793,7 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     height: toRem(15);
     margin-inline-start: toRem(4);
     flex-shrink: 0;
-    color: var(--yellow-color);
+    color: var(--green-color);
     pointer-events: none;
   }
 
@@ -986,7 +1000,7 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
       align-items: center;
       justify-content: center;
       height: toRem(30);
-      padding: 0 toRem(12);
+      padding: 0 toRem(11.5); // на 1px меньше по ширине (было toRem(12))
       background-color: var(--color);
       color: var(--light-color);
       border: toRem(1) solid var(--border-color);
