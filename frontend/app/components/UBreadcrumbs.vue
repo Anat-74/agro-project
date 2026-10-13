@@ -50,7 +50,14 @@ const hasBackground = computed(() =>
           <NuxtLink v-if="item.to" class="breadcrumbs__link" :to="item.to">
             {{ item.label }}
           </NuxtLink>
-          <span v-else class="breadcrumbs__current">{{ item.label }}</span>
+          <span v-else class="breadcrumbs__current">
+            <Icon
+              name="mdi:file-document-outline"
+              class="breadcrumbs__current-icon"
+              aria-hidden="true"
+            />
+            {{ item.label }}
+          </span>
         </li>
       </ol>
     </div>
@@ -133,13 +140,20 @@ const hasBackground = computed(() =>
     flex-shrink: 0;
   }
 
+  // Текущая страница: иконка слева, без фона, цвет — whitesmoke
   &__current {
-    color: var(--color);
+    display: inline-flex;
+    align-items: center;
+    gap: toRem(6);
+    color: var(--whitesmoke-color);
     font-weight: 600;
-    // «Тусклый фон» — маркер, что текущая страница не кликабельна
-    padding: toRem(3) toRem(10);
-    border-radius: toRem(6);
-    background-color: rgba(255, 255, 255, 0.16);
+  }
+
+  &__current-icon {
+    width: toRem(18);
+    height: toRem(18);
+    flex-shrink: 0;
+    color: inherit;
   }
 
   // ==== Адаптив ====

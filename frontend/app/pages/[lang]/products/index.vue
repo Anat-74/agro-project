@@ -191,10 +191,13 @@ useSeoMeta({
         :background="breadcrumbsBackground"
       />
 
-      <!-- Кнопка-гамбургер — в строке крошек справа (mobile). Переиспользует
-           панель ШАПКИ сайта (запрос → AppHeader), без текста; анимация
-           «линии ↔ крестик» как в шапке (через :is-open). -->
+      <!-- Кнопка-гамбургер — в строке крошек справа, ТОЛЬКО при открытом фильтре
+           (при закрытом шапка сайта видна и сама даёт гамбургер; плюс без sticky
+           у __header absolute-кнопка улетела бы к main). Переиспользует панель
+           ШАПКИ сайта (запрос → AppHeader), без текста; анимация «линии ↔ крестик»
+           как в шапке (через :is-open). -->
       <UButton
+        v-if="filterDialogOpen"
         variant="hamburger"
         class="products-page__hamburger"
         :is-open="hamburgerOpen"
