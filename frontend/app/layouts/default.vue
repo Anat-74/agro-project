@@ -64,9 +64,14 @@ console.debug("global data:", global.value);
 </template>
 
 <style lang="scss" scoped>
+// ВАЖНО: без `min-height: 100dvh`! Каркас sticky-footer уже задан глобально в
+// app.vue (#__nuxt: min-height:100dvh + flex-column; main: flex:1 1 auto).
+// Дублирующий min-height перебивал flex:1 → main всегда был ≥ вьюпорта → подвал
+// уезжал за экран, и на коротких страницах (напр. категория с 2 товарами)
+// оставалась большая пустота. Здесь — только позиционирование: якорь для
+// абсолютного фона (.app-bg) и собственный z-index-контекст.
 .page-main {
   position: relative;
   z-index: 0;
-  min-height: 100dvh;
 }
 </style>

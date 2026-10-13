@@ -9,6 +9,26 @@ const t = computed(() => shopFiltersTranslations[currentLocale.value])
 const pf = computed(() => productFilterTranslations[currentLocale.value])
 const bt = computed(() => buttonTranslations[currentLocale.value])
 
+// Иконка категории по slug — мэппинг в КОДЕ (без нового поля в Strapi).
+// Ключи — реальные slug'и категорий проекта (взяты из API). Неизвестный slug →
+// нейтральная иконка, чтобы ничего не ломалось.
+const CATEGORY_ICONS: Record<string, string> = {
+  frukty: "mdi:food-apple",
+  ovoshhi: "mdi:corn",
+  zelen: "mdi:leaf",
+  korneplody: "mdi:carrot",
+  yagody: "mdi:fruit-cherries",
+  bobovye: "mdi:seed-outline",
+  "orehi-i-suhofrukty": "mdi:peanut",
+  "posadka-i-urozhay": "mdi:sprout",
+  zagotovki: "mdi:package-variant",
+  "varenie-dzhem": "mdi:pot",
+  "kompoty-soki": "mdi:bottle-soda-outline",
+};
+// Иконка пункта «Все товары»
+const ALL_PRODUCTS_ICON = "mdi:basket-outline";
+const categoryIcon = (slug: string) => CATEGORY_ICONS[slug] ?? "mdi:food-variant";
+
 interface Props {
   category?: string
   priceMin?: number
@@ -260,7 +280,15 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
                    анимация [open] + .content через grid-template-rows 0fr→1fr -->
               <div class="shop-filters__content">
                 <ul class="shop-filters__category-list">
-                  <li class="shop-filters__category">
+                  <li
+                    class="shop-filters__category"
+                    :class="{ 'shop-filters__category_is-active': category === '' }"
+                  >
+                    <Icon
+                      :name="ALL_PRODUCTS_ICON"
+                      class="shop-filters__category-icon"
+                      aria-hidden="true"
+                    />
                     <UInput
                       class="shop-filters__category-input"
                       type="radio"
@@ -271,8 +299,24 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
                       @update:model-value="emit('update:category', $event)"
                     />
                     <span class="shop-filters__category-count">({{ totalProducts }})</span>
+                    <Icon
+                      v-if="category === ''"
+                      name="mdi:check"
+                      class="shop-filters__category-check"
+                      aria-hidden="true"
+                    />
                   </li>
-                  <li v-for="cat in categories" :key="cat.slug" class="shop-filters__category">
+                  <li
+                    v-for="cat in categories"
+                    :key="cat.slug"
+                    class="shop-filters__category"
+                    :class="{ 'shop-filters__category_is-active': category === cat.slug }"
+                  >
+                    <Icon
+                      :name="categoryIcon(cat.slug)"
+                      class="shop-filters__category-icon"
+                      aria-hidden="true"
+                    />
                     <UInput
                       class="shop-filters__category-input"
                       type="radio"
@@ -283,6 +327,12 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
                       @update:model-value="emit('update:category', $event)"
                     />
                     <span class="shop-filters__category-count">({{ categoryCount(cat) }})</span>
+                    <Icon
+                      v-if="category === cat.slug"
+                      name="mdi:check"
+                      class="shop-filters__category-check"
+                      aria-hidden="true"
+                    />
                   </li>
                 </ul>
               </div>
@@ -488,7 +538,7 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   @media (max-width: $mobile) {
     position: fixed;
     top: var(--crumb-h, 0px);
-    left: toRem(7); // = контейнерный padding-inline на mobile (при открытом фильтре)
+    left: toRem(5); // = контейнерный padding-inline на mobile (при открытом фильтре)
     z-index: 40;
     // Постоянная высота (без ресайза при скролле). Подвал при открытом фильтре скрыт
     // (CSS body:has(.products-page_filter-open) .base-footer), поэтому панель никого
@@ -526,9 +576,9 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     // скроллить — страница стоит; дошёл до края — страница не уезжает сразу.
     overscroll-behavior: contain;
 
-    // Внутренние боковые отступы — как были у mobile-оверлея (кнопка/сортировка)
+    // Внутренний боковой паддинг панели (просьба: 4px)
     @media (max-width: $mobile) {
-      padding-inline: toRem(9);
+      padding-inline: toRem(4);
     }
 
     // Анимация: desktop — слева направо (translate -100%). Mobile — БЕЗ
@@ -664,9 +714,20 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   }
 
   &__category {
+    position: relative;
     display: flex;
     align-items: center;
     gap: toRem(8);
+
+    // Точку радио скрываем — вместо неё иконка категории. input остаётся в DOM
+    // (фокус/a11y), но не занимает места и невидим; фокус показываем на строке.
+    :deep(.u-input__radio) {
+      position: absolute;
+      width: 0;
+      height: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
 
     // UInput radio внутри строки: имя занимает свободное место, счётчик справа
     :deep(.u-input) {
@@ -679,6 +740,56 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     :deep(.u-input__radio-label) {
       flex: 1;
       font-size: toEm(15);
+      transition: color var(--transition-duration);
+    }
+
+    // Фокус с клавиатуры — на строке (точка скрыта)
+    &:focus-within {
+      outline: toRem(2) solid var(--warning-color);
+      outline-offset: toRem(2);
+      border-radius: toRem(4);
+    }
+
+    // Активная категория: красим иконку и текст
+    &_is-active {
+      .shop-filters__category-icon {
+        color: var(--green-color);
+      }
+
+      :deep(.u-input__radio-label) {
+        color: var(--green-color);
+        font-weight: 600;
+      }
+    }
+  }
+
+  // Иконка категории (вместо точки радио)
+  &__category-icon {
+    width: toRem(18);
+    height: toRem(18);
+    flex-shrink: 0;
+    color: var(--gray-color);
+    transition: color var(--transition-duration);
+  }
+
+  // Галочка активной категории — ВНЕ потока (не сдвигает строку): бейдж на иконке
+  &__category-check {
+    position: absolute;
+    left: toRem(12);
+    bottom: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: toRem(12);
+    height: toRem(12);
+    border-radius: 50%;
+    background-color: var(--bg);
+    color: var(--green-color);
+    pointer-events: none;
+
+    svg {
+      width: toRem(11);
+      height: toRem(11);
     }
   }
 

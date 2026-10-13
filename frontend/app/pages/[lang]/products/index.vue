@@ -188,6 +188,7 @@ useSeoMeta({
     <header class="products-page__header" :aria-label="vh.productsPageHeader">
       <UBreadcrumbs
         :items="[{ label: t.breadcrumbsCurrent }]"
+        icon="mdi:basket-outline"
         :background="breadcrumbsBackground"
       />
 
@@ -499,27 +500,27 @@ useSeoMeta({
     margin-block-end: 0;
   }
 
-  // При открытом фильтре паддинги контейнеров (класс __container) компактнее — 7px
-  // (крошки и контент). Панель фильтров тоже смещаем на 7px (см. ShowShopFilter).
+  // При открытом фильтре паддинги контейнеров (класс __container) компактнее — 5px
+  // (крошки и контент). Панель фильтров тоже смещаем на 5px (см. ShowShopFilter).
   .products-page_filter-open .products-page__container-top,
   .products-page_filter-open .products-page__container-body {
-    padding-inline: toRem(7);
+    padding-inline: toRem(5);
   }
 
-  // Контейнер внутри UBreadcrumbs (:deep) — тоже 7px при открытом фильтре
+  // Контейнер внутри UBreadcrumbs (:deep) — тоже 5px при открытом фильтре
   .products-page_filter-open :deep(.breadcrumbs__container) {
-    padding-inline: toRem(7);
+    padding-inline: toRem(5);
   }
 
   // Панель фильтров — position: fixed (вне потока, слева). Товарную колонку сдвигаем
-  // вправо на контейнерный padding (7) + ширину панели. Колонка flex:1 → её ширина =
+  // вправо на контейнерный padding (5) + ширину панели. Колонка flex:1 → её ширина =
   // оставшееся место, поэтому чем меньше сдвиг, тем шире карточки.
-  // Зазор до панели = сдвиг − правый край панели = 2px (панель 163px: сдвиг 7+165=172,
-  // правый край панели 7+163=170). Объявлено ПОСЛЕ padding-inline выше — перебивает
+  // Зазор до панели = сдвиг − правый край панели = 2px (панель 163px: сдвиг 5+165=170,
+  // правый край панели 5+163=168). Объявлено ПОСЛЕ padding-inline выше — перебивает
   // start-сторону у container-body.
   .products-page_filter-open .products-page__container-body {
     padding-inline-start: calc(
-      toRem(7) + var(--filter-drawer-w, 0px)
+      toRem(5) + var(--filter-drawer-w, 0px)
     );
   }
 
@@ -548,17 +549,16 @@ useSeoMeta({
   }
 
   // Декоративный разделитель: по ширине товарной колонки, иконка — по центру зазора
-  // «последняя карточка → пагинация», сдвинута на 2px ниже центра. Бокс растянут от
-  // низа резерва (listBottom − 64) до верха пагинации (listBottom + 9) → height 73px;
-  // `bottom: -11` (вместо -9) опускает бокс (и иконку) на 2px. align-items:center
-  // центрирует иконку любого размера. Чисто декор — клики не перехватывает.
+  // «последняя карточка → пагинация», сдвинута вниз (bottom: -15 = на 6px ниже центра).
+  // Бокс: от низа резерва (listBottom − 64) до верха пагинации (listBottom + 9) — height 73px;
+  // align-items:center центрирует иконку любого размера. Чисто декор — клики не перехватывает.
   .products-page_filter-open .products-page__divider {
     display: flex;
     align-items: center;
     column-gap: toEm(10);
     position: absolute;
     inset-inline: 0;
-    bottom: toRem(-11);
+    bottom: toRem(-15);
     height: toRem(73);
     color: var(--green-color);
     pointer-events: none;
