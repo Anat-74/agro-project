@@ -188,7 +188,6 @@ useSeoMeta({
     <header class="products-page__header" :aria-label="vh.productsPageHeader">
       <UBreadcrumbs
         :items="[{ label: t.breadcrumbsCurrent }]"
-        icon="mdi:basket-outline"
         :background="breadcrumbsBackground"
       />
 
@@ -377,6 +376,15 @@ useSeoMeta({
         height: toRem(30);
         padding-inline: 0;
         border-radius: toRem(6);
+        // Светлый фон; полосы — ПОЛНОСТЬЮ ПРОЗРАЧНЫЕ (просьба). Всё это — ТОЛЬКО
+        // для этой кнопки (.products-page__hamburger); гамбургер в шапке не затронут.
+        background-color: var(--bg);
+
+        &::before,
+        &::after,
+        :deep(span) {
+          background-color: transparent;
+        }
 
         // Линии — от высоты САМОЙ кнопки (в базовом variant позиции заданы через
         // adaptiveValue от вьюпорта под высоту кнопки в шапке → на 30px жались).

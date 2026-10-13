@@ -4,9 +4,6 @@ import { breadcrumbsTranslations } from '~/locales/breadcrumbs'
 interface Props {
   // Промежуточные/текущий элементы крошек (без «Главной» — она рендерится сама)
   items?: { label: string; to?: string }[]
-  // Иконка ТЕКУЩЕЙ страницы (последний элемент). По умолчанию — «страница»;
-  // страницы передают тематическую (напр. продукты — корзина/продукты)
-  icon?: string
   // Фон — компонент background.background-image из Strapi (webp 1x + avif 2x)
   background?: {
     baseBgImageWebp?: { url?: string } | null
@@ -16,7 +13,6 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   items: () => [],
-  icon: "mdi:file-document-outline",
   background: null,
 })
 
@@ -54,14 +50,7 @@ const hasBackground = computed(() =>
           <NuxtLink v-if="item.to" class="breadcrumbs__link" :to="item.to">
             {{ item.label }}
           </NuxtLink>
-          <span v-else class="breadcrumbs__current">
-            <Icon
-              :name="icon"
-              class="breadcrumbs__current-icon"
-              aria-hidden="true"
-            />
-            {{ item.label }}
-          </span>
+          <span v-else class="breadcrumbs__current">{{ item.label }}</span>
         </li>
       </ol>
     </div>
@@ -144,22 +133,12 @@ const hasBackground = computed(() =>
     flex-shrink: 0;
   }
 
-  // Текущая страница: иконка слева, без фона, цвет — whitesmoke. Не жирный и
-  // приглушённый (opacity) — чтобы отличалась от «Главной».
+  // Текущая страница: без иконки, цвет — whitesmoke, сильно приглушена
+  // (opacity 0.4 ≈ вдвое тише прежних 0.75)
   &__current {
-    display: inline-flex;
-    align-items: center;
-    gap: toRem(6);
     color: var(--whitesmoke-color);
     font-weight: 400;
-    opacity: 0.75;
-  }
-
-  &__current-icon {
-    width: toRem(18);
-    height: toRem(18);
-    flex-shrink: 0;
-    color: inherit;
+    opacity: 0.4;
   }
 
   // ==== Адаптив ====

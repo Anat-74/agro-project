@@ -298,13 +298,13 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
                       :label="t.allProducts"
                       @update:model-value="emit('update:category', $event)"
                     />
-                    <span class="shop-filters__category-count">({{ totalProducts }})</span>
                     <Icon
                       v-if="category === ''"
                       name="mdi:check"
                       class="shop-filters__category-check"
                       aria-hidden="true"
                     />
+                    <span class="shop-filters__category-count">({{ totalProducts }})</span>
                   </li>
                   <li
                     v-for="cat in categories"
@@ -326,13 +326,13 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
                       :label="cat.name"
                       @update:model-value="emit('update:category', $event)"
                     />
-                    <span class="shop-filters__category-count">({{ categoryCount(cat) }})</span>
                     <Icon
                       v-if="category === cat.slug"
                       name="mdi:check"
                       class="shop-filters__category-check"
                       aria-hidden="true"
                     />
+                    <span class="shop-filters__category-count">({{ categoryCount(cat) }})</span>
                   </li>
                 </ul>
               </div>
@@ -750,14 +750,14 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
       border-radius: toRem(4);
     }
 
-    // Активная категория: красим иконку и текст
+    // Активная категория: иконка и текст — ЖЁЛТЫЙ (--yellow-color, НЕ warning)
     &_is-active {
       .shop-filters__category-icon {
-        color: var(--green-color);
+        color: var(--yellow-color);
       }
 
       :deep(.u-input__radio-label) {
-        color: var(--green-color);
+        color: var(--yellow-color);
         font-weight: 600;
       }
     }
@@ -772,25 +772,15 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     transition: color var(--transition-duration);
   }
 
-  // Галочка активной категории — ВНЕ потока (не сдвигает строку): бейдж на иконке
+  // Галочка активной категории — СПРАВА от текста (в потоке, перед счётчиком).
+  // Текст лейбла слева (flex:1), поэтому появление галочки его не сдвигает.
   &__category-check {
-    position: absolute;
-    left: toRem(12);
-    bottom: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: toRem(12);
-    height: toRem(12);
-    border-radius: 50%;
-    background-color: var(--bg);
-    color: var(--green-color);
+    width: toRem(15);
+    height: toRem(15);
+    margin-inline-start: toRem(4);
+    flex-shrink: 0;
+    color: var(--yellow-color);
     pointer-events: none;
-
-    svg {
-      width: toRem(11);
-      height: toRem(11);
-    }
   }
 
   &__category-count {
