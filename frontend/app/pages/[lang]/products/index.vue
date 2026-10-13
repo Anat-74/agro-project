@@ -282,13 +282,10 @@ useSeoMeta({
           :product="prod"
           :index="index"
         />
-        <!-- Декоративный разделитель в зазор «последняя карточка → пагинация»
-             (только mobile при открытом фильтре; см. стили). Чисто декоративный -->
-        <li
-          v-if="pageCount > 1"
-          class="products-page__divider"
-          aria-hidden="true"
-        >
+        <!-- Декоративный разделитель под списком (mobile при открытом фильтре;
+             см. стили). Рендерим ВСЕГДА (не только при пагинации), чтобы декор не
+             пропадал на категориях с одной страницей. Чисто декоративный. -->
+        <li class="products-page__divider" aria-hidden="true">
           <Icon name="mdi:sprout" />
         </li>
       </ul>
@@ -364,16 +361,33 @@ useSeoMeta({
     display: none;
 
     @media (max-width: $mobile) {
-      position: absolute;
-      right: toRem(12);
-      top: 50%;
-      translate: 0 -50%;
-      z-index: 15;
-      display: inline-flex;
-      width: toRem(34);
-      height: toRem(30);
-      padding-inline: 0;
-      border-radius: toRem(6);
+      // &.btn_hamburger — по специфичности перебиваем базовый variant кнопки
+      &.btn_hamburger {
+        position: absolute;
+        right: toRem(12);
+        top: 50%;
+        translate: 0 -50%;
+        z-index: 15;
+        display: inline-flex;
+        width: toRem(34);
+        height: toRem(30);
+        padding-inline: 0;
+        border-radius: toRem(6);
+
+        // Линии — от высоты САМОЙ кнопки (в базовом variant позиции заданы через
+        // adaptiveValue от вьюпорта под высоту кнопки в шапке → на 30px жались).
+        // 25% / 50% / 75% → равномерно при любой высоте. Селектор с двумя классами
+        // перебивает базовые `.btn_hamburger::before/::after` по специфичности.
+        &:not(.btn_hamburger_is-open) {
+          &::before {
+            top: 25%;
+          }
+
+          &::after {
+            bottom: 25%;
+          }
+        }
+      }
     }
   }
 
