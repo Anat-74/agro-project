@@ -380,7 +380,7 @@ useSeoMeta({
         // и тонкий бордер того же цвета. ТОЛЬКО для этой кнопки
         // (.products-page__hamburger); гамбургер в шапке не затронут.
         background-color: var(--transparent-color);
-        border: toRem(1) solid var(--light-color);
+        border: toRem(2) solid var(--light-color);
 
         &::before,
         &::after,

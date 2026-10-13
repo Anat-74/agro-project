@@ -224,6 +224,70 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
   else onRangeChange([localMin.value, clampPrice(Math.max(raw, localMin.value))])
 }
 
+// ===== Пресеты цены (5 чипов) =====
+// Границы — от РЕАЛЬНОГО разброса цен каталога (мин/макс), а не от PRICE_MAX
+// (0..2000 не отражает данные → ползунок был бесполезен). Два лёгких запроса
+// (по 1 товару, price:asc/desc) с кэшем на локаль.
+const { data: priceRange } = useCachedAsyncData(
+  `shop-price-range-${currentLocale.value}`,
+  async () => {
+    const one = (dir: "asc" | "desc") => ({
+      sort: [`price:${dir}`],
+      pagination: { pageSize: 1 },
+      fields: ["price"],
+      filters: { locale: { $eq: currentLocale.value } },
+    } as any)
+    const [lo, hi] = await Promise.all([
+      find("products", one("asc")),
+      find("products", one("desc")),
+    ])
+    return {
+      min: Number((lo.data as any)?.[0]?.price ?? 0),
+      max: Number((hi.data as any)?.[0]?.price ?? 0),
+    }
+  },
+  { ttl: 600_000 },
+)
+
+type PricePreset = { id: string; label: string; min: number; max: number }
+const pricePresets = computed<PricePreset[]>(() => {
+  const r = priceRange.value
+  if (!r || !(r.max > r.min)) return []
+  const min = Math.floor(r.min)
+  const max = Math.ceil(r.max)
+  const span = max - min
+  const b = (i: number) => Math.round(min + (span * i) / 4)
+  const q1 = b(1)
+  const q2 = b(2)
+  const q3 = b(3)
+  return [
+    { id: "all", label: t.value.priceAll, min, max },
+    { id: "q1", label: `≤ ${q1}`, min, max: q1 },
+    { id: "q2", label: `${q1}–${q2}`, min: q1, max: q2 },
+    { id: "q3", label: `${q2}–${q3}`, min: q2, max: q3 },
+    { id: "q4", label: `≥ ${q3}`, min: q3, max },
+  ]
+})
+
+// Активен ли пресет («Все» = текущий диапазон не уже полного)
+const isPricePresetActive = (p: PricePreset) => {
+  if (p.id === "all") return localMin.value <= p.min && localMax.value >= p.max
+  return localMin.value === p.min && localMax.value === p.max
+}
+
+const selectPricePreset = (p: PricePreset) => onRangeChange([p.min, p.max])
+
+// Поля ввода: при фокусе число исчезает (паттерн UInput clearOnFocus — как в
+// категориях «Посадка»/«Заготовки»); при уходе пустым возвращаем прежнее значение.
+const onPriceFieldFocus = (e: FocusEvent) => {
+  const el = e.target as HTMLInputElement
+  el.value = ""
+}
+const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
+  const el = e.target as HTMLInputElement
+  if (el.value === "") el.value = String(key === "min" ? localMin.value : localMax.value)
+}
+
 </script>
 
 <template>
@@ -360,13 +424,24 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
               </details>
               <div class="shop-filters__content">
                 <div class="shop-filters__price">
-                  <UInput
-                    type="range-dual"
-                    :min="0"
-                    :max="PRICE_MAX"
-                    :model-value="[localMin, localMax]"
-                    @update:model-value="onRangeChange"
-                  />
+                  <!-- Пресеты-диапазоны (5) — основной способ выбора на мобильном -->
+                  <ul v-if="pricePresets.length" class="shop-filters__price-presets">
+                    <li v-for="p in pricePresets" :key="p.id">
+                      <button
+                        type="button"
+                        class="shop-filters__price-preset"
+                        :class="{
+                          'shop-filters__price-preset_is-active': isPricePresetActive(p),
+                        }"
+                        :aria-pressed="isPricePresetActive(p)"
+                        @click="selectPricePreset(p)"
+                      >
+                        {{ p.label }}
+                      </button>
+                    </li>
+                  </ul>
+                  <!-- Свой диапазон — числовые поля (альтернатива пресетам).
+                       При фокусе число исчезает (как в категориях Посадки/Заготовок). -->
                   <div class="shop-filters__price-values">
                     <input
                       class="shop-filters__price-value-input"
@@ -376,6 +451,8 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
                       step="1"
                       :value="localMin"
                       aria-label="Минимальная цена"
+                      @focus="onPriceFieldFocus"
+                      @blur="onPriceFieldBlur('min', $event)"
                       @input="onPriceInput('min', $event)"
                       @change="onPriceInput('min', $event)"
                     >
@@ -388,6 +465,8 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
                       step="1"
                       :value="localMax"
                       aria-label="Максимальная цена"
+                      @focus="onPriceFieldFocus"
+                      @blur="onPriceFieldBlur('max', $event)"
                       @input="onPriceInput('max', $event)"
                       @change="onPriceInput('max', $event)"
                     >
@@ -802,29 +881,65 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
     color: var(--gray-color);
   }
 
-  // ==== Цена (двойной ползунок — трек/ручки в UInput range-dual) ====
-  // Вертикальный/горизонтальный запас под ручки теперь ВНУТРИ трека (UInput),
-  // поэтому у блока цены паддингов нет. Иначе: padding-block-end с content-box
-  // оставлял 6px-«хвост», в который помещалась линия слайдера (4px) — секция
-  // не схлопывалась полностью, а верх ручки резался overflow:hidden.
+  // ==== Цена: пресеты-чипы + поля «своего диапазона» (ползунок убран) ====
   &__price {
     padding: 0;
   }
 
+  // Чипы-диапазоны (5)
+  &__price-presets {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: toRem(8);
+
+    li {
+      display: flex;
+    }
+  }
+
+  &__price-preset {
+    padding: toRem(7) toRem(12);
+    border: toRem(1) solid var(--border-color);
+    border-radius: toRem(20);
+    background: var(--whitesmoke-color);
+    color: var(--gray-color);
+    font-size: toEm(13);
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background-color var(--transition-duration),
+      border-color var(--transition-duration),
+      color var(--transition-duration);
+
+    &_is-active {
+      background: var(--green-color);
+      border-color: var(--green-color);
+      color: var(--light-color);
+    }
+
+    @include hover {
+      border-color: var(--success-color);
+    }
+  }
+
+  // Свой диапазон — числовые поля (альтернатива пресетам)
   &__price-values {
     display: flex;
     align-items: center;
     gap: toRem(8);
     font-size: toEm(15);
     color: var(--color);
-    // Числа стоимости — ПОД инпутом с отступом от ползунка (было 5px — прижато)
     margin-block-start: toRem(12);
   }
 
-  // Инпуты диапазона цены (user может ввести диапазон руками)
+  // Инпуты «своего диапазона»: ~+40% по высоте (крупнее под палец), тянутся по ширине
   &__price-value-input {
-    width: toEm(72);
-    padding: toEm(2) toEm(6);
+    flex: 1 1 0;
+    min-width: 0;
+    padding: toEm(6) toEm(8);
     border: toRem(1) solid var(--border-color);
     border-radius: toRem(4);
     color: var(--color);
@@ -1000,7 +1115,7 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
       align-items: center;
       justify-content: center;
       height: toRem(30);
-      padding: 0 toRem(11.5); // на 1px меньше по ширине (было toRem(12))
+      padding: 0 toRem(10.5); // ширина на 2px меньше (было 11.5)
       background-color: var(--color);
       color: var(--light-color);
       border: toRem(1) solid var(--border-color);

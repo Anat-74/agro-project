@@ -7,6 +7,7 @@ export const shopFiltersTranslations: Record<LocaleCode, {
   categoriesTitle: string
   allProducts: string
   priceTitle: string
+  priceAll: string
   tagsTitle: string
   saleTitle: string
   discountBadge: string
@@ -28,6 +29,7 @@ export const shopFiltersTranslations: Record<LocaleCode, {
     categoriesTitle: "Все категории",
     allProducts: "Все товары",
     priceTitle: "Цена",
+    priceAll: "Все",
     tagsTitle: "Популярные теги",
     saleTitle: "Товары со скидкой",
     discountBadge: "Скидка 79%",
@@ -49,6 +51,7 @@ export const shopFiltersTranslations: Record<LocaleCode, {
     categoriesTitle: "Усе катэгорыі",
     allProducts: "Усе тавары",
     priceTitle: "Цана",
+    priceAll: "Усе",
     tagsTitle: "Папулярныя тэгі",
     saleTitle: "Тавары са скідкай",
     discountBadge: "Зніжка 79%",
