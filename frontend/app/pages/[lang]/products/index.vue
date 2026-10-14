@@ -93,6 +93,9 @@ const PAGE_SIZE = 12;
 const productsKey = () =>
   `shop-products-${currentLocale.value}-${category.value}-${sort.value}-${priceMin.value}-${priceMax.value}-${tags.value.join(",")}-${page.value}`
 
+// Максимальная цена (верх диапазона; согласовано с useProductsFilters.PRICE_MAX)
+const PRICE_MAX = 2000
+
 const { data: productsData, status } = useCachedAsyncData(
   productsKey,
   async () => {
@@ -105,10 +108,10 @@ const { data: productsData, status } = useCachedAsyncData(
         { subcategory: { category: { slug: { $eq: category.value } } } },
       ]
     }
-    if (priceMin.value > 0 || priceMax.value < 2000) {
+    if (priceMin.value > 0 || priceMax.value < PRICE_MAX) {
       filters.price = {}
       if (priceMin.value > 0) filters.price.$gte = priceMin.value
-      if (priceMax.value < 2000) filters.price.$lte = priceMax.value
+      if (priceMax.value < PRICE_MAX) filters.price.$lte = priceMax.value
     }
     return find("products", {
       filters,
@@ -133,6 +136,50 @@ watch(
     if (pc && pg > pc) page.value = 1
   },
 )
+
+// Название активной категории (для пустого экрана) — маленький кэшируемый запрос
+const { data: activeCategoryName } = useCachedAsyncData(
+  computed(() => `shop-category-name-${currentLocale.value}-${category.value}`),
+  async () => {
+    if (!category.value) return ""
+    const res = await find("categories", {
+      filters: {
+        slug: { $eq: category.value },
+        locale: { $eq: currentLocale.value },
+      },
+      fields: ["name"],
+      pagination: { pageSize: 1 },
+    } as any)
+    return (res.data as any)?.[0]?.name ?? ""
+  },
+  { ttl: 600_000 },
+)
+
+// Активные фильтры (кроме сортировки) — показываем на «пустом» экране,
+// чтобы сразу было видно, из-за чего ничего не найдено
+const activeFilters = computed(() => {
+  const parts: string[] = []
+  if (category.value) {
+    parts.push(`${t.value.filterCategory}: ${activeCategoryName.value || category.value}`)
+  }
+  if (priceMin.value > 0 || priceMax.value < PRICE_MAX) {
+    parts.push(`${t.value.priceTitle}: ${priceMin.value}–${priceMax.value}`)
+  }
+  if (tags.value.length) {
+    parts.push(`${t.value.filterTags}: ${tags.value.join(", ")}`)
+  }
+  return parts
+})
+
+const hasActiveFilters = computed(() => activeFilters.value.length > 0)
+
+// Сброс фильтров (категория/цена/теги) — кнопка на пустом экране
+const resetFilters = () => {
+  category.value = ""
+  priceMin.value = 0
+  priceMax.value = PRICE_MAX
+  tags.value = []
+}
 
 // Лоадер только когда ДАННЫХ ещё нет (первая загрузка): при повторных запросах
 // (смена фильтра/страницы) старые данные остаются — контент не «мигает».
@@ -303,11 +350,22 @@ useSeoMeta({
         </li>
       </ul>
 
-      <!-- Пусто — <span> с display:block: короткое сообщение без сильной смысловой
-           нагрузки (не параграф прозы); div не используем (для нас div = wrapper) -->
-      <span v-else-if="status === 'success'" class="products-page__empty">
-        {{ t.noResults }}
-      </span>
+      <!-- Пусто: сообщение + активные фильтры + сброс (чтобы сразу было видно,
+           из-за чего ничего не найдено) -->
+      <div v-else-if="status === 'success'" class="products-page__empty">
+        <p class="products-page__empty-title">{{ t.noResults }}</p>
+        <p v-if="hasActiveFilters" class="products-page__empty-filters">
+          {{ t.filtersActive }}: {{ activeFilters.join(" · ") }}
+        </p>
+        <UButton
+          v-if="hasActiveFilters"
+          variant="plain"
+          class="products-page__empty-reset"
+          @click="resetFilters"
+        >
+          {{ t.resetFilters }}
+        </UButton>
+      </div>
 
       <!-- Пагинация — вне потока (absolute), у низа контент-зоны: последний элемент
            удобно позиционировать; якорь — container-body (position: relative) -->
@@ -473,19 +531,55 @@ useSeoMeta({
 
   &__empty {
     // Состояние «ничего не найдено» — занимает колонку результатов (как ul).
-    // span + display:block: лёгкое сообщение без смысловой нагрузки (не div/не p)
     flex: 1;
     min-width: 0;
-    display: block;
+    display: grid;
+    justify-items: center;
+    gap: toRem(12);
     text-align: center;
     padding-block: toEm(40);
-    font-size: toEm(18);
     color: var(--gray-color);
 
     // Desktop (flex-row): не растягиваться по высоте под сайдбар
     // (на mobile колонка сама даёт полную ширину)
     @media (min-width: $mobile) {
       align-self: flex-start;
+    }
+  }
+
+  &__empty-title {
+    margin: 0;
+    font-size: toEm(18);
+    color: var(--gray-color);
+  }
+
+  // Активные фильтры — чтобы сразу было видно, из-за чего пусто
+  &__empty-filters {
+    margin: 0;
+    max-width: toRem(320);
+    font-size: toEm(14);
+    line-height: 1.5;
+    color: var(--gray-color);
+  }
+
+  &__empty-reset {
+    display: inline-flex;
+    align-items: center;
+    padding: toRem(8) toRem(16);
+    border: toRem(1) solid var(--border-color);
+    border-radius: toRem(20);
+    background-color: var(--bg);
+    color: var(--color);
+    font-size: toEm(14);
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      border-color var(--transition-duration),
+      background-color var(--transition-duration);
+
+    @include hover {
+      border-color: var(--green-color);
+      background-color: var(--bg-product);
     }
   }
 }
