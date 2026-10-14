@@ -1,4 +1,4 @@
-import { ref, watch, nextTick } from "vue"
+import { ref, watch } from "vue"
 import type { Ref } from "vue"
 import type { RouteLocationNormalizedLoaded, Router } from "vue-router"
 
@@ -25,6 +25,22 @@ const toPrice = (v: unknown, d: number) => {
 }
 const eq = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
 
+// Ключи фильтров в URL — для сравнения «собираемый query vs текущий URL»
+const FILTER_KEYS = ["category", "sort", "priceMin", "priceMax", "tags", "page"] as const
+
+// Каноничное строковое представление значения query (массивы сортируем, чтобы
+// порядок тегов не давал ложных различий)
+const normParam = (v: unknown): string => {
+  if (v === undefined || v === null || v === "") return ""
+  const arr = Array.isArray(v) ? v.map(String).filter(Boolean).sort() : [String(v)]
+  return arr.join(",")
+}
+
+// Совпадают ли фильтры собираемого query и текущего URL (посторонние парам, вроде
+// utm, не учитываем)
+const sameFilters = (a: Record<string, unknown>, b: Record<string, unknown>) =>
+  FILTER_KEYS.every((k) => normParam(a[k]) === normParam(b[k]))
+
 // Единый источник истины — URL query. Родитель (products/index.vue) получает
 // реактивные refs и пишет их вниз (ShowShopFilter) / в productsKey. Смена
 // фильтра → router.replace (page сброс в 1), пагинация → router.replace (page),
@@ -40,8 +56,6 @@ export const useProductsFilters = (
   const priceMax = ref(PRICE_MAX)
   const tags = ref<string[]>([])
   const page = ref(1)
-
-  let applyingUrl = false
 
   const buildQuery = (): Record<string, string | string[]> => {
     const q: Record<string, string | string[]> = {}
@@ -78,24 +92,29 @@ export const useProductsFilters = (
     if (page.value !== pg) page.value = pg
   }
 
+  // Пуш только если фильтры реально отличаются от текущего URL. Раньше здесь стоял
+  // флаг `applyingUrl`, который ГЛОТАЛ пользовательское изменение в момент
+  // синхронизации URL→refs (быстрые клики/навигация): тогда `page` не сбрасывался
+  // → запрос уходил на пустую страницу → «Товары не найдены».
   const pushQuery = () => {
     if (!import.meta.client) return
-    router.replace({ query: buildQuery() })
+    const q = buildQuery()
+    if (sameFilters(q, route.query)) return
+    router.replace({ query: q })
   }
 
-  // Пользователь меняет фильтр (не из URL) → сброс на 1-ю страницу + запись в URL
+  // Смена фильтра → ВСЕГДА сброс на 1-ю страницу + запись в URL (без гейта по флагу)
   watch([category, sort, priceMin, priceMax, tags], () => {
-    if (!import.meta.client || applyingUrl) return
-    page.value = 1
+    if (!import.meta.client) return
+    if (page.value !== 1) page.value = 1
     pushQuery()
   })
 
   // Смена страницы (пагинация / сброс фильтра) → URL + скролл к верху
   watch(page, () => {
     if (!import.meta.client) return
-    // Скролл — ВСЕГДА (и при пагинации через URL-навигацию, и при сбросе фильтра).
-    // pushQuery — только если изменение не пришло из URL (иначе эхо-loop).
-    if (!applyingUrl) pushQuery()
+    // Скролл — ВСЕГДА; pushQuery — только если URL реально другой (иначе эхо)
+    pushQuery()
     window.scrollTo({ top: 0, behavior: "smooth" })
   })
 
@@ -104,11 +123,7 @@ export const useProductsFilters = (
     () => route.query,
     () => {
       if (!import.meta.client) return
-      applyingUrl = true
       applyQuery(route.query)
-      nextTick(() => {
-        applyingUrl = false
-      })
     },
     { deep: true },
   )

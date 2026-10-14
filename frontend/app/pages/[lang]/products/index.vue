@@ -124,6 +124,16 @@ const products = computed(() => productsData.value?.data ?? [])
 const pageCount = computed(() => productsData.value?.meta?.pagination?.pageCount || 1)
 const resultsCount = computed(() => productsData.value?.meta?.pagination?.total ?? 0)
 
+// Страховка от «пустой» страницы: если запрошенная страница больше последней
+// (перешли по ссылке с ?page=N, либо фильтр сузился → страниц стало меньше) —
+// возвращаемся на 1-ю. Иначе показывалось «Товары не найдены» при meta.total > 0.
+watch(
+  [() => productsData.value?.meta?.pagination?.pageCount, page],
+  ([pc, pg]) => {
+    if (pc && pg > pc) page.value = 1
+  },
+)
+
 // Лоадер только когда ДАННЫХ ещё нет (первая загрузка): при повторных запросах
 // (смена фильтра/страницы) старые данные остаются — контент не «мигает».
 const isLoading = computed(

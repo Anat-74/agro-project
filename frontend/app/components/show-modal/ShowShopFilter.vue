@@ -668,8 +668,10 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     // горизонтальный скроллбар у панели; y — auto (внутренний вертикальный скролл).
     overflow: hidden auto;
     scrollbar-gutter: stable;
-    // Полосу скролла скрываем: индикатор прокрутки — шеврон-кнопка внизу панели
-    scrollbar-width: none;
+    // Полоса скролла — тонкая и ЖЁЛТАЯ (тест). Стоит у правого края панели, т.е.
+    // ровно в промежутке между полем фильтров и полем карточек.
+    scrollbar-width: thin;
+    scrollbar-color: var(--yellow-color) transparent;
     // Скролл фильтров не «пробрасывается» на страницу: пока в панели есть что
     // скроллить — страница стоит; дошёл до края — страница не уезжает сразу.
     overscroll-behavior: contain;
@@ -827,9 +829,12 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
       pointer-events: none;
     }
 
-    // UInput radio внутри строки: имя занимает свободное место, счётчик справа
+    // UInput radio внутри строки: имя занимает свободное место, счётчик справа.
+    // min-width:0 обязателен: без него flex-элемент не сжимается ниже min-content
+    // (самое длинное слово) → строка шире панели → счётчик обрезался.
     :deep(.u-input) {
       flex: 1;
+      min-width: 0;
       display: flex;
       flex-direction: row;
       align-items: center;
@@ -839,6 +844,8 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     // мобильном), поэтому 2-й аргумент 14 → на 390px получается ≈15px (было 13.24px).
     :deep(.u-input__radio-label) {
       flex: 1;
+      min-width: 0;
+      overflow-wrap: anywhere;
       font-size: toEm(15, 14);
       transition: color var(--transition-duration);
     }
@@ -853,15 +860,10 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     // Активная категория: иконка СОХРАНЯЕТ свой цвет (задан inline), но чуть толще;
     // текст жирнее; галочка и счётчик — зелёные.
     &_is-active {
-      // Круглый мягкий «ореол» вокруг иконки: outline НЕ влияет на лэйаут (иконка
-      // не сжимается), но визуально делает элемент чуть крупнее. border-radius 50% →
-      // ореол круглый.
+      // Иконка чуть толще (без бордера/ореола — по просьбе)
       .shop-filters__category-icon {
         stroke: currentColor;
         stroke-width: 0.8;
-        border-radius: 50%;
-        outline: toRem(1) solid color-mix(in srgb, var(--color) 22%, transparent);
-        outline-offset: toRem(1);
       }
 
       :deep(.u-input__radio-label) {
@@ -895,6 +897,7 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
   }
 
   &__category-count {
+    flex-shrink: 0; // счётчик не сжимаем — иначе режется
     font-size: toEm(13);
     color: var(--gray-color);
   }
@@ -947,23 +950,35 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
   &__price-values {
     display: flex;
     align-items: center;
+    justify-content: center; // группа полей — по центру
     gap: toRem(8);
     font-size: toEm(15);
     color: var(--color);
     margin-block-start: toRem(12);
   }
 
-  // Инпуты «своего диапазона»: ~+40% по высоте (крупнее под палец), тянутся по ширине
+  // Инпуты «своего диапазона»: ещё +8px по высоте, крупнее скругление, фокус
   &__price-value-input {
     flex: 1 1 0;
+    max-width: toRem(80);
     min-width: 0;
-    padding: toEm(6) toEm(8);
+    padding: toEm(10) toEm(8);
     border: toRem(1) solid var(--border-color);
-    border-radius: toRem(4);
+    border-radius: toRem(8);
     color: var(--color);
     background-color: var(--bg);
     text-align: center;
     font-size: toEm(14);
+    transition:
+      border-color var(--transition-duration),
+      box-shadow var(--transition-duration);
+
+    &:focus-visible {
+      outline: none;
+      border-color: var(--yellow-color);
+      box-shadow: 0 0 0 toRem(2) color-mix(in srgb, var(--yellow-color) 35%, transparent);
+    }
+
     // Скрыть «стрелочки» number в некоторых браузерах (аккуратно, только webkit)
     &::-webkit-outer-spin-button,
     &::-webkit-inner-spin-button {
@@ -998,7 +1013,7 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
   // через UScrollNav (mode="toggle") — только пока контент не помещается целиком.
   &__scroll-nav {
     position: sticky;
-    bottom: toRem(8);
+    bottom: 0; // в самый низ панели (было toRem(8))
     z-index: 5;
     display: flex;
     align-items: center;
@@ -1011,7 +1026,7 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     color: var(--color);
     border: toRem(1) solid var(--border-color);
     border-radius: 50%;
-    box-shadow: 0 toRem(2) toRem(10) rgba(0, 0, 0, 0.18);
+    box-shadow: 0 toRem(4) toRem(18) rgba(0, 0, 0, 0.3); // тень крупнее
     cursor: pointer;
     transition:
       transform var(--transition-duration),
