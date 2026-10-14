@@ -93,9 +93,6 @@ const PAGE_SIZE = 12;
 const productsKey = () =>
   `shop-products-${currentLocale.value}-${category.value}-${sort.value}-${priceMin.value}-${priceMax.value}-${tags.value.join(",")}-${page.value}`
 
-// Максимальная цена (верх диапазона; согласовано с useProductsFilters.PRICE_MAX)
-const PRICE_MAX = 2000
-
 const { data: productsData, status } = useCachedAsyncData(
   productsKey,
   async () => {
@@ -108,10 +105,10 @@ const { data: productsData, status } = useCachedAsyncData(
         { subcategory: { category: { slug: { $eq: category.value } } } },
       ]
     }
-    if (priceMin.value > 0 || priceMax.value < PRICE_MAX) {
+    if (priceMin.value > 0 || priceMax.value < PRODUCTS_PRICE_MAX) {
       filters.price = {}
       if (priceMin.value > 0) filters.price.$gte = priceMin.value
-      if (priceMax.value < PRICE_MAX) filters.price.$lte = priceMax.value
+      if (priceMax.value < PRODUCTS_PRICE_MAX) filters.price.$lte = priceMax.value
     }
     return find("products", {
       filters,
@@ -163,7 +160,7 @@ const activeFilters = computed(() => {
   if (category.value) {
     parts.push(`${t.value.filterCategory}: ${activeCategoryName.value || category.value}`)
   }
-  if (priceMin.value > 0 || priceMax.value < PRICE_MAX) {
+  if (priceMin.value > 0 || priceMax.value < PRODUCTS_PRICE_MAX) {
     parts.push(`${t.value.priceTitle}: ${priceMin.value}–${priceMax.value}`)
   }
   if (tags.value.length) {
@@ -178,7 +175,7 @@ const hasActiveFilters = computed(() => activeFilters.value.length > 0)
 const resetFilters = () => {
   category.value = ""
   priceMin.value = 0
-  priceMax.value = PRICE_MAX
+  priceMax.value = PRODUCTS_PRICE_MAX
   tags.value = []
 }
 

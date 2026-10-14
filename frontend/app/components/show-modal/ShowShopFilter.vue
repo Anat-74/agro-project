@@ -195,10 +195,21 @@ watch(width, (w) => {
 
 const saleProducts = computed(() => (saleData.value?.data as Product[] | undefined) ?? [])
 
-// ===== Диапазон цены (двойной ползунок — UInput range-dual) =====
-const PRICE_MAX = 2000
+// ===== Диапазон цены (пресеты-чипы + поля «своего диапазона») =====
+// Локальное состояние полей/чипов; синхронизируется с props (см. watch ниже).
 const localMin = ref(props.priceMin)
 const localMax = ref(props.priceMax)
+
+// Внешние изменения (кнопка «Сбросить фильтры» на странице, back/forward, прямая
+// ссылка) должны отражаться в полях/чипах — иначе панель показывает старый
+// диапазон, а выдача уже без него.
+watch(
+  () => [props.priceMin, props.priceMax] as const,
+  ([mn, mx]) => {
+    if (mn !== localMin.value) localMin.value = mn
+    if (mx !== localMax.value) localMax.value = mx
+  },
+)
 
 const onRangeChange = (range: [number, number]) => {
   localMin.value = range[0]
@@ -208,9 +219,8 @@ const onRangeChange = (range: [number, number]) => {
 }
 
 // Ввод диапазона руками (input type=number). Коммит по @change (blur/Enter),
-// кламп в [0, PRICE_MAX] и min ≤ max; ползунок подхватывает через
-// :model-value="[localMin, localMax]" → onRangeChange.
-const clampPrice = (v: number) => Math.min(PRICE_MAX, Math.max(0, Math.round(v || 0)))
+// кламп в [0, PRODUCTS_PRICE_MAX] и min ≤ max.
+const clampPrice = (v: number) => Math.min(PRODUCTS_PRICE_MAX, Math.max(0, Math.round(v || 0)))
 
 // Сортировка в шапке панели: USelect через v-model (прокси) — эмитим update:sort.
 const sortLocal = computed<string>({
@@ -226,9 +236,9 @@ const onPriceInput = (key: "min" | "max", e: Event) => {
 }
 
 // ===== Пресеты цены (5 чипов) =====
-// Границы — от РЕАЛЬНОГО разброса цен каталога (мин/макс), а не от PRICE_MAX
-// (0..2000 не отражает данные → ползунок был бесполезен). Два лёгких запроса
-// (по 1 товару, price:asc/desc) с кэшем на локаль.
+// Границы — от РЕАЛЬНОГО разброса цен каталога (мин/макс), а не от общего
+// PRODUCTS_PRICE_MAX: реальные цены ~0.5–19, «0..2000» не отражает данные.
+// Два лёгких запроса (по 1 товару, price:asc/desc) с кэшем на локаль.
 const { data: priceRange } = useCachedAsyncData(
   `shop-price-range-${currentLocale.value}`,
   async () => {
@@ -410,7 +420,7 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
               </div>
             </section>
 
-            <!-- Цена (двойной ползунок — UInput range-dual) -->
+            <!-- Цена: пресеты-чипы + поля «своего диапазона» -->
             <section
               class="shop-filters__section"
               aria-labelledby="shop-filters-price-title"
@@ -449,7 +459,7 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
                       class="shop-filters__price-value-input"
                       type="number"
                       :min="0"
-                      :max="PRICE_MAX"
+                      :max="PRODUCTS_PRICE_MAX"
                       step="1"
                       :value="localMin"
                       aria-label="Минимальная цена"
@@ -463,7 +473,7 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
                       class="shop-filters__price-value-input"
                       type="number"
                       :min="0"
-                      :max="PRICE_MAX"
+                      :max="PRODUCTS_PRICE_MAX"
                       step="1"
                       :value="localMax"
                       aria-label="Максимальная цена"
@@ -791,9 +801,9 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     transition: grid-template-rows 0.3s;
 
     > * {
-      // min-height:0 обязателен: без него grid-ряд 0fr не может схлопнуться
-      // ниже min-content ребёнка — у цены это линия слайдера (4px), поэтому
-      // при закрытии details ползунок оставался виден, а числа обрезались.
+      // min-height:0 обязателен: без него grid-ряд 0fr не схлопывается ниже
+      // min-content ребёнка (высокие элементы — поля цены и т.п. — торчали бы
+      // из закрытой секции).
       min-height: 0;
       overflow: hidden;
     }
@@ -904,11 +914,7 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     color: var(--gray-color);
   }
 
-  // ==== Цена: пресеты-чипы + поля «своего диапазона» (ползунок убран) ====
-  &__price {
-    padding: 0;
-  }
-
+  // ==== Цена: пресеты-чипы + поля «своего диапазона» ====
   // Чипы-диапазоны (5)
   &__price-presets {
     list-style: none;

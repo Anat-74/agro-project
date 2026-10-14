@@ -12,7 +12,9 @@ export interface ProductsFiltersState {
 }
 
 const DEFAULT_SORT = "name:asc"
-const PRICE_MAX = 2000
+// Единый максимум цены (сентинел «без верхней границы»). Экспортируется, чтобы
+// панель и страница не дублировали 2000 — рассинхрон ломал бы фильтр цены.
+export const PRODUCTS_PRICE_MAX = 2000
 const SORT_WHITELIST = ["name:asc", "price:asc", "price:desc"]
 
 const toInt = (v: unknown, d: number) => {
@@ -21,7 +23,7 @@ const toInt = (v: unknown, d: number) => {
 }
 const toPrice = (v: unknown, d: number) => {
   const n = Number(v)
-  return Number.isFinite(n) ? Math.min(PRICE_MAX, Math.max(0, Math.round(n))) : d
+  return Number.isFinite(n) ? Math.min(PRODUCTS_PRICE_MAX, Math.max(0, Math.round(n))) : d
 }
 const eq = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
 
@@ -53,7 +55,7 @@ export const useProductsFilters = (
   const category = ref("")
   const sort = ref(DEFAULT_SORT)
   const priceMin = ref(0)
-  const priceMax = ref(PRICE_MAX)
+  const priceMax = ref(PRODUCTS_PRICE_MAX)
   const tags = ref<string[]>([])
   const page = ref(1)
 
@@ -62,7 +64,7 @@ export const useProductsFilters = (
     if (category.value) q.category = category.value
     if (sort.value !== DEFAULT_SORT) q.sort = sort.value
     if (priceMin.value !== 0) q.priceMin = String(priceMin.value)
-    if (priceMax.value !== PRICE_MAX) q.priceMax = String(priceMax.value)
+    if (priceMax.value !== PRODUCTS_PRICE_MAX) q.priceMax = String(priceMax.value)
     if (tags.value.length) q.tags = [...tags.value]
     if (page.value > 1) q.page = String(page.value)
     return q
@@ -75,7 +77,7 @@ export const useProductsFilters = (
         ? q.sort
         : DEFAULT_SORT
     let mn = toPrice(q.priceMin, 0)
-    const mx = toPrice(q.priceMax, PRICE_MAX)
+    const mx = toPrice(q.priceMax, PRODUCTS_PRICE_MAX)
     if (mn > mx) mn = mx
     const tg = Array.isArray(q.tags)
       ? q.tags.filter((v): v is string => typeof v === "string" && !!v)

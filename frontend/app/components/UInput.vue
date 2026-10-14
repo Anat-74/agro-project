@@ -1,5 +1,5 @@
 <script setup lang="ts">
-type InputType = 'text' | 'textarea' | 'search' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'checkbox' | 'radio' | 'range' | 'range-dual'
+type InputType = 'text' | 'textarea' | 'search' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'checkbox' | 'radio' | 'range'
 
 interface Props {
   type?: InputType
@@ -79,55 +79,6 @@ const onCheckboxChange = (e: Event) => {
   }
 }
 
-// ===== Двойной ползунок (range-dual): модель — кортеж [min, max] =====
-const modelTuple = computed<[number, number]>(() => {
-  if (Array.isArray(model.value)) {
-    return [Number(model.value[0] ?? min), Number(model.value[1] ?? max)]
-  }
-  return [min, max]
-})
-const minPct = computed(() => ((modelTuple.value[0] - min) / (max - min)) * 100)
-const maxPct = computed(() => 100 - ((modelTuple.value[1] - min) / (max - min)) * 100)
-// Ручка (16px + 2px бордер = 20px, радиус 10px) должна помещаться в треке:
-// позиционируем её внутри «рабочей» зоны (ширина контейнера минус 2×радиус),
-// чтобы 0%/100% совпадали с центрами ручек и не обрезались overflow:hidden
-// родителя. Радиус дублируем константой (px) для CSS-вычислений заливки.
-const THUMB_R = 10
-
-// Ручки не пересекаются: min не может стать больше max (и наоборот)
-const onRangeMinInput = (e: Event) => {
-  const v = Number((e.target as HTMLInputElement).value)
-  model.value = [v, Math.max(v, modelTuple.value[1])]
-}
-const onRangeMaxInput = (e: Event) => {
-  const v = Number((e.target as HTMLInputElement).value)
-  model.value = [Math.min(v, modelTuple.value[0]), v]
-}
-
-// Клик по треку — перемещение БЛИЖАЙШЕЙ ручки (как в одинарном range у colorMode).
-// Инпуты range-dual имеют pointer-events:none (иначе верхний перехватывал бы оба),
-// поэтому клик ловим на самой обёртке-треке: считаем % от offsetX → значение и
-// двигаем ту ручку, что ближе, с сохранением min ≤ max.
-const rangeDualTrack = useTemplateRef<HTMLElement>("rangeDualTrack")
-const onRangeDualTrackClick = (e: MouseEvent) => {
-  const track = rangeDualTrack.value
-  if (!track) return
-  const rect = track.getBoundingClientRect()
-  // Ручки ездят по «рабочей» зоне (внутри отступа = радиус ручки), поэтому
-  // и клик-позицию считаем от неё — иначе клик у края даёт неверное значение.
-  const innerLeft = rect.left + THUMB_R
-  const innerWidth = rect.width - THUMB_R * 2
-  const ratio = (e.clientX - innerLeft) / innerWidth
-  const raw = min + ratio * (max - min)
-  const value = Math.min(max, Math.max(min, Math.round(raw / step) * step))
-  const curMin = modelTuple.value[0]
-  const curMax = modelTuple.value[1]
-  if (Math.abs(value - curMin) <= Math.abs(value - curMax)) {
-    model.value = [Math.min(value, curMax), curMax]
-  } else {
-    model.value = [curMin, Math.max(value, curMin)]
-  }
-}
 </script>
 
 <template>
@@ -201,37 +152,6 @@ const onRangeDualTrackClick = (e: MouseEvent) => {
         :disabled="disabled"
         :aria-label="ariaLabel || undefined"
         class="u-input__range"
-      >
-    </div>
-
-    <!-- Двойной ползунок (диапазон): модель — кортеж [min, max] -->
-    <div v-else-if="type === 'range-dual'" ref="rangeDualTrack" class="u-input__range-dual-track" @click="onRangeDualTrackClick">
-      <div
-        class="u-input__range-dual-fill"
-        :style="{
-          left: `calc(${THUMB_R}px + (100% - ${THUMB_R * 2}px) * ${minPct} / 100)`,
-          right: `calc(${THUMB_R}px + (100% - ${THUMB_R * 2}px) * ${maxPct} / 100)`,
-        }"
-      />
-      <input
-        type="range"
-        :min="min"
-        :max="max"
-        :step="step"
-        :value="modelTuple[0]"
-        :disabled="disabled"
-        class="u-input__range-dual-input u-input__range-dual-input_min"
-        @input="onRangeMinInput"
-      >
-      <input
-        type="range"
-        :min="min"
-        :max="max"
-        :step="step"
-        :value="modelTuple[1]"
-        :disabled="disabled"
-        class="u-input__range-dual-input u-input__range-dual-input_max"
-        @input="onRangeMaxInput"
       >
     </div>
 
@@ -507,86 +427,6 @@ const onRangeDualTrackClick = (e: MouseEvent) => {
       height: toRem(6);
       border-radius: toRem(4);
       background: var(--gray-color);
-    }
-  }
-
-  // ===== Двойной ползунок (range-dual) =====
-  &__range-dual-track {
-    position: relative;
-    // content-box обязателен: глобально box-sizing:border-box, а при height:4 +
-    // padding-block 8×2 content схлопнулся бы в 0 и линия (background-clip:
-    // content-box) не рисовалась. content-box → content 4px, линия по центру 20px.
-    box-sizing: content-box;
-    height: toRem(4);
-    // Воздух под ручку (20px) ВНУТРИ трека: content 4px + padding 8px×2 = 20px,
-    // линия по центру. Так ручка целиком помещается в треке и не режется
-    // overflow:hidden у прародителя (details-коллапс), и при закрытии секции
-    // трек схлопывается в 0 (нет призрачного паддинга на блоке цены).
-    padding-block: toRem(8);
-    padding-inline: toRem(10);
-    background: var(--border-color);
-    background-clip: content-box; // линия только во внутренней «рабочей» зоне
-    border-radius: toRem(2);
-  }
-
-  &__range-dual-fill {
-    position: absolute;
-    // Высота = толщина линии (content трека 4px), а не 100% трека: трек имеет
-    // padding-block 8px под ручки, поэтому 100% дало бы полосу 20px («слишком
-    // широкая»). Центрируем по вертикали.
-    height: toRem(4);
-    top: 50%;
-    transform: translateY(-50%);
-    background: var(--success-color);
-    border-radius: toRem(2);
-    pointer-events: none;
-  }
-
-  &__range-dual-input {
-    position: absolute;
-    top: 50%;
-    left: toRem(10); // инпуты = рабочая зона (внутри padding трека)
-    right: toRem(10);
-    height: toRem(4);
-    appearance: none;
-    background: transparent;
-    pointer-events: none;
-    transform: translateY(-50%);
-
-    &_min {
-      z-index: 2;
-    }
-
-    &_max {
-      z-index: 1;
-    }
-
-    &::-webkit-slider-thumb {
-      appearance: none;
-      width: toRem(16);
-      height: toRem(16);
-      background: var(--light-color);
-      border: toRem(2) solid var(--success-color);
-      border-radius: 50%;
-      cursor: pointer;
-      pointer-events: auto;
-      box-shadow: 0 toRem(2) toRem(6) rgba(0, 0, 0, 0.15);
-      transition: transform var(--transition-duration);
-
-      @include hover {
-        transform: scale(1.15);
-      }
-    }
-
-    &::-moz-range-thumb {
-      width: toRem(16);
-      height: toRem(16);
-      background: var(--light-color);
-      border: toRem(2) solid var(--success-color);
-      border-radius: 50%;
-      cursor: pointer;
-      pointer-events: auto;
-      box-shadow: 0 toRem(2) toRem(6) rgba(0, 0, 0, 0.15);
     }
   }
 
