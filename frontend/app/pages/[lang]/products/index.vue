@@ -120,7 +120,8 @@ const { data: productsData, status } = useCachedAsyncData(
       pagination: { page: page.value, pageSize: PAGE_SIZE },
     } as any) as Promise<ProductsResponse>
   },
-  { ttl: 600_000 },
+  // Свежесть: 1 минута (было 10) — правки в Strapi видны почти сразу
+  { ttl: 60_000 },
 )
 
 const products = computed(() => productsData.value?.data ?? [])

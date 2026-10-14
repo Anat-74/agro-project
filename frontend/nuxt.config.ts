@@ -122,7 +122,7 @@ export default defineNuxtConfig({
           handler: "NetworkFirst",
           options: {
             cacheName: "pages",
-            networkTimeoutSeconds: 3,
+            networkTimeoutSeconds: 8,
             expiration: {
               maxEntries: 50,
               maxAgeSeconds: 3600,
@@ -138,17 +138,25 @@ export default defineNuxtConfig({
   },
   ssr: true,
   routeRules: {
-    // === SSG (Static prerender) ===
+    // === SSG (Static prerender) — статичные страницы ===
     "/": { redirect: "/ru" },
-    "/sitemap.xml": { static: true },
+    // /sitemap.xml больше НЕ static: генерируется на запрос → новые товары/статьи
+    // попадают в карту сайта сразу (раньше требовалась пересборка).
     "/**/about": { prerender: true },
     "/**/contacts": { prerender: true },
     "/**/services": { prerender: true },
 
-    // === SWR (Stale-while-revalidate) ===
-    "/**/blog": { swr: 3600 },
-    "/**/news": { swr: 3600 },
-    "/**/products/**": { swr: 300 },
+    // === SWR — ТОЛЬКО контентные разделы (свежесть ≤5 мин) ===
+    // Паттерн без хвостового /** матчит сам список (/ru/blog), с /** — вложенные.
+    "/**/blog": { swr: 300 },
+    "/**/blog/**": { swr: 300 },
+    "/**/news": { swr: 300 },
+    "/**/news/**": { swr: 300 },
+
+    // Каталог (products / [categorySlug]/products / карточки товаров) — БЕЗ SWR:
+    // данные и так кэшируются useCachedAsyncData (1 мин), SSR дешёвый, страницы
+    // всегда свежие. Прежний "/**/products/**" не матчился (хвостовой /** требует
+    // сегмент) и не работал.
 
     // === CSR (Client-side only — no SEO, user-specific) ===
     "/**/cartshopping": { ssr: false },

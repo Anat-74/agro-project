@@ -139,7 +139,8 @@ const { data: categoriesData } = useCachedAsyncData(
       },
     },
   } as any),
-  { ttl: 600_000 },
+  // Свежесть категорий: 5 минут (было 10)
+  { ttl: 300_000 },
 )
 
 const categories = computed(() => (categoriesData.value?.data as Category[] | undefined) ?? [])
@@ -246,7 +247,8 @@ const { data: priceRange } = useCachedAsyncData(
       max: Number((hi.data as any)?.[0]?.price ?? 0),
     }
   },
-  { ttl: 600_000 },
+  // Свежесть диапазона цен: 5 минут (было 10)
+  { ttl: 300_000 },
 )
 
 type PricePreset = { id: string; label: string; min: number; max: number }
