@@ -657,9 +657,9 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     z-index: 40;
     // Постоянная высота (без ресайза при скролле). Подвал при открытом фильтре скрыт
     // (CSS body:has(.products-page_filter-open) .base-footer), поэтому панель никого
-    // не перекрывает и не требует скрытия/сжатия. Небольшой отступ снизу (4px) —
-    // панель не «прилипает» к краю и не упирается в системную зону жестов.
-    height: calc(100dvh - var(--crumb-h, 0px) - toRem(4));
+    // не перекрывает. Нижний отступ 4px даёт теперь `padding-block` диалога, поэтому
+    // height без вычитания.
+    height: calc(100dvh - var(--crumb-h, 0px));
     overflow: hidden; // для анимации ширины (сам скролл — у диалога)
     background-color: var(--bg);
   }
@@ -693,9 +693,12 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     // скроллить — страница стоит; дошёл до края — страница не уезжает сразу.
     overscroll-behavior: contain;
 
-    // Внутренний боковой паддинг панели (просьба: 4px)
+    // Внутренние отступы панели — 4px по всем сторонам. Логические свойства:
+    // блок = верх/низ, инлайн = бока. Раньше низ давал сам `height` панели (внешний
+    // зазор) — теперь отступ задан ТУТ и одинаков сверху и снизу.
     @media (max-width: $mobile) {
       padding-inline: toRem(4);
+      padding-block: toRem(4);
     }
 
     // Анимация: desktop — слева направо (translate -100%). Mobile — БЕЗ
@@ -774,8 +777,9 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     align-items: center;
     gap: toRem(8);
     cursor: pointer;
-    // Без рамки/outline/фона — просто название + иконка
+    // Без рамки/outline/фона — просто название + иконка; снизу +4px воздуха
     padding: 0;
+    padding-block-end: toRem(4);
     // На 4px меньше, чем было (toEm(22)) и тоньше (500)
     font-weight: 500;
     font-size: toEm(18);
@@ -857,13 +861,11 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
       align-items: center;
     }
 
-    // Подпись категории: toEm считается от размера body (adaptiveValue ≈14px на
-    // мобильном), поэтому 2-й аргумент 14 → на 390px получается ≈15px (было 13.24px).
+    // Размер шрифта подписи НЕ задаём — наследуется от body (adaptiveValue 16→15)
     :deep(.u-input__radio-label) {
       flex: 1;
       min-width: 0;
       overflow-wrap: anywhere;
-      font-size: toEm(15, 14);
       transition: color var(--transition-duration);
     }
 
@@ -1046,7 +1048,7 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     align-items: center;
     justify-content: center;
     width: toRem(34);
-    height: toRem(34);
+    height: toRem(30); // прямоугольная (по 2px меньше сверху и снизу)
     margin-inline: auto;
     padding: 0;
     background: none;

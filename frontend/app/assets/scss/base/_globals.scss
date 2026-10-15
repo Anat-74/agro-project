@@ -22,9 +22,9 @@ body {
   color: var(--color);
   background-color: var(--bg);
   transition: background-color var(--transition-duration);
-  @include m.adaptiveValue("font-size", 16, 14);
-}
 
+  @include m.adaptiveValue("font-size", 16, 15);
+}
 
 // ===================================================================
 //! DIALOG-RELATED STYLES

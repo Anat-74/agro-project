@@ -207,8 +207,11 @@ export default defineNuxtConfig({
       scan: {
         // Иконки из .ts-файлов (например, флаги в app/composables/useLocale.ts)
         globInclude: ["**/*.{vue,js,jsx,ts,tsx,md,mdc,mdx,yml,yaml}"],
-        // Коллекция `et` отсутствует в известном списке iconify → сканер её не матчит
-        additionalCollections: ["et"],
+        // Коллекции, которых нет в известном списке iconify (стандартная `et` и наша
+        // кастомная `my-icon`). Без этого сканер их НЕ матчит → иконки не попадают
+        // в клиентский бандл и грузятся отдельным рантайм-запросом (отсюда «квадрат»
+        // вместо иконки рубля у части товаров — гонка загрузки).
+        additionalCollections: ["et", "my-icon"],
       },
       sizeLimitKb: 100,
     },

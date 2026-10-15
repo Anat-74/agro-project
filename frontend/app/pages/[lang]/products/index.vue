@@ -246,6 +246,13 @@ useSeoMeta({
         :background="breadcrumbsBackground"
       />
 
+      <!-- Переключатель темы — в крошках, между названием текущей страницы и
+           «каталогом» (переиспользуем компонент ColorMode, как в шапке сайта) -->
+      <ColorMode
+        v-if="filterDialogOpen"
+        class="products-page__color-mode"
+      />
+
       <!-- Кнопка-гамбургер — в строке крошек справа, ТОЛЬКО при открытом фильтре
            (при закрытом шапка сайта видна и сама даёт гамбургер; плюс без sticky
            у __header absolute-кнопка улетела бы к main). Переиспользует панель
@@ -420,6 +427,21 @@ useSeoMeta({
       // top: toRem(125);
       z-index: 10;
       background-color: var(--bg);
+    }
+  }
+
+  // Переключатель темы в строке крошек (mobile, при открытом фильтре) — слева от
+  // гамбургера: 12 (отступ) + 34 (гамбургер) + 8 (зазор)
+  &__color-mode {
+    display: none;
+
+    @media (max-width: $mobile) {
+      position: absolute;
+      right: toRem(54);
+      top: 50%;
+      translate: 0 -50%;
+      z-index: 15;
+      display: inline-flex;
     }
   }
 
