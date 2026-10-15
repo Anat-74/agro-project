@@ -112,22 +112,16 @@ export default defineNuxtConfig({
       ],
     },
     workbox: {
-      globPatterns: ["**/*.{js,css,html,png,svg,ico}"],
-      // Навигация — NetworkFirst: сначала сеть (свежий HTML сразу после деплоя),
-      // при офлайне — последняя закэшированная версия. navigateFallback убран:
-      // иначе его NavigationRoute перехватывал бы навигации раньше runtime-роута.
+      // HTML в precache НЕ кладём: навигации уходят в сеть (см. NetworkOnly ниже)
+      globPatterns: ["**/*.{js,css,png,svg,ico}"],
+      // Навигации — ТОЛЬКО сеть. NetworkFirst с таймаутом отдавал закэшированный
+      // HTML (со старым бандлом и payload) на холодной сети, и приложение
+      // продолжало работать старой версией до ручной перезагрузки.
+      // Офлайн отдаст браузерную заглушку (для магазина это приемлемо).
       runtimeCaching: [
         {
           urlPattern: ({ request }) => request.mode === "navigate",
-          handler: "NetworkFirst",
-          options: {
-            cacheName: "pages",
-            networkTimeoutSeconds: 8,
-            expiration: {
-              maxEntries: 50,
-              maxAgeSeconds: 3600,
-            },
-          },
+          handler: "NetworkOnly",
         },
       ],
     },

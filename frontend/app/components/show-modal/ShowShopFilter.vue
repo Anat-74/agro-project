@@ -598,6 +598,10 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
 .show-shop-filter {
   display: flex;
   flex-shrink: 0;
+  // Декоративный разделитель между панелью фильтров и контентом (вместо
+  // «пустого» зазора) — тонкая линия + мягкая тень: панель читается как колонка.
+  border-inline-end: toRem(1) solid var(--border-color);
+  box-shadow: toRem(2) 0 toRem(10) rgba(0, 0, 0, 0.06);
   // Клип по ширине колонки: при exit-анимации диалог уезжает влево
   // (translate -100%) и обрезается у края колонки, а не вылезает за страницу
   overflow: hidden;
@@ -680,10 +684,8 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     // горизонтальный скроллбар у панели; y — auto (внутренний вертикальный скролл).
     overflow: hidden auto;
     scrollbar-gutter: stable;
-    // Полоса скролла — тонкая и ЖЁЛТАЯ (тест). Стоит у правого края панели, т.е.
-    // ровно в промежутке между полем фильтров и полем карточек.
-    scrollbar-width: thin;
-    scrollbar-color: var(--yellow-color) transparent;
+    // Полосу скролла убираем (индикатор прокрутки — шеврон внизу)
+    scrollbar-width: none;
     // Скролл фильтров не «пробрасывается» на страницу: пока в панели есть что
     // скроллить — страница стоит; дошёл до края — страница не уезжает сразу.
     overscroll-behavior: contain;
@@ -829,7 +831,7 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     position: relative;
     display: flex;
     align-items: center;
-    gap: toRem(10);
+    gap: toRem(6);
 
     // Точку радио скрываем — вместо неё иконка категории. input остаётся в DOM
     // (фокус/a11y), но не занимает места и невидим; фокус показываем на строке.
@@ -872,18 +874,16 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     // Активная категория: иконка СОХРАНЯЕТ свой цвет (задан inline), но чуть толще;
     // текст жирнее; галочка и счётчик — зелёные.
     &_is-active {
-      // Иконка чуть толще (без бордера/ореола — по просьбе)
+      // Иконка чуть толще и на 1px больше
       .shop-filters__category-icon {
         stroke: currentColor;
         stroke-width: 0.8;
+        width: toRem(19);
+        height: toRem(19);
       }
 
       :deep(.u-input__radio-label) {
         font-weight: 600;
-      }
-
-      .shop-filters__category-count {
-        color: var(--green-color);
       }
     }
   }
@@ -897,21 +897,28 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     transition: color var(--transition-duration);
   }
 
-  // Галочка активной категории — СПРАВА от текста (в потоке, перед счётчиком).
-  // Текст лейбла слева (flex:1), поэтому появление галочки его не сдвигает.
+  // Галочка активной категории — ВНЕ потока: не отнимает ширину у названия.
+  // Стоит у правого края строки; место под неё зарезервировано отступом счётчика.
+  // Цвет — как у текста категории, «жирнее» за счёт обводки.
   &__category-check {
-    width: toRem(15);
-    height: toRem(15);
-    margin-inline-start: toRem(4);
-    flex-shrink: 0;
-    color: var(--green-color);
+    position: absolute;
+    right: 0;
+    top: 50%;
+    translate: 0 -50%;
+    width: toRem(16);
+    height: toRem(16);
+    color: var(--color);
+    stroke: currentColor;
+    stroke-width: 0.6;
     pointer-events: none;
   }
 
   &__category-count {
     flex-shrink: 0; // счётчик не сжимаем — иначе режется
-    font-size: toEm(13);
-    color: var(--gray-color);
+    margin-inline-end: toRem(18); // резерв под галочку (она absolute)
+    font-size: toEm(14);
+    font-weight: 600;
+    color: var(--color);
   }
 
   // ==== Цена: пресеты-чипы + поля «своего диапазона» ====
@@ -1019,9 +1026,12 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
 
   // Кнопка-шеврон прокрутки панели: sticky внизу диалога, по центру. Показывается
   // через UScrollNav (mode="toggle") — только пока контент не помещается целиком.
+  // Кнопка-шеврон прокрутки: только иконка — без фона, бордера и скругления.
+  // Тень «сильная» и вокруг самой иконки → filter: drop-shadow (box-shadow у
+  // прозрачной кнопки без фона ничего не рисует).
   &__scroll-nav {
     position: sticky;
-    bottom: 0; // в самый низ панели (было toRem(8))
+    bottom: 0;
     z-index: 5;
     display: flex;
     align-items: center;
@@ -1030,15 +1040,14 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     height: toRem(34);
     margin-inline: auto;
     padding: 0;
-    background-color: var(--bg);
+    background: none;
     color: var(--color);
-    border: toRem(1) solid var(--border-color);
-    border-radius: 50%;
-    box-shadow: 0 toRem(4) toRem(18) rgba(0, 0, 0, 0.3); // тень крупнее
+    border: none;
+    border-radius: 0;
     cursor: pointer;
-    transition:
-      transform var(--transition-duration),
-      background-color var(--transition-duration);
+    filter: drop-shadow(0 toRem(2) toRem(4) rgba(0, 0, 0, 0.45))
+      drop-shadow(0 toRem(6) toRem(14) rgba(0, 0, 0, 0.35));
+    transition: transform var(--transition-duration);
 
     svg {
       width: toRem(20);
@@ -1046,7 +1055,7 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     }
 
     @include hover {
-      background-color: var(--bg-product);
+      transform: scale(1.08);
     }
   }
 
