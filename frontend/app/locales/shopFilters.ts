@@ -8,6 +8,9 @@ export const shopFiltersTranslations: Record<LocaleCode, {
   allProducts: string
   priceTitle: string
   priceAll: string
+  priceUpTo: string
+  priceFrom: string
+  priceCustom: string
   tagsTitle: string
   saleTitle: string
   discountBadge: string
@@ -34,6 +37,9 @@ export const shopFiltersTranslations: Record<LocaleCode, {
     allProducts: "Все товары",
     priceTitle: "Цена",
     priceAll: "Все",
+    priceUpTo: "до",
+    priceFrom: "от",
+    priceCustom: "Введите цену",
     tagsTitle: "Популярные теги",
     saleTitle: "Товары со скидкой",
     discountBadge: "Скидка 79%",
@@ -60,6 +66,9 @@ export const shopFiltersTranslations: Record<LocaleCode, {
     allProducts: "Усе тавары",
     priceTitle: "Цана",
     priceAll: "Усе",
+    priceUpTo: "да",
+    priceFrom: "ад",
+    priceCustom: "Увядзіце цану",
     tagsTitle: "Папулярныя тэгі",
     saleTitle: "Тавары са скідкай",
     discountBadge: "Зніжка 79%",

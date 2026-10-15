@@ -274,10 +274,10 @@ const pricePresets = computed<PricePreset[]>(() => {
   const q3 = b(3)
   return [
     { id: "all", label: t.value.priceAll, min, max },
-    { id: "q1", label: `≤ ${q1}`, min, max: q1 },
+    { id: "q1", label: `${t.value.priceUpTo} ${q1}`, min, max: q1 },
     { id: "q2", label: `${q1}–${q2}`, min: q1, max: q2 },
     { id: "q3", label: `${q2}–${q3}`, min: q2, max: q3 },
-    { id: "q4", label: `≥ ${q3}`, min: q3, max },
+    { id: "q4", label: `${t.value.priceFrom} ${q3}`, min: q3, max },
   ]
 })
 
@@ -454,6 +454,9 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
                   </ul>
                   <!-- Свой диапазон — числовые поля (альтернатива пресетам).
                        При фокусе число исчезает (как в категориях Посадки/Заготовок). -->
+                  <p class="shop-filters__price-custom">
+                    {{ t.priceCustom }}
+                  </p>
                   <div class="shop-filters__price-values">
                     <input
                       class="shop-filters__price-value-input"
@@ -961,6 +964,13 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     }
   }
 
+  // Подпись над полями «своего диапазона» — смысловой разделитель с чипами
+  &__price-custom {
+    margin: toRem(12) 0 toRem(4);
+    font-size: toEm(13);
+    color: var(--gray-color);
+  }
+
   // Свой диапазон — числовые поля (альтернатива пресетам)
   &__price-values {
     display: flex;
@@ -969,7 +979,6 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     gap: toRem(8);
     font-size: toEm(15);
     color: var(--color);
-    margin-block-start: toRem(12);
   }
 
   // Инпуты «своего диапазона»: ещё +8px по высоте, крупнее скругление, фокус
@@ -1026,9 +1035,9 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
 
   // Кнопка-шеврон прокрутки панели: sticky внизу диалога, по центру. Показывается
   // через UScrollNav (mode="toggle") — только пока контент не помещается целиком.
-  // Кнопка-шеврон прокрутки: только иконка — без фона, бордера и скругления.
-  // Тень «сильная» и вокруг самой иконки → filter: drop-shadow (box-shadow у
-  // прозрачной кнопки без фона ничего не рисует).
+  // Кнопка-шеврон прокрутки: ПРЯМОУГОЛЬНАЯ — вокруг иконки тонкий бордер;
+  // тень широкая через box-shadow со spread (внешняя тень рисуется и без фона,
+  // по рамке). Прижата к самому низу панели.
   &__scroll-nav {
     position: sticky;
     bottom: 0;
@@ -1042,15 +1051,14 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     padding: 0;
     background: none;
     color: var(--yellow-color);
-    border: none;
+    border: toRem(1) solid var(--border-color);
     border-radius: 0;
     cursor: pointer;
-    // ОЧЕНЬ сильная тень: три слоя drop-shadow (box-shadow у прозрачной
-    // кнопки не рисуется — тень нужна вокруг самой иконки)
-    filter: drop-shadow(0 toRem(2) toRem(3) rgba(0, 0, 0, 0.75))
-      drop-shadow(0 toRem(6) toRem(14) rgba(0, 0, 0, 0.6))
-      drop-shadow(0 toRem(12) toRem(28) rgba(0, 0, 0, 0.45));
-    transition: transform var(--transition-duration);
+    // Широкая тень: большой размыв + spread
+    box-shadow: 0 toRem(4) toRem(24) toRem(8) rgba(0, 0, 0, 0.28);
+    transition:
+      box-shadow var(--transition-duration),
+      transform var(--transition-duration);
 
     svg {
       width: toRem(20);
@@ -1059,6 +1067,7 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
 
     @include hover {
       transform: scale(1.08);
+      box-shadow: 0 toRem(6) toRem(30) toRem(10) rgba(0, 0, 0, 0.35);
     }
   }
 
