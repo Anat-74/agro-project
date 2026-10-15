@@ -885,6 +885,12 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
       :deep(.u-input__radio-label) {
         font-weight: 600;
       }
+
+      // Жирнее и цветом текста — ТОЛЬКО у активного счётчика
+      .shop-filters__category-count {
+        font-weight: 600;
+        color: var(--color);
+      }
     }
   }
 
@@ -897,17 +903,13 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     transition: color var(--transition-duration);
   }
 
-  // Галочка активной категории — ВНЕ потока: не отнимает ширину у названия.
-  // Стоит у правого края строки; место под неё зарезервировано отступом счётчика.
-  // Цвет — как у текста категории, «жирнее» за счёт обводки.
+  // Галочка активной категории — сразу после названия, ПЕРЕД счётчиком (в потоке).
+  // Жёлтая, чуть «жирнее» за счёт обводки.
   &__category-check {
-    position: absolute;
-    right: 0;
-    top: 50%;
-    translate: 0 -50%;
     width: toRem(16);
     height: toRem(16);
-    color: var(--color);
+    flex-shrink: 0;
+    color: var(--yellow-color);
     stroke: currentColor;
     stroke-width: 0.6;
     pointer-events: none;
@@ -915,10 +917,8 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
 
   &__category-count {
     flex-shrink: 0; // счётчик не сжимаем — иначе режется
-    margin-inline-end: toRem(18); // резерв под галочку (она absolute)
     font-size: toEm(14);
-    font-weight: 600;
-    color: var(--color);
+    color: var(--gray-color);
   }
 
   // ==== Цена: пресеты-чипы + поля «своего диапазона» ====
@@ -1041,12 +1041,14 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     margin-inline: auto;
     padding: 0;
     background: none;
-    color: var(--color);
+    color: var(--yellow-color);
     border: none;
     border-radius: 0;
     cursor: pointer;
-    filter: drop-shadow(0 toRem(2) toRem(4) rgba(0, 0, 0, 0.45))
-      drop-shadow(0 toRem(6) toRem(14) rgba(0, 0, 0, 0.35));
+    // Тень именно вокруг иконки (box-shadow у прозрачной кнопки не виден):
+    // крупная, размытая и плотная, чтобы читалась на белой панели.
+    filter: drop-shadow(0 toRem(3) toRem(8) rgba(0, 0, 0, 0.55))
+      drop-shadow(0 toRem(8) toRem(20) rgba(0, 0, 0, 0.4));
     transition: transform var(--transition-duration);
 
     svg {

@@ -1,16 +1,16 @@
 /**
- * Guard версии приложения (client-only).
+ * Защита от «устаревшего» состояния при возврате в приложение (client-only).
  *
- * Почему нужен: после деплоя установленная PWA может продолжать работать СТАРЫМ
- * бандлом — ОС восстанавливает живой процесс (resume из памяти) без запроса за
- * HTML/JS, либо service worker отдаёт закэшированный старый HTML на холодной
- * сети. Ручной reload поднимает свежий бандл, но пользователь об этом не знает.
+ * 1) ВЕРСИЯ БАНДЛА. После деплоя PWA может продолжать работать СТАРЫМ бандлом
+ *    (resume живого процесса из памяти либо старый HTML, отданный service worker'ом).
+ *    На старте / при возврате на передний план / раз в 10 минут сравниваем свой
+ *    buildId с серверным; при расхождении — location.reload() (коулдаун 60 с).
  *
- * Здесь: на старте, при возврате приложения на передний план и раз в 10 минут
- * сравниваем свой buildId с серверным. Если разошлись — перезагружаемся.
- * Не чаще раза в минуту (анти-петля, если сервер отдаёт неконсистентный id).
+ * 2) СВЕЖЕСТЬ ДАННЫХ. SPA при возврате сам данные НЕ перезапрашивает — показывает
+ *    загруженное ранее. Если приложение «спало» дольше минуты, обновляем async-данные
+ *    хуком Nuxt `app:data:refresh`.
  */
-export default defineNuxtPlugin(() => {
+export default defineNuxtPlugin((nuxtApp) => {
   const running = String(useRuntimeConfig().app?.buildId ?? "")
   if (!running) return
 
@@ -41,9 +41,26 @@ export default defineNuxtPlugin(() => {
   }
 
   check()
+
+  // Возврат приложения на передний план (resume PWA). SPA сам данные НЕ
+  // перезапрашивает — показывает загруженное в прошлый раз (это и есть «старые
+  // данные», которые «лечила» ручная перезагрузка). Если приложение спало дольше
+  // минуты — обновляем async-данные хуком Nuxt + проверяем версию бандла.
+  let hiddenAt = 0
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") check()
+    if (document.visibilityState === "hidden") {
+      hiddenAt = Date.now()
+      return
+    }
+    if (hiddenAt && Date.now() - hiddenAt > 60_000) {
+      hiddenAt = 0
+      nuxtApp.hooks
+        .callHookParallel("app:data:refresh", undefined)
+        .catch(() => {})
+    }
+    check()
   })
+
   setInterval(() => {
     if (document.visibilityState === "visible") check()
   }, CHECK_INTERVAL)

@@ -661,7 +661,7 @@ useSeoMeta({
   }
 
   // Декоративный разделитель: по ширине товарной колонки, иконка — по центру зазора
-  // «последняя карточка → пагинация», сдвинута вниз (bottom: -19 = на ~10px ниже центра).
+  // «последняя карточка → пагинация», сдвинута вниз (bottom: -23 = на ~14px ниже центра).
   // Бокс: от низа резерва (listBottom − 64) до верха пагинации (listBottom + 9) — height 73px;
   // align-items:center центрирует иконку любого размера. Чисто декор — клики не перехватывает.
   .products-page_filter-open .products-page__divider {
@@ -670,7 +670,7 @@ useSeoMeta({
     column-gap: toEm(10);
     position: absolute;
     inset-inline: 0;
-    bottom: toRem(-19);
+    bottom: toRem(-23);
     height: toRem(73);
     color: var(--green-color);
     pointer-events: none;
