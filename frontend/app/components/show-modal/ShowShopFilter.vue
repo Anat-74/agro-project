@@ -1045,10 +1045,11 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     border: none;
     border-radius: 0;
     cursor: pointer;
-    // Тень именно вокруг иконки (box-shadow у прозрачной кнопки не виден):
-    // крупная, размытая и плотная, чтобы читалась на белой панели.
-    filter: drop-shadow(0 toRem(3) toRem(8) rgba(0, 0, 0, 0.55))
-      drop-shadow(0 toRem(8) toRem(20) rgba(0, 0, 0, 0.4));
+    // ОЧЕНЬ сильная тень: три слоя drop-shadow (box-shadow у прозрачной
+    // кнопки не рисуется — тень нужна вокруг самой иконки)
+    filter: drop-shadow(0 toRem(2) toRem(3) rgba(0, 0, 0, 0.75))
+      drop-shadow(0 toRem(6) toRem(14) rgba(0, 0, 0, 0.6))
+      drop-shadow(0 toRem(12) toRem(28) rgba(0, 0, 0, 0.45));
     transition: transform var(--transition-duration);
 
     svg {

@@ -95,6 +95,14 @@ export default defineNuxtConfig({
   },
   pwa: {
     registerType: "autoUpdate",
+    // ВРЕМЕННО: снять регистрацию service worker и очистить ВСЕ его кэши
+    // (официальный способ — https://vite-pwa-org.netlify.app/guide/unregister-service-worker).
+    // Причина: старый SW на устройствах не обновлялся и продолжал отдавать старый
+    // HTML/ассеты (resume PWA без навигации не запускает проверку обновления).
+    // Плагин соберёт спец-SW с тем же именем, который при активации разрегистрируется,
+    // удалит caches.storage и перезагрузит клиентов → приложение всегда грузится из сети.
+    // Вернуть PWA позже: selfDestroying: false.
+    selfDestroying: true,
     manifest: {
       name: "Organick",
       short_name: "Organick",
