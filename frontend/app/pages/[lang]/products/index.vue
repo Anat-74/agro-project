@@ -431,13 +431,13 @@ useSeoMeta({
   }
 
   // Переключатель темы в строке крошек (mobile, при открытом фильтре) — слева от
-  // гамбургера: 12 (отступ) + 34 (гамбургер) + 8 (зазор)
+  // гамбургера: 12 (отступ) + 34 (гамбургер) + 13 (зазор)
   &__color-mode {
     display: none;
 
     @media (max-width: $mobile) {
       position: absolute;
-      right: toRem(54);
+      right: toRem(59);
       top: 50%;
       translate: 0 -50%;
       z-index: 15;

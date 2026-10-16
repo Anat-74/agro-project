@@ -154,8 +154,8 @@ defineEmits<Emits>();
   // Кнопка-«кружок» переключателя темы (thumb на слайдере ColorMode).
   // Позиционирование на слайдере — через класс в ColorMode, здесь только внешний вид
   &_theme {
-    width: toRem(27);
-    height: toRem(27);
+    width: toRem(26);   // на 1px меньше
+    height: toRem(26);
     padding: 0;
     border-radius: 50%;
     background: var(--light-color);

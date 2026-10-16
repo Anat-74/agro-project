@@ -1037,9 +1037,8 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
 
   // Кнопка-шеврон прокрутки панели: sticky внизу диалога, по центру. Показывается
   // через UScrollNav (mode="toggle") — только пока контент не помещается целиком.
-  // Кнопка-шеврон прокрутки: ПРЯМОУГОЛЬНАЯ — вокруг иконки тонкий бордер;
-  // тень широкая через box-shadow со spread (внешняя тень рисуется и без фона,
-  // по рамке). Прижата к самому низу панели.
+  // Плашка ТЁМНАЯ и скруглённая 6px: прозрачная кнопка читалась как часть текста
+  // под ней. Высота — на 2px меньше сверху и снизу. Прижата к низу панели.
   &__scroll-nav {
     position: sticky;
     bottom: 0;
@@ -1048,13 +1047,13 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     align-items: center;
     justify-content: center;
     width: toRem(34);
-    height: toRem(30); // прямоугольная (по 2px меньше сверху и снизу)
+    height: toRem(26); // по 2px меньше сверху и снизу (было 30)
     margin-inline: auto;
     padding: 0;
-    background: none;
+    background: var(--dark-color);
     color: var(--yellow-color);
-    border: toRem(1) solid var(--border-color);
-    border-radius: 0;
+    border: toRem(1) solid var(--dark-color);
+    border-radius: toRem(6);
     cursor: pointer;
     // Широкая тень: большой размыв + spread
     box-shadow: 0 toRem(4) toRem(24) toRem(8) rgba(0, 0, 0, 0.28);

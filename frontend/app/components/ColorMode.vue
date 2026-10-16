@@ -116,7 +116,7 @@ function setTheme(theme: string) {
   &__slider {
     :deep(.u-input__range) {
       width: 100%;
-      height: toRem(10);
+      height: toRem(9);
       appearance: none;
       border-radius: toRem(4);
       outline: none;
