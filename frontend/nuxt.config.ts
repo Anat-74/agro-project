@@ -8,6 +8,13 @@ export default defineNuxtConfig({
   experimental: {
     // View Transitions API (нативно, opt-in на страницах через definePageMeta)
     viewTransition: true,
+    // TODO (отдельным деплоем): appManifest: true — манифест сборки Nuxt
+    // (`_nuxt/builds/**/*.json`), модуль @vite-pwa/nuxt добавит его в precache и снесёт
+    // revision. Флаг ЭКСПЕРИМЕНТАЛЬНЫЙ, поэтому включаем НЕ вместе с возвратом PWA,
+    // а следующим шагом — чтобы изолировать возможные проблемы. Пока не нужен:
+    // после возврата SW авто-обновление (autoUpdate) само перезагружает страницу на
+    // новую сборку, а навигации у нас NetworkOnly (HTML всегда из сети).
+    // appManifest: true,
   },
   app: {
     // Глобальный дефолт VT — выключен; включается точечно (лёгкие CSR-страницы)
@@ -95,14 +102,9 @@ export default defineNuxtConfig({
   },
   pwa: {
     registerType: "autoUpdate",
-    // ВРЕМЕННО: снять регистрацию service worker и очистить ВСЕ его кэши
-    // (официальный способ — https://vite-pwa-org.netlify.app/guide/unregister-service-worker).
-    // Причина: старый SW на устройствах не обновлялся и продолжал отдавать старый
-    // HTML/ассеты (resume PWA без навигации не запускает проверку обновления).
-    // Плагин соберёт спец-SW с тем же именем, который при активации разрегистрируется,
-    // удалит caches.storage и перезагрузит клиентов → приложение всегда грузится из сети.
-    // Вернуть PWA позже: selfDestroying: false.
-    selfDestroying: true,
+    // `selfDestroying` включали 15.10 (снять SW + очистить кэши), 16.10 СНЯТ — PWA
+    // возвращена. Кэш-стратегия безопасна по свежести: навигации в NetworkOnly
+    // (ниже, в workbox), `html` не в precache → старый HTML подменить нельзя.
     manifest: {
       name: "Organick",
       short_name: "Organick",
