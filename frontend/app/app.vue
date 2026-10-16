@@ -98,7 +98,6 @@ provide(VISIBILITY_KEY, {
 
 <template>
   <VitePwaManifest />
-  <PWAUpdateNotice />
   <div :style="containerVars">
     <NuxtLayout>
       <NuxtPage />

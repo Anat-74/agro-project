@@ -1,4 +1,4 @@
-import { computed, toValue } from 'vue'
+import { toValue } from 'vue'
 import type { MaybeRefOrGetter, MultiWatchSources } from 'vue'
 
 // Общий TTL-кэш для useAsyncData.
@@ -50,20 +50,14 @@ export const useCachedAsyncData = <T>(
 ) => {
   const ttl = opts.ttl ?? 300_000
 
-  // ШТАМП ВЕРСИИ СБОРКИ в ключе. После деплоя buildId меняется → ключи новые →
-  // старые закэшированные данные (и SSR-payload прошлой сборки) физически
-  // недостижимы: «старьё» не залипает ни в сессии клиента, ни в кэше сервера.
-  const buildId = String(useRuntimeConfig().app?.buildId ?? '')
-  const stampedKey = computed(() => `${buildId}:${toValue(key)}`)
-
   return useAsyncData<T>(
-    stampedKey,
+    key,
     async () => {
       // Ключ ФИКСИРУЕМ ДО запроса. Иначе после await toValue(key) вернёт УЖЕ
       // изменённый ключ (фильтр успели переключить) — и ответ старого запроса
       // закэшируется под НОВЫМ ключом. Тогда getCachedData отдаёт устаревшие
       // (часто пустые) данные для текущего фильтра и «залипает» до конца TTL.
-      const cacheKey = stampedKey.value
+      const cacheKey = toValue(key)
       const data = await handler()
       cache.set(cacheKey, { data, expiresAt: Date.now() + ttl })
       sweepCache()
