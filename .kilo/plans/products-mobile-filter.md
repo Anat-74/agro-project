@@ -200,9 +200,10 @@
   summary аккордеона `padding-block-end: toRem(4)`. В крошках страницы товаров (mobile, при открытом
   фильтре) — переиспользован **`ColorMode`** слева от гамбургера (`right: 54 = 12+34+8`).
 - **Ревью 16.10 — возврат PWA:** `selfDestroying` снят (штатный Workbox-SW с тем же именем `sw.js`; доки:
-  «remove the `selfDestroying` option»). `experimental.appManifest` НЕ включён — вынесен в TODO отдельным
-  деплоем (флаг экспериментальный; после возврата SW авто-обновление само перезагружает страницу на новую
-  сборку, а навигации `NetworkOnly`). Ранее в этот же день: удалены `PWAUpdateNotice.vue` (мёртв при
+  «remove the `selfDestroying` option»). `experimental.appManifest` — в Nuxt 4 **включён по умолчанию**
+  (доки: «enabled by default»), поэтому отдельный флаг НЕ нужен: `@vite-pwa/nuxt` видит его
+  (`nuxt.options.experimental.appManifest`) и уже добавляет `_nuxt/builds/**/*.json` в precache со снятым
+  revision — это и есть нативная per-build изоляция кэша. Ранее в этот же день: удалены `PWAUpdateNotice.vue` (мёртв при
   autoUpdate) и самодельный buildId-штамп (коммит `84837a4`), удалён `ShowHamburgerCopy.vue`.
   ⚠️ Риск-заметка: `autoUpdate` может перезагрузить вкладку с заполняемой формой (предупреждение доков) —
   при необходимости перейти на `registerType: 'prompt'`.

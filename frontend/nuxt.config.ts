@@ -8,13 +8,9 @@ export default defineNuxtConfig({
   experimental: {
     // View Transitions API (нативно, opt-in на страницах через definePageMeta)
     viewTransition: true,
-    // TODO (отдельным деплоем): appManifest: true — манифест сборки Nuxt
-    // (`_nuxt/builds/**/*.json`), модуль @vite-pwa/nuxt добавит его в precache и снесёт
-    // revision. Флаг ЭКСПЕРИМЕНТАЛЬНЫЙ, поэтому включаем НЕ вместе с возвратом PWA,
-    // а следующим шагом — чтобы изолировать возможные проблемы. Пока не нужен:
-    // после возврата SW авто-обновление (autoUpdate) само перезагружает страницу на
-    // новую сборку, а навигации у нас NetworkOnly (HTML всегда из сети).
-    // appManifest: true,
+    // appManifest — в Nuxt 4 включён ПО УМОЛЧАНИЮ (доки: "enabled by default"), отдельный флаг
+    // не нужен. @vite-pwa/nuxt это видит (nuxt.options.experimental.appManifest) и сам добавляет
+    // `_nuxt/builds/**/*.json` в precache со снятым revision — нативная per-build изоляция кэша.
   },
   app: {
     // Глобальный дефолт VT — выключен; включается точечно (лёгкие CSR-страницы)
