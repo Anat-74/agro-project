@@ -1064,7 +1064,9 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
       box-shadow var(--transition-duration),
       transform var(--transition-duration);
 
-    svg {
+    // Размер иконки — через :deep: svg рендерит дочерний UButton/Icon,
+    // scoped-правило родителя до него не достаёт (иконка иначе 25px из .iconify).
+    :deep(svg) {
       width: toRem(16);
       height: toRem(16);
     }

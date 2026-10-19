@@ -52,9 +52,10 @@ const onSelect = (code) => {
   border-radius: toRem(4);
 
   // Одна (активная) кнопка — она же переключатель на другой язык.
-  // Бордер активной в этом режиме не нужен: кнопка единственная.
+  // Бордер светлый, чтобы кнопка читалась на тёмных крошках.
   &_single .active {
-    outline: none;
+    outline: 1px solid var(--light-color);
+    outline-offset: 1px;
     cursor: pointer;
   }
 }

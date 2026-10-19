@@ -18,14 +18,14 @@
 - **Товары** — 1 колонка, сдвинуты вправо: `padding-inline-start: calc(toRem(7) + var(--filter-drawer-w))`
   (контент начинается на 172px, правый край панели 170 → зазор 2px); у списка базовый
   `padding-block-end: 64px` (резерв), `overflow-x: clip`.
-- **Пагинация** — absolute в `container-body`; при открытом `bottom: toRem(-63)` → её низ в **2px** от низа
-  документа (`padding-block-end` секции `65px`). Зазор «последняя карточка → пагинация» ≈ **73px**.
+- **Пагинация** — absolute в `container-body`; при открытом `bottom: toRem(-71)` → у максимума скролла
+  встаёт **вплотную** к низу документа (0px). Зазор «последняя карточка → пагинация» ≈ **81px**.
 - **Декоративный разделитель (12.10):** в зоне резерва между последней карточкой и пагинацией —
   линия + иконка-росток (`mdi:sprout`), по ширине товарной колонки, **смещён ниже центра** зазора.
   - Разметка: `<li class="products-page__divider" aria-hidden="true">` внутри `ul` (декор; `v-if="pageCount > 1"`).
   - Стили: `.products-page__card-list { position: relative }`; `&__divider { display: none }` (десктоп/закрыт);
     на mobile при `_filter-open` — `display: flex; align-items: center; position: absolute;
-    inset-inline: 0; bottom: toRem(-33); height: toRem(73); padding-inline: toRem(10)` (бокс 73px,
+    inset-inline: 0; bottom: toRem(-41); height: toRem(73); padding-inline: toRem(10)` (бокс 73px,
     опускается вместе с пагинацией; `padding-inline` — отступ от краёв колонки, чтобы были видны
     закруглённые концы). Иконка `--green-color`, `font-size: toRem(43)`.
     Линии `::before/::after`: `height: toRem(2)`, `border-radius: toRem(25)`, «вдавленный» эффект —
@@ -35,11 +35,10 @@
     = его собственный font-size → `font-size` на обёртке иконку НЕ менял (прошлые +30%/+20% были no-op, иконка была 25px).
   - **Ревью 12.10:** иконка реально 25px (`.iconify`) → 30 → 35 → **40px** (+5px, через `svg`); разделитель
     центрируется боксом (`bottom: -9; height: 73`), а не подгонкой `bottom`.
-- **Нижний запас под пагинацией (mobile, фильтр открыт):** пагинация `absolute` (`bottom: -63`)
-  переполняет `container-body` на 63px и является самым низким элементом документа → без запаса
-  прилипала к самому низу экрана (отступа не было ни на одной странице; на 1-й «отступ» был виден
-  из-за положения скролла). Решение: `.products-page_filter-open { padding-block-end: toRem(65) }`
-  (падинг секции > 63px) → под пагинацией ровно 2px.
+- **Нижний запас под пагинацией (mobile, фильтр открыт):** пагинация `absolute` (`bottom: -71`) выходит
+  на 6px ниже padding-бокса секции (`65px`); документ растягивается до её края (scrollable overflow),
+  поэтому на максимуме скролла она у самого низа (0px). Без запаса раньше прилипала к низу на всех
+  страницах пагинации — резерв секции нужен как страховка.
 - **Верхний отступ карточек (mobile, фильтр открыт, 12.10):** первая карточка прилипала к крошкам
   (`gapCrumbCard 0`) → `.products-page_filter-open .products-page__card-list { padding-block-start: toRem(12) }`.
 - **Зазор панель→карточки = 2px:** ширина панели на mobile `--filter-panel-w: var(--filter-drawer-w)`
