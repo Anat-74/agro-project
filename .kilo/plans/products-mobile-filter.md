@@ -25,8 +25,8 @@
   - Разметка: `<li class="products-page__divider" aria-hidden="true">` внутри `ul` (декор; `v-if="pageCount > 1"`).
   - Стили: `.products-page__card-list { position: relative }`; `&__divider { display: none }` (десктоп/закрыт);
     на mobile при `_filter-open` — `display: flex; align-items: center; position: absolute;
-    inset-inline: 0; bottom: toRem(-41); height: toRem(73); padding-inline: toRem(10)` (бокс 73px,
-    опускается вместе с пагинацией; `padding-inline` — отступ от краёв колонки, чтобы были видны
+    inset-inline: 0; bottom: toRem(-37); height: toRem(73); padding-inline: toRem(10)` (бокс 73px,
+    на 4px выше пагинации; `padding-inline` — отступ от краёв колонки, чтобы были видны
     закруглённые концы). Иконка `--green-color`, `font-size: toRem(43)`.
     Линии `::before/::after`: `height: toRem(2)`, `border-radius: toRem(25)`, «вдавленный» эффект —
     `background: rgba(0,0,0,0.28)` + `box-shadow: 0 toRem(1) 0 rgba(255,255,255,0.7)`. `pointer-events: none`.
@@ -184,6 +184,11 @@
   одна активная кнопка, клик переключает язык); пагинация и росток опущены на 5px
   (`bottom: -53→-58`, `-23→-28`). Доп.: иконка «Главная» `18→20px`; у активной кнопки языка в режиме
   `single` убран бордер; кнопка-шеврон — светлый бордер (`--light-color`), иконка `18→16px`, размер `32×24`.
+- **Ревью 19.10 (2):** иконка «Главная» `→24px`; шеврон — иконка `17px`, размер `30×22`;
+  у диалога фильтра убран `padding-inline` (0), `padding-block` остаётся 4px; росток на 4px выше
+  пагинации (`bottom: -37`); фильтр **не закрывается** при уходе со страницы (`onBeforeRouteLeave`
+  удалён) — состояние живёт в `useState`, шапка и кнопка фона скрываются только на `/products`
+  (проверка маршрута), чтобы истинное состояние не влияло на другие страницы.
 - **Подвал** — `display: none` (CSS `body:has(.products-page_filter-open) .base-footer`).
 - **Плавающая кнопка** — при открытом скрыта; при закрытом появляется по скроллу (иконка анимируется
   filter ↔ close, уменьшена до 36px).

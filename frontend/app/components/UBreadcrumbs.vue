@@ -138,8 +138,8 @@ const hasBackground = computed(() =>
   }
 
   &__home-icon {
-    width: toRem(22);
-    height: toRem(22);
+    width: toRem(24);
+    height: toRem(24);
     flex-shrink: 0;
   }
 

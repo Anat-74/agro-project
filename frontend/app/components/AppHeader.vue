@@ -16,8 +16,14 @@ const props = defineProps<Props>()
 
 // Открытый диалог фильтров (страница товаров) — на mobile прячем шапку сайта:
 // диалог ~75% ширины слева, контент поднимается на --header-h, поэтому шапку
-// убираем (transform: translateY(-100%), высота не меняется → скролл сохраняется)
+// убираем (transform: translateY(-100%), высота не меняется → скролл сохраняется).
+// Состояние фильтра НЕ сбрасывается при уходе со страницы (возврат показывает его
+// открытым), поэтому класс прятанья вешаем только на самой странице товаров.
+const route = useRoute()
 const { isOpen: filterDialogOpen } = useDialog("shopFilterDialog")
+const filterPageActive = computed(
+  () => filterDialogOpen.value && /\/(ru|be)\/products\/?$/.test(route.path),
+)
 
 // Ссылка на «Блог» берётся из Strapi-навигации (label локализуется в CMS),
 // рендерится отдельно от меню «Ещё»
@@ -105,7 +111,7 @@ function openPreview(product: Product) {
 </script>
 
 <template>
-  <header :class="['header', { 'header_filter-open': filterDialogOpen }]">
+  <header :class="['header', { 'header_filter-open': filterPageActive }]">
     <BannerLayouts
       v-if="global"
       :banner-text="global?.header?.bannerText"

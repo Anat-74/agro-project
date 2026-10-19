@@ -30,8 +30,13 @@ const backgroundT = computed(() => backgroundTranslations[currentLocale.value])
 const effectT = computed(() => effectTranslations[currentLocale.value])
 
 // Открытый диалог фильтров (страница товаров) — на mobile скрываем кнопку-триггер,
-// чтобы не мешала полноэкранному оверлею фильтров
+// чтобы не мешала полноэкранному оверлею фильтров. Состояние фильтра сохраняется
+// при переходе на другие страницы, поэтому проверяем и сам маршрут.
+const route = useRoute()
 const { isOpen: filterDialogOpen } = useDialog("shopFilterDialog")
+const filterPageActive = computed(
+  () => filterDialogOpen.value && /\/(ru|be)\/products\/?$/.test(route.path),
+)
 
 const sizeOptions = computed(() => [
   { value: "cover", label: backgroundT.value.sizeCover, icon: "🖼️" },
@@ -110,7 +115,7 @@ watch(isOpen, (open) => {
         'background-popover__trigger',
         {
           'background-popover__trigger_hidden': isOpen,
-          'background-popover__trigger_hidden-filter': filterDialogOpen,
+          'background-popover__trigger_hidden-filter': filterPageActive,
         },
       ]"
       icon="mingcute:palette-line"

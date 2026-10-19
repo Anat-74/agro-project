@@ -41,11 +41,9 @@ useMeasureToVar("--crumb-h", {
 // (body:has(.products-page_filter-open) .base-footer — см. _globals.scss),
 // поэтому панель фильтров фиксированной высоты никого не перекрывает.
 
-// При уходе со страницы (например, клик «Главное» в breadcrumbs) закрываем диалог:
-// иначе isOpen остаётся true (глобальный Map).
-onBeforeRouteLeave(() => {
-  shopFilterRef.value?.close?.()
-})
+// НЕ закрываем диалог при уходе со страницы: состояние живёт в useState, чтобы
+// при возврате (клик «Главная» → назад) фильтр оставался открытым. Потребители
+// состояния (шапка, кнопка фона) сами проверяют, что мы на странице товаров.
 
 // ===== Состояние фильтров (сайдбар + сортировка) — единый источник: URL =====
 const router = useRouter();
@@ -706,8 +704,8 @@ useSeoMeta({
   }
 
   // Декоративный разделитель: по ширине товарной колонки, иконка — по центру зазора
-  // «последняя карточка → пагинация», опущен вместе с пагинацией (bottom: -41).
-  // Бокс: от (listBottom − 32) до (listBottom + 41) — height 73px;
+  // «последняя карточка → пагинация», на 4px выше пагинации (bottom: -37).
+  // Бокс: от (listBottom − 36) до (listBottom + 37) — height 73px;
   // align-items:center центрирует иконку любого размера. Чисто декор — клики не перехватывает.
   .products-page_filter-open .products-page__divider {
     display: flex;
@@ -715,7 +713,7 @@ useSeoMeta({
     column-gap: toEm(10);
     position: absolute;
     inset-inline: 0;
-    bottom: toRem(-41);
+    bottom: toRem(-37);
     height: toRem(73);
     color: var(--green-color);
     pointer-events: none;

@@ -693,11 +693,9 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     // скроллить — страница стоит; дошёл до края — страница не уезжает сразу.
     overscroll-behavior: contain;
 
-    // Внутренние отступы панели — 4px по всем сторонам. Логические свойства:
-    // блок = верх/низ, инлайн = бока. Раньше низ давал сам `height` панели (внешний
-    // зазор) — теперь отступ задан ТУТ и одинаков сверху и снизу.
+    // Отступы панели: по горизонтали убраны (было 4px), сверху и снизу — 4px.
     @media (max-width: $mobile) {
-      padding-inline: toRem(4);
+      padding-inline: 0;
       padding-block: toRem(4);
     }
 
@@ -1047,8 +1045,8 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: toRem(32);
-    height: toRem(24);
+    width: toRem(30);   // по 1px «паддинга» с боков
+    height: toRem(22);  // по 1px сверху и снизу
     margin-inline: auto;
     padding: 0;
     background: transparent;
@@ -1067,8 +1065,8 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     // Размер иконки — через :deep: svg рендерит дочерний UButton/Icon,
     // scoped-правило родителя до него не достаёт (иконка иначе 25px из .iconify).
     :deep(svg) {
-      width: toRem(16);
-      height: toRem(16);
+      width: toRem(17);
+      height: toRem(17);
     }
 
     @include hover {
