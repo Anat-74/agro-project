@@ -1038,7 +1038,8 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
   // Кнопка-шеврон прокрутки панели: sticky внизу диалога, по центру. Показывается
   // через UScrollNav (mode="toggle") — только пока контент не помещается целиком.
   // Фон прозрачный + backdrop-blur: контент под кнопкой размывается, но плашка
-  // не «сливается» с текстом. Скругление 6px, высота — на 2px меньше сверху и снизу.
+  // не «сливается» с текстом. Бордер светлый, скругление 6px; размер уменьшен
+  // вслед за иконкой (16px): 32×24.
   &__scroll-nav {
     position: sticky;
     bottom: 0;
@@ -1046,15 +1047,15 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: toRem(34);
-    height: toRem(26); // по 2px меньше сверху и снизу (было 30)
+    width: toRem(32);
+    height: toRem(24);
     margin-inline: auto;
     padding: 0;
     background: transparent;
     backdrop-filter: blur(toRem(4));
     -webkit-backdrop-filter: blur(toRem(4));
     color: var(--yellow-color);
-    border: toRem(1) solid var(--dark-color);
+    border: toRem(1) solid var(--light-color);
     border-radius: toRem(6);
     cursor: pointer;
     // Широкая тень: большой размыв + spread
@@ -1064,8 +1065,8 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
       transform var(--transition-duration);
 
     svg {
-      width: toRem(18);
-      height: toRem(18);
+      width: toRem(16);
+      height: toRem(16);
     }
 
     @include hover {

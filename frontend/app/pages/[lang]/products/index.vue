@@ -189,14 +189,14 @@ const isLoading = computed(
 // в useProductsFilters (единый источник — URL, router.replace). Здесь остаётся
 // только O2-открытие панели после успешной загрузки.
 
-// O2 (plan.md §1): панель фильтров на desktop открывается ПОСЛЕ загрузки товаров
-// (status === 'success') — при входе и на SSR панель закрыта, поэтому нет «флипа»
-// контента (mobile больше не «закрывает диалог после маунта»). Открываем ОДИН раз.
-const { width } = useViewport()
+// O2 (plan.md §1): панель фильтров открывается ПОСЛЕ загрузки товаров
+// (status === 'success') — на desktop И mobile. При входе и на SSR панель закрыта
+// (нет «флипа» контента), затем открывается ОДИН раз. Отдельного условия по ширине
+// больше нет: на mobile фильтр должен быть открыт, как и на desktop.
 let filterDialogOpened = false
 const openFilterDialogOnce = () => {
   if (filterDialogOpened || !import.meta.client) return
-  if (status.value === "success" && width.value > 767.98 && shopFilterRef.value) {
+  if (status.value === "success" && shopFilterRef.value) {
     filterDialogOpened = true
     shopFilterRef.value.open?.()
   }
@@ -693,23 +693,22 @@ useSeoMeta({
   }
 
   // Опускаем пагинацию ниже товарной зоны на запас резерва, чтобы её низ (вместе с
-  // паддингом секции ниже, 65px) встал на 7px выше низа экрана, ровно как у панели.
+  // паддингом секции ниже, 65px) встал на 2px выше низа документа.
   .products-page_filter-open .products-page__pagination {
-    bottom: toRem(-58);
+    bottom: toRem(-63);
   }
 
   // Нижний запас страницы при открытом фильтре. Пагинация — absolute, переполняет
-  // container-body на 58px и оказывается САМЫМ низким элементом документа → без
+  // container-body на 63px и оказывается САМЫМ низким элементом документа → без
   // запаса она прилипает к самому низу экрана (отступа нет ни на одной странице).
-  // Паддинг секции (> 58px) добавляет под пагинацией ровно 7px, и её низ совпадает
-  // с низом панели фильтров на ЛЮБОЙ странице пагинации (была видна только на 1-й).
+  // Паддинг секции (> 63px) добавляет под пагинацией ровно 2px.
   .products-page_filter-open {
     padding-block-end: toRem(65);
   }
 
   // Декоративный разделитель: по ширине товарной колонки, иконка — по центру зазора
-  // «последняя карточка → пагинация», опущен вместе с пагинацией (bottom: -28).
-  // Бокс: от (listBottom − 45) до (listBottom + 28) — height 73px;
+  // «последняя карточка → пагинация», опущен вместе с пагинацией (bottom: -33).
+  // Бокс: от (listBottom − 40) до (listBottom + 33) — height 73px;
   // align-items:center центрирует иконку любого размера. Чисто декор — клики не перехватывает.
   .products-page_filter-open .products-page__divider {
     display: flex;
@@ -717,7 +716,7 @@ useSeoMeta({
     column-gap: toEm(10);
     position: absolute;
     inset-inline: 0;
-    bottom: toRem(-28);
+    bottom: toRem(-33);
     height: toRem(73);
     color: var(--green-color);
     pointer-events: none;
