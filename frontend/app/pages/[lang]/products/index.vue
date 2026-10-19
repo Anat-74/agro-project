@@ -244,6 +244,7 @@ useSeoMeta({
       <UBreadcrumbs
         :items="[{ label: t.breadcrumbsCurrent }]"
         :background="breadcrumbsBackground"
+        :home-icon-only="filterDialogOpen"
       />
 
       <!-- Переключатель темы — в крошках, между названием текущей страницы и
@@ -251,6 +252,14 @@ useSeoMeta({
       <ColorMode
         v-if="filterDialogOpen"
         class="products-page__color-mode"
+      />
+
+      <!-- Переключатель языка по центру крошек (mobile, только при открытом
+           фильтре). Вариант single — одна активная кнопка; клик меняет язык -->
+      <LangSwitcher
+        v-if="filterDialogOpen"
+        single
+        class="products-page__lang"
       />
 
       <!-- Кнопка-гамбургер — в строке крошек справа, ТОЛЬКО при открытом фильтре
@@ -431,15 +440,31 @@ useSeoMeta({
   }
 
   // Переключатель темы в строке крошек (mobile, при открытом фильтре) — слева от
-  // гамбургера: 12 (отступ) + 34 (гамбургер) + 13 (зазор)
+  // гамбургера: 12 (отступ) + 34 (гамбургер) + 18 (зазор)
   &__color-mode {
     display: none;
 
     @media (max-width: $mobile) {
       position: absolute;
-      right: toRem(59);
+      right: toRem(64);
       top: 50%;
       translate: 0 -50%;
+      z-index: 15;
+      display: inline-flex;
+    }
+  }
+
+  // Переключатель языка — по центру строки крошек (mobile, при открытом фильтре).
+  // Одна активная кнопка (LangSwitcher single): клик переключает на другой язык.
+  // Селектор с __header — перебиваем display:flex корня LangSwitcher.
+  &__header &__lang {
+    display: none;
+
+    @media (max-width: $mobile) {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      translate: -50% -50%;
       z-index: 15;
       display: inline-flex;
     }
@@ -660,7 +685,7 @@ useSeoMeta({
 
   // Товарная колонка при открытом фильтре — одна колонка (карточка по ширине колонки).
   // padding-block-end базовый (64px) НЕ трогаем: он делает низ товарной зоны ниже, и
-  // пагинация (`bottom: toRem(-53)`) встаёт ровно на уровень низа панели фильтров.
+  // пагинация (`bottom: toRem(-58)`) встаёт ровно на уровень низа панели фильтров.
   // padding-block-start — верхний отступ первой карточки от липких крошек.
   .products-page_filter-open .products-page__card-list {
     grid-template-columns: 1fr;
@@ -668,23 +693,23 @@ useSeoMeta({
   }
 
   // Опускаем пагинацию ниже товарной зоны на запас резерва, чтобы её низ (вместе с
-  // паддингом секции ниже, 65px) встал на 12px выше низа экрана, ровно как у панели.
+  // паддингом секции ниже, 65px) встал на 7px выше низа экрана, ровно как у панели.
   .products-page_filter-open .products-page__pagination {
-    bottom: toRem(-53);
+    bottom: toRem(-58);
   }
 
   // Нижний запас страницы при открытом фильтре. Пагинация — absolute, переполняет
-  // container-body на 53px и оказывается САМЫМ низким элементом документа → без
+  // container-body на 58px и оказывается САМЫМ низким элементом документа → без
   // запаса она прилипает к самому низу экрана (отступа нет ни на одной странице).
-  // Паддинг секции (> 53px) добавляет под пагинацией ровно 12px, и её низ совпадает
+  // Паддинг секции (> 58px) добавляет под пагинацией ровно 7px, и её низ совпадает
   // с низом панели фильтров на ЛЮБОЙ странице пагинации (была видна только на 1-й).
   .products-page_filter-open {
     padding-block-end: toRem(65);
   }
 
   // Декоративный разделитель: по ширине товарной колонки, иконка — по центру зазора
-  // «последняя карточка → пагинация», сдвинута вниз (bottom: -23 = на ~14px ниже центра).
-  // Бокс: от низа резерва (listBottom − 64) до верха пагинации (listBottom + 9) — height 73px;
+  // «последняя карточка → пагинация», опущен вместе с пагинацией (bottom: -28).
+  // Бокс: от (listBottom − 45) до (listBottom + 28) — height 73px;
   // align-items:center центрирует иконку любого размера. Чисто декор — клики не перехватывает.
   .products-page_filter-open .products-page__divider {
     display: flex;
@@ -692,7 +717,7 @@ useSeoMeta({
     column-gap: toEm(10);
     position: absolute;
     inset-inline: 0;
-    bottom: toRem(-23);
+    bottom: toRem(-28);
     height: toRem(73);
     color: var(--green-color);
     pointer-events: none;

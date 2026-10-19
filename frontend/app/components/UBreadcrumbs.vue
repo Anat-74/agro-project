@@ -9,11 +9,14 @@ interface Props {
     baseBgImageWebp?: { url?: string } | null
     retinaBgImageAvif?: { url?: string } | null
   } | null
+  // «Главная» только иконкой (без текста) — компактные крошки на mobile
+  homeIconOnly?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   items: () => [],
   background: null,
+  homeIconOnly: false,
 })
 
 const { currentLocale } = useLocale()
@@ -40,10 +43,12 @@ const hasBackground = computed(() =>
         <li class="breadcrumbs__item">
           <NuxtLink
             class="breadcrumbs__link breadcrumbs__link_home"
+            :class="{ 'breadcrumbs__link_home_icon-only': homeIconOnly }"
             :to="`/${currentLocale}`"
+            :aria-label="homeIconOnly ? t.home : undefined"
           >
             <Icon name="mdi:home" class="breadcrumbs__home-icon" aria-hidden="true" />
-            {{ t.home }}
+            <span v-if="!homeIconOnly">{{ t.home }}</span>
           </NuxtLink>
         </li>
         <li v-for="(item, i) in items" :key="i" class="breadcrumbs__item">
@@ -121,6 +126,11 @@ const hasBackground = computed(() =>
     gap: toRem(6);
     color: var(--light-color);
     font-size: calc(1em + 1px);
+
+    // Только иконка: без текста — убираем и зазор под него
+    &_icon-only {
+      gap: 0;
+    }
 
     @include hover {
       color: var(--warning-color);

@@ -1,24 +1,43 @@
 <script setup>
 import { buttonTranslations } from '~/locales/button'
 
+const props = defineProps({
+  // Показывать только активный язык (одна кнопка); клик переключает на другой
+  single: { type: Boolean, default: false },
+})
+
 const { currentLocale, locales, switchLocale } = useLocale()
 
 // Безопасный доступ к переводам
 const getButtonTranslation = (locale) => {
   return buttonTranslations[locale] || buttonTranslations.ru
 }
+
+const visibleLocales = computed(() =>
+  props.single
+    ? locales.filter((locale) => locale.code === currentLocale.value)
+    : locales,
+)
+
+// Раскладка «одна активная кнопка»: клик по ней переключает на следующий язык
+const onSelect = (code) => {
+  if (!props.single) return switchLocale(code)
+
+  const other = locales.find((locale) => locale.code !== currentLocale.value)
+  if (other) switchLocale(other.code)
+}
 </script>
 
 <template>
-  <div class="lang-switcher">
+  <div class="lang-switcher" :class="{ 'lang-switcher_single': single }">
     <UButton
-      v-for="locale in locales"
+      v-for="locale in visibleLocales"
       :key="locale.code"
       variant="lang-switcher"
       :icon="locale.icon"
       :class="{ active: currentLocale === locale.code }"
       :aria-label="getButtonTranslation(currentLocale).ariaLabelLang"
-      @click="switchLocale(locale.code)"
+      @click="onSelect(locale.code)"
      />
   </div>
 </template>
@@ -31,6 +50,11 @@ const getButtonTranslation = (locale) => {
   padding-inline: toRem(3);
   padding-block: toRem(2);
   border-radius: toRem(4);
+
+  // Одна (активная) кнопка — она же переключатель на другой язык
+  &_single .active {
+    cursor: pointer;
+  }
 }
 .active {
    outline: 1px solid var(--active-color);
