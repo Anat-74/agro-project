@@ -25,7 +25,7 @@ export const shopFiltersTranslations: Record<LocaleCode, {
   filterTags: string
   seoTitle: string
   seoDescription: string
-  tags: string[]
+  tags: { label: string; icon: string }[]
 }> = {
   ru: {
     filterTitle: "Фильтр",
@@ -40,7 +40,7 @@ export const shopFiltersTranslations: Record<LocaleCode, {
     priceUpTo: "до",
     priceFrom: "от",
     priceCustom: "Введите цену",
-    tagsTitle: "Популярные теги",
+    tagsTitle: "Популярное",
     saleTitle: "Товары со скидкой",
     discountBadge: "Скидка 79%",
     discountText: "на первый заказ",
@@ -54,7 +54,19 @@ export const shopFiltersTranslations: Record<LocaleCode, {
     filterTags: "Теги",
     seoTitle: "Все товары",
     seoDescription: "Интернет-магазин агропродуктов: все товары — фрукты, овощи, зелень, орехи и многое другое с быстрой доставкой.",
-    tags: ["Здоровое", "Низкокалорийное", "Вегетарианское", "Для детей", "Витамины", "Хлеб", "Мясо", "Снеки", "Обед", "Ужин", "Завтрак", "Фрукты"],
+    tags: [
+      { label: "Здоровое", icon: "mdi:leaf" },
+      { label: "Низкокалорийное", icon: "mdi:fire-off" },
+      { label: "Вегетарианское", icon: "mdi:sprout" },
+      { label: "Для детей", icon: "mdi:teddy-bear" },
+      { label: "Витамины", icon: "mdi:pill" },
+      { label: "Хлеб", icon: "mdi:bread-slice" },
+      { label: "Снеки", icon: "mdi:popcorn" },
+      { label: "Обед", icon: "mdi:silverware-fork-knife" },
+      { label: "Ужин", icon: "mdi:silverware-variant" },
+      { label: "Завтрак", icon: "mdi:coffee-outline" },
+      { label: "Фрукты", icon: "mdi:fruit-watermelon" },
+    ],
   },
   be: {
     filterTitle: "Фільтр",
@@ -69,7 +81,7 @@ export const shopFiltersTranslations: Record<LocaleCode, {
     priceUpTo: "да",
     priceFrom: "ад",
     priceCustom: "Увядзіце цану",
-    tagsTitle: "Папулярныя тэгі",
+    tagsTitle: "Папулярнае",
     saleTitle: "Тавары са скідкай",
     discountBadge: "Зніжка 79%",
     discountText: "на першы заказ",
@@ -83,6 +95,18 @@ export const shopFiltersTranslations: Record<LocaleCode, {
     filterTags: "Тэгі",
     seoTitle: "Усе тавары",
     seoDescription: "Інтэрнэт-крама аграпрадуктаў: усе тавары — садавіна, агародніна, зеляніна, арэхі і многае іншае з хуткай дастаўкай.",
-    tags: ["Здаровае", "Нізкакаларыйнае", "Вегетарыянскае", "Для дзяцей", "Вітаміны", "Хлеб", "Мяса", "Снэкі", "Абед", "Вячэра", "Сняданак", "Фрукты"],
+    tags: [
+      { label: "Здаровае", icon: "mdi:leaf" },
+      { label: "Нізкакаларыйнае", icon: "mdi:fire-off" },
+      { label: "Вегетарыянскае", icon: "mdi:sprout" },
+      { label: "Для дзяцей", icon: "mdi:teddy-bear" },
+      { label: "Вітаміны", icon: "mdi:pill" },
+      { label: "Хлеб", icon: "mdi:bread-slice" },
+      { label: "Снэкі", icon: "mdi:popcorn" },
+      { label: "Абед", icon: "mdi:silverware-fork-knife" },
+      { label: "Вячэра", icon: "mdi:silverware-variant" },
+      { label: "Сняданак", icon: "mdi:coffee-outline" },
+      { label: "Фрукты", icon: "mdi:fruit-watermelon" },
+    ],
   },
 }

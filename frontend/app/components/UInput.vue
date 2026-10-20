@@ -117,7 +117,7 @@ const onCheckboxChange = (e: Event) => {
         @change="onCheckboxChange"
       >
       <label v-if="label" :for="inputId" :class="['u-input__checkbox-label', { 'u-input__checkbox-label_pill': pill }]">
-        {{ label }}
+        <slot name="label">{{ label }}</slot>
         <span v-if="required" class="u-input__required">*</span>
       </label>
     </div>

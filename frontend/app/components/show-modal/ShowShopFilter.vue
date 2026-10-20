@@ -506,15 +506,20 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
               </details>
               <div class="shop-filters__content">
                 <ul class="shop-filters__tags">
-                    <li v-for="tag in t.tags" :key="tag" class="shop-filters__tag-item">
+                    <li v-for="tag in t.tags" :key="tag.label" class="shop-filters__tag-item">
                       <UInput
                         type="checkbox"
                         pill
-                        :value="tag"
+                        :value="tag.label"
                         :model-value="tags"
-                        :label="tag"
+                        :label="tag.label"
                         @update:model-value="emit('update:tags', $event)"
-                      />
+                      >
+                        <template #label>
+                          <Icon :name="tag.icon" class="shop-filters__tag-icon" />
+                          <span>{{ tag.label }}</span>
+                        </template>
+                      </UInput>
                     </li>
                   </ul>
                 </div>
@@ -703,10 +708,10 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     // скроллить — страница стоит; дошёл до края — страница не уезжает сразу.
     overscroll-behavior: contain;
 
-    // Отступы панели: по 2px слева и справа (контент по центру панели),
+    // Отступы панели: слева 0, справа 2px (счётчики не липнут к краю),
     // сверху и снизу — 4px.
     @media (max-width: $mobile) {
-      padding-inline: toRem(2);
+      padding-inline: 0 toRem(2);
       padding-block: toRem(4);
     }
 
@@ -742,20 +747,31 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
   // Здесь только секции фильтров (сортировка и закрытие — в липком тулбаре страницы).
 
   &__section {
+    position: relative;
     margin-block-end: toRem(24);
     padding-block-end: toRem(24);
-    // Разделитель «втиснение» (паттерн BannerLayouts): тёмная линия снизу +
-    // светлый блик прямо под ней — вид вдавленной канавки
-    border-bottom: toRem(1) solid rgba(0, 0, 0, 0.3);
-    box-shadow:
-      inset 0 toRem(-1) 0 rgba(0, 0, 0, 0.08),
-      0 toRem(1) 0 rgba(255, 255, 255, 0.6);
+
+    // Разделитель «втиснение» (паттерн BannerLayouts): тёмная линия + светлый блик
+    // под ней. Псевдоэлемент, а не border-bottom: линия короче секции на 4px
+    // (по 2px с каждой стороны).
+    &::after {
+      content: "";
+      position: absolute;
+      inset-inline: toRem(2);
+      bottom: 0;
+      height: toRem(1);
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.6);
+      pointer-events: none;
+    }
 
     &:last-child {
-      border-bottom: none;
-      box-shadow: none;
       margin-block-end: 0;
       padding-block-end: 0;
+
+      &::after {
+        display: none;
+      }
     }
   }
 
@@ -789,9 +805,9 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     // Без рамки/outline/фона — просто название + иконка; снизу +4px воздуха
     padding: 0;
     padding-block-end: toRem(4);
-    // Размер как у пунктов списков (наследуется) — единая типографика фильтра
+    // Заголовки секций на ~2px крупнее пунктов списков (toEm(18) от 14.1 → ≈15.9)
     font-weight: 500;
-    font-size: inherit;
+    font-size: toEm(18);
     color: var(--primary-color);
     // Отступ снизу от summary ~8px
     margin-block-end: toRem(8);
@@ -870,12 +886,13 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
       align-items: center;
     }
 
-    // Размер шрифта подписи НЕ задаём (эксперимент: показываем размер из UInput).
+    // Размер подписи — от li/body через inherit (перебивает toRem(15) из UInput).
     // Жирность единая для фильтра — 500 (как у тегов и чипов).
     :deep(.u-input__radio-label) {
       flex: 1;
       min-width: 0;
       overflow-wrap: anywhere;
+      font-size: inherit;
       font-weight: 500;
       transition: color var(--transition-duration);
     }
@@ -960,6 +977,8 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     border-radius: toRem(20);
     background: var(--whitesmoke-color);
     color: var(--gray-color);
+    // На 2px меньше списков (toEm(14) от 14.1 → ≈12.3)
+    font-size: toEm(14);
     font-weight: 500;
     cursor: pointer;
     transition:
@@ -1000,7 +1019,8 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     flex: 1 1 0;
     max-width: toRem(80);
     min-width: 0;
-    padding: toEm(10) toEm(8);
+    // Высота −2px: по 1px с каждого края
+    padding: calc(toEm(10) - 1px) toEm(8);
     border: toRem(1) solid var(--border-color);
     border-radius: toRem(8);
     color: var(--color);
@@ -1046,10 +1066,19 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
   &__tag-item {
     margin: 0;
 
-    // Размер подписи — из UInput (эксперимент). Жирность единая — 500.
+    // Размер подписи — от li/body через inherit (перебивает toEm(13) из UInput).
+    // Жирность единая — 500; иконка + текст внутри пилюли.
     :deep(.u-input__checkbox-label) {
+      font-size: inherit;
       font-weight: 500;
+      gap: toRem(4);
     }
+  }
+
+  // Иконка тега в пилюле — по размеру текста
+  &__tag-icon {
+    flex-shrink: 0;
+    font-size: 1em;
   }
 
   // Кнопка-шеврон прокрутки панели: sticky внизу диалога, по центру. Показывается
