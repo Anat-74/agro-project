@@ -359,7 +359,7 @@ useSeoMeta({
              см. стили). Рендерим ВСЕГДА (не только при пагинации), чтобы декор не
              пропадал на категориях с одной страницей. Чисто декоративный. -->
         <li class="products-page__divider" aria-hidden="true">
-          <UAnimatedIcon name="mdi:sprout" animation="wind" />
+          <UAnimatedIcon name="mdi:sprout" animation="wind" :duration="10" />
         </li>
       </ul>
 
@@ -692,22 +692,20 @@ useSeoMeta({
     padding-block-start: toRem(12);
   }
 
-  // Пагинация: поднята на 4px выше (bottom: -67) — переполняет секцию на 2px,
-  // у максимума скролла стоит у самого низа.
+  // Пагинация: 7px от низа страницы (bottom: -58 при padding-block-end 65px).
   .products-page_filter-open .products-page__pagination {
-    bottom: toRem(-67);
+    bottom: toRem(-58);
   }
 
-  // Нижний запас страницы при открытом фильтре. Пагинация — absolute и при `-67`
-  // выходит на 2px ниже padding-бокса секции (65px); документ растягивается до её
-  // нижнего края (scrollable overflow), поэтому на максимуме скролла она у самого низа.
+  // Нижний запас страницы при открытом фильтре. Пагинация — absolute: при `-58`
+  // под ней остаётся 7px (padding-block-end секции 65px).
   .products-page_filter-open {
     padding-block-end: toRem(65);
   }
 
   // Декоративный разделитель: по ширине товарной колонки, иконка — по центру зазора
-  // «последняя карточка → пагинация», поднят вместе с пагинацией (bottom: -33).
-  // Бокс: от (listBottom − 40) до (listBottom + 33) — height 73px;
+  // «последняя карточка → пагинация», поднят вместе с пагинацией (bottom: -24).
+  // Бокс: от (listBottom − 49) до (listBottom + 24) — height 73px;
   // align-items:center центрирует иконку любого размера. Чисто декор — клики не перехватывает.
   .products-page_filter-open .products-page__divider {
     display: flex;
@@ -715,7 +713,7 @@ useSeoMeta({
     column-gap: toEm(10);
     position: absolute;
     inset-inline: 0;
-    bottom: toRem(-33);
+    bottom: toRem(-24);
     height: toRem(73);
     color: var(--green-color);
     pointer-events: none;

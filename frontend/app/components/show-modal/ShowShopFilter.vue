@@ -859,12 +859,14 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
       align-items: center;
     }
 
-    // Размер шрифта подписи НЕ задаём — наследуется от li (глобальный adaptiveValue)
+    // Размер шрифта подписи НЕ задаём — наследуется от li (глобальный adaptiveValue).
+    // Жирность единая для фильтра — 500 (как у тегов и чипов).
     :deep(.u-input__radio-label) {
       flex: 1;
       min-width: 0;
       overflow-wrap: anywhere;
       font-size: inherit;
+      font-weight: 500;
       transition: color var(--transition-duration);
     }
 
@@ -887,12 +889,12 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
       }
 
       :deep(.u-input__radio-label) {
-        font-weight: 600;
+        font-weight: 500;
       }
 
       // Жирнее и цветом текста — ТОЛЬКО у активного счётчика
       .shop-filters__category-count {
-        font-weight: 600;
+        font-weight: 500;
         color: var(--color);
       }
     }
@@ -921,6 +923,9 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
 
   &__category-count {
     flex-shrink: 0; // счётчик не сжимаем — иначе режется
+    // На 2px меньше подписи: toEm(14) на унаследованном размере даёт ≈12px
+    font-size: toEm(14);
+    font-weight: 500;
     color: var(--gray-color);
   }
 
@@ -1031,9 +1036,11 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
   &__tag-item {
     margin: 0;
 
-    // Размер подписи — от li (глобальный adaptiveValue), не из UInput
+    // Размер подписи — от li (глобальный adaptiveValue), не из UInput.
+    // Жирность единая для фильтра — 500.
     :deep(.u-input__checkbox-label) {
       font-size: inherit;
+      font-weight: 500;
     }
   }
 
@@ -1049,12 +1056,12 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     align-items: center;
     justify-content: center;
     width: toRem(30);   // по 1px «паддинга» с боков
-    height: toRem(22);  // по 1px сверху и снизу
+    height: toRem(20);  // −2px по высоте
     margin-inline: auto;
     padding: 0;
     background: transparent;
-    backdrop-filter: blur(toRem(4));
-    -webkit-backdrop-filter: blur(toRem(4));
+    backdrop-filter: blur(toRem(2));   // мягче — фон ещё прозрачнее
+    -webkit-backdrop-filter: blur(toRem(2));
     color: var(--yellow-color);
     border: toRem(1) solid var(--light-color);
     border-radius: toRem(6);
@@ -1068,8 +1075,8 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     // Размер иконки — через :deep: svg рендерит дочерний UButton/Icon,
     // scoped-правило родителя до него не достаёт (иконка иначе 25px из .iconify).
     :deep(svg) {
-      width: toRem(17);
-      height: toRem(17);
+      width: toRem(18);
+      height: toRem(18);
     }
 
     @include hover {
