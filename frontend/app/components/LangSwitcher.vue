@@ -66,18 +66,31 @@ const onSelect = (code) => {
     cursor: pointer;
   }
 
-  // Текстовая версия (RU/BE): как select-контрол — Neucha, 14px, 600
+  // Текстовая версия (RU/BE): как select-контрол — Neucha, 14px, 600.
+  // «Втиснутый» контрол: светлый фон + inset-тени (паттерн кнопки темы в шапке).
   &_codes .btn_lang-switcher {
     width: auto;
     height: auto;
-    padding: toRem(1) toRem(6);
+    padding: toRem(2) toRem(7);
     border-radius: toRem(6);
-    color: inherit;
+    background: var(--light-color);
+    // Текст всегда тёмный: фон контрола светлый во всех темах
+    color: var(--dark-color);
+    border: toRem(1) solid var(--border-color);
+    box-shadow:
+      0 toRem(2) toRem(4) rgba(0, 0, 0, 0.25),
+      inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
+      0 toRem(1) 0 rgba(255, 255, 255, 0.4);
     font-family: "Neucha", cursive, sans-serif;
     font-size: toRem(14);
     font-weight: 600;
     line-height: 1.1;
     letter-spacing: 0.02em;
+  }
+
+  // В режиме codes индикатор активного — сам «вдавленный» контрол, outline не нужен
+  &_codes .active {
+    outline: none;
   }
 }
 .active {

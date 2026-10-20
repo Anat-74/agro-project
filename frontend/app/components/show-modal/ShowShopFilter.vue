@@ -520,11 +520,20 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
                 </div>
             </section>
 
-            <!-- Баннер «Скидка 79%» (изображение Bannar.jpg) -->
+            <!-- Баннер «Скидка 79%» — фон через UImage (lazy + оптимизация) -->
             <section
               class="shop-filters__banner"
               aria-labelledby="shop-filters-banner-title"
             >
+              <UImage
+                class="shop-filters__banner-image"
+                src="/image/Bannar-2026-10-20.jpg"
+                alt=""
+                width="330"
+                height="280"
+                loading="lazy"
+                :from-strapi="false"
+              />
               <div class="shop-filters__banner-content">
                 <h2 id="shop-filters-banner-title" class="shop-filters__banner-badge">
                   {{ t.discountBadge }}
@@ -693,9 +702,10 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     // скроллить — страница стоит; дошёл до края — страница не уезжает сразу.
     overscroll-behavior: contain;
 
-    // Отступы панели: по горизонтали убраны (было 4px), сверху и снизу — 4px.
+    // Отступы панели: по горизонтали 2px справа (счётчики не липнут к краю),
+    // сверху и снизу — 4px.
     @media (max-width: $mobile) {
-      padding-inline: 0;
+      padding-inline: 0 toRem(2);
       padding-block: toRem(4);
     }
 
@@ -778,9 +788,9 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     // Без рамки/outline/фона — просто название + иконка; снизу +4px воздуха
     padding: 0;
     padding-block-end: toRem(4);
-    // На 4px меньше, чем было (toEm(22)) и тоньше (500)
+    // Размер как у пунктов списков (наследуется) — единая типографика фильтра
     font-weight: 500;
-    font-size: toEm(18);
+    font-size: inherit;
     color: var(--primary-color);
     // Отступ снизу от summary ~8px
     margin-block-end: toRem(8);
@@ -1087,18 +1097,36 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
 
   // ==== Баннер «Скидка 79%» ====
   &__banner {
+    position: relative;
+    overflow: hidden;
     border-radius: toRem(12);
     padding: toRem(24) toRem(20);
     margin-block-end: toRem(24);
     min-height: toRem(140);
-    background-image: url("/image/Bannar.jpg");
-    background-size: cover;
-    background-position: center;
     display: flex;
     align-items: center;
   }
 
+  // Фон баннера — UImage во всю площадь секции, текст поверх
+  &__banner-image {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  // Перебиваем `object-fit: contain` у типа product в UImage (селектор с двумя
+  // классами родителя выше по специфичности)
+  &__banner &__banner-image :deep(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
   &__banner-content {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: flex-start;

@@ -359,7 +359,7 @@ useSeoMeta({
              см. стили). Рендерим ВСЕГДА (не только при пагинации), чтобы декор не
              пропадал на категориях с одной страницей. Чисто декоративный. -->
         <li class="products-page__divider" aria-hidden="true">
-          <UAnimatedIcon name="mdi:sprout" animation="wind" :duration="10" />
+          <UAnimatedIcon name="mdi:sprout" animation="wind" :duration="20" />
         </li>
       </ul>
 
@@ -692,20 +692,20 @@ useSeoMeta({
     padding-block-start: toRem(12);
   }
 
-  // Пагинация: 7px от низа страницы (bottom: -58 при padding-block-end 65px).
+  // Пагинация: 9px от низа страницы (bottom: -56 при padding-block-end 65px).
   .products-page_filter-open .products-page__pagination {
-    bottom: toRem(-58);
+    bottom: toRem(-56);
   }
 
-  // Нижний запас страницы при открытом фильтре. Пагинация — absolute: при `-58`
-  // под ней остаётся 7px (padding-block-end секции 65px).
+  // Нижний запас страницы при открытом фильтре. Пагинация — absolute: при `-56`
+  // под ней остаётся 9px (padding-block-end секции 65px).
   .products-page_filter-open {
     padding-block-end: toRem(65);
   }
 
   // Декоративный разделитель: по ширине товарной колонки, иконка — по центру зазора
-  // «последняя карточка → пагинация», поднят вместе с пагинацией (bottom: -24).
-  // Бокс: от (listBottom − 49) до (listBottom + 24) — height 73px;
+  // «последняя карточка → пагинация», поднят вместе с пагинацией (bottom: -22).
+  // Бокс: от (listBottom − 51) до (listBottom + 22) — height 73px;
   // align-items:center центрирует иконку любого размера. Чисто декор — клики не перехватывает.
   .products-page_filter-open .products-page__divider {
     display: flex;
@@ -713,7 +713,7 @@ useSeoMeta({
     column-gap: toEm(10);
     position: absolute;
     inset-inline: 0;
-    bottom: toRem(-24);
+    bottom: toRem(-22);
     height: toRem(73);
     color: var(--green-color);
     pointer-events: none;
