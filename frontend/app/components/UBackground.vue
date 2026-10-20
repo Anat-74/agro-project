@@ -346,7 +346,8 @@ const interactiveClass = computed(() => ({
     z-index: 1;
 
     @media (prefers-reduced-motion: reduce) {
-      animation: none;
+      // animation обнуляется глобальным правилом в _normalize.scss;
+      // здесь только убираем сам слой блика
       display: none;
     }
   }

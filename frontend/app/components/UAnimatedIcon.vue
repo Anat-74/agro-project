@@ -7,7 +7,10 @@
  *  - pulse — мягкое «дыхание» (масштаб 1 → 1.04);
  *  - none  — без анимации.
  *
- * Уважает prefers-reduced-motion (анимация отключается).
+ * Уважает prefers-reduced-motion: анимации глобально отключаются правилом
+ * в _normalize.scss (@media (prefers-reduced-motion: reduce) { * { ... } }),
+ * поэтому собственного медиа-дубля здесь нет.
+ *
  * Размер задаётся снаружи на самом svg (как у обычного Icon).
  */
 interface Props {
@@ -93,13 +96,6 @@ const animationStyle = computed(() => ({
 
   50% {
     scale: 1.04;
-  }
-}
-
-// Доступность: при reduce-настройке анимации не крутим
-@media (prefers-reduced-motion: reduce) {
-  .u-animated-icon {
-    animation: none !important;
   }
 }
 </style>
