@@ -859,11 +859,12 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
       align-items: center;
     }
 
-    // Размер шрифта подписи НЕ задаём — наследуется от body (adaptiveValue 16→15)
+    // Размер шрифта подписи НЕ задаём — наследуется от li (глобальный adaptiveValue)
     :deep(.u-input__radio-label) {
       flex: 1;
       min-width: 0;
       overflow-wrap: anywhere;
+      font-size: inherit;
       transition: color var(--transition-duration);
     }
 
@@ -920,7 +921,6 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
 
   &__category-count {
     flex-shrink: 0; // счётчик не сжимаем — иначе режется
-    font-size: toEm(14);
     color: var(--gray-color);
   }
 
@@ -945,7 +945,6 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     border-radius: toRem(20);
     background: var(--whitesmoke-color);
     color: var(--gray-color);
-    font-size: toEm(13);
     font-weight: 500;
     cursor: pointer;
     transition:
@@ -1031,13 +1030,17 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
 
   &__tag-item {
     margin: 0;
+
+    // Размер подписи — от li (глобальный adaptiveValue), не из UInput
+    :deep(.u-input__checkbox-label) {
+      font-size: inherit;
+    }
   }
 
   // Кнопка-шеврон прокрутки панели: sticky внизу диалога, по центру. Показывается
   // через UScrollNav (mode="toggle") — только пока контент не помещается целиком.
   // Фон прозрачный + backdrop-blur: контент под кнопкой размывается, но плашка
-  // не «сливается» с текстом. Бордер светлый, скругление 6px; размер уменьшен
-  // вслед за иконкой (16px): 32×24.
+  // не «сливается» с текстом. Бордер светлый, скругление 6px; иконка 17px, кнопка 30×22.
   &__scroll-nav {
     position: sticky;
     bottom: 0;

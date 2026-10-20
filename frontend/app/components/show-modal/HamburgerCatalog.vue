@@ -39,7 +39,7 @@ const isCategoryActive = (slug?: string) =>
           <UImage
             v-if="cat.image?.url"
             :src="cat.image?.url"
-            alt=""
+            :alt="cat.name"
             class="accordion__product-image"
             width="44"
             height="32"

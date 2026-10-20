@@ -98,7 +98,7 @@ provide(VISIBILITY_KEY, {
 
 <template>
   <VitePwaManifest />
-  <div :style="containerVars">
+  <div class="app-shell" :style="containerVars">
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
@@ -108,6 +108,15 @@ provide(VISIBILITY_KEY, {
 <style lang="scss">
 #__nuxt {
   min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+// Обёртка app.vue: держит CSS-переменные темы/яркости/локали и должна быть
+// flex-колонкой, иначе `main { flex: 1 1 auto }` ниже не работает (main —
+// потомок этой обёртки, а не #__nuxt напрямую).
+.app-shell {
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
 

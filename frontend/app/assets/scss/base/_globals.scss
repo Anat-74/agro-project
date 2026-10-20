@@ -23,6 +23,13 @@ body {
   background-color: var(--bg);
   transition: background-color var(--transition-duration);
 
+  @include m.adaptiveValue("font-size", 16, 14);
+}
+
+// Текст списков — единый размер: на мобильном чуть крупнее body (15 против 14).
+// Прямое правило на <li> (дети наследуют); собственные font-size у детей списков
+// в компонентах убраны — см. план typography-lists-audit.md.
+li {
   @include m.adaptiveValue("font-size", 16, 15);
 }
 

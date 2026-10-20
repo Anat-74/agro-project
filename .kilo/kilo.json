@@ -33,6 +33,14 @@
       ],
       "enabled": true
     },
+    "deepseek-search": {
+      "type": "local",
+      "command": [
+        "node",
+        "C:/agro-project/mcp-servers/deepseek-search/server.mjs"
+      ],
+      "enabled": true
+    },
     "figma-rest": {
       "type": "local",
       "command": [

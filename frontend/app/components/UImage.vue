@@ -136,8 +136,8 @@ const finalSrc = computed(() => {
       :quality="props.quality"
       :loading="props.loading"
       :fetchpriority="props.priority"
-      :class="['app-image__img', `app-image__img_${type}`]"
       decoding="async"
+      :class="['app-image__img', `app-image__img_${type}`]"
       @load="onImageLoad"
     />
     <img
@@ -147,8 +147,8 @@ const finalSrc = computed(() => {
       :width="width"
       :height="height"
       :loading="'eager'"
-      :class="['app-image__img', `app-image__img_${type}`]"
       decoding="async"
+      :class="['app-image__img', `app-image__img_${type}`]"
       @load="onImageLoad"
     >
   </div>
