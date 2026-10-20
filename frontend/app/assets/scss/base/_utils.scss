@@ -62,12 +62,6 @@
   font-size: toRem(25);
 }
 
-.iconify--my-icon {
-  translate: 0 toRem(2);
-  font-size: toEm(16);
-  color: var(--warning-color);
-}
-
 
 // Класс для визуального скрытия элемента, но сохранения доступности для скринридеров
 .visually-hidden {

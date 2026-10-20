@@ -361,8 +361,10 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
               <div class="shop-filters__content">
                 <ul class="shop-filters__category-list">
                   <li
-                    class="shop-filters__category"
-                    :class="{ 'shop-filters__category_is-active': category === '' }"
+                    :class="[
+                      'shop-filters__category',
+                      { 'shop-filters__category_is-active': category === '' },
+                    ]"
                   >
                     <Icon
                       :name="ALL_PRODUCTS_VISUAL.icon"
@@ -390,8 +392,10 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
                   <li
                     v-for="cat in categories"
                     :key="cat.slug"
-                    class="shop-filters__category"
-                    :class="{ 'shop-filters__category_is-active': category === cat.slug }"
+                    :class="[
+                      'shop-filters__category',
+                      { 'shop-filters__category_is-active': category === cat.slug },
+                    ]"
                   >
                     <Icon
                       :name="categoryVisual(cat.slug).icon"
@@ -439,17 +443,19 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
                   <!-- Пресеты-диапазоны (5) — основной способ выбора на мобильном -->
                   <ul v-if="pricePresets.length" class="shop-filters__price-presets">
                     <li v-for="p in pricePresets" :key="p.id">
-                      <button
-                        type="button"
-                        class="shop-filters__price-preset"
-                        :class="{
-                          'shop-filters__price-preset_is-active': isPricePresetActive(p),
-                        }"
+                      <UButton
+                        variant="plain"
+                        :class="[
+                          'shop-filters__price-preset',
+                          {
+                            'shop-filters__price-preset_is-active': isPricePresetActive(p),
+                          },
+                        ]"
                         :aria-pressed="isPricePresetActive(p)"
                         @click="selectPricePreset(p)"
                       >
                         {{ p.label }}
-                      </button>
+                      </UButton>
                     </li>
                   </ul>
                   <!-- Свой диапазон — числовые поля (альтернатива пресетам).
@@ -589,11 +595,13 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
          body — чтобы position:fixed не ломался о transform-предка, и только на
          клиенте (v-if=isMobile на SSR false → без SSR-флипа). -->
     <Teleport to="body">
-      <button
+      <UButton
         v-if="isMobile"
-        type="button"
-        class="show-shop-filter__float"
-        :class="{ 'show-shop-filter__float_visible': floatVisible }"
+        variant="plain"
+        :class="[
+          'show-shop-filter__float',
+          { 'show-shop-filter__float_visible': floatVisible },
+        ]"
         :aria-label="t.filterTitle"
         :aria-expanded="isOpen"
         aria-controls="dialogShopFilter"
@@ -606,7 +614,7 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
           </Transition>
         </span>
         <span>{{ t.filterTitle }}</span>
-      </button>
+      </UButton>
     </Teleport>
   </div>
 </template>
@@ -757,11 +765,12 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     &::after {
       content: "";
       position: absolute;
-      inset-inline: toRem(5);
+      inset-inline: toEm(5);
       bottom: 0;
       height: toRem(1);
-      background: rgba(0, 0, 0, 0.3);
-      box-shadow: 0 toRem(1) 0 rgba(255, 255, 255, 0.6);
+      // Цвета — из переменных темы (без хардкода)
+      background: color-mix(in srgb, var(--color) 30%, transparent);
+      box-shadow: 0 toRem(1) 0 color-mix(in srgb, var(--light-color) 60%, transparent);
       pointer-events: none;
     }
 
@@ -841,12 +850,6 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
       min-height: 0;
       overflow: hidden;
     }
-  }
-
-  &__section-title {
-    margin: 0 0 toRem(16) 0;
-    font-weight: 600;
-    @include adaptiveValue("font-size", 18, 16);
   }
 
   // ==== Категории (radio) ====
@@ -1073,20 +1076,21 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
       font-weight: 500;
       gap: toRem(4);
       // Внутренние отступы пилюли: −2px справа и слева (было 16px)
-      padding-inline: toRem(8);
+      padding-inline: toEm(8);
     }
   }
 
-  // Иконка тега в пилюле — на 2px крупнее текста, светлый серый
+  // Иконка тега в пилюле — на 2px крупнее текста, светлее подписи (opacity,
+  // чтобы не хардкодить цвет и наследовать тему)
   &__tag-icon {
     flex-shrink: 0;
-    font-size: calc(1em + 2px);
-    color: #a9a9a9;
+    font-size: 1.125em; // ≈ +2px к 14px
+    opacity: 0.65;
   }
 
-  // Активный тег: иконка светлая, как и подпись (на зелёной пилюле)
+  // Активный тег: иконка светлая и полная, как подпись на зелёной пилюле
   &__tag-item:has(.u-input__checkbox:checked) &__tag-icon {
-    color: var(--light-color);
+    opacity: 1;
   }
 
   // Кнопка-шеврон прокрутки панели: sticky внизу диалога, по центру. Показывается

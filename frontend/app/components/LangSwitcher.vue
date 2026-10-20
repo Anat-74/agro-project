@@ -32,8 +32,10 @@ const onSelect = (code) => {
 
 <template>
   <div
-    class="lang-switcher"
-    :class="{ 'lang-switcher_single': single, 'lang-switcher_codes': codes }"
+    :class="[
+      'lang-switcher',
+      { 'lang-switcher_single': single, 'lang-switcher_codes': codes },
+    ]"
   >
     <UButton
       v-for="locale in visibleLocales"
@@ -71,8 +73,8 @@ const onSelect = (code) => {
   &_codes .btn_lang-switcher {
     width: auto;
     height: auto;
-    padding: toRem(2) toRem(7);
-    border-radius: toRem(6);
+    padding: toEm(2) toEm(7);
+    border-radius: toEm(6);
     background: transparent;
     color: var(--light-color);
     border: toRem(1) solid var(--border-color);

@@ -1,9 +1,6 @@
 export const shopFiltersTranslations: Record<LocaleCode, {
   filterTitle: string
   sortLabel: string
-  sortName: string
-  sortPriceAsc: string
-  sortPriceDesc: string
   categoriesTitle: string
   allProducts: string
   priceTitle: string
@@ -30,9 +27,6 @@ export const shopFiltersTranslations: Record<LocaleCode, {
   ru: {
     filterTitle: "Фильтр",
     sortLabel: "Сортировка",
-    sortName: "По названию",
-    sortPriceAsc: "Сначала дешевле",
-    sortPriceDesc: "Сначала дороже",
     categoriesTitle: "Все категории",
     allProducts: "Все товары",
     priceTitle: "Цена",
@@ -70,9 +64,6 @@ export const shopFiltersTranslations: Record<LocaleCode, {
   be: {
     filterTitle: "Фільтр",
     sortLabel: "Сартаванне",
-    sortName: "Па назве",
-    sortPriceAsc: "Спачатку танней",
-    sortPriceDesc: "Спачатку даражэй",
     categoriesTitle: "Усе катэгорыі",
     allProducts: "Усе тавары",
     priceTitle: "Цана",
