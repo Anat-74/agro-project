@@ -177,9 +177,9 @@ const handleAddToCart = (product: Product) => {
           { 'wrapper-right__price_discount': product.isDiscount },
         ]"
       >
-        <Icon
+        <UIconLocal
+          name="icon-by-regular"
           :class="{ 'wrapper-right__discount-icon': product.isDiscount }"
-          name="my-icon:icon-by-regular"
         />
         {{ formatPrice(product.price) }}
       </span>

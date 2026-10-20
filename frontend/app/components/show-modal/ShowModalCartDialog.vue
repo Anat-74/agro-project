@@ -161,7 +161,7 @@ onMounted(() => {
         >
           <span class="cart-dialog__checkout-label">Оформить</span>
           <span class="cart-dialog__checkout-price">
-            <Icon name="my-icon:icon-by-regular" />
+            <UIconLocal name="icon-by-regular" />
             {{ formatPrice(cartStore.totalPrice) }}
           </span>
         </UButton>

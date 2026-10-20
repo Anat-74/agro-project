@@ -164,7 +164,7 @@ v-if="pending"
       <UTooltip 
       :text="tooltipT.byRuble"
       >
-        <Icon name="my-icon:icon-by-regular" />
+        <UIconLocal name="icon-by-regular" />
       </UTooltip>
       {{ formatPrice(product.price) }}
      </span>

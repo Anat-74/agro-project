@@ -109,7 +109,7 @@ const characteristics = computed(() => {
       </div>
       <div class="product-card__bottom-items">
         <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
-          <Icon name="my-icon:icon-by-regular" />
+          <UIconLocal name="icon-by-regular" />
         </UTooltip>
         <span
           :class="[
@@ -171,7 +171,7 @@ const characteristics = computed(() => {
       </div>
       <div class="product-card__bottom-items">
         <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
-          <Icon name="my-icon:icon-by-regular" />
+          <UIconLocal name="icon-by-regular" />
         </UTooltip>
         <span
           :class="[

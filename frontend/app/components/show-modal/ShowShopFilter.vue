@@ -752,12 +752,12 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     padding-block-end: toRem(24);
 
     // Разделитель «втиснение» (паттерн BannerLayouts): тёмная линия + светлый блик
-    // под ней. Псевдоэлемент, а не border-bottom: линия короче секции на 5px
-    // (по 2.5px с каждой стороны).
+    // под ней. Псевдоэлемент, а не border-bottom: линия короче секции на 10px
+    // (по 5px с каждой стороны) — 2.5px визуально не читались.
     &::after {
       content: "";
       position: absolute;
-      inset-inline: toRem(2.5);
+      inset-inline: toRem(5);
       bottom: 0;
       height: toRem(1);
       background: rgba(0, 0, 0, 0.3);
@@ -1077,10 +1077,16 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     }
   }
 
-  // Иконка тега в пилюле — по размеру текста
+  // Иконка тега в пилюле — на 2px крупнее текста, светлый серый
   &__tag-icon {
     flex-shrink: 0;
-    font-size: 1em;
+    font-size: calc(1em + 2px);
+    color: #a9a9a9;
+  }
+
+  // Активный тег: иконка светлая, как и подпись (на зелёной пилюле)
+  &__tag-item:has(.u-input__checkbox:checked) &__tag-icon {
+    color: var(--light-color);
   }
 
   // Кнопка-шеврон прокрутки панели: sticky внизу диалога, по центру. Показывается

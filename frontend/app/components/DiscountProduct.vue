@@ -61,7 +61,7 @@ const visibleImagesCount = computed(() => {
     <h3 class="discount-card__title" itemprop="name">{{ product.name }}</h3>
     <div class="discount-card__items-price">
       <UTooltip :text="tooltipT.byRuble">
-        <Icon name="my-icon:icon-by-regular" />
+        <UIconLocal name="icon-by-regular" />
       </UTooltip>
       <span
         :class="[

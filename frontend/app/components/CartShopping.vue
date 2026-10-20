@@ -132,7 +132,7 @@ onMounted(() => {
           <span v-else class="cart-items__name">{{ item.product.name }}</span>
 
           <span class="cart-items__price">
-            <Icon name="my-icon:icon-by-regular" />
+            <UIconLocal name="icon-by-regular" />
             {{ formatPrice(item.product.price) }}
           </span>
         </div>

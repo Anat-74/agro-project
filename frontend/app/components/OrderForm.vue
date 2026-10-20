@@ -125,7 +125,7 @@ const submitOrder = async () => {
       >{{ isSubmitting ? t.submitting : t.checkout }}</UButton>
       <b>{{ t.total }}</b>
       <strong aria-live="polite" role="status" aria-atomic="true">
-        <Icon name="my-icon:icon-by-regular" />
+        <UIconLocal name="icon-by-regular" />
         {{ formatPrice(cartStore.totalPrice) }}
       </strong>
     </div>
