@@ -108,6 +108,12 @@ const { data: productsData, status } = useCachedAsyncData(
       if (priceMin.value > 0) filters.price.$gte = priceMin.value
       if (priceMax.value < PRODUCTS_PRICE_MAX) filters.price.$lte = priceMax.value
     }
+    // Теги: AND — товар должен содержать все выбранные теги (slug'и из Strapi)
+    if (tags.value.length) {
+      filters.$and = tags.value.map((slug: string) => ({
+        tags: { slug: { $eq: slug } },
+      }))
+    }
     return find("products", {
       filters,
       populate: { image: { fields: ["alternativeText", "url"] } },
@@ -162,7 +168,11 @@ const activeFilters = computed(() => {
     parts.push(`${t.value.priceTitle}: ${priceMin.value}–${priceMax.value}`)
   }
   if (tags.value.length) {
-    parts.push(`${t.value.filterTags}: ${tags.value.join(", ")}`)
+    // В query храним slug'и (стабильны между локалями) — для подписи ищем label
+    const labels = tags.value.map(
+      (slug) => t.value.tags.find((tag) => tag.slug === slug)?.label ?? slug,
+    )
+    parts.push(`${t.value.filterTags}: ${labels.join(", ")}`)
   }
   return parts
 })

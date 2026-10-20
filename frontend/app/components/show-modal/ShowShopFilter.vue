@@ -510,7 +510,7 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
                       <UInput
                         type="checkbox"
                         pill
-                        :value="tag.label"
+                        :value="tag.slug"
                         :model-value="tags"
                         :label="tag.label"
                         @update:model-value="emit('update:tags', $event)"
@@ -752,12 +752,12 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     padding-block-end: toRem(24);
 
     // Разделитель «втиснение» (паттерн BannerLayouts): тёмная линия + светлый блик
-    // под ней. Псевдоэлемент, а не border-bottom: линия короче секции на 4px
-    // (по 2px с каждой стороны).
+    // под ней. Псевдоэлемент, а не border-bottom: линия короче секции на 5px
+    // (по 2.5px с каждой стороны).
     &::after {
       content: "";
       position: absolute;
-      inset-inline: toRem(2);
+      inset-inline: toRem(2.5);
       bottom: 0;
       height: toRem(1);
       background: rgba(0, 0, 0, 0.3);
@@ -1072,6 +1072,8 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
       font-size: inherit;
       font-weight: 500;
       gap: toRem(4);
+      // Внутренние отступы пилюли: −2px справа и слева (было 16px)
+      padding-inline: toRem(8);
     }
   }
 

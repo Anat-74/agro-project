@@ -25,7 +25,7 @@ export const shopFiltersTranslations: Record<LocaleCode, {
   filterTags: string
   seoTitle: string
   seoDescription: string
-  tags: { label: string; icon: string }[]
+  tags: { label: string; slug: string; icon: string }[]
 }> = {
   ru: {
     filterTitle: "Фильтр",
@@ -55,17 +55,16 @@ export const shopFiltersTranslations: Record<LocaleCode, {
     seoTitle: "Все товары",
     seoDescription: "Интернет-магазин агропродуктов: все товары — фрукты, овощи, зелень, орехи и многое другое с быстрой доставкой.",
     tags: [
-      { label: "Здоровое", icon: "mdi:leaf" },
-      { label: "Низкокалорийное", icon: "mdi:fire-off" },
-      { label: "Вегетарианское", icon: "mdi:sprout" },
-      { label: "Для детей", icon: "mdi:teddy-bear" },
-      { label: "Витамины", icon: "mdi:pill" },
-      { label: "Хлеб", icon: "mdi:bread-slice" },
-      { label: "Снеки", icon: "mdi:popcorn" },
-      { label: "Обед", icon: "mdi:silverware-fork-knife" },
-      { label: "Ужин", icon: "mdi:silverware-variant" },
-      { label: "Завтрак", icon: "mdi:coffee-outline" },
-      { label: "Фрукты", icon: "mdi:fruit-watermelon" },
+      { label: "Здоровое", slug: "zdorovoe", icon: "mdi:leaf" },
+      { label: "Вегетарианское", slug: "vegetarianskoe", icon: "mdi:sprout" },
+      { label: "Для детей", slug: "dlya-detey", icon: "mdi:teddy-bear" },
+      { label: "Витамины", slug: "vitaminy", icon: "mdi:pill" },
+      { label: "Хлеб", slug: "hleb", icon: "mdi:bread-slice" },
+      { label: "Снеки", slug: "sneki", icon: "mdi:popcorn" },
+      { label: "Обед", slug: "obed", icon: "mdi:silverware-fork-knife" },
+      { label: "Ужин", slug: "uzhin", icon: "mdi:silverware-variant" },
+      { label: "Завтрак", slug: "zavtrak", icon: "mdi:coffee-outline" },
+      { label: "Фрукты", slug: "frukty", icon: "mdi:fruit-watermelon" },
     ],
   },
   be: {
@@ -96,17 +95,16 @@ export const shopFiltersTranslations: Record<LocaleCode, {
     seoTitle: "Усе тавары",
     seoDescription: "Інтэрнэт-крама аграпрадуктаў: усе тавары — садавіна, агародніна, зеляніна, арэхі і многае іншае з хуткай дастаўкай.",
     tags: [
-      { label: "Здаровае", icon: "mdi:leaf" },
-      { label: "Нізкакаларыйнае", icon: "mdi:fire-off" },
-      { label: "Вегетарыянскае", icon: "mdi:sprout" },
-      { label: "Для дзяцей", icon: "mdi:teddy-bear" },
-      { label: "Вітаміны", icon: "mdi:pill" },
-      { label: "Хлеб", icon: "mdi:bread-slice" },
-      { label: "Снэкі", icon: "mdi:popcorn" },
-      { label: "Абед", icon: "mdi:silverware-fork-knife" },
-      { label: "Вячэра", icon: "mdi:silverware-variant" },
-      { label: "Сняданак", icon: "mdi:coffee-outline" },
-      { label: "Фрукты", icon: "mdi:fruit-watermelon" },
+      { label: "Здаровае", slug: "zdorovoe", icon: "mdi:leaf" },
+      { label: "Вегетарыянскае", slug: "vegetarianskoe", icon: "mdi:sprout" },
+      { label: "Для дзяцей", slug: "dlya-detey", icon: "mdi:teddy-bear" },
+      { label: "Вітаміны", slug: "vitaminy", icon: "mdi:pill" },
+      { label: "Хлеб", slug: "hleb", icon: "mdi:bread-slice" },
+      { label: "Снэкі", slug: "sneki", icon: "mdi:popcorn" },
+      { label: "Абед", slug: "obed", icon: "mdi:silverware-fork-knife" },
+      { label: "Вячэра", slug: "uzhin", icon: "mdi:silverware-variant" },
+      { label: "Сняданак", slug: "zavtrak", icon: "mdi:coffee-outline" },
+      { label: "Фрукты", slug: "frukty", icon: "mdi:fruit-watermelon" },
     ],
   },
 }
