@@ -67,20 +67,18 @@ const onSelect = (code) => {
   }
 
   // Текстовая версия (RU/BE): как select-контрол — Neucha, 14px, 600.
-  // «Втиснутый» контрол: светлый фон + inset-тени (паттерн кнопки темы в шапке).
+  // Фон прозрачный, текст светлый (крошки тёмные); «втиснутость» — только тени/бордер.
   &_codes .btn_lang-switcher {
     width: auto;
     height: auto;
     padding: toRem(2) toRem(7);
     border-radius: toRem(6);
-    background: var(--light-color);
-    // Текст всегда тёмный: фон контрола светлый во всех темах
-    color: var(--dark-color);
+    background: transparent;
+    color: var(--light-color);
     border: toRem(1) solid var(--border-color);
     box-shadow:
-      0 toRem(2) toRem(4) rgba(0, 0, 0, 0.25),
       inset 0 toRem(2) toRem(3) rgba(0, 0, 0, 0.25),
-      0 toRem(1) 0 rgba(255, 255, 255, 0.4);
+      0 toRem(1) 0 rgba(255, 255, 255, 0.25);
     font-family: "Neucha", cursive, sans-serif;
     font-size: toRem(14);
     font-weight: 600;

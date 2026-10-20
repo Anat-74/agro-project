@@ -695,17 +695,18 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     // x — hidden: широкие элементы внутри (бегущая строка промо-баннера) иначе дают
     // горизонтальный скроллбар у панели; y — auto (внутренний вертикальный скролл).
     overflow: hidden auto;
-    scrollbar-gutter: stable;
-    // Полосу скролла убираем (индикатор прокрутки — шеврон внизу)
+    // Полосу скролла убираем (индикатор прокрутки — шеврон внизу).
+    // scrollbar-gutter НЕ задаём: при скрытом скроллбаре он не нужен, а в браузерах
+    // без поддержки scrollbar-width резервирует ~15px справа и ломает симметрию.
     scrollbar-width: none;
     // Скролл фильтров не «пробрасывается» на страницу: пока в панели есть что
     // скроллить — страница стоит; дошёл до края — страница не уезжает сразу.
     overscroll-behavior: contain;
 
-    // Отступы панели: по горизонтали 2px справа (счётчики не липнут к краю),
+    // Отступы панели: по 2px слева и справа (контент по центру панели),
     // сверху и снизу — 4px.
     @media (max-width: $mobile) {
-      padding-inline: 0 toRem(2);
+      padding-inline: toRem(2);
       padding-block: toRem(4);
     }
 
@@ -869,13 +870,12 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
       align-items: center;
     }
 
-    // Размер шрифта подписи НЕ задаём — наследуется от li (глобальный adaptiveValue).
+    // Размер шрифта подписи НЕ задаём (эксперимент: показываем размер из UInput).
     // Жирность единая для фильтра — 500 (как у тегов и чипов).
     :deep(.u-input__radio-label) {
       flex: 1;
       min-width: 0;
       overflow-wrap: anywhere;
-      font-size: inherit;
       font-weight: 500;
       transition: color var(--transition-duration);
     }
@@ -1046,10 +1046,8 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
   &__tag-item {
     margin: 0;
 
-    // Размер подписи — от li (глобальный adaptiveValue), не из UInput.
-    // Жирность единая для фильтра — 500.
+    // Размер подписи — из UInput (эксперимент). Жирность единая — 500.
     :deep(.u-input__checkbox-label) {
-      font-size: inherit;
       font-weight: 500;
     }
   }
