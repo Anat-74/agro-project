@@ -4,6 +4,8 @@ import { buttonTranslations } from '~/locales/button'
 const props = defineProps({
   // Показывать только активный язык (одна кнопка); клик переключает на другой
   single: { type: Boolean, default: false },
+  // Текстовая версия (RU/BE) вместо флагов — шрифт как у select (Neucha)
+  codes: { type: Boolean, default: false },
 })
 
 const { currentLocale, locales, switchLocale } = useLocale()
@@ -29,16 +31,21 @@ const onSelect = (code) => {
 </script>
 
 <template>
-  <div class="lang-switcher" :class="{ 'lang-switcher_single': single }">
+  <div
+    class="lang-switcher"
+    :class="{ 'lang-switcher_single': single, 'lang-switcher_codes': codes }"
+  >
     <UButton
       v-for="locale in visibleLocales"
       :key="locale.code"
       variant="lang-switcher"
-      :icon="locale.icon"
+      :icon="codes ? '' : locale.icon"
       :class="{ active: currentLocale === locale.code }"
       :aria-label="getButtonTranslation(currentLocale).ariaLabelLang"
       @click="onSelect(locale.code)"
-     />
+    >
+      <template v-if="codes">{{ locale.code.toUpperCase() }}</template>
+    </UButton>
   </div>
 </template>
 
@@ -57,6 +64,20 @@ const onSelect = (code) => {
     outline: 1px solid var(--light-color);
     outline-offset: 1px;
     cursor: pointer;
+  }
+
+  // Текстовая версия (RU/BE): как select-контрол — Neucha, 14px, 600
+  &_codes .btn_lang-switcher {
+    width: auto;
+    height: auto;
+    padding: toRem(1) toRem(6);
+    border-radius: toRem(6);
+    color: inherit;
+    font-family: "Neucha", cursive, sans-serif;
+    font-size: toRem(14);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: 0.02em;
   }
 }
 .active {

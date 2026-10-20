@@ -257,6 +257,7 @@ useSeoMeta({
       <LangSwitcher
         v-if="filterDialogOpen"
         single
+        codes
         class="products-page__lang"
       />
 
@@ -358,7 +359,7 @@ useSeoMeta({
              см. стили). Рендерим ВСЕГДА (не только при пагинации), чтобы декор не
              пропадал на категориях с одной страницей. Чисто декоративный. -->
         <li class="products-page__divider" aria-hidden="true">
-          <Icon name="mdi:sprout" />
+          <UAnimatedIcon name="mdi:sprout" animation="wind" />
         </li>
       </ul>
 
@@ -465,6 +466,7 @@ useSeoMeta({
       translate: -50% -50%;
       z-index: 15;
       display: inline-flex;
+      color: var(--light-color);
     }
   }
 
@@ -690,22 +692,22 @@ useSeoMeta({
     padding-block-start: toRem(12);
   }
 
-  // Опускаем пагинацию ниже товарной зоны ещё на 8px: при `bottom: -71` у низа
-  // документа она встаёт вплотную (0px) — это максимум, ниже уже некуда.
+  // Пагинация: поднята на 4px выше (bottom: -67) — переполняет секцию на 2px,
+  // у максимума скролла стоит у самого низа.
   .products-page_filter-open .products-page__pagination {
-    bottom: toRem(-71);
+    bottom: toRem(-67);
   }
 
-  // Нижний запас страницы при открытом фильтре. Пагинация — absolute и при `-71`
-  // выходит на 6px ниже padding-бокса секции (65px); документ растягивается до её
+  // Нижний запас страницы при открытом фильтре. Пагинация — absolute и при `-67`
+  // выходит на 2px ниже padding-бокса секции (65px); документ растягивается до её
   // нижнего края (scrollable overflow), поэтому на максимуме скролла она у самого низа.
   .products-page_filter-open {
     padding-block-end: toRem(65);
   }
 
   // Декоративный разделитель: по ширине товарной колонки, иконка — по центру зазора
-  // «последняя карточка → пагинация», на 4px выше пагинации (bottom: -37).
-  // Бокс: от (listBottom − 36) до (listBottom + 37) — height 73px;
+  // «последняя карточка → пагинация», поднят вместе с пагинацией (bottom: -33).
+  // Бокс: от (listBottom − 40) до (listBottom + 33) — height 73px;
   // align-items:center центрирует иконку любого размера. Чисто декор — клики не перехватывает.
   .products-page_filter-open .products-page__divider {
     display: flex;
@@ -713,7 +715,7 @@ useSeoMeta({
     column-gap: toEm(10);
     position: absolute;
     inset-inline: 0;
-    bottom: toRem(-37);
+    bottom: toRem(-33);
     height: toRem(73);
     color: var(--green-color);
     pointer-events: none;
