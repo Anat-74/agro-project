@@ -19,6 +19,26 @@ const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopF
 // (products-page_filter-open: раскладка «панель + карточки» и одна колонка карточек).
 const { isOpen: filterDialogOpen } = useDialog("shopFilterDialog")
 
+// Компактные карточки (без переворота, с кнопкой модалки) — когда фильтр ЗАКРЫТ.
+// mounted: на SSR/первом рендере всегда обычные карточки (без флипа разметки).
+// filterEverOpened: фильтр открывается автоматически после загрузки товаров —
+// иначе был бы кратковременный «компакт» до этого открытия.
+const mounted = ref(false)
+onMounted(() => {
+  mounted.value = true
+})
+const filterEverOpened = ref(false)
+watch(
+  filterDialogOpen,
+  (isOpen) => {
+    if (isOpen) filterEverOpened.value = true
+  },
+  { immediate: true },
+)
+const compactCards = computed(
+  () => mounted.value && filterEverOpened.value && !filterDialogOpen.value,
+)
+
 // Кнопка-гамбургер в крошках (mobile): переиспользуем панель ШАПКИ (запрос →
 // AppHeader переключает свой экземпляр ShowHamburger — без дублирования/повторной
 // загрузки global). Состояние открытия — из общего useDialog('hamburgerDialog').
@@ -93,6 +113,9 @@ const breadcrumbsBackground = computed(() => {
 
 // ===== Товары: все продукты с фильтрами/сортировкой/пагинацией =====
 const PAGE_SIZE = 12;
+
+// ВРЕМЕННО (демо): варианты стилизации карточки. Удалить после выбора.
+const cardStyleVariants = ["soft", "notch", "wave", "cut", "frame"];
 
 const productsKey = () =>
   `shop-products-${currentLocale.value}-${category.value}-${sort.value}-${priceMin.value}-${priceMax.value}-${tags.value.join(",")}-${page.value}`
@@ -370,6 +393,7 @@ useSeoMeta({
           :key="prod.documentId"
           :product="prod"
           :index="index"
+          :compact="compactCards"
         />
         <!-- Декоративный разделитель под списком (mobile при открытом фильтре;
              см. стили). Рендерим ВСЕГДА (не только при пагинации), чтобы декор не
@@ -411,6 +435,45 @@ useSeoMeta({
         :page-count="pageCount"
         :route-name="route.name?.toString() || ''"
       />
+    </div>
+
+    <!-- ВРЕМЕННО: варианты стилизации карточки (выбрать один). Удалить после выбора. -->
+    <div class="products-page__style-demo" aria-hidden="true">
+      <p class="products-page__style-demo-title">card styles</p>
+      <ul class="products-page__style-demo-list">
+        <li
+          v-for="(variant, i) in cardStyleVariants"
+          :key="variant"
+          class="products-page__style-demo-item"
+        >
+          <div :class="['style-card', `style-card_${variant}`]">
+            <div class="style-card__media">
+              <UImage
+                v-if="products[i]?.image?.length"
+                class="style-card__image"
+                :src="products[i].image[0].url"
+                :alt="products[i].name"
+                width="200"
+                height="200"
+                type="product"
+              />
+              <span class="style-card__label">{{
+                products[i]?.isDiscount ? "SALE" : "NEW"
+              }}</span>
+            </div>
+            <div class="style-card__body">
+              <p class="style-card__title">{{ products[i]?.name || "Product" }}</p>
+              <div class="style-card__row">
+                <span class="style-card__price">{{
+                  products[i] ? formatPrice(products[i].price) : "0,00"
+                }}</span>
+                <span class="style-card__plus">+</span>
+              </div>
+            </div>
+          </div>
+          <span class="products-page__style-demo-name">{{ variant }}</span>
+        </li>
+      </ul>
     </div>
   </section>
 </template>
@@ -910,4 +973,160 @@ useSeoMeta({
   }
 }
 
+/* ВРЕМЕННО: варианты стилизации карточки (демо). Удалить после выбора. */
+.products-page__style-demo {
+  margin-block-start: toRem(32);
+  padding: toRem(16);
+  border: toRem(1) dashed var(--border-color);
+  border-radius: toRem(12);
+}
+
+.products-page__style-demo-title {
+  margin: 0 0 toRem(12);
+  font-size: toEm(11);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-color);
+}
+
+.products-page__style-demo-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, toRem(220));
+  justify-content: start;
+  gap: toRem(18);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.products-page__style-demo-item {
+  display: flex;
+  flex-direction: column;
+  gap: toRem(6);
+}
+
+.products-page__style-demo-name {
+  font-size: toEm(10);
+  color: var(--gray-color);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+// --- Базовый макет демо-карточки ---
+.style-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--light-color);
+  color: var(--gray-color);
+  border: toEm(2) solid var(--whitesmoke-color);
+  box-shadow: 0 toEm(6) toEm(18) toRem(3) hsla(0, 0%, 0%, 0.07);
+}
+
+.style-card__media {
+  position: relative;
+  aspect-ratio: 1;
+  background-color: var(--whitesmoke-color);
+
+  :deep(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+.style-card__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.style-card__label {
+  position: absolute;
+  left: toEm(10);
+  top: toEm(10);
+  padding: toEm(3) toEm(8);
+  border-radius: toEm(20);
+  background-color: var(--success-color);
+  color: var(--light-color);
+  font-size: toEm(10);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.style-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: toEm(8);
+  padding: toEm(12);
+}
+
+.style-card__title {
+  margin: 0;
+  font-size: toEm(14);
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--color);
+}
+
+.style-card__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: toEm(8);
+}
+
+.style-card__price {
+  font-weight: 600;
+}
+
+.style-card__plus {
+  display: grid;
+  place-items: center;
+  width: toEm(28);
+  height: toEm(28);
+  border-radius: 50%;
+  background-color: var(--success-color);
+  color: var(--light-color);
+  font-size: toEm(18);
+  font-weight: 600;
+  line-height: 1;
+}
+
+// 1. soft — крупные радиусы + мягкая тень
+.style-card_soft {
+  border-radius: toEm(20);
+}
+
+// 2. notch — круглый вырез в правом верхнем углу
+.style-card_notch {
+  border-radius: toEm(14);
+  @include maskEdgeCut(toEm(16), "top-right", "round");
+  box-shadow: none;
+  filter: drop-shadow(0 toEm(6) toEm(12) color-mix(in srgb, var(--color) 18%, transparent));
+}
+
+// 3. wave — волнистый нижний край
+.style-card_wave {
+  border-radius: toEm(14) toEm(14) 0 0;
+  @include maskScallopEdge(toEm(7), "bottom");
+  box-shadow: none;
+  filter: drop-shadow(0 toEm(6) toEm(12) color-mix(in srgb, var(--color) 18%, transparent));
+}
+
+// 4. cut — диагональный срез правого нижнего угла
+.style-card_cut {
+  border-radius: 0;
+  @include maskEdgeCut(toEm(18), "bottom-right", "diagonal");
+  box-shadow: none;
+  filter: drop-shadow(0 toEm(6) toEm(12) color-mix(in srgb, var(--color) 18%, transparent));
+}
+
+// 5. frame — жёсткая рамка + смещённая тень
+.style-card_frame {
+  border: toEm(2) solid var(--color);
+  border-radius: 0;
+  box-shadow: toEm(5) toEm(5) 0 var(--green-color);
+}
 </style>

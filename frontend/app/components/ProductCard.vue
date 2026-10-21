@@ -12,13 +12,26 @@ const { getProductLink } = useProductLink();
 interface Props {
   product: Product;
   index: number;
+  // Компактный режим (фильтр закрыт на mobile): без переворота,
+  // вместо кнопки переворота — кнопка модального окна товара
+  compact?: boolean;
 }
-const { product } = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), { compact: false });
+const { product } = props;
 
 const rotateActive = ref(false);
 const toggleActive = () => {
+  if (props.compact) return;
   rotateActive.value = !rotateActive.value;
 };
+
+// При переходе в компактный режим возвращаем карточку на лицевую сторону
+watch(
+  () => props.compact,
+  (isCompact) => {
+    if (isCompact) rotateActive.value = false;
+  },
+);
 
 const isVisibleLink = ref(false);
 const toggleVisibleLink = () => {
@@ -54,7 +67,12 @@ const characteristics = computed(() => {
 </script>
 
 <template>
-  <li :class="['product-card', { 'product-card_rotate-active': rotateActive }]">
+  <li
+    :class="[
+      'product-card',
+      { 'product-card_rotate-active': rotateActive, 'product-card_compact': compact },
+    ]"
+  >
     <div
       :class="[
         'product-card__front',
@@ -69,12 +87,19 @@ const characteristics = computed(() => {
         />
         <ProductStatus class="product-card__in-stock" :product="product" />
         <UButton
+          v-if="!compact"
           class="product-card__details"
           variant="product-details"
           icon="mdi:rotate-3d"
           :aria-label="buttonTranslations[currentLocale].ariaLabelProductDetails"
           @click="toggleActive"
         />
+        <!-- Компактный режим: вместо переворота — модалка товара.
+             Обёртка нужна: у ShowModalProduct несколько корней (фрагмент),
+             класс снаружи на него не пробрасывается. -->
+        <div v-else class="product-card__modal">
+          <ShowModalProduct :product="product" />
+        </div>
       </div>
       <div class="product-card__content" @click="toggleVisibleLink">
         <UImage
@@ -132,6 +157,7 @@ const characteristics = computed(() => {
       </div>
     </div>
     <div
+      v-if="!compact"
       :class="[
         'product-card__back',
         { 'product-card__back_back': rotateActive },
@@ -226,6 +252,18 @@ const characteristics = computed(() => {
 
     @media (max-width: $tablet) {
       margin-block-start: toEm(16);
+    }
+  }
+
+  // Компактный режим (фильтр закрыт): переворота нет, кнопка модалки сверху справа
+  &_compact {
+    perspective: none;
+
+    .product-card__modal {
+      position: absolute;
+      z-index: 150;
+      right: toEm(14);
+      top: toEm(22);
     }
   }
 
