@@ -16,7 +16,7 @@
  */
 interface Props {
   name: string
-  animation?: "wind" | "pulse" | "none"
+  animation?: "wind" | "float" | "pulse" | "none"
   // Длительность одного цикла, сек
   duration?: number
   // Задержка старта, сек
@@ -61,6 +61,12 @@ const animationStyle = computed(() => ({
     animation-iteration-count: infinite;
   }
 
+  &_float {
+    animation-name: u-animated-icon-float;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+  }
+
   &_none {
     animation: none;
   }
@@ -101,6 +107,25 @@ const animationStyle = computed(() => ({
 
   50% {
     scale: 1.04;
+  }
+}
+
+// «Парение»: лёгкий подъём + наклон
+@keyframes u-animated-icon-float {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+
+  50% {
+    translate: 0 -3px;
+    rotate: -1deg;
+  }
+
+  75% {
+    translate: 0 -1px;
+    rotate: 0.5deg;
   }
 }
 </style>

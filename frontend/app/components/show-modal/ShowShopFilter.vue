@@ -620,6 +620,23 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
 </template>
 
 <style lang="scss" scoped>
+// Втиснутый разделитель (шапка панели + секции): тонкая линия + светлый блик,
+// короче блока на 2×$inset. Цвет линии — через colorMix (учитывает --brightness).
+@mixin insetDivider($inset: toEm(10)) {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset-inline: $inset;
+    bottom: 0;
+    height: toRem(1);
+    @include colorMix(background, var(--color), transparent, 30%);
+    box-shadow: 0 toRem(1) 0 color-mix(in srgb, var(--light-color) 60%, transparent);
+    pointer-events: none;
+  }
+}
+
 .show-shop-filter {
   display: flex;
   flex-shrink: 0;
@@ -755,24 +772,10 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
   // Здесь только секции фильтров (сортировка и закрытие — в липком тулбаре страницы).
 
   &__section {
-    position: relative;
     margin-block-end: toRem(24);
     padding-block-end: toRem(24);
-
-    // Разделитель «втиснение» (паттерн BannerLayouts): тёмная линия + светлый блик
-    // под ней. Псевдоэлемент, а не border-bottom: линия короче секции на 10px
-    // (по 5px с каждой стороны) — 2.5px визуально не читались.
-    &::after {
-      content: "";
-      position: absolute;
-      inset-inline: toEm(5);
-      bottom: 0;
-      height: toRem(1);
-      // Цвета — из переменных темы (без хардкода)
-      background: color-mix(in srgb, var(--color) 30%, transparent);
-      box-shadow: 0 toRem(1) 0 color-mix(in srgb, var(--light-color) 60%, transparent);
-      pointer-events: none;
-    }
+    // Линия короче секции на 20px (по 10px с каждой стороны)
+    @include insetDivider(toEm(10));
 
     &:last-child {
       margin-block-end: 0;
@@ -1080,12 +1083,11 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     }
   }
 
-  // Иконка тега в пилюле — на 2px крупнее текста, светлее подписи (opacity,
-  // чтобы не хардкодить цвет и наследовать тему)
+  // Иконка тега в пилюле — ещё +2px к размеру, светлее подписи
   &__tag-icon {
     flex-shrink: 0;
-    font-size: 1.125em; // ≈ +2px к 14px
-    opacity: 0.65;
+    font-size: calc(1.125em + 2px);
+    opacity: 0.45;
   }
 
   // Активный тег: иконка светлая и полная, как подпись на зелёной пилюле
@@ -1277,11 +1279,8 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     align-items: center;
     gap: toRem(10);
     padding: toRem(10) 0 toRem(24);
-    // Тот же «втиснутый» разделитель, что у секций фильтров ниже — единый вид
-    border-bottom: toRem(1) solid rgba(0, 0, 0, 0.3);
-    box-shadow:
-      inset 0 toRem(-1) 0 rgba(0, 0, 0, 0.08),
-      0 toRem(1) 0 rgba(255, 255, 255, 0.6);
+    // Тот же «втиснутый» разделитель, что у секций — единая длина линий
+    @include insetDivider(toEm(10));
 
     // Кнопка закрытия (тёмный фон «как фоновое изображение», белый крестик).
     // :deep(path) — у path нет scoped-атрибута (внутри дочернего Icon).
