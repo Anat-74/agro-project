@@ -1083,18 +1083,16 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
     }
   }
 
-  // Иконка тега в пилюле — +2px к размеру и светлая (как у активного тега);
-  // мягкая тень нужна, чтобы светлый значок читался на светлой пилюле
+  // Иконка тега в пилюле — +2px и зелёная (тот же --success-color, что фон
+  // выбранного тега); у активного — светлая, как подпись
   &__tag-icon {
     flex-shrink: 0;
     font-size: calc(1.125em + 2px);
-    color: var(--light-color);
-    filter: drop-shadow(0 0 toRem(1) color-mix(in srgb, var(--gray-color) 65%, transparent));
+    color: var(--success-color);
   }
 
-  // Активная пилюля зелёная — тень не нужна
   &__tag-item:has(.u-input__checkbox:checked) &__tag-icon {
-    filter: none;
+    color: var(--light-color);
   }
 
   // Кнопка-шеврон прокрутки панели: sticky внизу диалога, по центру. Показывается
