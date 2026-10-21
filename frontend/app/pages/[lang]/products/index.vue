@@ -369,7 +369,7 @@ useSeoMeta({
              см. стили). Рендерим ВСЕГДА (не только при пагинации), чтобы декор не
              пропадал на категориях с одной страницей. Чисто декоративный. -->
         <li class="products-page__divider" aria-hidden="true">
-          <UIconLocal name="sprout" class="products-page__divider-icon" />
+          <UIconLocal src="/image/logo.svg" class="products-page__divider-icon" />
         </li>
       </ul>
 

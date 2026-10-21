@@ -13,8 +13,10 @@
  * Иконка должна быть силуэтом (альфа-канал); многоцветные сюда не подходят.
  */
 interface Props {
-  // Имя файла без .svg, например "icon-by-regular"
-  name: string
+  // Имя файла без .svg из /my-icons, например "icon-by-regular"
+  name?: string
+  // Прямой путь к SVG (приоритетнее name), например "/image/logo.svg"
+  src?: string
   // Размер (width/height), по умолчанию 1em от текущего шрифта
   size?: string
   // Необязательные раздельные размеры
@@ -25,6 +27,8 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  name: "",
+  src: "",
   size: "1em",
   width: "",
   height: "",
@@ -32,7 +36,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const iconStyle = computed(() => ({
-  "--icon-src": `url("/my-icons/${props.name}.svg")`,
+  "--icon-src": `url("${props.src || `/my-icons/${props.name}.svg`}")`,
   "--icon-w": props.width || props.size,
   "--icon-h": props.height || props.size,
 }))
