@@ -88,19 +88,6 @@ const breadcrumbsBackground = computed(() => {
 // ===== Товары: все продукты с фильтрами/сортировкой/пагинацией =====
 const PAGE_SIZE = 12;
 
-// ВРЕМЕННО (демо): кандидаты иконок для декора-разделителя. Удалить после выбора.
-const demoIcons = [
-  "mdi:sprout",
-  "mdi:leaf",
-  "mdi:barley",
-  "mdi:basket-outline",
-  "mdi:carrot",
-  "mdi:food-apple",
-  "mdi:flower-tulip-outline",
-  "mdi:package-variant-closed",
-  "mdi:fruit-watermelon",
-];
-
 const productsKey = () =>
   `shop-products-${currentLocale.value}-${category.value}-${sort.value}-${priceMin.value}-${priceMax.value}-${tags.value.join(",")}-${page.value}`
 
@@ -382,7 +369,7 @@ useSeoMeta({
              см. стили). Рендерим ВСЕГДА (не только при пагинации), чтобы декор не
              пропадал на категориях с одной страницей. Чисто декоративный. -->
         <li class="products-page__divider" aria-hidden="true">
-          <UAnimatedIcon name="mdi:sprout" animation="wind" :duration="20" />
+          <UIconLocal name="sprout" class="products-page__divider-icon" />
         </li>
       </ul>
 
@@ -412,40 +399,9 @@ useSeoMeta({
         :page-count="pageCount"
         :route-name="route.name?.toString() || ''"
       />
-      <!-- ВРЕМЕННО (демо): иконки и анимации для декора-разделителя.
-           Удалить после выбора варианта. -->
-      <div class="products-page__demo" aria-hidden="true">
-        <p class="products-page__demo-title">icons</p>
-        <ul class="products-page__demo-list">
-          <li v-for="icon in demoIcons" :key="icon" class="products-page__demo-item">
-            <Icon :name="icon" />
-            <span>{{ icon.replace("mdi:", "") }}</span>
-          </li>
-        </ul>
-        <p class="products-page__demo-title">animations</p>
-        <ul class="products-page__demo-list">
-          <li class="products-page__demo-item">
-            <UAnimatedIcon name="mdi:sprout" animation="wind" :duration="20" />
-            <span>wind</span>
-          </li>
-          <li class="products-page__demo-item">
-            <UAnimatedIcon name="mdi:sprout" animation="float" :duration="7" />
-            <span>float</span>
-          </li>
-          <li class="products-page__demo-item">
-            <UAnimatedIcon name="mdi:sprout" animation="pulse" :duration="4" />
-            <span>pulse</span>
-          </li>
-          <li class="products-page__demo-item">
-            <UIconLocal name="sprout" class="products-page__demo-shine" />
-            <span>shine</span>
-          </li>
-        </ul>
-      </div>
     </div>
   </section>
 </template>
-
 <style lang="scss" scoped>
 .products-page {
   // Открытие/закрытие фильтра меняет число колонок карточек (2↔1) → браузерный
@@ -791,12 +747,21 @@ useSeoMeta({
       );
     }
 
-    // Размер иконки задаём НА САМОМ svg: глобальное `.iconify { font-size: toRem(25) }`
-    // (_utils.scss) задаёт font-size svg, а width/height svg = 1em = его собственный
-    // font-size — поэтому `font-size` на обёртке иконку не менял. 40 → 43px (+3px).
-    svg {
+    // Размер иконки: UIconLocal — span 1em, поэтому задаём font-size на обёртке
+    font-size: toRem(43);
+
+    // «Блик»: иконка-маска (UIconLocal), по ней бежит градиент
+    .products-page__divider-icon {
       flex-shrink: 0;
-      font-size: toRem(43);
+      background-color: transparent;
+      background-image: linear-gradient(
+        100deg,
+        var(--green-color) 30%,
+        var(--light-color) 50%,
+        var(--green-color) 70%
+      );
+      background-size: 300% 100%;
+      animation: products-divider-shine 8s linear infinite;
     }
   }
 }
@@ -950,67 +915,8 @@ useSeoMeta({
   }
 }
 
-/* ВРЕМЕННО (демо): иконки и анимации для декора-разделителя.
-   Удалить после выбора варианта. */
-.products-page__demo {
-  margin-block-start: toRem(32);
-  padding: toRem(16);
-  border: toRem(1) dashed var(--border-color);
-  border-radius: toRem(12);
-}
-
-.products-page__demo-title {
-  margin: 0 0 toRem(10);
-  font-size: toEm(11);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--gray-color);
-}
-
-.products-page__demo-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: toRem(16);
-  margin: 0 0 toRem(20);
-  padding: 0;
-  list-style: none;
-
-  &:last-child {
-    margin-block-end: 0;
-  }
-}
-
-.products-page__demo-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: toRem(6);
-  width: toRem(76);
-  font-size: toEm(10);
-  color: var(--gray-color);
-  text-align: center;
-
-  svg {
-    font-size: toRem(40);
-  }
-}
-
-// «Блик»: иконка как CSS-маска (UIconLocal) + бегущий градиент
-.products-page__demo-item .products-page__demo-shine {
-  width: toRem(40);
-  height: toRem(40);
-  background-color: transparent;
-  background-image: linear-gradient(
-    100deg,
-    var(--primary-color) 35%,
-    var(--light-color) 50%,
-    var(--primary-color) 65%
-  );
-  background-size: 300% 100%;
-  animation: products-demo-shine 4s linear infinite;
-}
-
-@keyframes products-demo-shine {
+// «Блик» по иконке разделителя (иконка — маска, градиент бежит по ней)
+@keyframes products-divider-shine {
   from {
     background-position: 150% 0;
   }
