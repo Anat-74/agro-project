@@ -223,16 +223,6 @@ watch(status, openFilterDialogOnce)
 // breadcrumbs из Strapi. StructuredData не добавляем (нет источника данных).
 const config = useRuntimeConfig();
 
-// Логотип магазина из Strapi (global.footer.logo) — для декора-разделителя.
-// UIconLocal работает через CSS-маску, поэтому путь должен быть абсолютным
-// (к домену Strapi); fallback — статический логотип из /public.
-const shopLogoUrl = computed(() => {
-  const g = globalData.value?.data as any
-  const url = (Array.isArray(g) ? g[0]?.footer?.logo?.url : g?.footer?.logo?.url) ?? ""
-  if (!url) return "/image/logo.svg"
-  return url.startsWith("http") ? url : `${config.public.strapi.url}${url}`
-})
-
 const seoTitle = computed(() => t.value.seoTitle)
 const seoDescription = computed(() => t.value.seoDescription)
 const seoImage = computed(() => {
@@ -385,7 +375,13 @@ useSeoMeta({
              см. стили). Рендерим ВСЕГДА (не только при пагинации), чтобы декор не
              пропадал на категориях с одной страницей. Чисто декоративный. -->
         <li class="products-page__divider" aria-hidden="true">
-          <UIconLocal :src="shopLogoUrl" class="products-page__divider-icon" />
+          <ULogo
+            variant="mark"
+            animated
+            :global="globalData?.data"
+            :width="43"
+            :height="43"
+          />
         </li>
       </ul>
 
@@ -762,23 +758,6 @@ useSeoMeta({
         rgba(255, 255, 255, 0.5)
       );
     }
-
-    // Размер иконки: UIconLocal — span 1em, поэтому задаём font-size на обёртке
-    font-size: toRem(43);
-
-    // «Блик»: иконка-маска (UIconLocal), по ней бежит градиент
-    .products-page__divider-icon {
-      flex-shrink: 0;
-      background-color: transparent;
-      background-image: linear-gradient(
-        100deg,
-        var(--green-color) 30%,
-        var(--light-color) 50%,
-        var(--green-color) 70%
-      );
-      background-size: 300% 100%;
-      animation: products-divider-shine 8s linear infinite;
-    }
   }
 }
 
@@ -931,14 +910,4 @@ useSeoMeta({
   }
 }
 
-// «Блик» по иконке разделителя (иконка — маска, градиент бежит по ней)
-@keyframes products-divider-shine {
-  from {
-    background-position: 150% 0;
-  }
-
-  to {
-    background-position: -150% 0;
-  }
-}
 </style>
