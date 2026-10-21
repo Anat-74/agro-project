@@ -73,6 +73,12 @@ const { data: globalData } = useCachedAsyncData(
           },
         },
       },
+      // Логотип магазина — для декора-разделителя товаров
+      footer: {
+        populate: {
+          logo: { fields: ["url"] },
+        },
+      },
     },
   } as any),
   { ttl: 600_000 },
@@ -216,6 +222,16 @@ watch(status, openFilterDialogOnce)
 // статическая локализованная (паттерн подкатегории адаптирован). ogImage — фон
 // breadcrumbs из Strapi. StructuredData не добавляем (нет источника данных).
 const config = useRuntimeConfig();
+
+// Логотип магазина из Strapi (global.footer.logo) — для декора-разделителя.
+// UIconLocal работает через CSS-маску, поэтому путь должен быть абсолютным
+// (к домену Strapi); fallback — статический логотип из /public.
+const shopLogoUrl = computed(() => {
+  const g = globalData.value?.data as any
+  const url = (Array.isArray(g) ? g[0]?.footer?.logo?.url : g?.footer?.logo?.url) ?? ""
+  if (!url) return "/image/logo.svg"
+  return url.startsWith("http") ? url : `${config.public.strapi.url}${url}`
+})
 
 const seoTitle = computed(() => t.value.seoTitle)
 const seoDescription = computed(() => t.value.seoDescription)
@@ -369,7 +385,7 @@ useSeoMeta({
              см. стили). Рендерим ВСЕГДА (не только при пагинации), чтобы декор не
              пропадал на категориях с одной страницей. Чисто декоративный. -->
         <li class="products-page__divider" aria-hidden="true">
-          <UIconLocal src="/image/logo.svg" class="products-page__divider-icon" />
+          <UIconLocal :src="shopLogoUrl" class="products-page__divider-icon" />
         </li>
       </ul>
 
