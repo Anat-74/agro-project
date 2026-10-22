@@ -114,8 +114,10 @@ const breadcrumbsBackground = computed(() => {
 // ===== Товары: все продукты с фильтрами/сортировкой/пагинацией =====
 const PAGE_SIZE = 12;
 
-// ВРЕМЕННО (демо): варианты стилизации карточки. Удалить после выбора.
-const cardStyleVariants = ["panels", "tag", "arch", "collage", "mat"];
+// ВРЕМЕННО (демо): товар со скидкой для варианта карточки
+const demoSaleProduct = computed(
+  () => products.value.find((item) => item.isDiscount) ?? products.value[1] ?? null,
+)
 
 const productsKey = () =>
   `shop-products-${currentLocale.value}-${category.value}-${sort.value}-${priceMin.value}-${priceMax.value}-${tags.value.join(",")}-${page.value}`
@@ -437,92 +439,24 @@ useSeoMeta({
       />
     </div>
 
-    <!-- ВРЕМЕННО: варианты стилизации карточки (выбрать один). Удалить после выбора. -->
+    <!-- ВРЕМЕННО (демо): мобильная композиция карточки на разных фонах. -->
     <div class="products-page__style-demo" aria-hidden="true">
-      <p class="products-page__style-demo-title">card styles</p>
+      <p class="products-page__style-demo-title">mobile cards</p>
 
-      <!-- Широкая композиция по референсу: отдельные плавающие плашки -->
-      <div class="products-page__style-demo-wide">
-        <div class="cham-card">
-          <div class="cham-card__photo">
-            <UImage
-              v-if="products[0]?.image?.length"
-              class="cham-card__image"
-              :src="products[0].image[0].url"
-              :alt="products[0].name"
-              width="400"
-              height="400"
-              type="product"
-            />
-          </div>
-
-          <span class="cham-card__pill">{{
-            products[0]?.isDiscount ? "SALE" : "NEW"
-          }}</span>
-
-          <div class="cham-card__panel">
-            <p class="cham-card__name">
-              {{ products[0]?.name || "Product" }}
-            </p>
-            <p class="cham-card__desc">
-              Fresh harvest, delivered in a day. Taste the season while it is
-              still warm from the field. Every box is packed by hand.
-            </p>
-          </div>
-
-          <div class="cham-card__quote">
-            <p class="cham-card__quote-text">
-              «Свежий вкус лета — в каждом кусочке»
-            </p>
-            <div class="cham-card__price-row">
-              <span class="cham-card__price">{{
-                products[0] ? formatPrice(products[0].price) : "0,00"
-              }}</span>
-              <span class="cham-card__plus">+</span>
-            </div>
-          </div>
-        </div>
+      <div class="products-page__demo-bg products-page__demo-bg_light">
+        <ProductFeatureCard v-if="products[0]" :product="products[0]" />
       </div>
 
-      <p class="products-page__style-demo-title">narrow variants</p>
-      <ul class="products-page__style-demo-list">
-        <li
-          v-for="(variant, i) in cardStyleVariants"
-          :key="variant"
-          class="products-page__style-demo-item"
-        >
-          <div :class="['style-card', `style-card_${variant}`]">
-            <div class="style-card__media">
-              <UImage
-                v-if="products[i]?.image?.length"
-                class="style-card__image"
-                :src="products[i].image[0].url"
-                :alt="products[i].name"
-                width="200"
-                height="200"
-                type="product"
-              />
-              <span class="style-card__label">{{
-                products[i]?.isDiscount ? "SALE" : "NEW"
-              }}</span>
-            </div>
-            <!-- Тёмная панель-описание (концепт «panels» по референсу) -->
-            <p v-if="variant === 'panels'" class="style-card__panel">
-              Fresh harvest, delivered in a day. Taste the season.
-            </p>
-            <div class="style-card__body">
-              <p class="style-card__title">{{ products[i]?.name || "Product" }}</p>
-              <div class="style-card__row">
-                <span class="style-card__price">{{
-                  products[i] ? formatPrice(products[i].price) : "0,00"
-                }}</span>
-                <span class="style-card__plus">+</span>
-              </div>
-            </div>
-          </div>
-          <span class="products-page__style-demo-name">{{ variant }}</span>
-        </li>
-      </ul>
+      <div class="products-page__demo-bg products-page__demo-bg_tint">
+        <ProductFeatureCard
+          v-if="demoSaleProduct"
+          :product="demoSaleProduct"
+        />
+      </div>
+
+      <div class="products-page__demo-bg products-page__demo-bg_soft">
+        <ProductFeatureCard v-if="products[2]" :product="products[2]" />
+      </div>
     </div>
   </section>
 </template>
@@ -1022,12 +956,9 @@ useSeoMeta({
   }
 }
 
-/* ВРЕМЕННО: концепты стилизации карточки (демо). Удалить после выбора. */
+/* ВРЕМЕННО (демо): карточка на разных фонах. Удалить после выбора. */
 .products-page__style-demo {
   margin-block-start: toRem(32);
-  padding: toRem(16);
-  border: toRem(1) dashed var(--border-color);
-  border-radius: toRem(12);
 }
 
 .products-page__style-demo-title {
@@ -1038,510 +969,22 @@ useSeoMeta({
   color: var(--gray-color);
 }
 
-.products-page__style-demo-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, toRem(180));
-  justify-content: start;
-  gap: toRem(20);
-  margin: 0;
-  padding: 0;
-  list-style: none;
+.products-page__demo-bg {
+  margin-block-end: toRem(16);
+  padding: toRem(16);
+  border-radius: toRem(16);
 }
 
-.products-page__style-demo-item {
-  display: flex;
-  flex-direction: column;
-  gap: toRem(6);
+.products-page__demo-bg_light {
+  background-color: var(--bg);
+  border: toRem(1) dashed var(--border-color);
 }
 
-.products-page__style-demo-name {
-  font-size: toEm(10);
-  color: var(--gray-color);
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+.products-page__demo-bg_tint {
+  background-color: var(--bg-product);
 }
 
-// ---- Базовый макет демо-карточки ----
-.style-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  color: var(--gray-color);
+.products-page__demo-bg_soft {
+  background: linear-gradient(135deg, var(--bg-product), var(--warning-color));
 }
-
-.style-card__media {
-  position: relative;
-  aspect-ratio: 1;
-  background-color: var(--whitesmoke-color);
-
-  :deep(img) {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-}
-
-.style-card__image {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.style-card__label {
-  position: absolute;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: toEm(9);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.style-card__panel {
-  margin: 0;
-}
-
-.style-card__body {
-  display: flex;
-  flex-direction: column;
-  gap: toEm(4);
-}
-
-.style-card__title {
-  margin: 0;
-  font-size: toEm(13);
-  font-weight: 600;
-  line-height: 1.25;
-  color: var(--color);
-}
-
-.style-card__row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: toEm(6);
-}
-
-.style-card__price {
-  font-size: toEm(13);
-  font-weight: 700;
-  color: var(--color);
-}
-
-.style-card__plus {
-  display: grid;
-  place-items: center;
-  width: toEm(26);
-  height: toEm(26);
-  border-radius: 50%;
-  background-color: var(--color);
-  color: var(--light-color);
-  font-size: toEm(16);
-  font-weight: 600;
-  line-height: 1;
-}
-
-// =====================================================
-// 1. panels — по референсу: слои панелей с перекрытием
-// =====================================================
-.style-card_panels {
-  gap: toEm(6);
-
-  .style-card__media {
-    border-radius: toEm(16);
-    overflow: hidden;
-  }
-
-  .style-card__label {
-    top: auto;
-    left: auto;
-    right: toEm(8);
-    bottom: toEm(8);
-    padding: toEm(4) toEm(8);
-    border-radius: toEm(20);
-    background-color: var(--success-color);
-    color: var(--dark-color);
-  }
-
-  .style-card__panel {
-    position: relative;
-    z-index: 2;
-    margin: toEm(-14) toEm(10) 0;
-    padding: toEm(10);
-    border-radius: toEm(12);
-    background-color: var(--color);
-    color: var(--light-color);
-    font-size: toEm(9);
-    line-height: 1.4;
-  }
-
-  .style-card__body {
-    position: relative;
-    z-index: 3;
-    margin: toEm(-6) toEm(4) 0;
-    padding: toEm(9);
-    border-radius: toEm(12);
-    background-color: var(--success-color);
-
-    .style-card__title,
-    .style-card__price {
-      color: var(--dark-color);
-    }
-
-    .style-card__plus {
-      background-color: var(--dark-color);
-      color: var(--light-color);
-    }
-  }
-}
-
-// =====================================================
-// 2. tag — бирка: отверстие, пунктир, наклонный стикер
-// =====================================================
-.style-card_tag {
-  padding: toEm(10);
-  border-radius: toEm(6) toEm(6) toEm(18) toEm(18);
-  background-color: var(--whitesmoke-color);
-  border: toEm(1) dashed color-mix(in srgb, var(--color) 28%, transparent);
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: toEm(5);
-    left: 50%;
-    translate: -50% 0;
-    width: toEm(9);
-    height: toEm(9);
-    border-radius: 50%;
-    background-color: var(--bg);
-    box-shadow: inset 0 toEm(2) toEm(3) color-mix(in srgb, var(--color) 35%, transparent);
-  }
-
-  .style-card__media {
-    margin-block-start: toEm(8);
-    border-radius: toEm(8);
-    overflow: hidden;
-  }
-
-  .style-card__label {
-    top: toEm(6);
-    left: toEm(-6);
-    padding: toEm(3) toEm(7);
-    border-radius: toEm(4);
-    background-color: var(--yellow-color);
-    color: var(--dark-color);
-    rotate: -6deg;
-    box-shadow: 0 toEm(2) toEm(6) color-mix(in srgb, var(--dark-color) 25%, transparent);
-  }
-
-  .style-card__body {
-    margin-block-start: toEm(8);
-    padding-block-start: toEm(8);
-    border-block-start: toEm(1) dashed color-mix(in srgb, var(--color) 28%, transparent);
-  }
-
-  .style-card__plus {
-    border-radius: toEm(6);
-  }
-}
-
-// =====================================================
-// 3. arch — арка: фото в высоком скруглении, центрирование
-// =====================================================
-.style-card_arch {
-  text-align: center;
-
-  .style-card__media {
-    // Настоящая арка: радиус = половина ширины/высоты (эллипс)
-    border-radius: 50% 50% toEm(10) toEm(10);
-    overflow: hidden;
-    aspect-ratio: 3 / 4;
-  }
-
-  .style-card__label {
-    top: toEm(8);
-    left: 50%;
-    translate: -50% 0;
-    padding: toEm(3) toEm(8);
-    border-radius: toEm(20);
-    background-color: var(--light-color);
-    color: var(--color);
-  }
-
-  .style-card__body {
-    margin-block-start: toEm(8);
-    padding: toEm(9);
-    border-radius: toEm(12);
-    background-color: var(--light-color);
-    align-items: center;
-  }
-
-  .style-card__row {
-    width: 100%;
-    justify-content: center;
-    gap: toEm(10);
-  }
-
-  .style-card__plus {
-    background-color: var(--success-color);
-    color: var(--dark-color);
-  }
-}
-
-// =====================================================
-// 4. collage — коллаж: пятна, наклон, круглый штамп
-// =====================================================
-.style-card_collage {
-  padding-block-end: toEm(4);
-
-  &::before,
-  &::after {
-    content: "";
-    position: absolute;
-    border-radius: 50%;
-    z-index: 0;
-  }
-
-  &::before {
-    width: toEm(90);
-    height: toEm(90);
-    left: toEm(-12);
-    top: toEm(-12);
-    background-color: var(--warning-color);
-    opacity: 0.3;
-  }
-
-  &::after {
-    width: toEm(60);
-    height: toEm(60);
-    right: toEm(-8);
-    bottom: toEm(30);
-    background-color: var(--success-color);
-    opacity: 0.35;
-  }
-
-  .style-card__media {
-    z-index: 1;
-    rotate: -3deg;
-    border-radius: toEm(14);
-    overflow: hidden;
-    box-shadow: 0 toEm(8) toEm(18) color-mix(in srgb, var(--dark-color) 22%, transparent);
-  }
-
-  .style-card__label {
-    top: toEm(4);
-    left: auto;
-    right: toEm(-6);
-    width: toEm(42);
-    height: toEm(42);
-    border-radius: 50%;
-    border: toEm(2) dashed var(--dark-color);
-    background-color: var(--yellow-color);
-    color: var(--dark-color);
-    rotate: 12deg;
-    font-size: toEm(8);
-  }
-
-  .style-card__body {
-    position: relative;
-    z-index: 2;
-    margin: toEm(-16) toEm(8) 0;
-    padding: toEm(9);
-    border-radius: toEm(12);
-    background-color: var(--light-color);
-    box-shadow: 0 toEm(4) toEm(12) color-mix(in srgb, var(--dark-color) 16%, transparent);
-  }
-}
-
-// =====================================================
-// 5. mat — паспарту: рамка, жёсткая тень, капс
-// =====================================================
-.style-card_mat {
-  padding: toEm(8);
-  background-color: var(--light-color);
-  border: toEm(1) solid var(--border-color);
-  box-shadow: toEm(6) toEm(6) 0 var(--success-color);
-
-  .style-card__media {
-    overflow: hidden;
-  }
-
-  .style-card__label {
-    top: toEm(6);
-    left: toEm(6);
-    padding: toEm(2) toEm(6);
-    background-color: var(--dark-color);
-    color: var(--light-color);
-    font-size: toEm(8);
-  }
-
-  .style-card__body {
-    padding: toEm(8) toEm(4) toEm(2);
-    gap: toEm(6);
-  }
-
-  .style-card__title {
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-size: toEm(10);
-  }
-
-  .style-card__row {
-    padding-block-start: toEm(6);
-    border-block-start: toEm(1) solid var(--border-color);
-  }
-
-  .style-card__plus {
-    border-radius: 0;
-  }
-}
-// =====================================================
-// 6. chameleon — по референсу: фото слева во всю высоту,
-//    справа тёмная панель + зелёная панель с наложением
-// =====================================================
-.products-page__style-demo-wide {
-  max-width: toRem(620);
-  margin-block-end: toRem(22);
-}
-
-// Широкая композиция по референсу: фото + отдельные плавающие плашки
-.cham-card {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 2.1 / 1;
-  min-height: toRem(230);
-
-  &__photo {
-    position: absolute;
-    inset-block: 0;
-    left: 0;
-    width: 52%;
-    border-radius: toEm(24);
-    overflow: hidden;
-    background-color: var(--whitesmoke-color);
-
-    :deep(img) {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-  }
-
-  &__image {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-
-  // Пилюля над фото: правый верхний край, вокруг воздух
-  &__pill {
-    position: absolute;
-    top: 0;
-    left: 44%;
-    z-index: 3;
-    padding: toEm(4) toEm(10);
-    border-radius: toEm(60);
-    background-color: var(--success-color);
-    color: var(--dark-color);
-    font-size: toEm(10);
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    white-space: nowrap;
-  }
-
-  // Тёмная панель: справа сверху, отдельным блоком (зазор от фото)
-  &__panel {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 40%;
-    height: 56%;
-    padding: toEm(14);
-    border-radius: toEm(22);
-    background-color: var(--color);
-    color: var(--light-color);
-  }
-
-  &__name {
-    margin: 0;
-    font-size: toEm(13);
-    font-weight: 700;
-    line-height: 1.2;
-  }
-
-  &__desc {
-    margin: toEm(6) 0 0;
-    font-size: toEm(9);
-    line-height: 1.5;
-    text-align: justify;
-    opacity: 0.85;
-  }
-
-  // Зелёная панель: справа снизу, уже тёмной и с зазорами
-  &__quote {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    width: 33%;
-    min-height: 30%;
-    padding: toEm(12) toEm(14);
-    border-radius: toEm(22);
-    background-color: var(--success-color);
-    color: var(--dark-color);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: toEm(8);
-
-    &::before {
-      content: "“";
-      position: absolute;
-      top: toEm(4);
-      left: toEm(8);
-      font-size: toEm(20);
-      line-height: 1;
-      opacity: 0.25;
-    }
-  }
-
-  &__quote-text {
-    margin: 0;
-    padding-inline-start: toEm(8);
-    font-size: toEm(10);
-    font-style: italic;
-    line-height: 1.35;
-  }
-
-  &__price-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: toEm(6);
-    padding-block-start: toEm(6);
-    border-block-start: toEm(1) solid color-mix(in srgb, var(--dark-color) 20%, transparent);
-  }
-
-  &__price {
-    font-size: toEm(15);
-    font-weight: 700;
-  }
-
-  &__plus {
-    display: grid;
-    place-items: center;
-    width: toEm(24);
-    height: toEm(24);
-    border-radius: 50%;
-    background-color: var(--dark-color);
-    color: var(--light-color);
-    font-size: toEm(14);
-    font-weight: 600;
-    line-height: 1;
-  }
-}
-
-
 </style>
