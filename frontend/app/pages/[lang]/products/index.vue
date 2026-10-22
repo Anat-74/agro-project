@@ -970,6 +970,7 @@ useSeoMeta({
 }
 
 .products-page__demo-bg {
+  max-width: toRem(620);
   margin-block-end: toRem(16);
   padding: toRem(16);
   border-radius: toRem(16);

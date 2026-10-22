@@ -1,8 +1,14 @@
 <script setup lang="ts">
 /**
- * ВРЕМЕННО (демо): мобильная композиция карточки по референсу.
- * Фото сверху → пилюля → тёмная панель наезжает на фото → зелёная панель с цитатой
- * ниже, уже и со сдвигом вправо (между блоками воздух).
+ * ВРЕМЕННО (демо): 1:1 композиция по референсу (хамелеон).
+ *
+ * Геометрия относительно контейнера (aspect ≈ 2.12):
+ *  - фото: слева, 63% ширины, вся высота;
+ *  - зелёный лейбл: поверх фото, справа сверху (39%..60%, высота 21%);
+ *  - тёмная панель: справа сверху (61%..100%), высота 66% — нахлёст на фото ~2%;
+ *  - зелёная цитата: справа снизу (67%..100%), высота 33% — с зазором от тёмной.
+ *
+ * Текст масштабируется через cqw с нижним порогом читаемости.
  */
 interface Props {
   product: Product
@@ -10,40 +16,40 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const isSale = computed(() => Boolean(props.product?.isDiscount))
+const shortName = computed(() => {
+  const name = props.product?.name ?? "Product"
+  return name.split(" ")[0]
+})
 </script>
 
 <template>
-  <article :class="['fcard', { 'fcard_sale': isSale }]">
+  <article class="fcard">
     <div class="fcard__photo">
       <UImage
         v-if="product?.image?.length"
         class="fcard__image"
         :src="product.image[0]?.url"
         :alt="product.name"
-        width="360"
-        height="270"
+        width="480"
+        height="360"
         type="product"
       />
-      <span class="fcard__pill">{{ isSale ? "SALE" : "NEW" }}</span>
     </div>
 
+    <span class="fcard__label">{{ shortName }}</span>
+
     <div class="fcard__panel">
-      <h3 class="fcard__name">{{ product?.name || "Product" }}</h3>
-      <p class="fcard__desc">
+      <p class="fcard__text">
         Fresh harvest, delivered in a day. Taste the season while it is still
-        warm from the field.
+        warm from the field — every box is packed by hand and keeps its
+        vitamins for days.
       </p>
     </div>
 
     <div class="fcard__quote">
+      <span class="fcard__quote-mark fcard__quote-mark_open">“</span>
       <p class="fcard__quote-text">«Свежий вкус лета — в каждом кусочке»</p>
-      <div class="fcard__row">
-        <span class="fcard__price">{{
-          product ? formatPrice(product.price) : "0,00"
-        }}</span>
-        <span class="fcard__plus">+</span>
-      </div>
+      <span class="fcard__quote-mark fcard__quote-mark_close">”</span>
     </div>
   </article>
 </template>
@@ -51,15 +57,18 @@ const isSale = computed(() => Boolean(props.product?.isDiscount))
 <style lang="scss" scoped>
 .fcard {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  max-width: toRem(360);
+  width: 100%;
+  aspect-ratio: 2.12 / 1;
+  container-type: inline-size;
 }
 
+// Фото: слева, 63% ширины, вся высота
 .fcard__photo {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  border-radius: toEm(20);
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 63%;
+  border-radius: toEm(24);
   overflow: hidden;
   background-color: var(--whitesmoke-color);
 
@@ -76,104 +85,90 @@ const isSale = computed(() => Boolean(props.product?.isDiscount))
   height: 100%;
 }
 
-// Пилюля на фото, у верхнего края
-.fcard__pill {
+// Зелёный лейбл поверх фото, справа сверху
+.fcard__label {
   position: absolute;
-  top: toEm(10);
-  left: toEm(10);
-  padding: toEm(4) toEm(10);
-  border-radius: toEm(40);
+  top: 0;
+  left: 39%;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 21%;
+  height: 21%;
+  padding-inline: 2cqw;
+  border-radius: toEm(12);
   background-color: var(--success-color);
   color: var(--dark-color);
-  font-size: toEm(10);
+  font-size: clamp(8px, 1.55cqw, 12px);
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-
-  .fcard_sale & {
-    background-color: var(--warning-color);
-  }
+  text-align: center;
 }
 
-// Тёмная панель заходит на фото
+// Тёмная панель: справа сверху, нахлёст на фото ~2%
 .fcard__panel {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 61%;
   z-index: 2;
-  margin: toEm(-26) toEm(8) 0 toEm(10);
-  padding: toEm(14);
-  border-radius: toEm(18);
+  width: 39%;
+  height: 66%;
+  display: flex;
+  align-items: center;
+  padding: clamp(8px, 2.2cqw, 18px);
+  border-radius: toEm(22);
   background-color: var(--color);
   color: var(--light-color);
 }
 
-.fcard__name {
+.fcard__text {
   margin: 0;
-  font-size: toEm(15);
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.fcard__desc {
-  margin: toEm(6) 0 0;
-  font-size: toEm(10);
+  font-size: clamp(8px, 1.45cqw, 12px);
   line-height: 1.5;
-  opacity: 0.85;
+  text-align: justify;
 }
 
-// Зелёная панель: ниже, уже и со сдвигом вправо — между блоками воздух
+// Зелёная панель цитаты: справа снизу, уже и с зазором
 .fcard__quote {
-  position: relative;
-  width: calc(100% - toEm(34));
-  margin: toEm(14) 0 0 auto;
-  padding: toEm(12) toEm(14);
-  border-radius: toEm(18);
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 67%;
+  z-index: 2;
+  height: 33%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(8px, 2cqw, 16px);
+  border-radius: toEm(22);
   background-color: var(--success-color);
-  color: var(--dark-color);
-
-  &::before {
-    content: "“";
-    position: absolute;
-    top: toEm(2);
-    left: toEm(8);
-    font-size: toEm(20);
-    line-height: 1;
-    opacity: 0.25;
-  }
+  color: var(--light-color);
+  text-align: center;
 }
 
 .fcard__quote-text {
   margin: 0;
-  padding-inline-start: toEm(8);
-  font-size: toEm(10);
+  font-size: clamp(8px, 1.3cqw, 11px);
   font-style: italic;
   line-height: 1.35;
 }
 
-.fcard__row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: toEm(6);
-  margin-block-start: toEm(8);
-  padding-block-start: toEm(7);
-  border-block-start: toEm(1) solid color-mix(in srgb, var(--dark-color) 20%, transparent);
-}
-
-.fcard__price {
-  font-size: toEm(15);
-  font-weight: 700;
-}
-
-.fcard__plus {
-  display: grid;
-  place-items: center;
-  width: toEm(26);
-  height: toEm(26);
-  border-radius: 50%;
-  background-color: var(--dark-color);
-  color: var(--light-color);
-  font-size: toEm(15);
-  font-weight: 600;
+.fcard__quote-mark {
+  position: absolute;
+  font-size: clamp(14px, 2.6cqw, 22px);
   line-height: 1;
+  opacity: 0.85;
+
+  &_open {
+    top: clamp(4px, 1cqw, 8px);
+    left: clamp(6px, 1.4cqw, 12px);
+  }
+
+  &_close {
+    right: clamp(6px, 1.4cqw, 12px);
+    bottom: clamp(4px, 1cqw, 8px);
+  }
 }
 </style>
