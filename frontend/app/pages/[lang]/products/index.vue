@@ -440,6 +440,44 @@ useSeoMeta({
     <!-- ВРЕМЕННО: варианты стилизации карточки (выбрать один). Удалить после выбора. -->
     <div class="products-page__style-demo" aria-hidden="true">
       <p class="products-page__style-demo-title">card styles</p>
+
+      <!-- Широкая карточка по референсу: фото слева, панели справа/снизу -->
+      <div class="products-page__style-demo-wide">
+        <div class="style-card style-card_chameleon">
+          <div class="style-card__media">
+            <UImage
+              v-if="products[0]?.image?.length"
+              class="style-card__image"
+              :src="products[0].image[0].url"
+              :alt="products[0].name"
+              width="300"
+              height="300"
+              type="product"
+            />
+            <span class="style-card__label">{{
+              products[0]?.isDiscount ? "SALE" : "NEW"
+            }}</span>
+          </div>
+          <div class="style-card__side">
+            <div class="style-card__panel">
+              <p class="style-card__title">
+                {{ products[0]?.name || "Product" }}
+              </p>
+              <p class="style-card__desc">
+                Fresh harvest, delivered in a day. Taste the season.
+              </p>
+            </div>
+            <div class="style-card__body">
+              <span class="style-card__price">{{
+                products[0] ? formatPrice(products[0].price) : "0,00"
+              }}</span>
+              <span class="style-card__plus">+</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="products-page__style-demo-title">narrow variants</p>
       <ul class="products-page__style-demo-list">
         <li
           v-for="(variant, i) in cardStyleVariants"
@@ -1350,6 +1388,110 @@ useSeoMeta({
 
   .style-card__plus {
     border-radius: 0;
+  }
+}
+// =====================================================
+// 6. chameleon — широкая карточка по референсу
+// =====================================================
+.products-page__style-demo-wide {
+  max-width: toRem(560);
+  margin-block-end: toRem(22);
+}
+
+.style-card_chameleon {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: toEm(8);
+  padding: toEm(8);
+  border-radius: toEm(20);
+  background-color: var(--light-color);
+  box-shadow: 0 toEm(8) toEm(20) color-mix(in srgb, var(--dark-color) 10%, transparent);
+
+  .style-card__media {
+    position: relative;
+    aspect-ratio: auto;
+    min-height: toEm(150);
+    overflow: visible;
+  }
+
+  // Скругление — на самой картинке, чтобы плашка могла выступать за её край
+  .style-card__image {
+    height: 100%;
+    border-radius: toEm(16);
+    overflow: hidden;
+  }
+
+  .style-card__label {
+    top: toEm(10);
+    left: auto;
+    right: toEm(-6);
+    z-index: 3;
+    padding: toEm(4) toEm(10);
+    border-radius: toEm(20);
+    background-color: var(--success-color);
+    color: var(--dark-color);
+    box-shadow: 0 toEm(2) toEm(6) color-mix(in srgb, var(--dark-color) 20%, transparent);
+  }
+
+  .style-card__side {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: toEm(8);
+    padding-block: toEm(4);
+  }
+
+  .style-card__panel {
+    position: relative;
+    padding: toEm(12);
+    border-radius: toEm(14);
+    background-color: var(--color);
+    color: var(--light-color);
+
+    .style-card__title {
+      color: var(--light-color);
+      font-size: toEm(14);
+    }
+  }
+
+  .style-card__desc {
+    margin: toEm(6) 0 0;
+    font-size: toEm(10);
+    line-height: 1.4;
+    opacity: 0.85;
+  }
+
+  .style-card__body {
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: toEm(8);
+    padding: toEm(10) toEm(12);
+    border-radius: toEm(14);
+    background-color: var(--success-color);
+
+    // Декоративная кавычка, как на референсе
+    &::before {
+      content: "“";
+      position: absolute;
+      right: toEm(10);
+      top: toEm(-4);
+      font-size: toEm(26);
+      line-height: 1;
+      color: var(--dark-color);
+      opacity: 0.2;
+    }
+
+    .style-card__price {
+      color: var(--dark-color);
+      font-size: toEm(15);
+    }
+
+    .style-card__plus {
+      background-color: var(--dark-color);
+      color: var(--light-color);
+    }
   }
 }
 </style>
