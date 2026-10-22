@@ -143,7 +143,8 @@ const shortName = computed(() => {
   align-items: center;
   justify-content: center;
   padding: clamp(8px, 2cqw, 16px);
-  border-radius: 0 0 toEm(22) toEm(22);
+  // Нижние углы прямые — плашка вставлена в нижнюю кромку, верхние скруглены
+  border-radius: toEm(22) toEm(22) 0 0;
   background-color: var(--success-color);
   color: var(--light-color);
   text-align: center;

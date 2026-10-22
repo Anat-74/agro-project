@@ -276,12 +276,13 @@
   &::after {
     content: "";
     position: absolute;
-    top: 0;
     width: $radius;
     height: $radius;
     background-color: $color;
 
     @if $cut == "top" {
+      // Плашка врастает снизу: ушки на НИЖНЕЙ кромке, вырез сверху-внутри
+      bottom: 0;
       -webkit-mask-image: radial-gradient(
         circle at 100% 0,
         transparent calc(#{$radius} - 0.5px),
@@ -293,6 +294,8 @@
         #000 #{$radius}
       );
     } @else {
+      // Плашка висит сверху: ушки на ВЕРХНЕЙ кромке, вырез снизу-внутри
+      top: 0;
       -webkit-mask-image: radial-gradient(
         circle at 100% 100%,
         transparent calc(#{$radius} - 0.5px),
