@@ -1,14 +1,11 @@
 <script setup lang="ts">
 /**
- * ВРЕМЕННО (демо): 1:1 композиция по референсу (хамелеон).
+ * ВРЕМЕННО (демо): карточка по схеме «Inverted Mask Effect».
  *
- * Геометрия относительно контейнера (aspect ≈ 2.12):
- *  - фото: слева, 63% ширины, вся высота;
- *  - зелёный лейбл: поверх фото, справа сверху (39%..60%, высота 21%);
- *  - тёмная панель: справа сверху (61%..100%), высота 66% — нахлёст на фото ~2%;
- *  - зелёная цитата: справа снизу (67%..100%), высота 33% — с зазором от тёмной.
- *
- * Текст масштабируется через cqw с нижним порогом читаемости.
+ * Эффект — на САМОЙ КАРТОЧКЕ: её силуэт вырезан в двух местах
+ * (сверху по центру — под лейбл, снизу справа — под цитату).
+ * Плашки — отдельные элементы внутри вырезов с зазором, поэтому
+ * фон «обтекает» их (видно подложку сквозь зазор).
  */
 interface Props {
   product: Product
@@ -16,40 +13,45 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const shortName = computed(() => {
-  const name = props.product?.name ?? "Product"
-  return name.split(" ")[0]
-})
+const isSale = computed(() => Boolean(props.product?.isDiscount))
+
+const shortName = computed(() => (props.product?.name ?? "Product").split(" ")[0])
 </script>
 
 <template>
-  <article class="fcard">
-    <div class="fcard__photo">
+  <article :class="['fcard', { 'fcard_sale': isSale }]">
+    <!-- Поверхность с вырезами под плашки -->
+    <div class="fcard__surface">
       <UImage
         v-if="product?.image?.length"
         class="fcard__image"
         :src="product.image[0]?.url"
         :alt="product.name"
-        width="480"
-        height="360"
+        width="360"
+        height="450"
         type="product"
       />
+      <div class="fcard__meta">
+        <h3 class="fcard__name">{{ product?.name || "Product" }}</h3>
+        <p class="fcard__desc">
+          Fresh harvest, delivered in a day. Taste the season.
+        </p>
+      </div>
     </div>
 
+    <!-- Лейбл: в верхнем вырезе -->
     <span class="fcard__label">{{ shortName }}</span>
 
-    <div class="fcard__panel">
-      <p class="fcard__text">
-        Fresh harvest, delivered in a day. Taste the season while it is still
-        warm from the field — every box is packed by hand and keeps its
-        vitamins for days.
-      </p>
-    </div>
-
+    <!-- Цитата: в нижнем правом вырезе -->
     <div class="fcard__quote">
       <span class="fcard__quote-mark fcard__quote-mark_open">“</span>
       <p class="fcard__quote-text">«Свежий вкус лета — в каждом кусочке»</p>
-      <span class="fcard__quote-mark fcard__quote-mark_close">”</span>
+      <div class="fcard__row">
+        <span class="fcard__price">{{
+          product ? formatPrice(product.price) : "0,00"
+        }}</span>
+        <span class="fcard__plus">+</span>
+      </div>
     </div>
   </article>
 </template>
@@ -58,19 +60,27 @@ const shortName = computed(() => {
 .fcard {
   position: relative;
   width: 100%;
-  aspect-ratio: 2.12 / 1;
+  aspect-ratio: 4 / 5;
   container-type: inline-size;
 }
 
-// Фото: слева, 63% ширины, вся высота
-.fcard__photo {
+// Вырез: скруглённый прямоугольник (mask-composite: exclude убирает его из карточки)
+$notch: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><rect x="0" y="0" width="100" height="100" rx="18"/></svg>');
+
+// --- Поверхность карточки: фото + маска с двумя вырезами ---
+.fcard__surface {
   position: absolute;
-  inset-block: 0;
-  left: 0;
-  width: 63%;
-  border-radius: toEm(24);
+  inset: 0;
+  border-radius: toEm(22);
   overflow: hidden;
-  background-color: var(--whitesmoke-color);
+  // Тёмная поверхность: вырезы (прозрачные) показывают светлый фон страницы,
+  // поэтому «обтекание» читается
+  background-color: var(--dark-color);
+  mask-image: $notch, $notch, linear-gradient(#000 0 0);
+  mask-size: 64% 13%, 62% 21%, 100% 100%;
+  mask-position: top 12px center, bottom 12px right 12px, 0 0;
+  mask-repeat: no-repeat;
+  mask-composite: exclude, exclude, add;
 
   :deep(img) {
     width: 100%;
@@ -85,93 +95,109 @@ const shortName = computed(() => {
   height: 100%;
 }
 
-// Зелёный лейбл поверх фото: таб с вогнутыми ушками, верхние углы прямые
+.fcard__meta {
+  position: absolute;
+  inset-inline: 0;
+  top: 22%;
+  padding: 0 toEm(18);
+  color: var(--light-color);
+  text-align: center;
+}
+
+.fcard__name {
+  margin: 0;
+  font-size: toEm(18);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.fcard__desc {
+  margin: toEm(6) 0 0;
+  font-size: toEm(11);
+  line-height: 1.4;
+  opacity: 0.75;
+}
+
+// --- Лейбл: в верхнем вырезе, с зазором 4px ---
 .fcard__label {
   position: absolute;
-  top: 0;
-  left: 39%;
-  z-index: 3;
+  top: toRem(16);
+  left: 50%;
+  translate: -50% 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 21%;
-  height: 21%;
-  padding-inline: 2cqw;
-  border-radius: 0 0 toEm(10) toEm(10);
+  width: calc(64% - #{toRem(8)});
+  height: calc(13% - #{toRem(8)});
+  border-radius: toEm(12);
   background-color: var(--success-color);
   color: var(--dark-color);
-  font-size: clamp(8px, 1.55cqw, 12px);
+  font-size: clamp(9px, 2.2cqw, 13px);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  text-align: center;
-  @include tabEars(toEm(8), var(--success-color), "bottom");
+
+  .fcard_sale & {
+    background-color: var(--warning-color);
+  }
 }
 
-// Тёмная панель: справа сверху, нахлёст на фото ~2%
-.fcard__panel {
-  position: absolute;
-  top: 0;
-  left: 61%;
-  z-index: 2;
-  width: 39%;
-  height: 66%;
-  display: flex;
-  align-items: center;
-  padding: clamp(8px, 2.2cqw, 18px);
-  border-radius: toEm(22);
-  background-color: var(--color);
-  color: var(--light-color);
-}
-
-.fcard__text {
-  margin: 0;
-  font-size: clamp(8px, 1.45cqw, 12px);
-  line-height: 1.5;
-  text-align: justify;
-}
-
-// Зелёная панель цитаты: врастает в зазор снизу — ушки с зеркальной маской
+// --- Цитата: в нижнем правом вырезе, с зазором 4px ---
 .fcard__quote {
   position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 67%;
-  z-index: 2;
-  height: 33%;
+  right: toRem(16);
+  bottom: toRem(16);
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
-  padding: clamp(8px, 2cqw, 16px);
-  // Нижние углы прямые — плашка вставлена в нижнюю кромку, верхние скруглены
-  border-radius: toEm(22) toEm(22) 0 0;
+  width: calc(62% - #{toRem(8)});
+  height: calc(21% - #{toRem(8)});
+  padding: toEm(10) toEm(12);
+  border-radius: toEm(12);
   background-color: var(--success-color);
-  color: var(--light-color);
-  text-align: center;
-  @include tabEars(toEm(10), var(--success-color), "top");
-}
-
-.fcard__quote-text {
-  margin: 0;
-  font-size: clamp(8px, 1.3cqw, 11px);
-  font-style: italic;
-  line-height: 1.35;
+  color: var(--dark-color);
 }
 
 .fcard__quote-mark {
   position: absolute;
-  font-size: clamp(14px, 2.6cqw, 22px);
+  top: toEm(2);
+  left: toEm(8);
+  font-size: toEm(18);
   line-height: 1;
-  opacity: 0.85;
+  opacity: 0.25;
+}
 
-  &_open {
-    top: clamp(4px, 1cqw, 8px);
-    left: clamp(6px, 1.4cqw, 12px);
-  }
+.fcard__quote-text {
+  margin: 0;
+  padding-inline-start: toEm(8);
+  font-size: clamp(8px, 1.9cqw, 11px);
+  font-style: italic;
+  line-height: 1.3;
+}
 
-  &_close {
-    right: clamp(6px, 1.4cqw, 12px);
-    bottom: clamp(4px, 1cqw, 8px);
-  }
+.fcard__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: toEm(6);
+  margin-block-start: toEm(6);
+}
+
+.fcard__price {
+  font-size: toEm(15);
+  font-weight: 700;
+}
+
+.fcard__plus {
+  display: grid;
+  place-items: center;
+  width: toEm(24);
+  height: toEm(24);
+  border-radius: 50%;
+  background-color: var(--dark-color);
+  color: var(--light-color);
+  font-size: toEm(14);
+  font-weight: 600;
+  line-height: 1;
 }
 </style>
