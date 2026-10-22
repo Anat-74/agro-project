@@ -115,7 +115,7 @@ const breadcrumbsBackground = computed(() => {
 const PAGE_SIZE = 12;
 
 // ВРЕМЕННО (демо): варианты стилизации карточки. Удалить после выбора.
-const cardStyleVariants = ["soft", "notch", "wave", "cut", "frame"];
+const cardStyleVariants = ["panels", "tag", "arch", "collage", "mat"];
 
 const productsKey = () =>
   `shop-products-${currentLocale.value}-${category.value}-${sort.value}-${priceMin.value}-${priceMax.value}-${tags.value.join(",")}-${page.value}`
@@ -461,6 +461,10 @@ useSeoMeta({
                 products[i]?.isDiscount ? "SALE" : "NEW"
               }}</span>
             </div>
+            <!-- Тёмная панель-описание (концепт «panels» по референсу) -->
+            <p v-if="variant === 'panels'" class="style-card__panel">
+              Fresh harvest, delivered in a day. Taste the season.
+            </p>
             <div class="style-card__body">
               <p class="style-card__title">{{ products[i]?.name || "Product" }}</p>
               <div class="style-card__row">
@@ -973,7 +977,7 @@ useSeoMeta({
   }
 }
 
-/* ВРЕМЕННО: варианты стилизации карточки (демо). Удалить после выбора. */
+/* ВРЕМЕННО: концепты стилизации карточки (демо). Удалить после выбора. */
 .products-page__style-demo {
   margin-block-start: toRem(32);
   padding: toRem(16);
@@ -991,9 +995,9 @@ useSeoMeta({
 
 .products-page__style-demo-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, toRem(220));
+  grid-template-columns: repeat(auto-fill, toRem(180));
   justify-content: start;
-  gap: toRem(18);
+  gap: toRem(20);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1013,15 +1017,12 @@ useSeoMeta({
   letter-spacing: 0.06em;
 }
 
-// --- Базовый макет демо-карточки ---
+// ---- Базовый макет демо-карточки ----
 .style-card {
+  position: relative;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  background-color: var(--light-color);
   color: var(--gray-color);
-  border: toEm(2) solid var(--whitesmoke-color);
-  box-shadow: 0 toEm(6) toEm(18) toRem(3) hsla(0, 0%, 0%, 0.07);
 }
 
 .style-card__media {
@@ -1044,27 +1045,28 @@ useSeoMeta({
 
 .style-card__label {
   position: absolute;
-  left: toEm(10);
-  top: toEm(10);
-  padding: toEm(3) toEm(8);
-  border-radius: toEm(20);
-  background-color: var(--success-color);
-  color: var(--light-color);
-  font-size: toEm(10);
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: toEm(9);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.style-card__panel {
+  margin: 0;
 }
 
 .style-card__body {
   display: flex;
   flex-direction: column;
-  gap: toEm(8);
-  padding: toEm(12);
+  gap: toEm(4);
 }
 
 .style-card__title {
   margin: 0;
-  font-size: toEm(14);
+  font-size: toEm(13);
   font-weight: 600;
   line-height: 1.25;
   color: var(--color);
@@ -1074,59 +1076,280 @@ useSeoMeta({
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: toEm(8);
+  gap: toEm(6);
 }
 
 .style-card__price {
-  font-weight: 600;
+  font-size: toEm(13);
+  font-weight: 700;
+  color: var(--color);
 }
 
 .style-card__plus {
   display: grid;
   place-items: center;
-  width: toEm(28);
-  height: toEm(28);
+  width: toEm(26);
+  height: toEm(26);
   border-radius: 50%;
-  background-color: var(--success-color);
+  background-color: var(--color);
   color: var(--light-color);
-  font-size: toEm(18);
+  font-size: toEm(16);
   font-weight: 600;
   line-height: 1;
 }
 
-// 1. soft — крупные радиусы + мягкая тень
-.style-card_soft {
-  border-radius: toEm(20);
+// =====================================================
+// 1. panels — по референсу: слои панелей с перекрытием
+// =====================================================
+.style-card_panels {
+  gap: toEm(6);
+
+  .style-card__media {
+    border-radius: toEm(16);
+    overflow: hidden;
+  }
+
+  .style-card__label {
+    top: auto;
+    left: auto;
+    right: toEm(8);
+    bottom: toEm(8);
+    padding: toEm(4) toEm(8);
+    border-radius: toEm(20);
+    background-color: var(--success-color);
+    color: var(--dark-color);
+  }
+
+  .style-card__panel {
+    position: relative;
+    z-index: 2;
+    margin: toEm(-14) toEm(10) 0;
+    padding: toEm(10);
+    border-radius: toEm(12);
+    background-color: var(--color);
+    color: var(--light-color);
+    font-size: toEm(9);
+    line-height: 1.4;
+  }
+
+  .style-card__body {
+    position: relative;
+    z-index: 3;
+    margin: toEm(-6) toEm(4) 0;
+    padding: toEm(9);
+    border-radius: toEm(12);
+    background-color: var(--success-color);
+
+    .style-card__title,
+    .style-card__price {
+      color: var(--dark-color);
+    }
+
+    .style-card__plus {
+      background-color: var(--dark-color);
+      color: var(--light-color);
+    }
+  }
 }
 
-// 2. notch — круглый вырез в правом верхнем углу
-.style-card_notch {
-  border-radius: toEm(14);
-  @include maskEdgeCut(toEm(16), "top-right", "round");
-  box-shadow: none;
-  filter: drop-shadow(0 toEm(6) toEm(12) color-mix(in srgb, var(--color) 18%, transparent));
+// =====================================================
+// 2. tag — бирка: отверстие, пунктир, наклонный стикер
+// =====================================================
+.style-card_tag {
+  padding: toEm(10);
+  border-radius: toEm(6) toEm(6) toEm(18) toEm(18);
+  background-color: var(--whitesmoke-color);
+  border: toEm(1) dashed color-mix(in srgb, var(--color) 28%, transparent);
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: toEm(5);
+    left: 50%;
+    translate: -50% 0;
+    width: toEm(9);
+    height: toEm(9);
+    border-radius: 50%;
+    background-color: var(--bg);
+    box-shadow: inset 0 toEm(2) toEm(3) color-mix(in srgb, var(--color) 35%, transparent);
+  }
+
+  .style-card__media {
+    margin-block-start: toEm(8);
+    border-radius: toEm(8);
+    overflow: hidden;
+  }
+
+  .style-card__label {
+    top: toEm(6);
+    left: toEm(-6);
+    padding: toEm(3) toEm(7);
+    border-radius: toEm(4);
+    background-color: var(--yellow-color);
+    color: var(--dark-color);
+    rotate: -6deg;
+    box-shadow: 0 toEm(2) toEm(6) color-mix(in srgb, var(--dark-color) 25%, transparent);
+  }
+
+  .style-card__body {
+    margin-block-start: toEm(8);
+    padding-block-start: toEm(8);
+    border-block-start: toEm(1) dashed color-mix(in srgb, var(--color) 28%, transparent);
+  }
+
+  .style-card__plus {
+    border-radius: toEm(6);
+  }
 }
 
-// 3. wave — волнистый нижний край
-.style-card_wave {
-  border-radius: toEm(14) toEm(14) 0 0;
-  @include maskScallopEdge(toEm(7), "bottom");
-  box-shadow: none;
-  filter: drop-shadow(0 toEm(6) toEm(12) color-mix(in srgb, var(--color) 18%, transparent));
+// =====================================================
+// 3. arch — арка: фото в высоком скруглении, центрирование
+// =====================================================
+.style-card_arch {
+  text-align: center;
+
+  .style-card__media {
+    // Настоящая арка: радиус = половина ширины/высоты (эллипс)
+    border-radius: 50% 50% toEm(10) toEm(10);
+    overflow: hidden;
+    aspect-ratio: 3 / 4;
+  }
+
+  .style-card__label {
+    top: toEm(8);
+    left: 50%;
+    translate: -50% 0;
+    padding: toEm(3) toEm(8);
+    border-radius: toEm(20);
+    background-color: var(--light-color);
+    color: var(--color);
+  }
+
+  .style-card__body {
+    margin-block-start: toEm(8);
+    padding: toEm(9);
+    border-radius: toEm(12);
+    background-color: var(--light-color);
+    align-items: center;
+  }
+
+  .style-card__row {
+    width: 100%;
+    justify-content: center;
+    gap: toEm(10);
+  }
+
+  .style-card__plus {
+    background-color: var(--success-color);
+    color: var(--dark-color);
+  }
 }
 
-// 4. cut — диагональный срез правого нижнего угла
-.style-card_cut {
-  border-radius: 0;
-  @include maskEdgeCut(toEm(18), "bottom-right", "diagonal");
-  box-shadow: none;
-  filter: drop-shadow(0 toEm(6) toEm(12) color-mix(in srgb, var(--color) 18%, transparent));
+// =====================================================
+// 4. collage — коллаж: пятна, наклон, круглый штамп
+// =====================================================
+.style-card_collage {
+  padding-block-end: toEm(4);
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    z-index: 0;
+  }
+
+  &::before {
+    width: toEm(90);
+    height: toEm(90);
+    left: toEm(-12);
+    top: toEm(-12);
+    background-color: var(--warning-color);
+    opacity: 0.3;
+  }
+
+  &::after {
+    width: toEm(60);
+    height: toEm(60);
+    right: toEm(-8);
+    bottom: toEm(30);
+    background-color: var(--success-color);
+    opacity: 0.35;
+  }
+
+  .style-card__media {
+    z-index: 1;
+    rotate: -3deg;
+    border-radius: toEm(14);
+    overflow: hidden;
+    box-shadow: 0 toEm(8) toEm(18) color-mix(in srgb, var(--dark-color) 22%, transparent);
+  }
+
+  .style-card__label {
+    top: toEm(4);
+    left: auto;
+    right: toEm(-6);
+    width: toEm(42);
+    height: toEm(42);
+    border-radius: 50%;
+    border: toEm(2) dashed var(--dark-color);
+    background-color: var(--yellow-color);
+    color: var(--dark-color);
+    rotate: 12deg;
+    font-size: toEm(8);
+  }
+
+  .style-card__body {
+    position: relative;
+    z-index: 2;
+    margin: toEm(-16) toEm(8) 0;
+    padding: toEm(9);
+    border-radius: toEm(12);
+    background-color: var(--light-color);
+    box-shadow: 0 toEm(4) toEm(12) color-mix(in srgb, var(--dark-color) 16%, transparent);
+  }
 }
 
-// 5. frame — жёсткая рамка + смещённая тень
-.style-card_frame {
-  border: toEm(2) solid var(--color);
-  border-radius: 0;
-  box-shadow: toEm(5) toEm(5) 0 var(--green-color);
+// =====================================================
+// 5. mat — паспарту: рамка, жёсткая тень, капс
+// =====================================================
+.style-card_mat {
+  padding: toEm(8);
+  background-color: var(--light-color);
+  border: toEm(1) solid var(--border-color);
+  box-shadow: toEm(6) toEm(6) 0 var(--success-color);
+
+  .style-card__media {
+    overflow: hidden;
+  }
+
+  .style-card__label {
+    top: toEm(6);
+    left: toEm(6);
+    padding: toEm(2) toEm(6);
+    background-color: var(--dark-color);
+    color: var(--light-color);
+    font-size: toEm(8);
+  }
+
+  .style-card__body {
+    padding: toEm(8) toEm(4) toEm(2);
+    gap: toEm(6);
+  }
+
+  .style-card__title {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: toEm(10);
+  }
+
+  .style-card__row {
+    padding-block-start: toEm(6);
+    border-block-start: toEm(1) solid var(--border-color);
+  }
+
+  .style-card__plus {
+    border-radius: 0;
+  }
 }
 </style>
