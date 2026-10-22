@@ -114,6 +114,11 @@ const breadcrumbsBackground = computed(() => {
 // ===== Товары: все продукты с фильтрами/сортировкой/пагинацией =====
 const PAGE_SIZE = 12;
 
+// ВРЕМЕННО (демо): товар со скидкой для варианта карточки
+const demoSaleProduct = computed(
+  () => products.value.find((item) => item.isDiscount) ?? products.value[1] ?? null,
+)
+
 const productsKey = () =>
   `shop-products-${currentLocale.value}-${category.value}-${sort.value}-${priceMin.value}-${priceMax.value}-${tags.value.join(",")}-${page.value}`
 
@@ -432,6 +437,23 @@ useSeoMeta({
         :page-count="pageCount"
         :route-name="route.name?.toString() || ''"
       />
+    </div>
+
+    <!-- ВРЕМЕННО (демо): карточка с инвертированным радиусом (квадрат).
+         Техника 1:1 из css-tip.com/inverted-radius. -->
+    <div class="products-page__style-demo" aria-hidden="true">
+      <p class="products-page__style-demo-title">inverted radius</p>
+
+      <div class="products-page__demo-bg products-page__demo-bg_light">
+        <ProductFeatureCard v-if="products[0]" :product="products[0]" />
+      </div>
+
+      <div class="products-page__demo-bg products-page__demo-bg_tint">
+        <ProductFeatureCard
+          v-if="demoSaleProduct"
+          :product="demoSaleProduct"
+        />
+      </div>
     </div>
   </section>
 </template>
@@ -929,5 +951,33 @@ useSeoMeta({
       font-size: toEm(13);
     }
   }
+}
+/* ВРЕМЕННО (демо): карточка с инвертированным радиусом. Удалить после выбора. */
+.products-page__style-demo {
+  margin-block-start: toRem(32);
+}
+
+.products-page__style-demo-title {
+  margin: 0 0 toRem(12);
+  font-size: toEm(11);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-color);
+}
+
+.products-page__demo-bg {
+  max-width: toRem(400);
+  margin-block-end: toRem(16);
+  padding: toRem(16);
+  border-radius: toRem(16);
+}
+
+.products-page__demo-bg_light {
+  background-color: var(--bg);
+  border: toRem(1) dashed var(--border-color);
+}
+
+.products-page__demo-bg_tint {
+  background-color: var(--bg-product);
 }
 </style>
