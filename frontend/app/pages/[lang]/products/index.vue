@@ -456,12 +456,12 @@ useSeoMeta({
                 type="product"
               />
             </div>
-            <span class="style-card__label">{{
-              products[0]?.isDiscount ? "SALE" : "NEW"
-            }}</span>
           </div>
           <div class="style-card__side">
             <div class="style-card__panel">
+              <span class="style-card__label">{{
+                products[0]?.isDiscount ? "SALE" : "NEW"
+              }}</span>
               <p class="style-card__title">
                 {{ products[0]?.name || "Product" }}
               </p>
@@ -1435,18 +1435,18 @@ useSeoMeta({
     height: 100%;
   }
 
-  // Плашка перекрывает правый верхний угол фото
+  // Плашка-таб на верхней кромке тёмной панели: вогнутые «ушки» (tabEars)
   .style-card__label {
     position: absolute;
-    top: toEm(14);
-    right: toEm(-14);
+    top: 0;
+    left: toEm(16);
     z-index: 3;
-    padding: toEm(5) toEm(12);
-    border-radius: toEm(14);
-    background-color: var(--success-color);
+    padding: toEm(5) toEm(12) toEm(6);
+    border-radius: 0 0 toEm(10) toEm(10);
     color: var(--dark-color);
-    font-size: toEm(11);
+    font-size: toEm(10);
     letter-spacing: 0.04em;
+    @include tabEars(toEm(10), var(--success-color));
   }
 
   .style-card__side {
@@ -1457,8 +1457,9 @@ useSeoMeta({
   }
 
   .style-card__panel {
+    position: relative;
     flex: 1;
-    padding: toEm(16);
+    padding: toEm(32) toEm(16) toEm(16);
     border-radius: toEm(22);
     background-color: var(--color);
     color: var(--light-color);

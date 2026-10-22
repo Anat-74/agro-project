@@ -257,3 +257,43 @@
   mask-size: calc(2 * #{$size}) 100%;
   mask-repeat: repeat-x;
 }
+
+//* tabEars — плавный стык плашки («таба») с поверхностью: вогнутые «ушки»
+//  по бокам внизу таба, через mask-image (радиальный градиент стирает угол).
+//  Плашка висит на верхней кромке поверхности (таб сверху, поверхность ниже).
+//  $radius — радиус вогнутого угла; $color — цвет плашки (ушки того же цвета).
+//  Мягкий переход 0.5px — против «зубцов» маски на HiDPI.
+//  Пример: @include tabEars(toEm(10), var(--success-color));
+@mixin tabEars($radius: toEm(12), $color: var(--success-color)) {
+  position: relative;
+  background-color: $color;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: $radius;
+    height: $radius;
+    background-color: $color;
+    -webkit-mask-image: radial-gradient(
+      circle at 100% 100%,
+      transparent calc(#{$radius} - 0.5px),
+      #000 #{$radius}
+    );
+    mask-image: radial-gradient(
+      circle at 100% 100%,
+      transparent calc(#{$radius} - 0.5px),
+      #000 #{$radius}
+    );
+  }
+
+  &::before {
+    left: calc(-1 * #{$radius});
+  }
+
+  &::after {
+    right: calc(-1 * #{$radius});
+    transform: scaleX(-1);
+  }
+}
