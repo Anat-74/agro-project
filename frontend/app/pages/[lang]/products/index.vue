@@ -114,11 +114,6 @@ const breadcrumbsBackground = computed(() => {
 // ===== Товары: все продукты с фильтрами/сортировкой/пагинацией =====
 const PAGE_SIZE = 12;
 
-// ВРЕМЕННО (демо): товар со скидкой для варианта карточки
-const demoSaleProduct = computed(
-  () => products.value.find((item) => item.isDiscount) ?? products.value[1] ?? null,
-)
-
 const productsKey = () =>
   `shop-products-${currentLocale.value}-${category.value}-${sort.value}-${priceMin.value}-${priceMax.value}-${tags.value.join(",")}-${page.value}`
 
@@ -439,21 +434,12 @@ useSeoMeta({
       />
     </div>
 
-    <!-- ВРЕМЕННО (демо): карточка с инвертированным радиусом (квадрат).
-         Техника 1:1 из css-tip.com/inverted-radius. -->
-    <div class="products-page__style-demo" aria-hidden="true">
-      <p class="products-page__style-demo-title">inverted radius</p>
-
-      <div class="products-page__demo-bg products-page__demo-bg_light">
-        <ProductFeatureCard v-if="products[0]" :product="products[0]" />
-      </div>
-
-      <div class="products-page__demo-bg products-page__demo-bg_tint">
-        <ProductFeatureCard
-          v-if="demoSaleProduct"
-          :product="demoSaleProduct"
-        />
-      </div>
+    <!-- ВРЕМЕННО (демо): точная копия примера css-tip.com/inverted-radius.
+         Маска 1:1, размер фиксированный, стили проекта не используются.
+         Удалить после просмотра. -->
+    <div class="ir-demo" aria-hidden="true">
+      <div class="ir-demo__surface" />
+      <span class="ir-demo__plate">CTA</span>
     </div>
   </section>
 </template>
@@ -952,32 +938,55 @@ useSeoMeta({
     }
   }
 }
-/* ВРЕМЕННО (демо): карточка с инвертированным радиусом. Удалить после выбора. */
-.products-page__style-demo {
-  margin-block-start: toRem(32);
+
+/* ===== ВРЕМЕННО (демо): inverted radius, код генератора css-shape.com ===== */
+.ir-demo {
+  position: relative;
+  width: 250px;
+  height: 250px;
+  margin: 32px auto 0;
 }
 
-.products-page__style-demo-title {
-  margin: 0 0 toRem(12);
-  font-size: toEm(11);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--gray-color);
+.ir-demo__surface {
+  /* Значения генератора: r=20, s=30 */
+  --r: 20px;
+  --s: 30px;
+
+  width: 100%;
+  height: 100%;
+  border-radius: var(--r);
+  background: #274c5b;
+
+  --_m: / calc(2 * var(--r)) calc(2 * var(--r))
+    radial-gradient(#000 70%, #0000 72%) no-repeat;
+  mask:
+    right calc(var(--s) + 2 * var(--r)) top 0 var(--_m),
+    right 0 top calc(2 * var(--s)) var(--_m),
+    radial-gradient(var(--s) at 100% 0, #0000 99%, #000 calc(100% + 1px))
+      calc(-2 * var(--r)) var(--s) no-repeat,
+    conic-gradient(at calc(100% - var(--r)) var(--r), #0000 25%, #000 0)
+      calc(-1 * (var(--s) + 2 * var(--r))) 0 no-repeat,
+    conic-gradient(at calc(100% - var(--r)) var(--r), #0000 25%, #000 0) 0
+      calc(2 * var(--s)) no-repeat;
+  mask-repeat: no-repeat;
 }
 
-.products-page__demo-bg {
-  max-width: toRem(400);
-  margin-block-end: toRem(16);
-  padding: toRem(16);
-  border-radius: toRem(16);
-}
-
-.products-page__demo-bg_light {
-  background-color: var(--bg);
-  border: toRem(1) dashed var(--border-color);
-}
-
-.products-page__demo-bg_tint {
-  background-color: var(--bg-product);
+/* Плашка — «выбранный элемент», вокруг которого обтекает поверхность */
+.ir-demo__plate {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 40px;
+  border-radius: 12px;
+  background: #f4e63a;
+  color: #274c5b;
+  font-family: system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
 }
 </style>
