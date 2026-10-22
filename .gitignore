@@ -143,4 +143,5 @@ nbproject
 # Скриншоты диагностики скриптов деплоя/перезапуска
 deploy-err.png
 restart-ok.png
-restart-err.pngfrontend/.nuxtrc
+restart-err.png
+frontend/.nuxtrc
