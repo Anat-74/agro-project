@@ -85,7 +85,7 @@ const shortName = computed(() => {
   height: 100%;
 }
 
-// Зелёный лейбл поверх фото, справа сверху
+// Зелёный лейбл поверх фото: таб с вогнутыми ушками, верхние углы прямые
 .fcard__label {
   position: absolute;
   top: 0;
@@ -97,7 +97,7 @@ const shortName = computed(() => {
   width: 21%;
   height: 21%;
   padding-inline: 2cqw;
-  border-radius: toEm(12);
+  border-radius: 0 0 toEm(10) toEm(10);
   background-color: var(--success-color);
   color: var(--dark-color);
   font-size: clamp(8px, 1.55cqw, 12px);
@@ -105,6 +105,7 @@ const shortName = computed(() => {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   text-align: center;
+  @include tabEars(toEm(8), var(--success-color), "bottom");
 }
 
 // Тёмная панель: справа сверху, нахлёст на фото ~2%
@@ -130,7 +131,7 @@ const shortName = computed(() => {
   text-align: justify;
 }
 
-// Зелёная панель цитаты: справа снизу, уже и с зазором
+// Зелёная панель цитаты: врастает в зазор снизу — ушки с зеркальной маской
 .fcard__quote {
   position: absolute;
   right: 0;
@@ -142,10 +143,11 @@ const shortName = computed(() => {
   align-items: center;
   justify-content: center;
   padding: clamp(8px, 2cqw, 16px);
-  border-radius: toEm(22);
+  border-radius: 0 0 toEm(22) toEm(22);
   background-color: var(--success-color);
   color: var(--light-color);
   text-align: center;
+  @include tabEars(toEm(10), var(--success-color), "top");
 }
 
 .fcard__quote-text {

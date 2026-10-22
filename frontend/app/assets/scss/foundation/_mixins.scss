@@ -259,13 +259,17 @@
 }
 
 //* tabEars — плавный стык плашки («таба») с поверхностью: вогнутые «ушки»
-//  по бокам внизу таба, через mask-image (радиальный градиент стирает угол).
-//  Плашка висит на верхней кромке поверхности (таб сверху, поверхность ниже).
-//  $radius — радиус вогнутого угла; $color — цвет плашки (ушки того же цвета).
+//  через mask-image (радиальный градиент стирает угол).
+//  $radius — радиус вогнутого угла; $color — цвет плашки (ушки того же цвета);
+//  $cut — какой угол ушка вырезать:
+//    "bottom" (default) — таб висит с верхней кромки (вырез снизу-внутри);
+//    "top" — плашка врастает снизу в зазор (вырез сверху-внутри).
 //  Мягкий переход 0.5px — против «зубцов» маски на HiDPI.
 //  Пример: @include tabEars(toEm(10), var(--success-color));
-@mixin tabEars($radius: toEm(12), $color: var(--success-color)) {
-  position: relative;
+//          @include tabEars(toEm(10), var(--success-color), "top");
+@mixin tabEars($radius: toEm(12), $color: var(--success-color), $cut: "bottom") {
+  // ВАЖНО: элемент-вызыватель должен быть позиционирован (absolute/relative) —
+  // сам миксин position не меняет, чтобы не перебивать absolute у плашки.
   background-color: $color;
 
   &::before,
@@ -276,16 +280,30 @@
     width: $radius;
     height: $radius;
     background-color: $color;
-    -webkit-mask-image: radial-gradient(
-      circle at 100% 100%,
-      transparent calc(#{$radius} - 0.5px),
-      #000 #{$radius}
-    );
-    mask-image: radial-gradient(
-      circle at 100% 100%,
-      transparent calc(#{$radius} - 0.5px),
-      #000 #{$radius}
-    );
+
+    @if $cut == "top" {
+      -webkit-mask-image: radial-gradient(
+        circle at 100% 0,
+        transparent calc(#{$radius} - 0.5px),
+        #000 #{$radius}
+      );
+      mask-image: radial-gradient(
+        circle at 100% 0,
+        transparent calc(#{$radius} - 0.5px),
+        #000 #{$radius}
+      );
+    } @else {
+      -webkit-mask-image: radial-gradient(
+        circle at 100% 100%,
+        transparent calc(#{$radius} - 0.5px),
+        #000 #{$radius}
+      );
+      mask-image: radial-gradient(
+        circle at 100% 100%,
+        transparent calc(#{$radius} - 0.5px),
+        #000 #{$radius}
+      );
+    }
   }
 
   &::before {
