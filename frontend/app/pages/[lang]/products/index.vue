@@ -441,39 +441,44 @@ useSeoMeta({
     <div class="products-page__style-demo" aria-hidden="true">
       <p class="products-page__style-demo-title">card styles</p>
 
-      <!-- Широкая карточка по референсу: фото слева, панели справа/снизу -->
+      <!-- Широкая композиция по референсу: отдельные плавающие плашки -->
       <div class="products-page__style-demo-wide">
-        <div class="style-card style-card_chameleon">
-          <div class="style-card__media">
-            <div class="style-card__image-wrap">
-              <UImage
-                v-if="products[0]?.image?.length"
-                class="style-card__image"
-                :src="products[0].image[0].url"
-                :alt="products[0].name"
-                width="300"
-                height="300"
-                type="product"
-              />
-            </div>
+        <div class="cham-card">
+          <div class="cham-card__photo">
+            <UImage
+              v-if="products[0]?.image?.length"
+              class="cham-card__image"
+              :src="products[0].image[0].url"
+              :alt="products[0].name"
+              width="400"
+              height="400"
+              type="product"
+            />
           </div>
-          <div class="style-card__side">
-            <div class="style-card__panel">
-              <span class="style-card__label">{{
-                products[0]?.isDiscount ? "SALE" : "NEW"
-              }}</span>
-              <p class="style-card__title">
-                {{ products[0]?.name || "Product" }}
-              </p>
-              <p class="style-card__desc">
-                Fresh harvest, delivered in a day. Taste the season.
-              </p>
-            </div>
-            <div class="style-card__body">
-              <span class="style-card__price">{{
+
+          <span class="cham-card__pill">{{
+            products[0]?.isDiscount ? "SALE" : "NEW"
+          }}</span>
+
+          <div class="cham-card__panel">
+            <p class="cham-card__name">
+              {{ products[0]?.name || "Product" }}
+            </p>
+            <p class="cham-card__desc">
+              Fresh harvest, delivered in a day. Taste the season while it is
+              still warm from the field. Every box is packed by hand.
+            </p>
+          </div>
+
+          <div class="cham-card__quote">
+            <p class="cham-card__quote-text">
+              «Свежий вкус лета — в каждом кусочке»
+            </p>
+            <div class="cham-card__price-row">
+              <span class="cham-card__price">{{
                 products[0] ? formatPrice(products[0].price) : "0,00"
               }}</span>
-              <span class="style-card__plus">+</span>
+              <span class="cham-card__plus">+</span>
             </div>
           </div>
         </div>
@@ -1397,28 +1402,23 @@ useSeoMeta({
 //    справа тёмная панель + зелёная панель с наложением
 // =====================================================
 .products-page__style-demo-wide {
-  max-width: toRem(560);
+  max-width: toRem(620);
   margin-block-end: toRem(22);
 }
 
-.style-card_chameleon {
-  display: grid;
-  // minmax(0, …) — чтобы контент (картинка) не расширял колонку сверх доли fr
-  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
-  gap: toEm(10);
-  align-items: stretch;
+// Широкая композиция по референсу: фото + отдельные плавающие плашки
+.cham-card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2.1 / 1;
+  min-height: toRem(230);
 
-  .style-card__media {
-    position: relative;
-    min-width: 0;
-    min-height: toEm(250);
-  }
-
-  // Скругление на обёртке картинки, чтобы плашка могла выступать за край
-  .style-card__image-wrap {
-    width: 100%;
-    height: 100%;
-    border-radius: toEm(22);
+  &__photo {
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    width: 52%;
+    border-radius: toEm(24);
     overflow: hidden;
     background-color: var(--whitesmoke-color);
 
@@ -1429,96 +1429,119 @@ useSeoMeta({
     }
   }
 
-  .style-card__image {
+  &__image {
     display: block;
     width: 100%;
     height: 100%;
   }
 
-  // Плашка-таб на верхней кромке тёмной панели: вогнутые «ушки» (tabEars)
-  .style-card__label {
+  // Пилюля над фото: правый верхний край, вокруг воздух
+  &__pill {
     position: absolute;
     top: 0;
-    left: toEm(16);
+    left: 44%;
     z-index: 3;
-    padding: toEm(5) toEm(12) toEm(6);
-    border-radius: 0 0 toEm(10) toEm(10);
+    padding: toEm(4) toEm(10);
+    border-radius: toEm(60);
+    background-color: var(--success-color);
     color: var(--dark-color);
     font-size: toEm(10);
-    letter-spacing: 0.04em;
-    @include tabEars(toEm(10), var(--success-color));
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
   }
 
-  .style-card__side {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: toEm(10);
-  }
-
-  .style-card__panel {
-    position: relative;
-    flex: 1;
-    padding: toEm(32) toEm(16) toEm(16);
+  // Тёмная панель: справа сверху, отдельным блоком (зазор от фото)
+  &__panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40%;
+    height: 56%;
+    padding: toEm(14);
     border-radius: toEm(22);
     background-color: var(--color);
     color: var(--light-color);
-
-    .style-card__title {
-      color: var(--light-color);
-      font-size: toEm(16);
-      line-height: 1.2;
-    }
   }
 
-  .style-card__desc {
-    margin: toEm(8) 0 0;
-    font-size: toEm(11);
-    line-height: 1.45;
+  &__name {
+    margin: 0;
+    font-size: toEm(13);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  &__desc {
+    margin: toEm(6) 0 0;
+    font-size: toEm(9);
+    line-height: 1.5;
+    text-align: justify;
     opacity: 0.85;
   }
 
-  // Зелёная панель наезжает на фото
-  .style-card__body {
-    position: relative;
-    z-index: 2;
-    margin-inline-start: toEm(-34);
-    padding: toEm(14) toEm(16);
+  // Зелёная панель: справа снизу, уже тёмной и с зазорами
+  &__quote {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 33%;
+    min-height: 30%;
+    padding: toEm(12) toEm(14);
     border-radius: toEm(22);
     background-color: var(--success-color);
-
-    // Декоративные кавычки, как на референсе
-    &::before,
-    &::after {
-      position: absolute;
-      font-size: toEm(18);
-      line-height: 1;
-      color: var(--dark-color);
-      opacity: 0.25;
-    }
+    color: var(--dark-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: toEm(8);
 
     &::before {
       content: "“";
-      top: toEm(3);
+      position: absolute;
+      top: toEm(4);
       left: toEm(8);
-    }
-
-    &::after {
-      content: "”";
-      right: toEm(8);
-      bottom: toEm(2);
-    }
-
-    .style-card__price {
-      color: var(--dark-color);
-      font-size: toEm(16);
-    }
-
-    .style-card__plus {
-      background-color: var(--dark-color);
-      color: var(--light-color);
+      font-size: toEm(20);
+      line-height: 1;
+      opacity: 0.25;
     }
   }
+
+  &__quote-text {
+    margin: 0;
+    padding-inline-start: toEm(8);
+    font-size: toEm(10);
+    font-style: italic;
+    line-height: 1.35;
+  }
+
+  &__price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: toEm(6);
+    padding-block-start: toEm(6);
+    border-block-start: toEm(1) solid color-mix(in srgb, var(--dark-color) 20%, transparent);
+  }
+
+  &__price {
+    font-size: toEm(15);
+    font-weight: 700;
+  }
+
+  &__plus {
+    display: grid;
+    place-items: center;
+    width: toEm(24);
+    height: toEm(24);
+    border-radius: 50%;
+    background-color: var(--dark-color);
+    color: var(--light-color);
+    font-size: toEm(14);
+    font-weight: 600;
+    line-height: 1;
+  }
 }
+
 
 </style>
