@@ -318,3 +318,25 @@
     transform: scaleX(-1);
   }
 }
+
+//* Вогнутый вырез в правом верхнем углу поверхности (inverted radius).
+//* Код 1:1 из генератора css-shape.com/inverted-radius: 5 слоёв + no-repeat.
+//* $r — радиус вогнутой дуги, $s — глубина выреза. Значения в px (не тянутся
+//* от ширины блока). Кнопка/плашка кладётся в вырез отдельным слоем ВЫШЕ.
+@mixin invertedRadius($r: 16px, $s: 24px) {
+  --_ir-r: #{$r};
+  --_ir-s: #{$s};
+  --_ir-m: / calc(2 * var(--_ir-r)) calc(2 * var(--_ir-r))
+    radial-gradient(#000 70%, #0000 72%) no-repeat;
+
+  mask:
+    right calc(var(--_ir-s) + 2 * var(--_ir-r)) top 0 var(--_ir-m),
+    right 0 top calc(2 * var(--_ir-s)) var(--_ir-m),
+    radial-gradient(var(--_ir-s) at 100% 0, #0000 99%, #000 calc(100% + 1px))
+      calc(-2 * var(--_ir-r)) var(--_ir-s) no-repeat,
+    conic-gradient(at calc(100% - var(--_ir-r)) var(--_ir-r), #0000 25%, #000 0)
+      calc(-1 * (var(--_ir-s) + 2 * var(--_ir-r))) 0 no-repeat,
+    conic-gradient(at calc(100% - var(--_ir-r)) var(--_ir-r), #0000 25%, #000 0) 0
+      calc(2 * var(--_ir-s)) no-repeat;
+  mask-repeat: no-repeat;
+}

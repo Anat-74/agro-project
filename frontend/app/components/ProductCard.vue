@@ -282,6 +282,8 @@ const characteristics = computed(() => {
     backface-visibility: hidden;
     transition: transform 0.6s;
     box-shadow: 0px toEm(6, 15) toEm(18, 15) toRem(5) hsla(0, 0%, 0%, 0.07);
+    // Вырез под кнопку «3D»/модалки (правый верхний угол)
+    @include invertedRadius(16px, 24px);
   }
 
   &__front {
