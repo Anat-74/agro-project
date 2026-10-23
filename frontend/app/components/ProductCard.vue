@@ -86,20 +86,6 @@ const characteristics = computed(() => {
           name="mdi:discount"
         />
         <ProductStatus class="product-card__in-stock" :product="product" />
-        <UButton
-          v-if="!compact"
-          class="product-card__details"
-          variant="product-details"
-          icon="mdi:rotate-3d"
-          :aria-label="buttonTranslations[currentLocale].ariaLabelProductDetails"
-          @click="toggleActive"
-        />
-        <!-- Компактный режим: вместо переворота — модалка товара.
-             Обёртка нужна: у ShowModalProduct несколько корней (фрагмент),
-             класс снаружи на него не пробрасывается. -->
-        <div v-else class="product-card__modal">
-          <ShowModalProduct :product="product" />
-        </div>
       </div>
       <div class="product-card__content" @click="toggleVisibleLink">
         <UImage
@@ -170,13 +156,6 @@ const characteristics = computed(() => {
           name="mdi:discount"
         />
         <ProductStatus :product="product" class="product-card__in-stock" />
-        <UButton
-          class="product-card__details"
-          variant="product-details"
-          icon="mdi:rotate-3d"
-          :aria-label="buttonTranslations[currentLocale].ariaLabelProductDetails"
-          @click="toggleActive"
-        />
       </div>
       <div class="product-card__content">
         <p class="product-card__description">
@@ -218,6 +197,22 @@ const characteristics = computed(() => {
           @click="handleAddToCart(product)"
         />
       </div>
+    </div>
+
+    <!-- Кнопка-«плашка» вынесена из-под маски: маска режет только поверхность,
+         а кнопка лежит в вырезе слоем выше (иначе её срезает вместе с карточкой).
+         В компактном режиме вместо переворота — модалка товара (обёртка нужна:
+         у ShowModalProduct несколько корней, класс наружу не пробрасывается). -->
+    <UButton
+      v-if="!compact"
+      class="product-card__details"
+      variant="product-details"
+      icon="mdi:rotate-3d"
+      :aria-label="buttonTranslations[currentLocale].ariaLabelProductDetails"
+      @click="toggleActive"
+    />
+    <div v-else class="product-card__modal">
+      <ShowModalProduct :product="product" />
     </div>
   </li>
 </template>
@@ -288,13 +283,6 @@ const characteristics = computed(() => {
 
   &__front {
     z-index: 100;
-
-    .product-card__details {
-      position: absolute;
-      z-index: 150;
-      right: toEm(14);
-      top: toEm(22);
-    }
 
     .product-card__content {
       @include hover {
@@ -424,6 +412,14 @@ const characteristics = computed(() => {
         }
       }
     }
+  }
+
+  // Кнопка-«плашка» — снаружи маски (в вырезе карточки), слой выше поверхности
+  &__details {
+    position: absolute;
+    z-index: 150;
+    right: toEm(14);
+    top: toEm(22);
   }
 
   &__top-items {
