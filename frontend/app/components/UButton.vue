@@ -472,30 +472,41 @@ defineEmits<Emits>();
        box-shadow var(--transition-duration),
        filter var(--transition-duration);
 
-     // крест «+»
+     // крест «+» — геометрия как у исходного add (right-based),
+     // чтобы «в корзине» корректно превращался в галочку
      &::before,
      &::after {
        content: "";
        position: absolute;
        top: calc(50% - 1px);
-       left: calc(50% - 9px);
-       width: 18px;
+       right: 9px;
+       width: 15px;
        height: 2px;
        border-radius: 2px;
        background-color: var(--green-color);
      }
 
-     // в корзине — белый крест на зелёной заливке (перекрываем btn_add_is-added)
-     &.btn_add_is-added {
-
-       &::before,
-       &::after {
-         background-color: var(--light-color);
-       }
+     &::before {
+       transform: rotate(-90deg);
      }
 
-     &::before {
-       transform: rotate(90deg);
+     // в корзине: «+» → галочка
+     &.btn_add_is-added {
+       &::before {
+         top: 45%;
+         right: 7px;
+         transform: rotate(-58deg);
+         background-color: var(--light-color);
+       }
+
+       &::after {
+         width: 8px;
+         right: 50%;
+         bottom: 40%;
+         top: auto;
+         transform: rotate(60deg);
+         background-color: var(--light-color);
+       }
      }
 
      @include hover {
