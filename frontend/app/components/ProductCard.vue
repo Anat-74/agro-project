@@ -293,8 +293,9 @@ const characteristics = computed(() => {
     position: absolute;
     inset: 0;
     transform: scaleY(-1);
-    // Вырез под кнопку «в корзину»: чуть крупнее верхнего
-    @include invertedRadius(18px, 30px);
+    // Вырез под кнопку «в корзину»: размеры — из переменных карточки,
+    // чтобы вырез масштабировался контейнерным запросом (см. @container внизу)
+    @include invertedRadius(var(--notch-r, 18px), var(--notch-s, 30px));
   }
 
   // Контент возвращаем в нормаль; здесь же фон, рамка, скругление и тень
@@ -454,16 +455,17 @@ const characteristics = computed(() => {
   }
 
   // «В корзину» — плашка в нижнем вырезе (снаружи маски).
-  // Размер и позиция ВЫВОДЯТСЯ из выреза: вырез 66px (s=30 + 2r=36),
-  // зазор с каждой стороны = (66 - размер) / 2 → отступы одинаковые.
+  // Все размеры — переменные: база + оверрайды контейнерными запросами.
+  // Зазор с каждой стороны = --notch-gap, вырез = плашка + 2*зазор.
   &__add {
     --notch-size: 46px;
+    --notch-gap: 10px;
     position: absolute;
     z-index: 150;
     width: var(--notch-size);
     height: var(--notch-size);
-    right: calc((66px - var(--notch-size)) / 2);
-    bottom: calc((66px - var(--notch-size)) / 2);
+    right: var(--notch-gap);
+    bottom: var(--notch-gap);
   }
 
   &__top-items {
@@ -626,6 +628,30 @@ const characteristics = computed(() => {
   .product-card__bottom-items {
     padding-inline: toEm(8);
     padding-block: toEm(6);
+  }
+
+  // Вырез и плашка уменьшаются вместе с карточкой (пропорции сохраняются):
+  // вырез = плашка + 2*зазор → 36 + 14 = 50 = s(22) + 2r(28)
+  .product-card__surface {
+    --notch-r: 14px;
+    --notch-s: 22px;
+  }
+
+  .product-card__add {
+    --notch-size: 36px;
+    --notch-gap: 7px;
+  }
+}
+
+@container card (max-width: 170px) {
+  .product-card__surface {
+    --notch-r: 12px;
+    --notch-s: 18px;
+  }
+
+  .product-card__add {
+    --notch-size: 30px;
+    --notch-gap: 6px;
   }
 }
 </style>

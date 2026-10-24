@@ -484,15 +484,14 @@ defineEmits<Emits>();
        box-shadow var(--transition-duration),
        filter var(--transition-duration);
 
-     // крест «+» — геометрия как у исходного add (right-based),
-     // чтобы «в корзине» корректно превращался в галочку
+     // крест «+» — строго по центру, размер пропорционален плашке
      &::before,
      &::after {
        content: "";
        position: absolute;
        top: calc(50% - 1px);
-       right: 9px;
-       width: 15px;
+       left: calc(50% - (var(--notch-size, 48px) * 0.163));
+       width: calc(var(--notch-size, 48px) * 0.326);
        height: 2px;
        border-radius: 2px;
        background-color: var(--green-color);
@@ -502,22 +501,29 @@ defineEmits<Emits>();
        transform: rotate(-90deg);
      }
 
-     // в корзине: «+» → галочка
+     // «в корзине»: «+» → галочка (две линии из общей вершины),
+     // позиции пропорциональны размеру плашки
      &.btn_add_is-added {
-       &::before {
-         top: 45%;
-         right: 7px;
-         transform: rotate(-58deg);
+       &::before,
+       &::after {
+         transform-origin: left center;
          background-color: var(--light-color);
        }
 
+       // короткая — из вершины вниз-вправо
        &::after {
-         width: 8px;
-         right: 50%;
-         bottom: 40%;
-         top: auto;
-         transform: rotate(60deg);
-         background-color: var(--light-color);
+         top: 58%;
+         left: 33%;
+         width: calc(var(--notch-size, 48px) * 0.174);
+         transform: rotate(45deg);
+       }
+
+       // длинная — из вершины вверх-вправо
+       &::before {
+         top: 63%;
+         left: 35%;
+         width: calc(var(--notch-size, 48px) * 0.326);
+         transform: rotate(-52deg);
        }
      }
 
@@ -834,29 +840,5 @@ defineEmits<Emits>();
 @keyframes pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4); }
   50% { box-shadow: 0 0 0 toRem(8) rgba(244, 67, 54, 0); }
-}
-
-/* Плашка «в корзину» в карточке товара: размер по контейнеру карточки (card),
-   как это сделано у UImage через productImage. Вне карточки — базовый размер. */
-@container card (max-width: 180px) {
-  .u-button_notch {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
-
-    &::before,
-    &::after {
-      width: 15px;
-      left: calc(50% - 7.5px);
-    }
-  }
-}
-
-@container card (min-width: 180.01px) and (max-width: 210px) {
-  .u-button_notch {
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-  }
 }
 </style>
