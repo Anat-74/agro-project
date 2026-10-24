@@ -62,7 +62,7 @@ defineEmits<Emits>();
       { 'btn_loading': isLoading, btn_disabled: isDisabled },
       { 'btn_selected': !colorMode.unknown && theme === colorMode.value },
       { 'btn_hamburger_is-open': isOpen && variant === 'hamburger' },
-      { 'btn_add_is-added': isInCart && variant === 'add' },
+      { 'btn_add_is-added': isInCart && (variant === 'add' || variant === 'notch') },
       size === 'large' ? 'btn_large' : '',
       icon ? 'btn_icon' : '',
     ]"
@@ -454,13 +454,17 @@ defineEmits<Emits>();
    // Плашка в вырезе карточки (inverted radius): «выпуклая» кнопка «в корзину»
    &_notch {
      position: relative;
-     width: 48px;
-     height: 48px;
+     // размер задаёт карточка через --notch-size (вырез + равные отступы)
+     width: var(--notch-size, 48px);
+     height: var(--notch-size, 48px);
      padding: 0;
      border: none;
      border-radius: 14px;
-     background: linear-gradient(160deg, #7cc98a, var(--success-color));
-     color: var(--light-color);
+     // База (товар НЕ в корзине) — как исходный вариант add: светлая,
+     // зелёная рамка, зелёный «+». «В корзине» — от btn_add_is-added (заливка).
+     background-color: var(--light-color);
+     border: toRem(1) solid var(--success-color);
+     color: var(--green-color);
      box-shadow:
        0 6px 14px rgba(39, 76, 91, 0.28),
        inset 0 1px 0 rgba(255, 255, 255, 0.45);
@@ -478,7 +482,16 @@ defineEmits<Emits>();
        width: 18px;
        height: 2px;
        border-radius: 2px;
-       background-color: var(--light-color);
+       background-color: var(--green-color);
+     }
+
+     // в корзине — белый крест на зелёной заливке (перекрываем btn_add_is-added)
+     &.btn_add_is-added {
+
+       &::before,
+       &::after {
+         background-color: var(--light-color);
+       }
      }
 
      &::before {
@@ -492,36 +505,14 @@ defineEmits<Emits>();
        filter: brightness(1.06);
      }
 
-     // ВРЕМЕННО (демо): разные закругления и ширина. Специфичность выше
-     // контейнерных запросов — демо-размеры фиксированные.
-     &.u-button_notch_v1 {
-       width: 44px;
-       height: 44px;
-       border-radius: 12px;
-     }
-
+     // ВРЕМЕННО (демо форм): v2 — закруглённый квадрат, v3 — круг.
+     // Размер общий (из выреза), меняется только форма — отступы равные.
      &.u-button_notch_v2 {
-       width: 48px;
-       height: 48px;
        border-radius: 14px;
      }
 
      &.u-button_notch_v3 {
-       width: 48px;
-       height: 48px;
        border-radius: 50%;
-     }
-
-     &.u-button_notch_v4 {
-       width: 56px;
-       height: 44px;
-       border-radius: 14px;
-     }
-
-     &.u-button_notch_v5 {
-       width: 44px;
-       height: 56px;
-       border-radius: 14px;
      }
    }
 

@@ -137,7 +137,11 @@ v-if="featuredProd?.[0]?.products?.length"
    }
 
    &__item {
-      // max-width: toRem(220);
+      // Карточка на главной — на 15px выше каталога (335/265 против 320/250)
+      &.product-card {
+         @include containerAdaptive("height", 335, 265, 1000, 360);
+      }
+
       transition: all .5s;
       // @include adaptiveValue("height", 350, 80);
 

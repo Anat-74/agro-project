@@ -461,12 +461,17 @@ const characteristics = computed(() => {
     }
   }
 
-  // «В корзину» — плашка в нижнем вырезе (снаружи маски)
+  // «В корзину» — плашка в нижнем вырезе (снаружи маски).
+  // Размер и позиция ВЫВОДЯТСЯ из выреза: вырез 66px (s=30 + 2r=36),
+  // зазор с каждой стороны = (66 - размер) / 2 → отступы одинаковые.
   &__add {
+    --notch-size: 46px;
     position: absolute;
     z-index: 150;
-    right: 9px;
-    bottom: 9px;
+    width: var(--notch-size);
+    height: var(--notch-size);
+    right: calc((66px - var(--notch-size)) / 2);
+    bottom: calc((66px - var(--notch-size)) / 2);
   }
 
   // Кнопка-«плашка» — снаружи маски (в вырезе карточки), слой выше поверхности
