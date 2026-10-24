@@ -84,6 +84,9 @@ v-if="featuredProd?.[0]?.products?.length"
           column-gap: toEm(16);
           padding-inline: toRem(5);
           overflow-x: auto;
+          // overflow-y: visible в скролл-контейнере вычисляется как auto →
+          // появлялся вертикальный скролл. Режем по вертикали.
+          overflow-y: clip;
          scrollbar-width: thin;
          scrollbar-color: var(--light-color) var(--light-color);
       }

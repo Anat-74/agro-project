@@ -492,32 +492,33 @@ defineEmits<Emits>();
        filter: brightness(1.06);
      }
 
-     // ВРЕМЕННО (демо): разные закругления и ширина
-     &_v1 {
+     // ВРЕМЕННО (демо): разные закругления и ширина. Специфичность выше
+     // контейнерных запросов — демо-размеры фиксированные.
+     &.u-button_notch_v1 {
        width: 44px;
        height: 44px;
        border-radius: 12px;
      }
 
-     &_v2 {
+     &.u-button_notch_v2 {
        width: 48px;
        height: 48px;
        border-radius: 14px;
      }
 
-     &_v3 {
+     &.u-button_notch_v3 {
        width: 48px;
        height: 48px;
        border-radius: 50%;
      }
 
-     &_v4 {
+     &.u-button_notch_v4 {
        width: 56px;
        height: 44px;
        border-radius: 14px;
      }
 
-     &_v5 {
+     &.u-button_notch_v5 {
        width: 44px;
        height: 56px;
        border-radius: 14px;
@@ -819,5 +820,29 @@ defineEmits<Emits>();
 @keyframes pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4); }
   50% { box-shadow: 0 0 0 toRem(8) rgba(244, 67, 54, 0); }
+}
+
+/* Плашка «в корзину» в карточке товара: размер по контейнеру карточки (card),
+   как это сделано у UImage через productImage. Вне карточки — базовый размер. */
+@container card (max-width: 180px) {
+  .u-button_notch {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+
+    &::before,
+    &::after {
+      width: 15px;
+      left: calc(50% - 7.5px);
+    }
+  }
+}
+
+@container card (min-width: 180.01px) and (max-width: 210px) {
+  .u-button_notch {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
 }
 </style>
