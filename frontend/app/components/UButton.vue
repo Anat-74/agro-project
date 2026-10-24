@@ -401,6 +401,18 @@ defineEmits<Emits>();
    svg {
       font-size: toRem(28);
    }
+
+   // В карточке товара размер ведёт себя по контейнеру карточки (как UImage):
+   // узкая карточка (мобильная сетка, ~160–210px) → компактная кнопка.
+   @container card (max-width: 210px) {
+      font-size: toEm(20);
+      padding-block: toEm(2);
+      padding-inline: toEm(3);
+
+      svg {
+         font-size: toRem(22);
+      }
+   }
   }
 
   &_share {

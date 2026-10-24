@@ -613,13 +613,19 @@ const characteristics = computed(() => {
   }
 
   .product-card__top-items {
-    padding-inline: toEm(8);
-    padding-block-end: toEm(8);
+    padding-inline: toEm(6);
+    padding-block-end: toEm(6);
   }
 
   .product-card__title {
-    font-size: toEm(14);
-    padding-block-end: toEm(8);
+    font-size: toEm(13);
+    padding-inline: toEm(2);
+    padding-block-end: toEm(6);
+  }
+
+  .product-card__bottom-items {
+    padding-inline: toEm(8);
+    padding-block: toEm(6);
   }
 }
 </style>
