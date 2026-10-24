@@ -15,10 +15,16 @@ interface Props {
   // Компактный режим (фильтр закрыт на mobile): без переворота,
   // вместо кнопки переворота — кнопка модального окна товара
   compact?: boolean;
-  // ВРЕМЕННО (демо стилей кнопки): 1..5 — вариант плашки в вырезе
+  // ВРЕМЕННО (демо стилей кнопки): 1..5 — вариант плашки «3D»
   detailsVariant?: number;
+  // ВРЕМЕННО (демо): 1..5 — форма/ширина плашки «в корзину»
+  addVariant?: number;
 }
-const props = withDefaults(defineProps<Props>(), { compact: false, detailsVariant: 0 });
+const props = withDefaults(defineProps<Props>(), {
+  compact: false,
+  detailsVariant: 0,
+  addVariant: 0,
+});
 const { product } = props;
 
 // Иконки демо-вариантов кнопки в вырезе
@@ -93,7 +99,12 @@ const characteristics = computed(() => {
         { 'product-card__front_front': rotateActive },
       ]"
     >
-      <div class="product-card__top-items">
+      <!-- Два маскированных слоя: front режет верх-справа (кнопка «3D»),
+           surface перевёрнут и тем же кодом режет низ-справа (кнопка «в корзину»),
+           inner возвращает контент в нормальное положение и несёт фон/рамку. -->
+      <div class="product-card__surface">
+        <div class="product-card__surface-inner">
+          <div class="product-card__top-items">
         <Icon
           v-if="product.isDiscount"
           class="product-card__discount"
@@ -144,16 +155,8 @@ const characteristics = computed(() => {
         >
           {{ formatPrice(product.price) }}
         </span>
-        <UButton
-          variant="add"
-          :is-in-cart="isInCart(product.documentId)"
-          :aria-label="
-            isInCart(product.documentId)
-              ? buttonTranslations[currentLocale].ariaLabelAdded
-              : buttonTranslations[currentLocale].label
-          "
-          @click="handleAddToCart(product)"
-        />
+      </div>
+        </div>
       </div>
     </div>
     <div
@@ -163,7 +166,9 @@ const characteristics = computed(() => {
         { 'product-card__back_back': rotateActive },
       ]"
     >
-      <div class="product-card__top-items">
+      <div class="product-card__surface">
+        <div class="product-card__surface-inner">
+          <div class="product-card__top-items">
         <Icon
           v-if="product.isDiscount"
           class="product-card__discount"
@@ -200,16 +205,8 @@ const characteristics = computed(() => {
         >
           {{ formatPrice(product.price) }}
         </span>
-        <UButton
-          variant="add"
-          :is-in-cart="isInCart(product.documentId)"
-          :aria-label="
-            isInCart(product.documentId)
-              ? buttonTranslations[currentLocale].ariaLabelAdded
-              : buttonTranslations[currentLocale].label
-          "
-          @click="handleAddToCart(product)"
-        />
+      </div>
+        </div>
       </div>
     </div>
 
@@ -231,6 +228,22 @@ const characteristics = computed(() => {
     <div v-else class="product-card__modal">
       <ShowModalProduct :product="product" />
     </div>
+
+    <!-- «В корзину» — плашка в нижнем вырезе: снаружи маски, слой выше поверхности -->
+    <UButton
+      :class="[
+        'product-card__add',
+        addVariant ? `u-button_notch_v${addVariant}` : '',
+      ]"
+      variant="notch"
+      :is-in-cart="isInCart(product.documentId)"
+      :aria-label="
+        isInCart(product.documentId)
+          ? buttonTranslations[currentLocale].ariaLabelAdded
+          : buttonTranslations[currentLocale].label
+      "
+      @click="handleAddToCart(product)"
+    />
   </li>
 </template>
 
@@ -283,6 +296,26 @@ const characteristics = computed(() => {
   &__back {
     position: absolute;
     inset: 0;
+    backface-visibility: hidden;
+    transition: transform 0.6s;
+    // Вырез под кнопку «3D»/модалки — правый верхний угол
+    @include invertedRadius(16px, 24px);
+  }
+
+  // Слой-«поверхность»: перевёрнут, поэтому тот же код режет низ-справа
+  // (вырез под кнопку «в корзину»). Фон/рамка/тень — на inner.
+  &__surface {
+    position: absolute;
+    inset: 0;
+    transform: scaleY(-1);
+    // Вырез под кнопку «в корзину»: чуть крупнее верхнего
+    @include invertedRadius(18px, 30px);
+  }
+
+  // Контент возвращаем в нормаль; здесь же фон, рамка, скругление и тень
+  &__surface-inner {
+    position: absolute;
+    inset: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -291,11 +324,8 @@ const characteristics = computed(() => {
     border-radius: toEm(6);
     background-color: var(--light-color);
     color: var(--gray-color);
-    backface-visibility: hidden;
-    transition: transform 0.6s;
     box-shadow: 0px toEm(6, 15) toEm(18, 15) toRem(5) hsla(0, 0%, 0%, 0.07);
-    // Вырез под кнопку «3D»/модалки (правый верхний угол)
-    @include invertedRadius(16px, 24px);
+    transform: scaleY(-1);
   }
 
   &__front {
@@ -429,6 +459,14 @@ const characteristics = computed(() => {
         }
       }
     }
+  }
+
+  // «В корзину» — плашка в нижнем вырезе (снаружи маски)
+  &__add {
+    position: absolute;
+    z-index: 150;
+    right: 9px;
+    bottom: 9px;
   }
 
   // Кнопка-«плашка» — снаружи маски (в вырезе карточки), слой выше поверхности

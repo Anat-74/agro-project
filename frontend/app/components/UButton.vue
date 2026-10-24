@@ -16,6 +16,7 @@ interface Props {
     | "switch-locale-cart"
     | "add-to-cart"
     | "add"
+    | "notch"
     | "is-added"
     | "remove-cart-item"
     | "remove-quantity-prod"
@@ -449,6 +450,79 @@ defineEmits<Emits>();
       }
     }
   }
+
+   // Плашка в вырезе карточки (inverted radius): «выпуклая» кнопка «в корзину»
+   &_notch {
+     position: relative;
+     width: 48px;
+     height: 48px;
+     padding: 0;
+     border: none;
+     border-radius: 14px;
+     background: linear-gradient(160deg, #7cc98a, var(--success-color));
+     color: var(--light-color);
+     box-shadow:
+       0 6px 14px rgba(39, 76, 91, 0.28),
+       inset 0 1px 0 rgba(255, 255, 255, 0.45);
+     transition:
+       box-shadow var(--transition-duration),
+       filter var(--transition-duration);
+
+     // крест «+»
+     &::before,
+     &::after {
+       content: "";
+       position: absolute;
+       top: calc(50% - 1px);
+       left: calc(50% - 9px);
+       width: 18px;
+       height: 2px;
+       border-radius: 2px;
+       background-color: var(--light-color);
+     }
+
+     &::before {
+       transform: rotate(90deg);
+     }
+
+     @include hover {
+       box-shadow:
+         0 8px 18px rgba(39, 76, 91, 0.4),
+         inset 0 1px 0 rgba(255, 255, 255, 0.55);
+       filter: brightness(1.06);
+     }
+
+     // ВРЕМЕННО (демо): разные закругления и ширина
+     &_v1 {
+       width: 44px;
+       height: 44px;
+       border-radius: 12px;
+     }
+
+     &_v2 {
+       width: 48px;
+       height: 48px;
+       border-radius: 14px;
+     }
+
+     &_v3 {
+       width: 48px;
+       height: 48px;
+       border-radius: 50%;
+     }
+
+     &_v4 {
+       width: 56px;
+       height: 44px;
+       border-radius: 14px;
+     }
+
+     &_v5 {
+       width: 44px;
+       height: 56px;
+       border-radius: 14px;
+     }
+   }
 
    &_add {
    position: relative;
