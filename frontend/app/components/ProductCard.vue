@@ -293,9 +293,9 @@ const characteristics = computed(() => {
     position: absolute;
     inset: 0;
     transform: scaleY(-1);
-    // Вырез под кнопку «в корзину»: размеры — из переменных карточки,
-    // чтобы вырез масштабировался контейнерным запросом (см. @container внизу)
-    @include invertedRadius(var(--notch-r, 18px), var(--notch-s, 30px));
+    // Зазор = радиус вогнутой дуги (r = gap) → расстояние до выреза
+    // одинаковое со всех сторон, включая внутренний угол
+    @include invertedRadius(var(--notch-r, 10px), var(--notch-s, 46px));
   }
 
   // Контент возвращаем в нормаль; здесь же фон, рамка, скругление и тень
@@ -608,7 +608,7 @@ const characteristics = computed(() => {
 // Компактные карточки (узкий контейнер, напр. сетка товаров ~180px):
 // уплотняем внутреннюю вёрстку по ширине самой карточки, а не вьюпорта.
 // Ширину изображения НЕ задаём — ей управляет UImage (type="product" + @container product).
-@container card (max-width: 210px) {
+@container card (max-width: 230px) {
   .product-card__front,
   .product-card__back {
     padding-block: toEm(4);
@@ -625,16 +625,23 @@ const characteristics = computed(() => {
     padding-block-end: toEm(6);
   }
 
+  // «ПОДРОБНЕЕ» (скрытая кнопка) — компактная вместе с карточкой
+  .product-card__link {
+    font-size: toEm(12);
+    padding-inline: toEm(16);
+    padding-block: toEm(6);
+  }
+
   .product-card__bottom-items {
     padding-inline: toEm(8);
     padding-block: toEm(6);
   }
 
-  // Вырез и плашка уменьшаются вместе с карточкой (пропорции сохраняются):
-  // вырез = плашка + 2*зазор → 36 + 14 = 50 = s(22) + 2r(28)
+  // Вырез и плашка уменьшаются вместе с карточкой; r = gap,
+  // вырез = плашка + 2*зазор → 36 + 14 = 50 = s(36) + 2r(14)
   .product-card__surface {
-    --notch-r: 14px;
-    --notch-s: 22px;
+    --notch-r: 7px;
+    --notch-s: 36px;
   }
 
   .product-card__add {
@@ -645,8 +652,8 @@ const characteristics = computed(() => {
 
 @container card (max-width: 170px) {
   .product-card__surface {
-    --notch-r: 12px;
-    --notch-s: 18px;
+    --notch-r: 6px;
+    --notch-s: 30px;
   }
 
   .product-card__add {
