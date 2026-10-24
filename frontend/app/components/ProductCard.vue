@@ -15,29 +15,14 @@ interface Props {
   // Компактный режим (фильтр закрыт на mobile): без переворота,
   // вместо кнопки переворота — кнопка модального окна товара
   compact?: boolean;
-  // ВРЕМЕННО (демо стилей кнопки): 1..5 — вариант плашки «3D»
-  detailsVariant?: number;
   // ВРЕМЕННО (демо): 1..5 — форма/ширина плашки «в корзину»
   addVariant?: number;
 }
 const props = withDefaults(defineProps<Props>(), {
   compact: false,
-  detailsVariant: 0,
   addVariant: 0,
 });
 const { product } = props;
-
-// Иконки демо-вариантов кнопки в вырезе
-const detailsIcon = computed(() => {
-  const icons: Record<number, string> = {
-    1: "mdi:eye-outline",
-    2: "mdi:eye",
-    3: "mdi:magnify-plus-outline",
-    4: "mdi:cube-outline",
-    5: "mdi:arrow-top-right",
-  }
-  return icons[props.detailsVariant] ?? "mdi:rotate-3d"
-})
 
 const rotateActive = ref(false);
 const toggleActive = () => {
@@ -111,6 +96,20 @@ const characteristics = computed(() => {
           name="mdi:discount"
         />
         <ProductStatus class="product-card__in-stock" :product="product" />
+        <UButton
+          v-if="!compact"
+          class="product-card__details"
+          variant="product-details"
+          icon="mdi:rotate-3d"
+          :aria-label="buttonTranslations[currentLocale].ariaLabelProductDetails"
+          @click="toggleActive"
+        />
+        <!-- Компактный режим: вместо переворота — модалка товара.
+             Обёртка нужна: у ShowModalProduct несколько корней (фрагмент),
+             класс снаружи на него не пробрасывается. -->
+        <div v-else class="product-card__modal">
+          <ShowModalProduct :product="product" />
+        </div>
       </div>
       <div class="product-card__content" @click="toggleVisibleLink">
         <UImage
@@ -175,6 +174,13 @@ const characteristics = computed(() => {
           name="mdi:discount"
         />
         <ProductStatus :product="product" class="product-card__in-stock" />
+        <UButton
+          class="product-card__details"
+          variant="product-details"
+          icon="mdi:rotate-3d"
+          :aria-label="buttonTranslations[currentLocale].ariaLabelProductDetails"
+          @click="toggleActive"
+        />
       </div>
       <div class="product-card__content">
         <p class="product-card__description">
@@ -208,25 +214,6 @@ const characteristics = computed(() => {
       </div>
         </div>
       </div>
-    </div>
-
-    <!-- Кнопка-«плашка» вынесена из-под маски: маска режет только поверхность,
-         а кнопка лежит в вырезе слоем выше (иначе её срезает вместе с карточкой).
-         В компактном режиме вместо переворота — модалка товара (обёртка нужна:
-         у ShowModalProduct несколько корней, класс наружу не пробрасывается). -->
-    <UButton
-      v-if="!compact"
-      :class="[
-        'product-card__details',
-        detailsVariant ? `product-card__details_v${detailsVariant}` : '',
-      ]"
-      variant="product-details"
-      :icon="detailsIcon"
-      :aria-label="buttonTranslations[currentLocale].ariaLabelProductDetails"
-      @click="toggleActive"
-    />
-    <div v-else class="product-card__modal">
-      <ShowModalProduct :product="product" />
     </div>
 
     <!-- «В корзину» — плашка в нижнем вырезе: снаружи маски, слой выше поверхности -->
@@ -298,8 +285,6 @@ const characteristics = computed(() => {
     inset: 0;
     backface-visibility: hidden;
     transition: transform 0.6s;
-    // Вырез под кнопку «3D»/модалки — правый верхний угол
-    @include invertedRadius(16px, 24px);
   }
 
   // Слой-«поверхность»: перевёрнут, поэтому тот же код режет низ-справа
@@ -330,6 +315,13 @@ const characteristics = computed(() => {
 
   &__front {
     z-index: 100;
+
+    .product-card__details {
+      position: absolute;
+      z-index: 150;
+      right: toEm(14);
+      top: toEm(22);
+    }
 
     .product-card__content {
       @include hover {
@@ -472,89 +464,6 @@ const characteristics = computed(() => {
     height: var(--notch-size);
     right: calc((66px - var(--notch-size)) / 2);
     bottom: calc((66px - var(--notch-size)) / 2);
-  }
-
-  // Кнопка-«плашка» — снаружи маски (в вырезе карточки), слой выше поверхности
-  &__details {
-    position: absolute;
-    z-index: 150;
-    right: 6px;
-    top: 6px;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    justify-content: center;
-    border-radius: 50%;
-    font-size: toEm(22);
-
-    svg {
-      font-size: toEm(24);
-    }
-
-    // ВРЕМЕННО (демо): 5 вариантов стиля плашки
-    // 1 — сплошной зелёный + белая иконка
-    &_v1 {
-      background-color: var(--success-color);
-      color: var(--light-color);
-      box-shadow: 0 6px 14px rgba(39, 76, 91, 0.28);
-
-      @include hover {
-        background-color: var(--green-color);
-      }
-    }
-
-    // 2 — светлая с зелёным кольцом
-    &_v2 {
-      background-color: var(--light-color);
-      color: var(--success-color);
-      border: 2px solid var(--success-color);
-      box-shadow: 0 4px 12px rgba(39, 76, 91, 0.18);
-
-      @include hover {
-        background-color: var(--success-color);
-        color: var(--light-color);
-      }
-    }
-
-    // 3 — градиент + свечение
-    &_v3 {
-      background: linear-gradient(135deg, var(--success-color), #79c98a);
-      color: #fff;
-      box-shadow:
-        0 8px 20px rgba(76, 175, 80, 0.45),
-        inset 0 1px 0 rgba(255, 255, 255, 0.35);
-
-      @include hover {
-        box-shadow:
-          0 10px 24px rgba(76, 175, 80, 0.6),
-          inset 0 1px 0 rgba(255, 255, 255, 0.45);
-      }
-    }
-
-    // 4 — «стекло» (glassmorphism)
-    &_v4 {
-      background-color: rgba(255, 255, 255, 0.22);
-      border: 1px solid rgba(255, 255, 255, 0.55);
-      backdrop-filter: blur(8px);
-      color: #fff;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-
-      @include hover {
-        background-color: rgba(255, 255, 255, 0.4);
-      }
-    }
-
-    // 5 — тёплый акцент (оранжевый)
-    &_v5 {
-      background-color: var(--warning-color);
-      color: var(--dark-color);
-      box-shadow: 0 6px 14px rgba(239, 166, 64, 0.45);
-
-      @include hover {
-        background-color: var(--danger-hover);
-        color: var(--light-color);
-      }
-    }
   }
 
   &__top-items {

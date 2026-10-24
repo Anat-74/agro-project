@@ -391,7 +391,6 @@ useSeoMeta({
           :product="prod"
           :index="index"
           :compact="compactCards"
-          :details-variant="index < 5 ? index + 1 : 0"
           :add-variant="index < 5 ? index + 1 : 0"
         />
         <!-- Декоративный разделитель под списком (mobile при открытом фильтре;
