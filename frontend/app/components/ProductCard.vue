@@ -296,7 +296,7 @@ const characteristics = computed(() => {
     transform: scaleY(-1);
     // Зазор = радиус вогнутой дуги (r = gap) → расстояние до выреза
     // одинаковое со всех сторон, включая внутренний угол
-    @include invertedRadius(var(--notch-r, 5px), var(--notch-s, 46px));
+    @include invertedRadius(var(--notch-r, 5px), var(--notch-s, 56px));
   }
 
   // Контент возвращаем в нормаль; здесь же фон, рамка, скругление и тень
@@ -642,7 +642,7 @@ const characteristics = computed(() => {
   // вырез = плашка + 2*зазор → 44 + 10 = 54 = s(44) + 2r(10)
   .product-card__surface {
     --notch-r: 5px;
-    --notch-s: 44px;
+    --notch-s: 54px;
   }
 
   .product-card__add {
@@ -654,7 +654,7 @@ const characteristics = computed(() => {
 @container card (max-width: 170px) {
   .product-card__surface {
     --notch-r: 5px;
-    --notch-s: 34px;
+    --notch-s: 44px;
   }
 
   .product-card__add {
@@ -672,27 +672,27 @@ const characteristics = computed(() => {
    v5 36/7 (50), круг — мелкая */
 
 .product-card_geo1 {
-  .product-card__surface { --notch-r: 5px; --notch-s: 44px; }
+  .product-card__surface { --notch-r: 5px; --notch-s: 54px; }
   .product-card__add { --notch-size: 44px; --notch-gap: 5px; }
 }
 
 .product-card_geo2 {
-  .product-card__surface { --notch-r: 6px; --notch-s: 40px; }
+  .product-card__surface { --notch-r: 6px; --notch-s: 52px; }
   .product-card__add { --notch-size: 40px; --notch-gap: 6px; }
 }
 
 .product-card_geo3 {
-  .product-card__surface { --notch-r: 4px; --notch-s: 48px; }
+  .product-card__surface { --notch-r: 4px; --notch-s: 56px; }
   .product-card__add { --notch-size: 48px; --notch-gap: 4px; }
 }
 
 .product-card_geo4 {
-  .product-card__surface { --notch-r: 7px; --notch-s: 42px; }
+  .product-card__surface { --notch-r: 7px; --notch-s: 56px; }
   .product-card__add { --notch-size: 42px; --notch-gap: 7px; }
 }
 
 .product-card_geo5 {
-  .product-card__surface { --notch-r: 7px; --notch-s: 36px; }
+  .product-card__surface { --notch-r: 7px; --notch-s: 50px; }
   .product-card__add { --notch-size: 36px; --notch-gap: 7px; }
 }
 </style>
