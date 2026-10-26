@@ -471,7 +471,8 @@ defineEmits<Emits>();
      height: var(--notch-size, 48px);
      padding: 0;
      border: none;
-     border-radius: 14px;
+     // форма/скругление как у исходной кнопки add (6px), размер ~46px
+     border-radius: toEm(6);
      // База (товар НЕ в корзине) — как исходный вариант add: светлая,
      // зелёная рамка, зелёный «+». «В корзине» — от btn_add_is-added (заливка).
      background-color: var(--light-color);
