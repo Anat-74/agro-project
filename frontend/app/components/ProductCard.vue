@@ -293,7 +293,10 @@ const characteristics = computed(() => {
   &__surface {
     position: absolute;
     inset: 0;
-    transform: scaleY(-1);
+    // translateZ(0): промоут в отдельный композитный слой, чтобы при 3D-перевороте
+    // маска не перерастрировалась (убирает задержку появления выреза при возврате)
+    transform: translateZ(0) scaleY(-1);
+    will-change: transform;
     // Пропорции как у рабочей тестовой карточки (r/s ≈ 0.67,
     // плашка ≈ 1.9·s, зазор ≈ 0.35·r), отмасштабированные под карточку
     border-radius: var(--notch-r, 18px);
