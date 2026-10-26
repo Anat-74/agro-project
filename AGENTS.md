@@ -1,5 +1,16 @@
 # Agents rules
 
+## Старт новой сессии — обязательное чтение (до любых действий)
+
+1. `AGENTS.md` (этот файл) — деплой/пуш, режим работы.
+2. `frontend/docs/style/patterns.md` §7–§9 — стиль, маски, проверка визуала, уроки.
+3. `.kilo/plans/1778783966963-style-guide.md` — стайлгайд проекта.
+4. `.kilo/plans/frontend-backend-rules.md` — правила фронта/бэка, публикация в Strapi (§8).
+5. `.kilo/plans/cards-notch.md` — текущая задача (состояние, грабли, что осталось).
+6. Компоненты текущей задачи: `frontend/app/components/ProductCard.vue`, `frontend/app/components/UButton.vue` — перед правкой выписать их состояния и псевдоэлементы.
+
+Не начинать правки, не прочитав пункты 1–6.
+
 ## CRITICAL: git push / deploy запрещены без явной команды
 
 - **"закомить"** — только `git commit`, без push.
