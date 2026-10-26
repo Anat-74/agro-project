@@ -294,8 +294,9 @@ const characteristics = computed(() => {
     position: absolute;
     inset: 0;
     transform: scaleY(-1);
-    // Зазор = радиус вогнутой дуги (r = gap) → расстояние до выреза
-    // одинаковое со всех сторон, включая внутренний угол
+    // ВАЖНО: маска генератора рассчитана на элемент с border-radius = r
+    // (как в рабочий демо-карточке). Без этого вырез получается угловатым.
+    border-radius: var(--notch-r, 10px);
     @include invertedRadius(var(--notch-r, 10px), var(--notch-s, 48px));
   }
 
