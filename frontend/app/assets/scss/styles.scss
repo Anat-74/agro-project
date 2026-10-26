@@ -34,7 +34,7 @@
   // скрывается под правым краем панели). Custom property — только готовые
   // значения (toEm-функция в этом контексте не выполняется).
   --catalog-gap: -6px;
-  --container-edge: max(0px, calc((100vw - 1450px) * 0.5));
+  --container-edge: max(0px, calc((100dvw - 1450px) * 0.5));
   --catalog-shift: calc(
     var(--container-edge) + 15px + var(--catalog-width) + var(--catalog-gap)
   );

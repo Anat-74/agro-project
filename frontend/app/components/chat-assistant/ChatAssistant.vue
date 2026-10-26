@@ -517,7 +517,7 @@ onMounted(() => {
     right: toRem(24);
     z-index: 10001;
     width: toRem(400);
-    max-width: calc(100vw - toRem(48));
+    max-width: calc(100dvw - toRem(48));
     height: toRem(600);
     max-height: calc(100vh - toRem(48));
     background: var(--light-color);
@@ -956,7 +956,7 @@ onMounted(() => {
 
 @media (max-width: $mobile) {
   .chat-assistant__modal {
-    width: calc(100vw - toRem(32));
+    width: calc(100dvw - toRem(32));
     height: calc(100vh - toRem(100));
     bottom: toRem(16);
     right: toRem(16);
