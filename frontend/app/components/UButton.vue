@@ -501,29 +501,23 @@ defineEmits<Emits>();
        transform: rotate(-90deg);
      }
 
-     // «в корзине»: «+» → галочка (две линии из общей вершины),
-     // позиции пропорциональны размеру плашки
+     // «в корзине»: «+» → галочка. Робастный способ: уголок из двух рамок,
+     // повёрнутый на -45° — геометрия не зависит от позиций отдельных линий.
      &.btn_add_is-added {
-       &::before,
-       &::after {
-         transform-origin: left center;
-         background-color: var(--light-color);
-       }
-
-       // короткая — из вершины вниз-вправо
-       &::after {
-         top: 58%;
-         left: 33%;
-         width: calc(var(--notch-size, 48px) * 0.174);
-         transform: rotate(45deg);
-       }
-
-       // длинная — из вершины вверх-вправо
        &::before {
-         top: 63%;
-         left: 35%;
-         width: calc(var(--notch-size, 48px) * 0.326);
-         transform: rotate(-52deg);
+         top: 28%;
+         left: 36%;
+         width: calc(var(--notch-size, 48px) * 0.26);
+         height: calc(var(--notch-size, 48px) * 0.48);
+         border: 2px solid var(--light-color);
+         border-top: none;
+         border-right: none;
+         background: transparent;
+         transform: rotate(-45deg);
+       }
+
+       &::after {
+         display: none;
        }
      }
 
