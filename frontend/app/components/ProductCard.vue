@@ -294,10 +294,10 @@ const characteristics = computed(() => {
     position: absolute;
     inset: 0;
     transform: scaleY(-1);
-    // ВАЖНО: маска генератора рассчитана на элемент с border-radius = r
-    // (как в рабочий демо-карточке). Без этого вырез получается угловатым.
-    border-radius: var(--notch-r, 10px);
-    @include invertedRadius(var(--notch-r, 10px), var(--notch-s, 48px));
+    // Пропорции как у рабочей тестовой карточки (r/s ≈ 0.67,
+    // плашка ≈ 1.9·s, зазор ≈ 0.35·r), отмасштабированные под карточку
+    border-radius: var(--notch-r, 18px);
+    @include invertedRadius(var(--notch-r, 18px), var(--notch-s, 26px));
   }
 
   // Контент возвращаем в нормаль; здесь же фон, рамка, скругление и тень
@@ -460,8 +460,8 @@ const characteristics = computed(() => {
   // Все размеры — переменные: база + оверрайды контейнерными запросами.
   // Зазор с каждой стороны = --notch-gap, вырез = плашка + 2*зазор.
   &__add {
-    --notch-size: 48px;
-    --notch-gap: 10px;
+    --notch-size: 49px;
+    --notch-gap: 6px;
     position: absolute;
     z-index: 150;
     width: var(--notch-size);
@@ -639,44 +639,28 @@ const characteristics = computed(() => {
     padding-block: toEm(6);
   }
 
-  // Старый вырез (как было): r = зазор, s = размер плашки
+  // Пропорции тестовой карточки, масштаб под компактную карточку
   .product-card__surface {
-    --notch-r: 8px;
-    --notch-s: 44px;
+    --notch-r: 17px;
+    --notch-s: 26px;
   }
 
   .product-card__add {
-    --notch-size: 44px;
-    --notch-gap: 8px;
+    --notch-size: 48px;
+    --notch-gap: 6px;
   }
 }
 
 @container card (max-width: 170px) {
   .product-card__surface {
-    --notch-r: 7px;
-    --notch-s: 34px;
+    --notch-r: 14px;
+    --notch-s: 21px;
   }
 
   .product-card__add {
-    --notch-size: 34px;
-    --notch-gap: 7px;
+    --notch-size: 39px;
+    --notch-gap: 5px;
   }
 }
 
-/* ===== ВРЕМЕННО (демо): 5 вариантов геометрии плашки/выреза =====
-   Каждый: плашка / зазор (вырез = плашка + 2·зазор) / форма (в UButton).
-   v1 44/5 (вырез 54), квадрат 14 — текущий
-   v2 40/6 (52), круг
-   v3 48/4 (56), квадрат 12 — крупная, плотная
-   v4 42/7 (56), квадрат 18 — мягкие скругления
-   v5 36/7 (50), круг — мелкая */
-
-.product-card_geo1,
-.product-card_geo2,
-.product-card_geo3,
-.product-card_geo4,
-.product-card_geo5 {
-  .product-card__surface { --notch-r: 8px; --notch-s: 44px; }
-  .product-card__add { --notch-size: 44px; --notch-gap: 8px; }
-}
 </style>
