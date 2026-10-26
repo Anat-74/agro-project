@@ -495,6 +495,8 @@ defineEmits<Emits>();
        height: 2px;
        border-radius: 2px;
        background-color: var(--green-color);
+       // плавное превращение «+» → галочка по клику
+       transition: all 0.25s ease;
      }
 
      &::before {

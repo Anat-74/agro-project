@@ -295,7 +295,7 @@ const characteristics = computed(() => {
     transform: scaleY(-1);
     // Зазор = радиус вогнутой дуги (r = gap) → расстояние до выреза
     // одинаковое со всех сторон, включая внутренний угол
-    @include invertedRadius(var(--notch-r, 10px), var(--notch-s, 48px));
+    @include invertedRadius(var(--notch-r, 5px), var(--notch-s, 46px));
   }
 
   // Контент возвращаем в нормаль; здесь же фон, рамка, скругление и тень
@@ -458,8 +458,8 @@ const characteristics = computed(() => {
   // Все размеры — переменные: база + оверрайды контейнерными запросами.
   // Зазор с каждой стороны = --notch-gap, вырез = плашка + 2*зазор.
   &__add {
-    --notch-size: 48px;
-    --notch-gap: 10px;
+    --notch-size: 46px;
+    --notch-gap: 5px;
     position: absolute;
     z-index: 150;
     width: var(--notch-size);
@@ -637,28 +637,28 @@ const characteristics = computed(() => {
     padding-block: toEm(6);
   }
 
-  // Вырез и плашка уменьшаются вместе с карточкой; r = gap,
-  // вырез = плашка + 2*зазор → 44 + 16 = 60 = s(44) + 2r(16)
+  // Вырез и плашка уменьшаются вместе с карточкой; r = gap (плотный),
+  // вырез = плашка + 2*зазор → 44 + 10 = 54 = s(44) + 2r(10)
   .product-card__surface {
-    --notch-r: 8px;
+    --notch-r: 5px;
     --notch-s: 44px;
   }
 
   .product-card__add {
     --notch-size: 44px;
-    --notch-gap: 8px;
+    --notch-gap: 5px;
   }
 }
 
 @container card (max-width: 170px) {
   .product-card__surface {
-    --notch-r: 7px;
+    --notch-r: 5px;
     --notch-s: 34px;
   }
 
   .product-card__add {
     --notch-size: 34px;
-    --notch-gap: 7px;
+    --notch-gap: 5px;
   }
 }
 </style>
