@@ -76,6 +76,7 @@ const characteristics = computed(() => {
     :class="[
       'product-card',
       { 'product-card_rotate-active': rotateActive, 'product-card_compact': compact },
+      addVariant ? `product-card_geo${addVariant}` : '',
     ]"
   >
     <div
@@ -660,5 +661,38 @@ const characteristics = computed(() => {
     --notch-size: 34px;
     --notch-gap: 5px;
   }
+}
+
+/* ===== ВРЕМЕННО (демо): 5 вариантов геометрии плашки/выреза =====
+   Каждый: плашка / зазор (вырез = плашка + 2·зазор) / форма (в UButton).
+   v1 44/5 (вырез 54), квадрат 14 — текущий
+   v2 40/6 (52), круг
+   v3 48/4 (56), квадрат 12 — крупная, плотная
+   v4 42/7 (56), квадрат 18 — мягкие скругления
+   v5 36/7 (50), круг — мелкая */
+
+.product-card_geo1 {
+  .product-card__surface { --notch-r: 5px; --notch-s: 44px; }
+  .product-card__add { --notch-size: 44px; --notch-gap: 5px; }
+}
+
+.product-card_geo2 {
+  .product-card__surface { --notch-r: 6px; --notch-s: 40px; }
+  .product-card__add { --notch-size: 40px; --notch-gap: 6px; }
+}
+
+.product-card_geo3 {
+  .product-card__surface { --notch-r: 4px; --notch-s: 48px; }
+  .product-card__add { --notch-size: 48px; --notch-gap: 4px; }
+}
+
+.product-card_geo4 {
+  .product-card__surface { --notch-r: 7px; --notch-s: 42px; }
+  .product-card__add { --notch-size: 42px; --notch-gap: 7px; }
+}
+
+.product-card_geo5 {
+  .product-card__surface { --notch-r: 7px; --notch-s: 36px; }
+  .product-card__add { --notch-size: 36px; --notch-gap: 7px; }
 }
 </style>
