@@ -278,6 +278,13 @@ const characteristics = computed(() => {
       right: toEm(14);
       top: toEm(22);
     }
+
+    // Вырез под «в корзину» — ТОЛЬКО здесь (нет 3D-переворота → нет задержки).
+    // На главной и при открытом фильтре карточка переворачивается — выреза нет.
+    .product-card__surface {
+      border-radius: var(--notch-r, 18px);
+      @include invertedRadius(var(--notch-r, 18px), var(--notch-s, 26px));
+    }
   }
 
   &__front,
@@ -288,16 +295,12 @@ const characteristics = computed(() => {
     transition: transform 0.6s;
   }
 
-  // Слой-«поверхность»: перевёрнут, поэтому тот же код режет низ-справа
-  // (вырез под кнопку «в корзину»). Фон/рамка/тень — на inner.
+  // Слой-«поверхность»: перевёрнут, поэтому тот же код режет низ-справа.
+  // Сам вырез включается ТОЛЬКО в компактном режиме (фильтр закрыт) — см. &_compact.
   &__surface {
     position: absolute;
     inset: 0;
     transform: scaleY(-1);
-    // Пропорции как у рабочей тестовой карточки (r/s ≈ 0.67,
-    // плашка ≈ 1.9·s, зазор ≈ 0.35·r), отмасштабированные под карточку
-    border-radius: var(--notch-r, 18px);
-    @include invertedRadius(var(--notch-r, 18px), var(--notch-s, 26px));
   }
 
   // Контент возвращаем в нормаль; здесь же фон, рамка, скругление и тень

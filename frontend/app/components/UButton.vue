@@ -512,27 +512,6 @@ defineEmits<Emits>();
          inset 0 1px 0 rgba(255, 255, 255, 0.55);
        filter: brightness(1.06);
      }
-
-     // ВРЕМЕННО (демо): 5 вариантов формы плашки (геометрия — в карточке)
-     &.u-button_notch_v1 {
-       border-radius: 14px;
-     }
-
-     &.u-button_notch_v2 {
-       border-radius: 50%;
-     }
-
-     &.u-button_notch_v3 {
-       border-radius: 12px;
-     }
-
-     &.u-button_notch_v4 {
-       border-radius: 18px;
-     }
-
-     &.u-button_notch_v5 {
-       border-radius: 50%;
-     }
    }
 
    &_add {
