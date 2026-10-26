@@ -484,14 +484,13 @@ defineEmits<Emits>();
        box-shadow var(--transition-duration),
        filter var(--transition-duration);
 
-     // крест «+» — геометрия исходного add (right-based), чтобы «в корзине»
-     // штатно превращался в галочку общим .btn_add_is-added
+     // крест «+» — по центру кнопки (left-based), чтобы стоял ровно
      &::before,
      &::after {
        content: "";
        position: absolute;
        top: calc(50% - 1px);
-       right: 9px;
+       left: calc(50% - 7.5px);
        width: 15px;
        height: 2px;
        border-radius: 2px;
@@ -579,6 +578,7 @@ defineEmits<Emits>();
 
       &::before,
       &::after{
+			left: auto;
 			background-color: var(--light-color);
       }
       &::before {
