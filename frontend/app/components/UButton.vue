@@ -578,22 +578,20 @@ defineEmits<Emits>();
 
       &::before,
       &::after{
-			left: calc(50% - 2px);
-			right: auto;
-			transform-origin: left center;
+			left: auto;
 			background-color: var(--light-color);
       }
-      // длинная — из вершины вверх-вправо
+      // исходная геометрия галочки (как до всех изменений)
       &::before {
-         top: calc(50% + 1px);
-         transform: rotate(-50deg);
+         top: 45%;
+         transform: rotate(-58deg);
+         @include adaptiveValue("right", 7, 5);
 		}
-		// короткая — из вершины вниз-влево
 		&::after {
-         top: calc(50% + 1px);
-         bottom: auto;
          width: toRem(8);
-         transform: rotate(135deg);
+         right: 50%;
+         bottom: 40%;
+         transform: rotate(60deg);
 		}
 
       @include hover {
