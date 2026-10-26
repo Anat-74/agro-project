@@ -296,7 +296,7 @@ const characteristics = computed(() => {
     transform: scaleY(-1);
     // Зазор = радиус вогнутой дуги (r = gap) → расстояние до выреза
     // одинаковое со всех сторон, включая внутренний угол
-    @include invertedRadius(var(--notch-r, 5px), var(--notch-s, 56px));
+    @include invertedRadius(var(--notch-r, 10px), var(--notch-s, 48px));
   }
 
   // Контент возвращаем в нормаль; здесь же фон, рамка, скругление и тень
@@ -459,8 +459,8 @@ const characteristics = computed(() => {
   // Все размеры — переменные: база + оверрайды контейнерными запросами.
   // Зазор с каждой стороны = --notch-gap, вырез = плашка + 2*зазор.
   &__add {
-    --notch-size: 46px;
-    --notch-gap: 5px;
+    --notch-size: 48px;
+    --notch-gap: 10px;
     position: absolute;
     z-index: 150;
     width: var(--notch-size);
@@ -638,28 +638,27 @@ const characteristics = computed(() => {
     padding-block: toEm(6);
   }
 
-  // Вырез и плашка уменьшаются вместе с карточкой; r = gap (плотный),
-  // вырез = плашка + 2*зазор → 44 + 10 = 54 = s(44) + 2r(10)
+  // Старый вырез (как было): r = зазор, s = размер плашки
   .product-card__surface {
-    --notch-r: 5px;
-    --notch-s: 54px;
+    --notch-r: 8px;
+    --notch-s: 44px;
   }
 
   .product-card__add {
     --notch-size: 44px;
-    --notch-gap: 5px;
+    --notch-gap: 8px;
   }
 }
 
 @container card (max-width: 170px) {
   .product-card__surface {
-    --notch-r: 5px;
-    --notch-s: 44px;
+    --notch-r: 7px;
+    --notch-s: 34px;
   }
 
   .product-card__add {
     --notch-size: 34px;
-    --notch-gap: 5px;
+    --notch-gap: 7px;
   }
 }
 
@@ -671,28 +670,12 @@ const characteristics = computed(() => {
    v4 42/7 (56), квадрат 18 — мягкие скругления
    v5 36/7 (50), круг — мелкая */
 
-.product-card_geo1 {
-  .product-card__surface { --notch-r: 5px; --notch-s: 54px; }
-  .product-card__add { --notch-size: 44px; --notch-gap: 5px; }
-}
-
-.product-card_geo2 {
-  .product-card__surface { --notch-r: 6px; --notch-s: 52px; }
-  .product-card__add { --notch-size: 40px; --notch-gap: 6px; }
-}
-
-.product-card_geo3 {
-  .product-card__surface { --notch-r: 4px; --notch-s: 56px; }
-  .product-card__add { --notch-size: 48px; --notch-gap: 4px; }
-}
-
-.product-card_geo4 {
-  .product-card__surface { --notch-r: 7px; --notch-s: 56px; }
-  .product-card__add { --notch-size: 42px; --notch-gap: 7px; }
-}
-
+.product-card_geo1,
+.product-card_geo2,
+.product-card_geo3,
+.product-card_geo4,
 .product-card_geo5 {
-  .product-card__surface { --notch-r: 7px; --notch-s: 50px; }
-  .product-card__add { --notch-size: 36px; --notch-gap: 7px; }
+  .product-card__surface { --notch-r: 8px; --notch-s: 44px; }
+  .product-card__add { --notch-size: 44px; --notch-gap: 8px; }
 }
 </style>

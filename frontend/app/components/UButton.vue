@@ -484,43 +484,27 @@ defineEmits<Emits>();
        box-shadow var(--transition-duration),
        filter var(--transition-duration);
 
-     // крест «+» — строго по центру, размер пропорционален плашке
+     // крест «+» — геометрия исходного add (right-based), чтобы «в корзине»
+     // штатно превращался в галочку общим .btn_add_is-added
      &::before,
      &::after {
        content: "";
        position: absolute;
        top: calc(50% - 1px);
-       left: calc(50% - (var(--notch-size, 48px) * 0.163));
-       width: calc(var(--notch-size, 48px) * 0.326);
+       right: 9px;
+       width: 15px;
        height: 2px;
        border-radius: 2px;
        background-color: var(--green-color);
-       // плавное превращение «+» → галочка по клику
-       transition: all 0.25s ease;
+       transition: all 0.2s ease;
      }
 
      &::before {
        transform: rotate(-90deg);
      }
 
-     // «в корзине»: «+» → галочка. Робастный способ: уголок из двух рамок,
-     // повёрнутый на -45° — геометрия не зависит от позиций отдельных линий.
-     &.btn_add_is-added {
-       &::before {
-         top: 28%;
-         left: 36%;
-         width: calc(var(--notch-size, 48px) * 0.26);
-         height: calc(var(--notch-size, 48px) * 0.48);
-         border: 2px solid var(--light-color);
-         border-top: none;
-         border-right: none;
-         background: transparent;
-         transform: rotate(-45deg);
-       }
-
-       &::after {
-         display: none;
-       }
+     &::after {
+       transform: rotate(180deg);
      }
 
      @include hover {
