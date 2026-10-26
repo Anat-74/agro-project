@@ -578,19 +578,22 @@ defineEmits<Emits>();
 
       &::before,
       &::after{
-			left: auto;
+			left: calc(50% - 2px);
+			right: auto;
+			transform-origin: left center;
 			background-color: var(--light-color);
       }
+      // длинная — из вершины вверх-вправо
       &::before {
-         top: 45%;
-         transform: rotate(-58deg);
-         @include adaptiveValue("right", 7, 5);
+         top: calc(50% + 1px);
+         transform: rotate(-50deg);
 		}
+		// короткая — из вершины вниз-влево
 		&::after {
+         top: calc(50% + 1px);
+         bottom: auto;
          width: toRem(8);
-         right: 50%;
-         bottom: 40%;
-         transform: rotate(60deg);
+         transform: rotate(135deg);
 		}
 
       @include hover {
