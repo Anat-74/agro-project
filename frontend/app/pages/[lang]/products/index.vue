@@ -438,8 +438,21 @@ useSeoMeta({
          Маска 1:1, размер фиксированный, стили проекта не используются.
          Удалить после просмотра. -->
     <div class="ir-demo" aria-hidden="true">
-      <div class="ir-demo__surface" />
-      <span class="ir-demo__plate">CTA</span>
+      <div class="ir-demo__item">
+        <div class="ir-demo__surface" />
+        <span class="ir-demo__plate">CSS mask</span>
+      </div>
+      <div class="ir-demo__item">
+        <svg class="ir-demo__svg" viewBox="0 0 250 250">
+          <defs>
+            <clipPath id="ir-clip">
+              <path d="M 20 0 H 170 A 20 20 0 0 1 190 20 V 44 A 20 20 0 0 1 170 64 H 250 V 230 A 20 20 0 0 1 230 250 H 20 A 20 20 0 0 1 0 230 V 20 A 20 20 0 0 1 20 0 Z" />
+            </clipPath>
+          </defs>
+          <rect width="250" height="250" fill="#8a4b2f" clip-path="url(#ir-clip)" />
+        </svg>
+        <span class="ir-demo__plate">SVG clip-path</span>
+      </div>
     </div>
   </section>
 </template>
@@ -941,13 +954,31 @@ useSeoMeta({
 
 /* ===== ВРЕМЕННО (демо): inverted radius, код генератора css-shape.com ===== */
 .ir-demo {
-  position: relative;
-  width: 250px;
-  height: 250px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
   margin: 32px auto 0;
 }
 
+.ir-demo__item {
+  position: relative;
+  flex-shrink: 0;
+  width: 250px;
+  height: 250px;
+}
+
+.ir-demo__svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .ir-demo__surface {
+  position: absolute;
+  inset: 0;
   /* Значения генератора: r=20, s=30 */
   --r: 20px;
   --s: 30px;
@@ -955,7 +986,7 @@ useSeoMeta({
   width: 100%;
   height: 100%;
   border-radius: var(--r);
-  background: #274c5b;
+  background: #8a4b2f;
 
   --_m: / calc(2 * var(--r)) calc(2 * var(--r))
     radial-gradient(#000 70%, #0000 72%) no-repeat;
