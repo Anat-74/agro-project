@@ -443,14 +443,7 @@ useSeoMeta({
         <span class="ir-demo__plate">CSS mask</span>
       </div>
       <div class="ir-demo__item">
-        <svg class="ir-demo__svg" viewBox="0 0 251 251">
-          <defs>
-            <clipPath id="ir-clip">
-              <path d="M 15.692 2.428 C 12.823 3.199, 9.479 5.082, 7.401 7.096 C 0.677 13.613, 0.926 8.710, 1.228 128.581 L 1.500 236.500 4.249 241.176 C 6.324 244.707, 8.296 246.487, 12.303 248.447 L 17.608 251.043 127.054 250.772 L 236.500 250.500 240.517 248.197 C 245.412 245.390, 248.555 240.981, 249.922 235 C 251.428 228.414, 251.372 79.409, 249.862 74.899 C 248.164 69.829, 244.579 65.513, 240.306 63.395 C 237.167 61.839, 233.435 61.420, 219 61 C 199.231 60.425, 196.639 59.681, 189.479 52.521 C 182.932 45.973, 181.644 42.249, 181 28 C 180.231 10.976, 177.320 5.560, 167.101 2.138 C 161.931 0.407, 22.213 0.675, 15.692 2.428" />
-            </clipPath>
-          </defs>
-          <rect width="250" height="250" fill="#8a4b2f" clip-path="url(#ir-clip)" />
-        </svg>
+        <UShapeNotch preset="notch-br"><div class="ir-demo__fill" /></UShapeNotch>
         <span class="ir-demo__plate">SVG clip-path</span>
       </div>
     </div>
@@ -968,12 +961,10 @@ useSeoMeta({
   height: 250px;
 }
 
-.ir-demo__svg {
+.ir-demo__fill {
   position: absolute;
   inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
+  background: #8a4b2f;
 }
 
 .ir-demo__surface {
