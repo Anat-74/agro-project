@@ -454,7 +454,7 @@ const characteristics = computed(() => {
   // Все размеры — переменные: база + оверрайды контейнерными запросами.
   // Зазор с каждой стороны = --notch-gap, вырез = плашка + 2*зазор.
   &__add {
-    --notch-size: 49px;
+    --notch-size: 40px;
     --notch-gap: 6px;
     position: absolute;
     z-index: 150;
