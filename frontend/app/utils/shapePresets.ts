@@ -1,7 +1,7 @@
 /**
- * Контуры-эталоны фигур (objectBoundingBox 0..1).
- * notch-tr — вырез в правом верхнем углу (снят с маски).
- * notch-br — вырез в правом нижнем углу (зеркало по Y эталона).
+ * Эталонные контуры фигур (objectBoundingBox 0..1).
+ * notch-tr — снят с CSS-маски демо-карточки (проверен: diff 1.3%).
+ * notch-br — то же отражение по Y для нижнего правого угла.
  */
 export const shapePresets: Record<string, string> = {
   "notch-tr":

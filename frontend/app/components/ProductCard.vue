@@ -90,7 +90,7 @@ const characteristics = computed(() => {
       ]"
     >
       <!-- Фигура карточки — компонент (clip-path). Ряд «цена + корзина» — вне клипа. -->
-      <UShapeNotch :d="notchPath" class="product-card__clip">
+      <UShapeNotch preset="notch-br" class="product-card__clip">
         <div class="product-card__surface-inner">
           <div class="product-card__top-items">
         <Icon
