@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { buttonTranslations } from "~/locales/button";
-import { notchBrPath } from "~/utils/shapePath";
 import { tooltipTranslations } from "~/locales/tooltip";
 import { linkTranslations } from "~/locales/link";
 const { currentLocale } = useLocale();
@@ -24,9 +23,6 @@ const props = withDefaults(defineProps<Props>(), {
   addVariant: 0,
 });
 const { product } = props;
-
-// вырез: от размеров плашки 40 и зазора 8 (карточка ~180×250)
-const notchPath = computed(() => notchBrPath({ r: 0.035, sx: 0.325, sy: 0.224, cr: 0.06 }));
 
 const rotateActive = ref(false);
 const toggleActive = () => {
@@ -178,7 +174,7 @@ const characteristics = computed(() => {
         { 'product-card__back_back': rotateActive },
       ]"
     >
-      <UShapeNotch :d="notchPath" class="product-card__clip">
+      <UShapeNotch preset="notch-br" class="product-card__clip">
         <div class="product-card__surface-inner">
           <div class="product-card__top-items">
         <Icon
