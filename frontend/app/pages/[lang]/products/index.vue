@@ -223,14 +223,14 @@ const isLoading = computed(
 // в useProductsFilters (единый источник — URL, router.replace). Здесь остаётся
 // только O2-открытие панели после успешной загрузки.
 
-// O2 (plan.md §1): панель фильтров открывается ПОСЛЕ загрузки товаров
-// (status === 'success') — на desktop И mobile. При входе и на SSR панель закрыта
-// (нет «флипа» контента), затем открывается ОДИН раз. Отдельного условия по ширине
-// больше нет: на mobile фильтр должен быть открыт, как и на desktop.
+// O2 (plan.md §1): на DESKTOP панель фильтров открывается ПОСЛЕ загрузки товаров
+// (status === 'success'). На mobile — остаётся закрытой: так видна сетка 2 колонки
+// и не «флипает» контент. При входе и на SSR панель закрыта в любом случае.
 let filterDialogOpened = false
 const openFilterDialogOnce = () => {
   if (filterDialogOpened || !import.meta.client) return
-  if (status.value === "success" && shopFilterRef.value) {
+  const isDesktop = window.matchMedia("(min-width: 768px)").matches
+  if (isDesktop && status.value === "success" && shopFilterRef.value) {
     filterDialogOpened = true
     shopFilterRef.value.open?.()
   }
