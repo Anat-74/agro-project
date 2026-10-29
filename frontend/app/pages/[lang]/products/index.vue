@@ -964,7 +964,7 @@ useSeoMeta({
 .ir-demo__fill {
   position: absolute;
   inset: 0;
-  background: #8a4b2f;
+  background: #2f5a8a;
 }
 
 .ir-demo__surface {
@@ -977,7 +977,7 @@ useSeoMeta({
   width: 100%;
   height: 100%;
   border-radius: var(--r);
-  background: #8a4b2f;
+  background: #2f5a8a;
 
   --_m: / calc(2 * var(--r)) calc(2 * var(--r))
     radial-gradient(#000 70%, #0000 72%) no-repeat;
