@@ -26,7 +26,7 @@ const props = withDefaults(defineProps<Props>(), {
 const { product } = props;
 
 // вырез: от размеров плашки 40 и зазора 8 (карточка ~180×250)
-const notchPath = computed(() => notchBrPath({ r: 0.04, s: 0.27, cr: 0.045 }));
+const notchPath = computed(() => notchBrPath({ r: 0.04, s: 0.31, cr: 0.05 }));
 
 const rotateActive = ref(false);
 const toggleActive = () => {
