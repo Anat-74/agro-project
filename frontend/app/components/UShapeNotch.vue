@@ -13,16 +13,14 @@ const props = withDefaults(defineProps<Props>(), {
   preset: "notch-br",
 });
 
-// Детерминированный id: useId() различается при SSR и гидратации,
-// из-за чего clip-path не находит clipPath и вырез пропадает в prod.
-let shapeUid = 0;
-const id = `ushape-${++shapeUid}`;
+// Уникальный id на экземпляр; двоеточия из useId ломают url(#...) в CSS.
+const id = useId().replace(/:/g, "");
 
 const d = computed(() => props.d || shapePresets[props.preset] || "");
 </script>
 
 <template>
-  <div class="u-shape" :style="{ clipPath: `url(#${id})` }">
+  <div :class="['u-shape', $attrs.class]" :style="{ clipPath: `url(#${id})` }">
     <svg class="u-shape__defs" aria-hidden="true" width="0" height="0">
       <defs>
         <clipPath :id="id" clipPathUnits="objectBoundingBox">

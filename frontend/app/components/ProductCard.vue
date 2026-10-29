@@ -178,7 +178,7 @@ const characteristics = computed(() => {
         { 'product-card__back_back': rotateActive },
       ]"
     >
-      <UShapeNotch preset="notch-br" class="product-card__clip">
+      <UShapeNotch :d="notchPath" class="product-card__clip">
         <div class="product-card__surface-inner">
           <div class="product-card__top-items">
         <Icon
