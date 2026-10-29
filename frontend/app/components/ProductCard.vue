@@ -547,6 +547,7 @@ const characteristics = computed(() => {
     width: 100%;
     display: flex;
     align-items: center;
+    gap: toEm(6);
     padding-inline: toEm(12);
     padding-block: toEm(8);
     background-color: var(--whitesmoke-color);
