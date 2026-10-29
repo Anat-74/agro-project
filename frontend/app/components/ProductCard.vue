@@ -141,9 +141,7 @@ const characteristics = computed(() => {
           }}</span>
         </NuxtLink>
       </div>
-        </div>
-      </UShapeNotch>
-      <div class="product-card__bottom-items">
+        <div class="product-card__bottom-items">
         <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
           <UIconLocal name="icon-by-regular" />
         </UTooltip>
@@ -164,9 +162,21 @@ const characteristics = computed(() => {
               ? buttonTranslations[currentLocale].ariaLabelAdded
               : buttonTranslations[currentLocale].label
           "
-          @click="handleAddToCart(product)"
         />
       </div>
+      </div>
+      </UShapeNotch>
+      <UButton
+        class="product-card__add"
+        variant="notch"
+        :is-in-cart="isInCart(product.documentId)"
+        :aria-label="
+          isInCart(product.documentId)
+            ? buttonTranslations[currentLocale].ariaLabelAdded
+            : buttonTranslations[currentLocale].label
+        "
+        @click="handleAddToCart(product)"
+      />
     </div>
     <div
       v-if="!compact"
