@@ -23,9 +23,11 @@ const props = withDefaults(defineProps<Props>(), {
   cr: 0.03,
 });
 
-// уникальный id на экземпляр, чтобы clipPath не конфликтовали.
-// useId() отдаёт ":r0:" — двоеточия ломают url(#id) в clip-path, поэтому чистим.
-const id = useId().replace(/:/g, "");
+// Уникальный id на экземпляр. useId() даёт разные значения при SSR и гидратации —
+// ссылка clip-path не находит clipPath (вырез пропадает в prod). Поэтому
+// генерируем детерминированный id сами (одинаков в SSR и на клиенте).
+let shapeUid = 0;
+const id = `ushape-${++shapeUid}`;
 
 // приоритет: свой контур → пресет-эталон → параметрическая генерация
 const d = computed(() => {
