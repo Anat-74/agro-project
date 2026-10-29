@@ -85,8 +85,10 @@ const characteristics = computed(() => {
         { 'product-card__front_front': rotateActive },
       ]"
     >
-      <!-- Фигура карточки — компонент (clip-path). Ряд «цена + корзина» — вне клипа. -->
-      <UShapeNotch preset="notch-br" class="product-card__clip">
+      <!-- Два маскированных слоя: front режет верх-справа (кнопка «3D»),
+           surface перевёрнут и тем же кодом режет низ-справа (кнопка «в корзину»),
+           inner возвращает контент в нормальное положение и несёт фон/рамку. -->
+      <div class="product-card__surface">
         <div class="product-card__surface-inner">
           <div class="product-card__top-items">
         <Icon
@@ -141,7 +143,7 @@ const characteristics = computed(() => {
           }}</span>
         </NuxtLink>
       </div>
-        <div class="product-card__bottom-items">
+      <div class="product-card__bottom-items">
         <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
           <UIconLocal name="icon-by-regular" />
         </UTooltip>
@@ -153,19 +155,9 @@ const characteristics = computed(() => {
         >
           {{ formatPrice(product.price) }}
         </span>
-        <UButton
-          class="product-card__add"
-          variant="notch"
-          :is-in-cart="isInCart(product.documentId)"
-          :aria-label="
-            isInCart(product.documentId)
-              ? buttonTranslations[currentLocale].ariaLabelAdded
-              : buttonTranslations[currentLocale].label
-          "
-        />
       </div>
+        </div>
       </div>
-      </UShapeNotch>
     </div>
     <div
       v-if="!compact"
@@ -174,7 +166,7 @@ const characteristics = computed(() => {
         { 'product-card__back_back': rotateActive },
       ]"
     >
-      <UShapeNotch preset="notch-br" class="product-card__clip">
+      <div class="product-card__surface">
         <div class="product-card__surface-inner">
           <div class="product-card__top-items">
         <Icon
@@ -208,8 +200,6 @@ const characteristics = computed(() => {
           }}</span>
         </NuxtLink>
       </div>
-        </div>
-      </UShapeNotch>
       <div class="product-card__bottom-items">
         <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
           <UIconLocal name="icon-by-regular" />
@@ -222,20 +212,26 @@ const characteristics = computed(() => {
         >
           {{ formatPrice(product.price) }}
         </span>
-        <UButton
-          class="product-card__add"
-          variant="notch"
-          :is-in-cart="isInCart(product.documentId)"
-          :aria-label="
-            isInCart(product.documentId)
-              ? buttonTranslations[currentLocale].ariaLabelAdded
-              : buttonTranslations[currentLocale].label
-          "
-          @click="handleAddToCart(product)"
-        />
+      </div>
+        </div>
       </div>
     </div>
 
+    <!-- «В корзину» — плашка в нижнем вырезе: снаружи маски, слой выше поверхности -->
+    <UButton
+      :class="[
+        'product-card__add',
+        addVariant ? `u-button_notch_v${addVariant}` : '',
+      ]"
+      variant="notch"
+      :is-in-cart="isInCart(product.documentId)"
+      :aria-label="
+        isInCart(product.documentId)
+          ? buttonTranslations[currentLocale].ariaLabelAdded
+          : buttonTranslations[currentLocale].label
+      "
+      @click="handleAddToCart(product)"
+    />
   </li>
 </template>
 
@@ -282,7 +278,6 @@ const characteristics = computed(() => {
       right: toEm(14);
       top: toEm(22);
     }
-
   }
 
   &__front,
@@ -293,6 +288,16 @@ const characteristics = computed(() => {
     transition: transform 0.6s;
   }
 
+  // Слой-«поверхность»: перевёрнут, поэтому тот же код режет низ-справа
+  // (вырез под кнопку «в корзину»). Фон/рамка/тень — на inner.
+  &__surface {
+    position: absolute;
+    inset: 0;
+    transform: scaleY(-1);
+    // Зазор = радиус вогнутой дуги (r = gap) → расстояние до выреза
+    // одинаковое со всех сторон, включая внутренний угол
+    @include invertedRadius(var(--notch-r, 10px), var(--notch-s, 48px));
+  }
 
   // Контент возвращаем в нормаль; здесь же фон, рамка, скругление и тень
   &__surface-inner {
@@ -307,6 +312,7 @@ const characteristics = computed(() => {
     background-color: var(--light-color);
     color: var(--gray-color);
     box-shadow: 0px toEm(6, 15) toEm(18, 15) toRem(5) hsla(0, 0%, 0%, 0.07);
+    transform: scaleY(-1);
   }
 
   &__front {
@@ -453,15 +459,14 @@ const characteristics = computed(() => {
   // Все размеры — переменные: база + оверрайды контейнерными запросами.
   // Зазор с каждой стороны = --notch-gap, вырез = плашка + 2*зазор.
   &__add {
-    --notch-size: 40px;
-    --notch-gap: 6px;
+    --notch-size: 48px;
+    --notch-gap: 10px;
     position: absolute;
     z-index: 150;
     width: var(--notch-size);
     height: var(--notch-size);
     right: var(--notch-gap);
-    // выравниваем низ кнопки с низом карточки (−5px от зазора)
-    bottom: calc(var(--notch-gap) - 5px);
+    bottom: var(--notch-gap);
   }
 
   &__top-items {
@@ -546,7 +551,6 @@ const characteristics = computed(() => {
     width: 100%;
     display: flex;
     align-items: center;
-    gap: toEm(6);
     padding-inline: toEm(12);
     padding-block: toEm(8);
     background-color: var(--whitesmoke-color);
@@ -634,28 +638,44 @@ const characteristics = computed(() => {
     padding-block: toEm(6);
   }
 
-  // Пропорции тестовой карточки, масштаб под компактную карточку
+  // Старый вырез (как было): r = зазор, s = размер плашки
   .product-card__surface {
-    --notch-r: 17px;
-    --notch-s: 26px;
+    --notch-r: 8px;
+    --notch-s: 44px;
   }
 
   .product-card__add {
-    --notch-size: 48px;
-    --notch-gap: 6px;
+    --notch-size: 44px;
+    --notch-gap: 8px;
   }
 }
 
 @container card (max-width: 170px) {
   .product-card__surface {
-    --notch-r: 14px;
-    --notch-s: 21px;
+    --notch-r: 7px;
+    --notch-s: 34px;
   }
 
   .product-card__add {
-    --notch-size: 39px;
-    --notch-gap: 5px;
+    --notch-size: 34px;
+    --notch-gap: 7px;
   }
 }
 
+/* ===== ВРЕМЕННО (демо): 5 вариантов геометрии плашки/выреза =====
+   Каждый: плашка / зазор (вырез = плашка + 2·зазор) / форма (в UButton).
+   v1 44/5 (вырез 54), квадрат 14 — текущий
+   v2 40/6 (52), круг
+   v3 48/4 (56), квадрат 12 — крупная, плотная
+   v4 42/7 (56), квадрат 18 — мягкие скругления
+   v5 36/7 (50), круг — мелкая */
+
+.product-card_geo1,
+.product-card_geo2,
+.product-card_geo3,
+.product-card_geo4,
+.product-card_geo5 {
+  .product-card__surface { --notch-r: 8px; --notch-s: 44px; }
+  .product-card__add { --notch-size: 44px; --notch-gap: 8px; }
+}
 </style>

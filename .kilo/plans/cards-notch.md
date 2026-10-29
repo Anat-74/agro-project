@@ -26,3 +26,21 @@
 - `frontend/app/components/UButton.vue` — `notch` (база), `add` (оригинал), `btn_add_is-added`.
 - `frontend/app/pages/[lang]/products/index.vue` — список, `:compact="compactCards"`, `ir-demo`.
 - `frontend/docs/style/patterns.md` §7–§9 — правила масок и проверки.
+
+## 29.10 — итог: mask vs path (responsive-карточки)
+
+### Факты (из документации)
+- **`clip-path: path()` НЕ масштабируется** — только абсолютные единицы. Для карточки, меняющей ширину
+  (1↔2 колонки), форма «плывёт». Источник: README `AstroDriss/inverted-corners-generator`.
+- **`mask`** работает при совпадении aspect-ratio (для карточек — фиксированная пропорция). Это responsive-вариант.
+- Новые CSS-возможности: `corner-shape: scoop` (Chrome 135+/Safari 18.4+/Firefox 148+),
+  `clip-path: shape()` (responsive, но пока не во всех браузерах).
+
+### Решение
+- Карточки товаров — **на CSS-маске** (`@include invertedRadius`), она проверена и responsive.
+- `UShapeNotch` + path — для **фиксированных** фигур и как задел на `corner-shape`/`shape()`.
+- Кнопка позиционируется **формулой от параметров маски** (`--r`/`--s`), а не «на глаз».
+
+### Инструменты, которые остаются
+- `scripts/shot.mjs` — скриншоты без MCP; `potrace` — трассировка; `sharp` — pixel-diff.
+- Правила проверки: patterns §7–§9 (кадр целиком, кнопка, состояния).
