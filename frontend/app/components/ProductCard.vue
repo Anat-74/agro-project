@@ -85,10 +85,8 @@ const characteristics = computed(() => {
         { 'product-card__front_front': rotateActive },
       ]"
     >
-      <!-- Два маскированных слоя: front режет верх-справа (кнопка «3D»),
-           surface перевёрнут и тем же кодом режет низ-справа (кнопка «в корзину»),
-           inner возвращает контент в нормальное положение и несёт фон/рамку. -->
-      <div class="product-card__surface">
+      <!-- Фигура карточки — компонент (clip-path). Ряд «цена + корзина» — вне клипа. -->
+      <UShapeNotch preset="notch-br" class="product-card__clip">
         <div class="product-card__surface-inner">
           <div class="product-card__top-items">
         <Icon
@@ -143,6 +141,8 @@ const characteristics = computed(() => {
           }}</span>
         </NuxtLink>
       </div>
+        </div>
+      </UShapeNotch>
       <div class="product-card__bottom-items">
         <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
           <UIconLocal name="icon-by-regular" />
@@ -155,8 +155,17 @@ const characteristics = computed(() => {
         >
           {{ formatPrice(product.price) }}
         </span>
-      </div>
-        </div>
+        <UButton
+          class="product-card__add"
+          variant="notch"
+          :is-in-cart="isInCart(product.documentId)"
+          :aria-label="
+            isInCart(product.documentId)
+              ? buttonTranslations[currentLocale].ariaLabelAdded
+              : buttonTranslations[currentLocale].label
+          "
+          @click="handleAddToCart(product)"
+        />
       </div>
     </div>
     <div
@@ -166,7 +175,7 @@ const characteristics = computed(() => {
         { 'product-card__back_back': rotateActive },
       ]"
     >
-      <div class="product-card__surface">
+      <UShapeNotch preset="notch-br" class="product-card__clip">
         <div class="product-card__surface-inner">
           <div class="product-card__top-items">
         <Icon
@@ -200,6 +209,8 @@ const characteristics = computed(() => {
           }}</span>
         </NuxtLink>
       </div>
+        </div>
+      </UShapeNotch>
       <div class="product-card__bottom-items">
         <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
           <UIconLocal name="icon-by-regular" />
@@ -212,26 +223,20 @@ const characteristics = computed(() => {
         >
           {{ formatPrice(product.price) }}
         </span>
-      </div>
-        </div>
+        <UButton
+          class="product-card__add"
+          variant="notch"
+          :is-in-cart="isInCart(product.documentId)"
+          :aria-label="
+            isInCart(product.documentId)
+              ? buttonTranslations[currentLocale].ariaLabelAdded
+              : buttonTranslations[currentLocale].label
+          "
+          @click="handleAddToCart(product)"
+        />
       </div>
     </div>
 
-    <!-- «В корзину» — плашка в нижнем вырезе: снаружи маски, слой выше поверхности -->
-    <UButton
-      :class="[
-        'product-card__add',
-        addVariant ? `u-button_notch_v${addVariant}` : '',
-      ]"
-      variant="notch"
-      :is-in-cart="isInCart(product.documentId)"
-      :aria-label="
-        isInCart(product.documentId)
-          ? buttonTranslations[currentLocale].ariaLabelAdded
-          : buttonTranslations[currentLocale].label
-      "
-      @click="handleAddToCart(product)"
-    />
   </li>
 </template>
 
@@ -279,12 +284,6 @@ const characteristics = computed(() => {
       top: toEm(22);
     }
 
-    // Вырез под «в корзину» — ТОЛЬКО здесь (нет 3D-переворота → нет задержки).
-    // На главной и при открытом фильтре карточка переворачивается — выреза нет.
-    .product-card__surface {
-      border-radius: var(--notch-r, 18px);
-      @include invertedRadius(var(--notch-r, 18px), var(--notch-s, 26px));
-    }
   }
 
   &__front,
@@ -295,13 +294,6 @@ const characteristics = computed(() => {
     transition: transform 0.6s;
   }
 
-  // Слой-«поверхность»: перевёрнут, поэтому тот же код режет низ-справа.
-  // Сам вырез включается ТОЛЬКО в компактном режиме (фильтр закрыт) — см. &_compact.
-  &__surface {
-    position: absolute;
-    inset: 0;
-    transform: scaleY(-1);
-  }
 
   // Контент возвращаем в нормаль; здесь же фон, рамка, скругление и тень
   &__surface-inner {
@@ -316,7 +308,6 @@ const characteristics = computed(() => {
     background-color: var(--light-color);
     color: var(--gray-color);
     box-shadow: 0px toEm(6, 15) toEm(18, 15) toRem(5) hsla(0, 0%, 0%, 0.07);
-    transform: scaleY(-1);
   }
 
   &__front {
