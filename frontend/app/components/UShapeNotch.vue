@@ -1,41 +1,24 @@
 <script setup lang="ts">
-import { shapePath, type ShapePreset } from "~/utils/shapePath";
 import { shapePresets } from "~/utils/shapePresets";
 
 interface Props {
   /** готовый контур (objectBoundingBox 0..1) — приоритет 1 */
   d?: string;
   /** именованный эталон из shapePresets — приоритет 2 */
-  preset?: ShapePreset;
-  /** радиус внешних углов (0..1) — приоритет 3 */
-  r?: number;
-  /** размер выреза (0..1) */
-  s?: number;
-  /** радиус вогнутой дуги (0..1) */
-  cr?: number;
+  preset?: keyof typeof shapePresets;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   d: "",
   preset: "notch-br",
-  r: 0.03,
-  s: 0.18,
-  cr: 0.03,
 });
 
-// Уникальный id на экземпляр. useId() даёт разные значения при SSR и гидратации —
-// ссылка clip-path не находит clipPath (вырез пропадает в prod). Поэтому
-// генерируем детерминированный id сами (одинаков в SSR и на клиенте).
+// Детерминированный id: useId() различается при SSR и гидратации,
+// из-за чего clip-path не находит clipPath и вырез пропадает в prod.
 let shapeUid = 0;
 const id = `ushape-${++shapeUid}`;
 
-// приоритет: свой контур → пресет-эталон → параметрическая генерация
-const d = computed(() => {
-  if (props.d) return props.d;
-  const presetD = shapePresets[props.preset];
-  if (presetD) return presetD;
-  return shapePath(props.preset, { r: props.r, s: props.s, cr: props.cr });
-});
+const d = computed(() => props.d || shapePresets[props.preset] || "");
 </script>
 
 <template>
