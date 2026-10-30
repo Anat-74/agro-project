@@ -434,19 +434,6 @@ useSeoMeta({
       />
     </div>
 
-    <!-- ВРЕМЕННО (демо): точная копия примера css-tip.com/inverted-radius.
-         Маска 1:1, размер фиксированный, стили проекта не используются.
-         Удалить после просмотра. -->
-    <div class="ir-demo" aria-hidden="true">
-      <div class="ir-demo__item">
-        <div class="ir-demo__surface" />
-        <span class="ir-demo__plate">CSS mask</span>
-      </div>
-      <div class="ir-demo__item">
-        <UShapeNotch preset="notch-br"><div class="ir-demo__fill" /></UShapeNotch>
-        <span class="ir-demo__plate">SVG clip-path</span>
-      </div>
-    </div>
   </section>
 </template>
 <style lang="scss" scoped>
@@ -945,70 +932,4 @@ useSeoMeta({
   }
 }
 
-/* ===== ВРЕМЕННО (демо): inverted radius, код генератора css-shape.com ===== */
-.ir-demo {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 16px;
-  margin: 32px auto 0;
-}
-
-.ir-demo__item {
-  position: relative;
-  flex-shrink: 0;
-  width: 250px;
-  height: 250px;
-}
-
-.ir-demo__fill {
-  position: absolute;
-  inset: 0;
-  background: #2f5a8a;
-}
-
-.ir-demo__surface {
-  position: absolute;
-  inset: 0;
-  /* Значения генератора: r=20, s=30 */
-  --r: 20px;
-  --s: 30px;
-
-  width: 100%;
-  height: 100%;
-  border-radius: var(--r);
-  background: #2f5a8a;
-
-  --_m: / calc(2 * var(--r)) calc(2 * var(--r))
-    radial-gradient(#000 70%, #0000 72%) no-repeat;
-  mask:
-    right calc(var(--s) + 2 * var(--r)) top 0 var(--_m),
-    right 0 top calc(2 * var(--s)) var(--_m),
-    radial-gradient(var(--s) at 100% 0, #0000 99%, #000 calc(100% + 1px))
-      calc(-2 * var(--r)) var(--s) no-repeat,
-    conic-gradient(at calc(100% - var(--r)) var(--r), #0000 25%, #000 0)
-      calc(-1 * (var(--s) + 2 * var(--r))) 0 no-repeat,
-    conic-gradient(at calc(100% - var(--r)) var(--r), #0000 25%, #000 0) 0
-      calc(2 * var(--s)) no-repeat;
-  mask-repeat: no-repeat;
-}
-
-/* Плашка — «выбранный элемент», вокруг которого обтекает поверхность */
-.ir-demo__plate {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 56px;
-  height: 40px;
-  border-radius: 12px;
-  background: #f4e63a;
-  color: #274c5b;
-  font-family: system-ui, sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1.2;
-}
 </style>
