@@ -345,7 +345,7 @@ export interface SlidersHeroSlider extends Struct.ComponentSchema {
 }
 
 declare module '@strapi/strapi' {
-  export module Public {
+  export namespace Public {
     export interface ComponentSchemas {
       'background.background-image': BackgroundBackgroundImage;
       'background.background-option': BackgroundBackgroundOption;
