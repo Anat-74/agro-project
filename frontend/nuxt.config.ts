@@ -2,6 +2,11 @@ import { defineNuxtConfig } from "nuxt/config";
 
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
+  // @nuxtjs/seo 6 подключает nuxt-ai-ready: его MCP-инструменты требуют БД,
+  // которая в проекте не используется — отключаем базу, чтобы nuxt prepare не падал.
+  aiReady: {
+    database: false,
+  },
   devtools: {
     enabled: false,
   },
@@ -196,7 +201,7 @@ export default defineNuxtConfig({
       lg: 1024,
       xl: 1630,
     },
-    quality: 85,
+   //  quality: 85,
     densities: [1, 2],
     format: ["avif", "webp", "png", "jpeg"],
   },
