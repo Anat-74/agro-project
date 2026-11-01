@@ -15,7 +15,7 @@
     "@strapi/plugin-users-permissions": "^5.40.0",
     "@strapi/provider-email-nodemailer": "^5.49.0",
     "@strapi/strapi": "^5.40.0",
-    "better-sqlite3": "11.3.0",
+    "better-sqlite3": "^13.0.3",
     "mysql2": "^3.22.6",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
@@ -34,5 +34,8 @@
   },
   "strapi": {
     "uuid": "5bccc4e6-006c-41b7-810e-062f22292d10"
+  },
+  "allowScripts": {
+    "better-sqlite3@11.3.0": true
   }
 }
