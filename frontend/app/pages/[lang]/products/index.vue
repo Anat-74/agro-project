@@ -19,25 +19,15 @@ const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopF
 // (products-page_filter-open: раскладка «панель + карточки» и одна колонка карточек).
 const { isOpen: filterDialogOpen } = useDialog("shopFilterDialog")
 
-// Компактные карточки (без переворота, с кнопкой модалки) — когда фильтр ЗАКРЫТ.
-// mounted: на SSR/первом рендере всегда обычные карточки (без флипа разметки).
-// filterEverOpened: фильтр открывается автоматически после загрузки товаров —
-// иначе был бы кратковременный «компакт» до этого открытия.
+// Компактные карточки (без переворота, с кнопкой модалки и вырезом под «в корзину»)
+// — когда фильтр ЗАКРЫТ (на mobile это состояние по умолчанию).
+// mounted: на SSR разметка всегда «обычная» (компакт содержит ClientOnly-модалку —
+// иначе hydration mismatch), переключение — сразу после гидратации, до отрисовки.
 const mounted = ref(false)
 onMounted(() => {
   mounted.value = true
 })
-const filterEverOpened = ref(false)
-watch(
-  filterDialogOpen,
-  (isOpen) => {
-    if (isOpen) filterEverOpened.value = true
-  },
-  { immediate: true },
-)
-const compactCards = computed(
-  () => mounted.value && filterEverOpened.value && !filterDialogOpen.value,
-)
+const compactCards = computed(() => mounted.value && !filterDialogOpen.value)
 
 // Кнопка-гамбургер в крошках (mobile): переиспользуем панель ШАПКИ (запрос →
 // AppHeader переключает свой экземпляр ShowHamburger — без дублирования/повторной
