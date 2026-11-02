@@ -82,6 +82,10 @@
   (`-mode`), а в `styles.scss` классы `.light-mode/.dark-mode/.custom-mode` → добавили
   `classSuffix: "-mode"` в nuxt.config. Проверено: классы `light-mode`/`dark-mode`/`custom-mode`,
   фон меняется (белый/тёмно-синий), сборка OK (2m23s).
+- ✅ **@types/node 24 → 26.6.6**, **happy-dom 20 → 21.0.4**, **dotenv 17 → 18.0.9** (`08f2418`).
+  Проверено: `vitest run` — 21/21 тестов, `nuxt typecheck` — 0 ошибок, сборка OK (1m59s).
+- ⏭ **h3 1 → 2 — пропускаем сейчас.** Nuxt 4.6.3 работает на Nitro 2 + h3 v1; h3 v2
+  приедет вместе с Nitro 3 (иначе в проекте два несовместимых Event-объекта).
 
 Осталось (по плану): `@nuxtjs/color-mode` 4, `h3` 2, `vitest` 5, `dotenv`/`happy-dom`/`@types/node`,
 `@nuxtjs/mdc` 0.23, `pinia` 4 + `@pinia/nuxt` 1, backend: `react` 19, `react-router-dom` 7, `typescript` 7.
