@@ -66,3 +66,23 @@
 - `npm run build` без ошибок;
 - страницы, затронутые пакетом, открываются и работают;
 - для backend — `npx strapi build` + успешный старт.
+
+## Статус плана (02.11.2026, вечер)
+
+Сделано:
+- ✅ **sharp 0.34 → 0.35.5** (`3424306`) — вне очереди: дерево было **invalid**
+  (`@nuxtjs/seo`/`nuxt-og-image` требуют `sharp ^0.35.5`, а корневой стоял 0.34.5).
+  Теперь `npm ls sharp` чистый, сборка проходит.
+- ✅ **@iconify-json/mingcute 1.2.8 → 1.2.9** (`96df028`).
+- ✅ **@nuxt/icon 1.10.3 → 2.6.2** (`5b3ee1a`) — единственное breaking-изменение v2.0.0:
+  «Upgrade to nuxt v4» (мы на Nuxt 4.6.3). Конфиг `clientBundle.scan` рабочий.
+  Проверено: build OK, dev OK, 208 svg на `/ru/products`, 12 карточек.
+
+Осталось (по плану): `@nuxtjs/color-mode` 4, `h3` 2, `vitest` 5, `dotenv`/`happy-dom`/`@types/node`,
+`@nuxtjs/mdc` 0.23, `pinia` 4 + `@pinia/nuxt` 1, backend: `react` 19, `react-router-dom` 7, `typescript` 7.
+
+Наблюдение (не связано с обновлением): в dev-консоли есть
+`Hydration node mismatch` на всех страницах (страница рендерится комментарием на сервере,
+div — на клиенте). Было и раньше (в прошлых проверках console errors уже были);
+разобрать отдельно, не блокирует обновления.
+
