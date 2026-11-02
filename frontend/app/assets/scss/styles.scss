@@ -42,6 +42,10 @@
   // mobile — фикс (--filter-drawer-w), чтобы справа оставалась колонка товаров
   @include adaptiveValue("--filter-width", 280, 180);
   --filter-drawer-w: #{toRem(165)};
+  // Safe-area (Android edge-to-edge / вырез iOS). В обычных браузерах — 0.
+  // Нужны, чтобы sticky-шапка и панель не заезжали под системный статус-бар.
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
  
 // Светлая тема (на основе цветов из Figma)

@@ -18,6 +18,16 @@ export default defineNuxtConfig({
     // `_nuxt/builds/**/*.json` в precache со снятым revision — нативная per-build изоляция кэша.
   },
   app: {
+    // viewport-fit=cover → Android edge-to-edge и вырезы iOS отдают env(safe-area-*),
+    // которыми компенсируются sticky-шапка и панель фильтра (см. --safe-top).
+    head: {
+      meta: [
+        {
+          name: "viewport",
+          content: "width=device-width, initial-scale=1, viewport-fit=cover",
+        },
+      ],
+    },
     // Глобальный дефолт VT — выключен; включается точечно (лёгкие CSR-страницы)
     viewTransition: false,
     // Vue Transitions — глобальный кроссфейд для всех страниц (SSR-дефолт)

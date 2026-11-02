@@ -513,7 +513,7 @@ onMounted(() => {
   &[open] {
     position: fixed;
     margin-inline-end: 0;
-    bottom: toRem(24);
+    bottom: calc(toRem(24) + var(--safe-bottom, 0px));
     right: toRem(24);
     z-index: 10001;
     width: toRem(400);

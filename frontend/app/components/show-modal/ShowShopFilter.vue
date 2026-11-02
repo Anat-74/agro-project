@@ -691,14 +691,14 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
   // Верх — под липкими крошками, низ — по низу вьюпорта; скролл — внутри диалога.
   @media (max-width: $mobile) {
     position: fixed;
-    top: var(--crumb-h, 0px);
+    top: calc(var(--crumb-h, 0px) + var(--safe-top, 0px));
     left: toRem(5); // = контейнерный padding-inline на mobile (при открытом фильтре)
     z-index: 40;
     // Постоянная высота (без ресайза при скролле). Подвал при открытом фильтре скрыт
     // (CSS body:has(.products-page_filter-open) .base-footer), поэтому панель никого
     // не перекрывает. Нижний отступ 4px даёт теперь `padding-block` диалога, поэтому
     // height без вычитания.
-    height: calc(100dvh - var(--crumb-h, 0px));
+    height: calc(100dvh - var(--crumb-h, 0px) - var(--safe-top, 0px));
     overflow: hidden; // для анимации ширины (сам скролл — у диалога)
     background-color: var(--bg);
   }
@@ -1344,7 +1344,7 @@ const onPriceFieldBlur = (key: "min" | "max", e: FocusEvent) => {
 .show-shop-filter__float {
   position: fixed;
   left: toRem(16);
-  bottom: toRem(16);
+  bottom: calc(toRem(16) + var(--safe-bottom, 0px));
   z-index: 9998;
   display: inline-flex;
   align-items: center;

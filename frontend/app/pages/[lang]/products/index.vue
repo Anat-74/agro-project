@@ -682,10 +682,11 @@ useSeoMeta({
     display: none;
   }
 
-  // Крошки липнут к самому верху при открытом фильтре (шапка сайта схлопнута → сдвига нет).
+  // Крошки липнут к верху под системной панелью при открытом фильтре
+  // (шапка сайта схлопнута → сдвига нет, кроме safe-area).
   .products-page_filter-open .products-page__header {
     position: sticky;
-    top: 0;
+    top: var(--safe-top, 0px);
     z-index: 20;
   }
 
