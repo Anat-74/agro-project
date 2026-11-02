@@ -231,6 +231,9 @@ export default defineNuxtConfig({
   colorMode: {
     preference: "system",
     fallback: "light",
+    // v4 убрал дефолтный суффикс: классы стали бы .light/.dark/.custom.
+    // В styles.scss используются .light-mode/.dark-mode/.custom-mode — сохраняем суффикс.
+    classSuffix: "-mode",
   },
   css: ["@/assets/scss/styles.scss"],
   vite: {
