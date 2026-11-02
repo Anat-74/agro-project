@@ -2,7 +2,7 @@
 
 ## Что есть и работает
 - **`scripts/shot.mjs`** — скриншоты страницы/элемента **без MCP** (Playwright):
-  `node ../scripts/shot.mjs <url> <selector> <out.png> [WxH] [close-filter|hide-plates|magenta-bg]`
+  `node ../scripts/shot.mjs <url> <selector> <out.png> [WxH] [close-filter|magenta-bg]`
   Запускать из `frontend` (там playwright).
 - **`sharp`** — попиксельный diff и измерения (зазоры, размеры, bbox расхождения).
 - **`potrace`** (devDependency) — трассировка битмапа в SVG path: снимаем контур с маски → получаем явную геометрию.

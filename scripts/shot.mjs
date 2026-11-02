@@ -1,7 +1,6 @@
 /**
  * Детерминированный скриншот без MCP: открывает страницу, ждёт элемент, снимает его.
  * Примеры:
- *   node scripts/shot.mjs http://localhost:3000/ru/products ".ir-demo" .tmp/demo.png
  *   node scripts/shot.mjs http://localhost:3000/ru/products ".product-card" .tmp/card.png 390x844
  *   node scripts/shot.mjs http://localhost:3000/ru/products "" .tmp/full.png 390x844
  */
@@ -26,7 +25,6 @@ try {
   }
   if (action) {
     await page.evaluate((a) => {
-      if (a.includes("hide-plates")) document.querySelectorAll(".ir-demo__plate").forEach((p) => (p.style.visibility = "hidden"));
       if (a.includes("magenta-bg")) document.body.style.backgroundColor = "#ff00ff";
       if (a.includes("close-filter")) {
         document.querySelectorAll("dialog[open]").forEach((d) => { try { d.close(); } catch {} });

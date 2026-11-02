@@ -15,12 +15,9 @@ interface Props {
   // Компактный режим (фильтр закрыт на mobile): без переворота,
   // вместо кнопки переворота — кнопка модального окна товара
   compact?: boolean;
-  // ВРЕМЕННО (демо): 1..5 — форма/ширина плашки «в корзину»
-  addVariant?: number;
 }
 const props = withDefaults(defineProps<Props>(), {
   compact: false,
-  addVariant: 0,
 });
 const { product } = props;
 
@@ -76,7 +73,6 @@ const characteristics = computed(() => {
     :class="[
       'product-card',
       { 'product-card_rotate-active': rotateActive, 'product-card_compact': compact },
-      addVariant ? `product-card_geo${addVariant}` : '',
     ]"
   >
     <div
@@ -219,10 +215,7 @@ const characteristics = computed(() => {
 
     <!-- «В корзину» — плашка в нижнем вырезе: снаружи маски, слой выше поверхности -->
     <UButton
-      :class="[
-        'product-card__add',
-        addVariant ? `u-button_notch_v${addVariant}` : '',
-      ]"
+      class="product-card__add"
       variant="notch"
       :is-in-cart="isInCart(product.documentId)"
       :aria-label="
@@ -559,10 +552,6 @@ const characteristics = computed(() => {
     padding-inline: toEm(12);
     padding-block: toEm(8);
     background-color: var(--whitesmoke-color);
-
-    &_is-visible {
-      margin-block-start: toRem(-32);
-    }
   }
 
   &__price {

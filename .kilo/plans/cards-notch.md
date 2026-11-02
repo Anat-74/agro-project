@@ -24,7 +24,7 @@
 ## Файлы-ориентиры
 - `frontend/app/components/ProductCard.vue` — `__front/__back` → `__surface` (маска, scaleY(-1)) → `__surface-inner` (фон/рамка) + `__add`.
 - `frontend/app/components/UButton.vue` — `notch` (база), `add` (оригинал), `btn_add_is-added`.
-- `frontend/app/pages/[lang]/products/index.vue` — список, `:compact="compactCards"`, `ir-demo`.
+- `frontend/app/pages/[lang]/products/index.vue` — список, `:compact="compactCards"`.
 - `frontend/docs/style/patterns.md` §7–§9 — правила масок и проверки.
 
 ## 29.10 — итог: mask vs path (responsive-карточки)
@@ -38,7 +38,7 @@
 
 ### Решение
 - Карточки товаров — **на CSS-маске** (`@include invertedRadius`), она проверена и responsive.
-- `UShapeNotch` + path — для **фиксированных** фигур и как задел на `corner-shape`/`shape()`.
+- `UShapeNotch` + path — удалены (не используются): задел на `corner-shape`/`shape()` — в git-истории.
 - Кнопка позиционируется **формулой от параметров маски** (`--r`/`--s`), а не «на глаз».
 
 ### Инструменты, которые остаются

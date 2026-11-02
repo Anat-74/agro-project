@@ -37,12 +37,14 @@ const { isOpen: hamburgerOpen } = useDialog("hamburgerDialog")
 
 // Высота липких крошек при открытом фильтре (постоянная, пока фильтр открыт) — от неё
 // считаем отступ/высоту fixed-панели фильтров.
+const headerEl = () =>
+  document.querySelector<HTMLElement>(".products-page__header")
 useMeasureToVar("--crumb-h", {
   enabled: () => filterDialogOpen.value,
   active: filterDialogOpen,
-  observe: () => document.querySelector(".products-page__header"),
+  observe: headerEl,
   measure: () => {
-    const el = document.querySelector<HTMLElement>(".products-page__header")
+    const el = headerEl()
     return el ? `${el.offsetHeight}px` : null
   },
 })
