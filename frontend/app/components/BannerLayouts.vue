@@ -32,7 +32,9 @@ withDefaults(defineProps<Props>(), {
 
 <style lang="scss" scoped>
 .banner {
-  overflow-x: auto;
+  // Текст-бегущая строка уже клипается внутри UMarqueeText; auto здесь создавал
+  // горизонтально прокручиваемую полосу у шапки (свайп по баннеру «скроллил» его).
+  overflow: hidden;
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;

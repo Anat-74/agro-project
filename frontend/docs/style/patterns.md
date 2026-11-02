@@ -219,6 +219,11 @@ body:has(
 - Плашка не должна касаться кромки выреза (нет зазора → выглядит как дефект).
 - Тень/свечение плашки **не должны** выходить за карточку — иначе возможен горизонтальный скролл;
   проверять: `document.documentElement.scrollWidth > document.documentElement.clientWidth`.
+- **`body { min-width }` = скрытый источник горизонтального скролла** при зуме/узком окне:
+  если layout viewport меньше min-width (напр. 390px при page zoom 125% → 312), страница
+  горизонтально скроллится на разницу. Не задавать min-width на `body`; нижнюю границу
+  адаптива держать в миксинах (`$minWidth` для `adaptiveValue`), а не блокировать страницу.
+  Проверка: viewport 300–319 (или zoom 125%) — `scrollWidth === clientWidth`.
 
 ### Техника
 - Только **полный код генератора** (`css-shape.com/inverted-radius`): 5 слоёв + `mask-repeat: no-repeat`.
