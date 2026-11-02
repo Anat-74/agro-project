@@ -84,8 +84,20 @@
   фон меняется (белый/тёмно-синий), сборка OK (2m23s).
 - ✅ **@types/node 24 → 26.6.6**, **happy-dom 20 → 21.0.4**, **dotenv 17 → 18.0.9** (`08f2418`).
   Проверено: `vitest run` — 21/21 тестов, `nuxt typecheck` — 0 ошибок, сборка OK (1m59s).
+- ✅ **vitest 4 → 5.1.0** (`a65e213`) — @nuxt/test-utils 4.3.4 официально поддерживает
+  `vitest ^5`. Проверено: 21/21 тестов, typecheck 0.
+- ✅ **@nuxtjs/mdc 0.17 → 0.23.2** (`f3002f7`) — сборка OK; на посте блога MDC рендерится
+  (h2/h3/strong на месте), ошибок в браузере нет.
+- ✅ **pinia 3 → 4.1.0 + @pinia/nuxt 1.0.3 + persistedstate 4.7.1** (`eafc821`) —
+  тесты 21/21, typecheck 0, сборка OK; корзина: «+» → счётчик 1, после перезагрузки
+  остаётся 1 (localStorage `cart`).
 - ⏭ **h3 1 → 2 — пропускаем сейчас.** Nuxt 4.6.3 работает на Nitro 2 + h3 v1; h3 v2
   приедет вместе с Nitro 3 (иначе в проекте два несовместимых Event-объекта).
+- ⏸ **Backend: react 19 / react-router-dom 7 — отложены.** `@strapi/strapi@5.60.0` в
+  peerDependencies требует `react ^18.0.0` и `react-router-dom ^6.30.3`. Обновление
+  сломает админку → ждём Strapi 6 (или официальной поддержки).
+- ⏸ **Backend: typescript 7 — отложен.** Сборка админки Strapi идёт своим тулингом;
+  TS 7 (нативный компилятор) сначала проверить в отдельной ветке на `strapi build`.
 
 Осталось (по плану): `@nuxtjs/color-mode` 4, `h3` 2, `vitest` 5, `dotenv`/`happy-dom`/`@types/node`,
 `@nuxtjs/mdc` 0.23, `pinia` 4 + `@pinia/nuxt` 1, backend: `react` 19, `react-router-dom` 7, `typescript` 7.
