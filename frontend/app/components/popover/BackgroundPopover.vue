@@ -214,7 +214,7 @@ watch(isOpen, (open) => {
 // Плавно скрывается, когда окно открыто (isOpen из usePopover)
 .background-popover__trigger {
   position: fixed;
-  bottom: toRem(29);
+  bottom: calc(toRem(29) + var(--safe-bottom, 0px));
   inset-inline-end: toRem(29);
   z-index: 900;
   pointer-events: auto;
@@ -248,7 +248,7 @@ watch(isOpen, (open) => {
   inset-inline: 0;
   inset-block-start: auto;
   inset-block-end: 0;
-  margin: 0 auto toRem(24);
+  margin: 0 auto calc(toRem(24) + var(--safe-bottom, 0px));
   width: fit-content;
   pointer-events: auto;
 
