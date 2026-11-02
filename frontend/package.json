@@ -37,7 +37,7 @@
     "nuxt-spyglass": "^1.0.0-alpha.1",
     "pinia": "^3.0.0",
     "pinia-plugin-persistedstate": "^4.2.0",
-    "sharp": "^0.34.3",
+    "sharp": "^0.35.5",
     "vue": "latest",
     "vue-router": "latest",
     "zod": "^4.3.6"
