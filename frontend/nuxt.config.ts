@@ -216,6 +216,10 @@ export default defineNuxtConfig({
     format: ["avif", "webp", "png", "jpeg"],
   },
   icon: {
+    // Иконки берём из локальных @iconify-json/* через эндпоинт Nuxt-сервера
+    // (без обращения к Iconify API) — одинаковый результат на SSR и клиенте.
+    provider: "server",
+    serverBundle: "local",
     clientBundle: {
       scan: {
         // Иконки из .ts-файлов (например, флаги в app/composables/useLocale.ts)
