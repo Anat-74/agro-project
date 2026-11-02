@@ -78,6 +78,10 @@
   страницах `Hydration node mismatch` (сервер отдаёт комментарий вместо корня страницы),
   A/B подтверждён: v2 → warning есть, 1.15.0 → warning нет. Остаёмся на **1.15.0**.
   Вернуться к v2 после разбора причины (возможно, вместе с Nuxt-обновлением).
+- ✅ **@nuxtjs/color-mode 3.5.2 → 4.1.0** (`7f55b49`). v4 убрал дефолтный `classSuffix`
+  (`-mode`), а в `styles.scss` классы `.light-mode/.dark-mode/.custom-mode` → добавили
+  `classSuffix: "-mode"` в nuxt.config. Проверено: классы `light-mode`/`dark-mode`/`custom-mode`,
+  фон меняется (белый/тёмно-синий), сборка OK (2m23s).
 
 Осталось (по плану): `@nuxtjs/color-mode` 4, `h3` 2, `vitest` 5, `dotenv`/`happy-dom`/`@types/node`,
 `@nuxtjs/mdc` 0.23, `pinia` 4 + `@pinia/nuxt` 1, backend: `react` 19, `react-router-dom` 7, `typescript` 7.
