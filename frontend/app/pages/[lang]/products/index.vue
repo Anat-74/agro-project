@@ -391,7 +391,7 @@ useSeoMeta({
           <ULogo
             variant="mark"
             animated
-            :global="globalData?.data"
+            :global="(globalData?.data as any)"
             :width="43"
             :height="43"
           />

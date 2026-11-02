@@ -6,7 +6,7 @@ const t = computed(() => logoTranslations[currentLocale.value])
 const config = useRuntimeConfig();
 
 interface Props {
-  global: GlobalData;
+  global?: GlobalData;
   width?: string | number;
   height?: string | number;
   // "link" — ссылка с фирменным кругом (шапка/футер)
@@ -17,6 +17,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  global: () => ({} as GlobalData),
   width: 45,
   height: 45,
   variant: "link",

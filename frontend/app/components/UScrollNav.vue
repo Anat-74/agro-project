@@ -15,7 +15,7 @@ interface Props {
   target?: HTMLElement | null
   mode?: 'up' | 'toggle'
   threshold?: number
-  variant?: string
+  variant?: 'go-to-top' | 'plain'
   iconDown?: string
   iconUp?: string
 }

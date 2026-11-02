@@ -18,9 +18,10 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
     if (hiddenAt && Date.now() - hiddenAt > STALE_AFTER) {
       hiddenAt = 0
-      nuxtApp.hooks
-        .callHookParallel("app:data:refresh", undefined)
-        .catch(() => {})
+      // callHookParallel может вернуть void (нет обработчиков) — нормализуем в Promise
+      Promise.resolve(
+        nuxtApp.hooks.callHookParallel("app:data:refresh", undefined),
+      ).catch(() => {})
     }
   })
 })

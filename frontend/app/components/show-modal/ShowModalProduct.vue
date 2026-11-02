@@ -59,7 +59,7 @@ const { data: details, status, execute } = useCachedAsyncData(
         mainImage: { fields: ["url", "alternativeText"] },
       },
     } as any)
-    return response.data?.[0] as Product
+    return response.data?.[0] as unknown as Product
   },
   { immediate: false, server: false, ttl: 300_000 }
 )

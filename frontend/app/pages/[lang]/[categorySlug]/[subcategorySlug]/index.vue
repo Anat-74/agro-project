@@ -76,8 +76,8 @@ const { data, pending, error, refresh } = useCachedAsyncData(
     }
 
     return {
-      subcategory: subcategoryRes.data[0] as Subcategory,
-      products: productsRes as ProductsResponse,
+      subcategory: subcategoryRes.data[0] as unknown as Subcategory,
+      products: productsRes as unknown as ProductsResponse,
     };
   },
   { ttl: 600_000 },

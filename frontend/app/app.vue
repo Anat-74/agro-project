@@ -41,7 +41,7 @@ watch([currentLocale, () => route.path], () => {
   const hreflangLinks = locales.map((locale) => {
     const newUrl = `/${locale}${pathWithoutCurrentLocale}`;
     return {
-      rel: "alternate",
+      rel: "alternate" as const,
       hreflang: locale,
       href: `${config.public.siteUrl}${newUrl}`,
     };
