@@ -2,6 +2,14 @@
 
 Дата: 02.11.2026. Файл моста: `C:\kilo-bridje\bridge.js` (правки — только по согласованию).
 
+## Статус: реализовано (03.11.2026)
+
+- Резервная копия: `C:\kilo-bridje\bridge.js.bak-20261103-183155`.
+- `sendAsFile()` переведён на прямой Bot API `sendDocument` с
+  `Blob(..., { type: "text/plain" })`; `InputFile` больше не используется.
+- `node --check bridge.js` — синтаксис OK.
+- Для применения нужен **перезапуск моста** (`node bridge.js`).
+
 ## Причина
 
 1. `sendAsFile()` (bridge.js ~200-224) шлёт ответ через grammY:
