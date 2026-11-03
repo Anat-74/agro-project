@@ -67,48 +67,43 @@
 - страницы, затронутые пакетом, открываются и работают;
 - для backend — `npx strapi build` + успешный старт.
 
-## Статус плана (02.11.2026, вечер)
+## Статус плана (обновлено 03.11.2026)
 
-Сделано:
+### Сделано
 - ✅ **sharp 0.34 → 0.35.5** (`3424306`) — вне очереди: дерево было **invalid**
-  (`@nuxtjs/seo`/`nuxt-og-image` требуют `sharp ^0.35.5`, а корневой стоял 0.34.5).
-  Теперь `npm ls sharp` чистый, сборка проходит.
+  (`@nuxtjs/seo`/`nuxt-og-image` требуют `sharp ^0.35.5`). Сейчас `npm ls sharp` чистый.
 - ✅ **@iconify-json/mingcute 1.2.8 → 1.2.9** (`96df028`).
-- ✅ **@nuxt/icon 1.10 → 2.6.2** (`eeb8ae1`). Сначала откатили (`c22635c`) из-за
-  `Hydration node mismatch`, но повторная проверка на **здоровом** dev-сервере показала:
-  предупреждение есть и на 1.15.0, и на 2.6.2 — **к версии иконок оно отношения не имеет**
-  (первый A/B шёл на сломанном `.nuxt` после установки модуля). Итог: v2 оставлена,
-  добавлены `provider: "server"` + `serverBundle: "local"` (SSR и клиент берут иконки
-  из локальных @iconify-json, без Iconify API). Проверено: 12 карточек, 208 svg (207 с path),
-  сборка OK (1m57s). Гидрейшн-mismatch — отдельная задача (см. ниже).
+- ✅ **@nuxt/icon 1.10 → 2.6.2** (`eeb8ae1`) + `provider: "server"`, `serverBundle: "local"`.
+  Проверено: 12 карточек, 208 svg (207 с path), сборка OK (1m57s).
 - ✅ **@nuxtjs/color-mode 3.5.2 → 4.1.0** (`7f55b49`). v4 убрал дефолтный `classSuffix`
-  (`-mode`), а в `styles.scss` классы `.light-mode/.dark-mode/.custom-mode` → добавили
-  `classSuffix: "-mode"` в nuxt.config. Проверено: классы `light-mode`/`dark-mode`/`custom-mode`,
-  фон меняется (белый/тёмно-синий), сборка OK (2m23s).
+  (`-mode`) → добавлен `classSuffix: "-mode"`. Проверено: `light-mode`/`dark-mode`/`custom-mode`,
+  фон меняется, сборка OK.
 - ✅ **@types/node 24 → 26.6.6**, **happy-dom 20 → 21.0.4**, **dotenv 17 → 18.0.9** (`08f2418`).
-  Проверено: `vitest run` — 21/21 тестов, `nuxt typecheck` — 0 ошибок, сборка OK (1m59s).
-- ✅ **vitest 4 → 5.1.0** (`a65e213`) — @nuxt/test-utils 4.3.4 официально поддерживает
-  `vitest ^5`. Проверено: 21/21 тестов, typecheck 0.
-- ✅ **@nuxtjs/mdc 0.17 → 0.23.2** (`f3002f7`) — сборка OK; на посте блога MDC рендерится
-  (h2/h3/strong на месте), ошибок в браузере нет.
+- ✅ **vitest 4 → 5.1.0** (`a65e213`) — `@nuxt/test-utils` 4.3.4 поддерживает `vitest ^5`.
+- ✅ **@nuxtjs/mdc 0.17 → 0.23.2** (`f3002f7`) — блог рендерится (h2/h3/strong), ошибок нет.
 - ✅ **pinia 3 → 4.1.0 + @pinia/nuxt 1.0.3 + persistedstate 4.7.1** (`eafc821`) —
-  тесты 21/21, typecheck 0, сборка OK; корзина: «+» → счётчик 1, после перезагрузки
-  остаётся 1 (localStorage `cart`).
-- ⏭ **h3 1 → 2 — пропускаем сейчас.** Nuxt 4.6.3 работает на Nitro 2 + h3 v1; h3 v2
-  приедет вместе с Nitro 3 (иначе в проекте два несовместимых Event-объекта).
-- ⏸ **Backend: react 19 / react-router-dom 7 — отложены.** `@strapi/strapi@5.60.0` в
-  peerDependencies требует `react ^18.0.0` и `react-router-dom ^6.30.3`. Обновление
-  сломает админку → ждём Strapi 6 (или официальной поддержки).
-- ⏸ **Backend: typescript 7 — отложен.** Сборка админки Strapi идёт своим тулингом;
-  TS 7 (нативный компилятор) сначала проверить в отдельной ветке на `strapi build`.
+  корзина: «+» → счётчик 1, после перезагрузки сохраняется.
 
-Осталось (по плану): `@nuxtjs/color-mode` 4, `h3` 2, `vitest` 5, `dotenv`/`happy-dom`/`@types/node`,
-`@nuxtjs/mdc` 0.23, `pinia` 4 + `@pinia/nuxt` 1, backend: `react` 19, `react-router-dom` 7, `typescript` 7.
+Итоговые проверки блока: `vitest run` — 21/21; `nuxt typecheck` — 0 ошибок;
+`npm run build` — успешно.
 
-Наблюдение: `Hydration node mismatch` на всех страницах — **не связано с иконками**
-(есть и на 1.15.0, и на 2.6.2 при здоровом dev-сервере). Симптом: сервер отдаёт комментарий
-вместо корня страницы (`<Index>`). Проверено и исключено: версия иконок, `pageTransition`
-(mode out-in и полное отключение), `VitePwaManifest` в app.vue. Продуктовая сборка (3100)
-тоже пишет «Hydration completed but contains mismatches», старый прод — нет.
-Отдельная задача: найти, какой элемент в `<main>` съезжает на клиенте.
+### Отложено (объективные причины)
+- ⏸ **h3 1 → 2** — Nuxt 4.6.3 работает на Nitro 2 + h3 v1; h3 v2 приедет с Nitro 3
+  (иначе два несовместимых Event-объекта).
+- ⏸ **react 19 / react-router-dom 7** — `@strapi/strapi@5.60.0` требует `react ^18.0.0`
+  и `react-router-dom ^6.30.3`; обновление сломает админку. Ждём Strapi 6.
+- ⏸ **typescript 7** — сборка админки Strapi идёт своим тулингом; проверять отдельно
+  на `npx strapi build`, лучше в отдельной ветке.
+
+### Что ещё открыто
+- **Гидрейшн-mismatch / пустой SSR — решено (03.11.2026).** Причина: routeRules вида
+  `"/**/auth/**": { ssr: false }` в Nuxt 4.6 помечали как SPA **все** страницы
+  (`_spaOnlyPageStub`). Фикс: явные пути с локалью (`4f931ef`). Разбор —
+  `.kilo/plans/ssr-hydration.md`. На сборке: 0 заглушек страниц, hydration mismatch — 0.
+- **bridge.js / `.md` — реализовано** (`text/plain` через Bot API), мост перезапущен.
+  Детали — `.kilo/plans/bridge-md-mime.md`.
+
+Действующих пунктов по обновлению зависимостей не осталось: всё, что можно было
+обновить без смены Strapi/Nitro, обновлено и проверено.
+
 
