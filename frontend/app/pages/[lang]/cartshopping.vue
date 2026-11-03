@@ -6,6 +6,7 @@ import { buttonTranslations } from "~/locales/button";
 import { orderSuccessTranslations } from "~/locales/orderSuccess";
 
 definePageMeta({
+  ssr: false,
   viewTransition: {
     enabled: true,
     toTypes: ["slide-forward"],

@@ -4,6 +4,7 @@ import { cabinetTranslations } from '~/locales/cabinet'
 import OrderHistory from '~/components/auth/OrderHistory.vue'
 
 definePageMeta({
+  ssr: false,
   middleware: 'auth',
   viewTransition: {
     enabled: true,

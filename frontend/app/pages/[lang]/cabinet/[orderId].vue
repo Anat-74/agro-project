@@ -2,6 +2,7 @@
 import { cabinetTranslations } from '~/locales/cabinet'
 
 definePageMeta({
+  ssr: false,
   middleware: 'auth',
   viewTransition: {
     enabled: true,

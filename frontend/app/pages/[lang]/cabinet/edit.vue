@@ -3,6 +3,7 @@ import { cabinetTranslations } from '~/locales/cabinet'
 import ConfirmDeleteModal from '~/components/auth/ConfirmDeleteModal.vue'
 
 definePageMeta({
+  ssr: false,
   middleware: 'auth',
   viewTransition: {
     enabled: true,

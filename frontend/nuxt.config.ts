@@ -174,9 +174,14 @@ export default defineNuxtConfig({
     // сегмент) и не работал.
 
     // === CSR (Client-side only — no SEO, user-specific) ===
-    "/**/cartshopping": { ssr: false },
-    "/**/auth/**": { ssr: false },
-    "/**/cabinet/**": { ssr: false },
+    // Только явные пути с локалью! Шаблоны "/**/auth/**" в Nuxt 4.6 помечают
+    // как SPA ВСЕ страницы (_spaOnlyPageStub → пустой SSR + hydration mismatch).
+    "/ru/cartshopping": { ssr: false },
+    "/be/cartshopping": { ssr: false },
+    "/ru/auth/**": { ssr: false },
+    "/be/auth/**": { ssr: false },
+    "/ru/cabinet/**": { ssr: false },
+    "/be/cabinet/**": { ssr: false },
   },
   runtimeConfig: {
     deepseekApiKey: process.env.DEEPSEEK_API_KEY,

@@ -2,6 +2,7 @@
 import { authTranslations } from '~/locales/auth'
 
 definePageMeta({
+  ssr: false,
   viewTransition: {
     enabled: true,
     toTypes: ['slide-forward'],
