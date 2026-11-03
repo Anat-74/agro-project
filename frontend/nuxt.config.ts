@@ -30,11 +30,11 @@ export default defineNuxtConfig({
     },
     // Глобальный дефолт VT — выключен; включается точечно (лёгкие CSR-страницы)
     viewTransition: false,
-    // Vue Transitions выключены: с глобальным pageTransition страницы НЕ
-    // рендерятся на сервере (в <main> остаётся только комментарий `<!---->`),
-    // клиент рисует их сам → Hydration node mismatch + пустой SSR (плохо для SEO).
-    // Вернуть после фикса в Nuxt или заменить на View Transitions (уже opt-in).
-    pageTransition: false,
+    // Vue Transitions — глобальный кроссфейд для всех страниц (SSR-дефолт)
+    pageTransition: {
+      name: "page-fade",
+      mode: "out-in",
+    },
   },
   modules: [
     "@nuxt/image",
