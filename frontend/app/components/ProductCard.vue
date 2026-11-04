@@ -275,8 +275,8 @@ const characteristics = computed(() => {
     // Вырез под «в корзину» — ТОЛЬКО здесь (нет 3D-переворота → нет задержки).
     // На главной и при открытом фильтре карточка переворачивается — выреза нет.
     .product-card__surface {
-      border-radius: var(--notch-r, 18px);
-      @include invertedRadius(var(--notch-r, 18px), var(--notch-s, 26px));
+      border-radius: var(--notch-r, 12px);
+      @include invertedRadius(var(--notch-r, 12px), var(--notch-s, 18px));
     }
   }
 
@@ -456,7 +456,7 @@ const characteristics = computed(() => {
   // Все размеры — переменные: база + оверрайды контейнерными запросами.
   // Зазор с каждой стороны = --notch-gap, вырез = плашка + 2*зазор.
   &__add {
-    --notch-size: 49px;
+    --notch-size: 34px;
     --notch-gap: 6px;
     position: absolute;
     z-index: 150;
@@ -634,25 +634,25 @@ const characteristics = computed(() => {
 
   // Пропорции тестовой карточки, масштаб под компактную карточку
   .product-card__surface {
-    --notch-r: 17px;
-    --notch-s: 26px;
+    --notch-r: 12px;
+    --notch-s: 18px;
   }
 
   .product-card__add {
-    --notch-size: 48px;
-    --notch-gap: 6px;
+    --notch-size: 34px;
+    --notch-gap: 5px;
   }
 }
 
 @container card (max-width: 170px) {
   .product-card__surface {
-    --notch-r: 14px;
-    --notch-s: 21px;
+    --notch-r: 11px;
+    --notch-s: 16px;
   }
 
   .product-card__add {
-    --notch-size: 39px;
-    --notch-gap: 5px;
+    --notch-size: 32px;
+    --notch-gap: 4px;
   }
 }
 
