@@ -728,6 +728,11 @@ useSeoMeta({
     padding-block-start: toRem(12);
   }
 
+  // ТЕСТ: при открытом фильтре карточка на 5px уже колонки
+  .products-page_filter-open :deep(.product-card) {
+    width: calc(100% - 5px);
+  }
+
   // Пагинация: 9px от низа страницы (bottom: -56 при padding-block-end 65px).
   .products-page_filter-open .products-page__pagination {
     bottom: toRem(-56);

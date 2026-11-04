@@ -466,9 +466,10 @@ defineEmits<Emits>();
    // Плашка в вырезе карточки (inverted radius): «выпуклая» кнопка «в корзину»
    &_notch {
      position: relative;
-     // размер задаёт карточка через --notch-size (вырез + равные отступы)
-     width: var(--notch-size, 48px);
-     height: var(--notch-size, 48px);
+     // размер задаёт карточка через --notch-size (вырез + равные отступы);
+     // если переменной нет — базовый 34px (как UImage: адаптация по контейнеру)
+     width: var(--notch-size, 34px);
+     height: var(--notch-size, 34px);
      padding: 0;
      border: none;
      // форма/скругление как у исходной кнопки add (6px), размер ~46px
@@ -812,5 +813,19 @@ defineEmits<Emits>();
 @keyframes pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4); }
   50% { box-shadow: 0 0 0 toRem(8) rgba(244, 67, 54, 0); }
+}
+
+/* Плашка «в корзину»: размер по контейнеру карточки — по аналогии с UImage
+   (там @container productImage). Карточка объявляет `container: card productImage`. */
+@container card (max-width: 230px) {
+  .u-button_notch {
+    --notch-size: 34px;
+  }
+}
+
+@container card (max-width: 170px) {
+  .u-button_notch {
+    --notch-size: 32px;
+  }
 }
 </style>

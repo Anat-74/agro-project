@@ -639,7 +639,6 @@ const characteristics = computed(() => {
   }
 
   .product-card__add {
-    --notch-size: 34px;
     --notch-gap: 5px;
   }
 }
@@ -651,7 +650,6 @@ const characteristics = computed(() => {
   }
 
   .product-card__add {
-    --notch-size: 32px;
     --notch-gap: 4px;
   }
 }
