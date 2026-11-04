@@ -1,13 +1,7 @@
 <script setup lang="ts">
-import USlider from '~/components/USlider.vue'
-
 const props = defineProps<{
   product: Product
 }>()
-
-const config = useRuntimeConfig()
-
-const strapiUrl = (url: string) => `${config.public.strapi.url}${url}`
 
 // Слайды = изображения продукта (из Strapi)
 const slides = computed(() => props.product?.image || [])
@@ -41,7 +35,7 @@ const sliderActive = computed<number>(() => {
       <!-- Слайд: полное изображение, первый eager, остальные lazy -->
       <template #default="{ slide, index }">
         <UImage
-          :src="strapiUrl(slide.url)"
+          :src="slide.url"
           :alt="product.name"
           type="product"
           width="290"
@@ -63,7 +57,7 @@ const sliderActive = computed<number>(() => {
         @click="sliderRef?.go?.(i + 1)"
       >
         <UImage
-          :src="strapiUrl(img.url)"
+          :src="img.url"
           :alt="`${product.name} - ${i + 1}`"
           type="product"
           width="40"
