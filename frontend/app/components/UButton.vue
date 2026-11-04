@@ -514,6 +514,16 @@ defineEmits<Emits>();
          inset 0 1px 0 rgba(255, 255, 255, 0.55);
        filter: brightness(1.06);
      }
+
+     // Контейнерные запросы — внутри класса (как в UImage для productImage).
+     // Карточка объявляет `container: card productImage / inline-size`.
+     @container card (max-width: 230px) {
+       --notch-size: 34px;
+     }
+
+     @container card (max-width: 170px) {
+       --notch-size: 32px;
+     }
    }
 
    &_add {
@@ -815,17 +825,4 @@ defineEmits<Emits>();
   50% { box-shadow: 0 0 0 toRem(8) rgba(244, 67, 54, 0); }
 }
 
-/* Плашка «в корзину»: размер по контейнеру карточки — по аналогии с UImage
-   (там @container productImage). Карточка объявляет `container: card productImage`. */
-@container card (max-width: 230px) {
-  .btn_notch {
-    --notch-size: 34px;
-  }
-}
-
-@container card (max-width: 170px) {
-  .btn_notch {
-    --notch-size: 32px;
-  }
-}
 </style>
