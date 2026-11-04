@@ -119,9 +119,6 @@ provide(VISIBILITY_KEY, {
 //   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  // Safe-area: контент не заезжает под системные панели (0 в обычном браузере)
-  padding-top: var(--safe-top, 0px);
-  padding-bottom: var(--safe-bottom, 0px);
 
   main {
     flex: 1 1 auto;

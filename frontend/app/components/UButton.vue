@@ -680,7 +680,7 @@ defineEmits<Emits>();
     z-index: 999;
     // По горизонтали по центру экрана, от низа 4px (+ safe-area)
     inset-inline: 0;
-    bottom: calc(toRem(4) + var(--safe-bottom, 0px));
+    bottom: toRem(4);
     margin-inline: auto;
     padding: 0;
     border-radius: 50%;

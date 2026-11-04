@@ -42,24 +42,6 @@
   // mobile — фикс (--filter-drawer-w), чтобы справа оставалась колонка товаров
   @include adaptiveValue("--filter-width", 280, 180);
   --filter-drawer-w: #{toRem(165)};
-  // Safe-area (Android edge-to-edge / вырез iOS). В обычных браузерах — 0.
-  // Нужны, чтобы sticky-шапка и панель не заезжали под системный статус-бар.
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-// Chrome на Android в standalone/fullscreen (в т.ч. из-за регрессии M153) может
-// отдавать safe-area-inset-top = 0, хотя страница уже рисуется под статус-баром.
-// В этих режимах держим минимум 30px (типичная высота статус-бара Android);
-// если браузер отдаёт больше (вырез) — берём его значение.
-@media (display-mode: standalone), (display-mode: fullscreen) {
-  :root {
-    --safe-top: max(env(safe-area-inset-top, 0px), 30px);
-    // Низ: 48px — высота системной навигации (3 кнопки). Без этого фиксированные
-    // кнопки (плавающий «Фильтр», чат, «наверх») уходят под панель навигации:
-    // Chrome расширяет layout-viewport под неё (edge-to-edge с M135).
-    --safe-bottom: max(env(safe-area-inset-bottom, 0px), 48px);
-  }
 }
  
 // Светлая тема (на основе цветов из Figma)

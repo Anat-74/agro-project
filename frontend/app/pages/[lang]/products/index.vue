@@ -686,7 +686,7 @@ useSeoMeta({
   // (шапка сайта схлопнута → сдвига нет, кроме safe-area).
   .products-page_filter-open .products-page__header {
     position: sticky;
-    top: var(--safe-top, 0px);
+    top: 0;
     z-index: 20;
   }
 

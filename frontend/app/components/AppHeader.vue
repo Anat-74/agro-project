@@ -202,10 +202,9 @@ function openPreview(product: Product) {
   @media (max-width: $tablet) {
     position: sticky;
     z-index: 998;
-    // top = safe-area − высота баннера: баннер уходит за статус-бар, строка иконок
-    // встаёт ровно под ним. Без safe-area (env = 0) — прежние -60…-40.
-    @include adaptiveValue("--header-sticky-top", -60, -40);
-    top: calc(var(--header-sticky-top) + var(--safe-top));
+    // top = минус высота баннера: при скролле скрывается только баннер,
+    // строка иконок остаётся полностью видимой
+    @include adaptiveValue("top", -60, -40);
   }
 
   &__container-top {
