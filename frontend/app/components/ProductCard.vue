@@ -235,7 +235,9 @@ const characteristics = computed(() => {
   border-radius: toEm(6);
   perspective: toRem(500);
   max-width: toRem(220);
-  @include containerAdaptive("height", 320, 250, 1000, 360);
+  // Высота — от ширины самой карточки (авто-подстройка в любой сетке).
+  // На главной секции переопределяют высоту через containerAdaptive (335/265).
+  aspect-ratio: 172 / 250;
   @include containerParent(card productImage, inline-size);
   // Плавная реакция 3D-кнопки: scale (transform) + margin-block (сдвиг нижнего
   // ряда). Сохраняем глобальные li:hover-переходы (opacity/filter/shadow/color).

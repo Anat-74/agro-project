@@ -818,13 +818,13 @@ defineEmits<Emits>();
 /* Плашка «в корзину»: размер по контейнеру карточки — по аналогии с UImage
    (там @container productImage). Карточка объявляет `container: card productImage`. */
 @container card (max-width: 230px) {
-  .u-button_notch {
+  .btn_notch {
     --notch-size: 34px;
   }
 }
 
 @container card (max-width: 170px) {
-  .u-button_notch {
+  .btn_notch {
     --notch-size: 32px;
   }
 }
