@@ -66,8 +66,6 @@ onMounted(() => {
   const start = () => {
     const { avifUrl, webpUrl } = imageUrls.value
 
-    // Предзагружаем тот же ресурс, что выберет браузер: AVIF (основной),
-    // при ошибке — WebP (фолбэк). Только после успешной загрузки показываем.
     const tryLoad = (url: string | null, ok: () => void, fail?: () => void) => {
       if (!url) {
         ;(fail ?? ok)()
@@ -80,7 +78,13 @@ onMounted(() => {
       img.src = url
     }
 
-    tryLoad(avifUrl, reveal, () => tryLoad(webpUrl, reveal, reveal))
+    // Предзагружаем тот же ресурс, что выберет браузер:
+    // DPR ≥ 2 → AVIF (2x), иначе WebP (1x). Второй — фолбэк при ошибке.
+    const prefersAvif = (window.devicePixelRatio || 1) > 1 && !!avifUrl
+    const first = prefersAvif ? avifUrl : webpUrl
+    const second = prefersAvif ? webpUrl : avifUrl
+
+    tryLoad(first, reveal, () => tryLoad(second, reveal, reveal))
   }
 
   const idle = () => {
@@ -237,8 +241,9 @@ const backgroundStyle = computed(() => {
   const { avifUrl, webpUrl } = imageUrls.value;
   if (avifUrl || webpUrl) {
     const parts = [];
-    // AVIF первым: браузер выберет его, если поддерживает; WebP — фолбэк.
-    if (avifUrl) parts.push(`url('${avifUrl}') type('image/avif') 1x`);
+    // AVIF — основной формат, но это файл 2x (ретина): браузер возьмёт его
+    // на DPR ≥ 2. WebP — 1x-фолбэк для обычных экранов и старых браузеров.
+    if (avifUrl) parts.push(`url('${avifUrl}') type('image/avif') 2x`);
     if (webpUrl) parts.push(`url('${webpUrl}') type('image/webp') 1x`);
     styles.backgroundImage = `image-set(${parts.join(", ")})`;
   }
