@@ -238,6 +238,11 @@ const characteristics = computed(() => {
   // Высота — от ширины самой карточки (авто-подстройка в любой сетке).
   // На главной секции переопределяют высоту через containerAdaptive (335/265).
   aspect-ratio: 172 / 250;
+  // Размер плашки и зазор — единый источник для кнопки И выреза.
+  // Вырез (--notch-r/--notch-s) считается от них ниже, в .product-card__surface,
+  // поэтому при изменении размера кнопки вырез подстраивается сам.
+  --notch-size: 34px;
+  --notch-gap: 5px;
   @include containerParent(card productImage, inline-size);
   // Плавная реакция 3D-кнопки: scale (transform) + margin-block (сдвиг нижнего
   // ряда). Сохраняем глобальные li:hover-переходы (opacity/filter/shadow/color).
@@ -276,7 +281,14 @@ const characteristics = computed(() => {
 
     // Вырез под «в корзину» — ТОЛЬКО здесь (нет 3D-переворота → нет задержки).
     // На главной и при открытом фильтре карточка переворачивается — выреза нет.
+    // r/s ВЫЧИСЛЯЮТСЯ из размера плашки и зазора:
+    //   вырез по ширине = s + 2r = размер + 2*зазор
+    //   r ≈ 35% от размера плашки
     .product-card__surface {
+      --notch-r: calc(var(--notch-size, 34px) * 0.35);
+      --notch-s: calc(
+        var(--notch-size, 34px) + 2 * var(--notch-gap, 5px) - 2 * var(--notch-r)
+      );
       border-radius: var(--notch-r, 12px);
       @include invertedRadius(var(--notch-r, 12px), var(--notch-s, 18px));
     }
@@ -458,14 +470,11 @@ const characteristics = computed(() => {
   // Все размеры — переменные: база + оверрайды контейнерными запросами.
   // Зазор с каждой стороны = --notch-gap, вырез = плашка + 2*зазор.
   &__add {
-    --notch-size: 34px;
-    --notch-gap: 6px;
     position: absolute;
     z-index: 150;
     width: var(--notch-size);
     height: var(--notch-size);
     right: var(--notch-gap);
-    // выравниваем низ кнопки с низом карточки (−5px от зазора)
     bottom: var(--notch-gap);
   }
 
@@ -633,25 +642,13 @@ const characteristics = computed(() => {
     padding-inline: toEm(8);
     padding-block: toEm(6);
   }
-
-  // Пропорции тестовой карточки, масштаб под компактную карточку
-  .product-card__surface {
-    --notch-r: 12px;
-    --notch-s: 18px;
-  }
-
-  .product-card__add {
-    --notch-gap: 5px;
-  }
 }
 
 @container card (max-width: 170px) {
-  .product-card__surface {
-    --notch-r: 11px;
-    --notch-s: 16px;
-  }
-
+  // Меняется только размер плашки/зазор — r и s пересчитаются на поверхности.
+  .product-card__surface,
   .product-card__add {
+    --notch-size: 32px;
     --notch-gap: 4px;
   }
 }

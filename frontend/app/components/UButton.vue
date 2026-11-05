@@ -571,10 +571,6 @@ defineEmits<Emits>();
       }
     }
 
-    @container card (max-width: 170px) {
-      width: var(--notch-size, 32px);
-      height: var(--notch-size, 32px);
-    }
   }
 
   &_remove-cart-item {
