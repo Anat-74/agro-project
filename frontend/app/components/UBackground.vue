@@ -23,6 +23,9 @@ interface Props {
   sizeMode?: "cover" | "contain" | "original";
   bgPosition?: string;
   backgroundOptions?: BackgroundItem[];
+  // Отложенная загрузка картинки: не ставим background-image, пока не загрузился
+  // основной контент (load/idle), затем предзагружаем и плавно проявляем.
+  defer?: boolean;
 }
 
 const config = useRuntimeConfig();
@@ -39,10 +42,50 @@ const props = withDefaults(defineProps<Props>(), {
   sizeMode: "original",
   bgPosition: "center",
   backgroundOptions: () => [],
+  defer: false,
 });
 
 const selectedBg = ref<BackgroundItem | null>(null)
 const isHovered = ref(false)
+
+// Отложенная загрузка фона: пока false — background-image не ставится вовсе,
+// поэтому браузер не начинает качать картинку до загрузки контента.
+const bgReady = ref(!props.defer)
+const bgVisible = ref(!props.defer)
+
+onMounted(() => {
+  if (!props.defer) return
+
+  const reveal = () => {
+    bgReady.value = true
+    // Два кадра: сначала появляется элемент с картинкой (из кэша предзагрузки),
+    // затем включаем opacity-переход — получаем плавное проявление.
+    requestAnimationFrame(() => requestAnimationFrame(() => (bgVisible.value = true)))
+  }
+
+  const start = () => {
+    const url = imageUrls.value.baseWebpUrl
+    if (!url) {
+      reveal()
+      return
+    }
+    const img = new Image()
+    img.decoding = "async"
+    const done = () => reveal()
+    img.onload = done
+    img.onerror = done
+    img.src = url
+  }
+
+  const idle = () => {
+    const ric = (window as any).requestIdleCallback
+    if (typeof ric === "function") ric(start, { timeout: 1500 })
+    else setTimeout(start, 250)
+  }
+
+  if (document.readyState === "complete") idle()
+  else window.addEventListener("load", idle, { once: true })
+})
 
 const isDynamic = computed(() => !!(props.backgroundOptions && props.backgroundOptions.length > 0))
 
@@ -181,6 +224,9 @@ const backgroundStyle = computed(() => {
     case "contain": styles.backgroundSize = "contain"; break;
     default: styles.backgroundSize = "auto";
   }
+  // До готовности (defer) background-image не задаём — иначе браузер начнёт
+  // грузить картинку в приоритете с основным контентом.
+  if (!bgReady.value) return styles
   const { baseWebpUrl, retinaAvifUrl } = imageUrls.value;
   if (baseWebpUrl || retinaAvifUrl) {
     const parts = [];
@@ -220,6 +266,7 @@ const interactiveClass = computed(() => ({
       filterClass,
       bgEffectClass,
       interactiveClass,
+      { 'is-deferred': defer, 'is-visible': bgVisible },
     ]"
     :style="backgroundStyle"
     @mouseenter="isHovered = true"
@@ -255,6 +302,16 @@ const interactiveClass = computed(() => ({
 
   @starting-style {
     opacity: 0;
+  }
+
+  /* Отложенный фон: плавное появление после загрузки картинки */
+  &.is-deferred {
+    opacity: 0;
+    transition: opacity 0.8s ease;
+
+    &.is-visible {
+      opacity: 1;
+    }
   }
 
   /* ========== ВАРИАНТЫ КОМПОНЕНТА ========== */
