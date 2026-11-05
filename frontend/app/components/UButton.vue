@@ -540,10 +540,14 @@ defineEmits<Emits>();
   // квадрат, «+» по центру, без тени. Размер — из --notch-size (задаёт карточка).
   &_add-plate {
     position: relative;
-    width: var(--notch-size, 34px);
-    height: var(--notch-size, 34px);
+    width: var(--notch-size, 39px);
+    height: var(--notch-size, 39px);
     padding: 0;
-    border-radius: toEm(6);
+    // «Пазл»: верхний левый угол повторяет радиус выреза (--notch-r),
+    // нижний правый — внешний радиус карточки (6px), остальные — малые.
+    border-radius:
+      calc(var(--notch-size, 39px) * 0.35 * var(--notch-scale, 1.28))
+      toRem(6) toRem(6) toRem(6);
     border: toRem(1) solid var(--success-color);
     background-color: var(--light-color);
     color: var(--green-color);
