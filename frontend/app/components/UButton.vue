@@ -16,6 +16,7 @@ interface Props {
     | "switch-locale-cart"
     | "add-to-cart"
     | "add"
+    | "add-plate"
     | "is-added"
     | "remove-cart-item"
     | "remove-quantity-prod"
@@ -61,7 +62,7 @@ defineEmits<Emits>();
       { 'btn_loading': isLoading, btn_disabled: isDisabled },
       { 'btn_selected': !colorMode.unknown && theme === colorMode.value },
       { 'btn_hamburger_is-open': isOpen && variant === 'hamburger' },
-      { 'btn_add_is-added': isInCart && variant === 'add' },
+      { 'btn_add_is-added': isInCart && (variant === 'add' || variant === 'add-plate') },
       size === 'large' ? 'btn_large' : '',
       icon ? 'btn_icon' : '',
     ]"
@@ -533,49 +534,60 @@ defineEmits<Emits>();
       }
     }
 
-    // В карточке товара (контейнер `card`) та же кнопка играет роль «плашки»
-    // в вырезе: фиксированный квадрат, непрозрачная, «+» по центру, тень.
-    // Вне карточки (модалка, скидки, подкатегории) — прежний вид add.
-    @container compact (max-width: 230px) {
-      width: var(--notch-size, 34px);
-      height: var(--notch-size, 34px);
-      padding: 0;
-      // Без тени: её размытие заливало зазор выреза, и он выглядел
-      // как серый квадрат вместо открытого вогнутого угла.
-      box-shadow: none;
-      transition:
-        background-color var(--transition-duration),
-        border-color var(--transition-duration),
-        opacity var(--transition-duration),
-        filter var(--transition-duration);
+  }
 
-      // «+» по центру — только в базовом состоянии. В состоянии «в корзине»
-      // должна работать исходная геометрия галочки из &_add_is-added,
-      // поэтому эти правила не применяем при наличии btn_add_is-added.
-      &:not(.btn_add_is-added) {
-        opacity: 1;
-        &::before,
-        &::after {
-          right: auto;
-          left: calc(50% - 7.5px);
-          top: calc(50% - 1px);
-          bottom: auto;
-        }
+  // Плашка «в корзину» в вырезе карточки (компактный режим): фиксированный
+  // квадрат, «+» по центру, без тени. Размер — из --notch-size (задаёт карточка).
+  &_add-plate {
+    position: relative;
+    width: var(--notch-size, 34px);
+    height: var(--notch-size, 34px);
+    padding: 0;
+    border-radius: toEm(6);
+    border: toRem(1) solid var(--success-color);
+    background-color: var(--light-color);
+    color: var(--green-color);
+    box-shadow: none;
+    transition:
+      background-color var(--transition-duration),
+      border-color var(--transition-duration),
+      opacity var(--transition-duration),
+      filter var(--transition-duration);
 
-        &::before {
-          transform: rotate(-90deg);
-        }
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      width: 15px;
+      height: 2px;
+      border-radius: 2px;
+      background-color: var(--green-color);
+      transition: all 0.2s ease;
+    }
 
-        &::after {
-          transform: rotate(180deg);
-        }
+    // «+» по центру — только в базовом состоянии; в состоянии «в корзине»
+    // работает общая геометрия галочки (.btn_add_is-added)
+    &:not(.btn_add_is-added) {
+      &::before,
+      &::after {
+        top: calc(50% - 1px);
+        left: calc(50% - 7.5px);
+        right: auto;
+        bottom: auto;
       }
 
-      @include hover {
-        filter: brightness(1.06);
+      &::before {
+        transform: rotate(-90deg);
+      }
+
+      &::after {
+        transform: rotate(180deg);
       }
     }
 
+    @include hover {
+      filter: brightness(1.06);
+    }
   }
 
   &_remove-cart-item {

@@ -240,7 +240,7 @@ const characteristics = computed(() => {
     <UButton
       v-if="compact"
       class="product-card__add product-card__add_plate"
-      variant="add"
+      variant="add-plate"
       :is-in-cart="isInCart(product.documentId)"
       :aria-label="
         isInCart(product.documentId)
@@ -295,10 +295,6 @@ const characteristics = computed(() => {
   // Компактный режим (фильтр закрыт): переворота нет, кнопка модалки сверху справа
   &_compact {
     perspective: none;
-    // Отдельное имя контейнера для компактного режима: стили «плашки»
-    // в UButton включаются только здесь (@container compact), в обычном
-    // режиме кнопка остаётся обычной add в нижней полосе.
-    container-name: card productImage compact;
 
     .product-card__modal {
       position: absolute;
