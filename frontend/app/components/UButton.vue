@@ -540,12 +540,10 @@ defineEmits<Emits>();
       height: var(--notch-size, 34px);
       padding: 0;
       opacity: 1;
-      box-shadow:
-        0 6px 14px rgba(39, 76, 91, 0.28),
-        inset 0 1px 0 rgba(255, 255, 255, 0.45);
-      transition:
-        box-shadow var(--transition-duration),
-        filter var(--transition-duration);
+      // Без тени: её размытие заливало зазор выреза, и он выглядел
+      // как серый квадрат вместо открытого вогнутого угла.
+      box-shadow: none;
+      transition: filter var(--transition-duration);
 
       // «+» по центру — только в базовом состоянии. В состоянии «в корзине»
       // должна работать исходная геометрия галочки из &_add_is-added,
@@ -569,9 +567,6 @@ defineEmits<Emits>();
       }
 
       @include hover {
-        box-shadow:
-          0 8px 18px rgba(39, 76, 91, 0.4),
-          inset 0 1px 0 rgba(255, 255, 255, 0.55);
         filter: brightness(1.06);
       }
     }

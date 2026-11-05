@@ -466,7 +466,7 @@ const characteristics = computed(() => {
     height: var(--notch-size);
     right: var(--notch-gap);
     // выравниваем низ кнопки с низом карточки (−5px от зазора)
-    bottom: calc(var(--notch-gap) - 5px);
+    bottom: var(--notch-gap);
   }
 
   &__top-items {
