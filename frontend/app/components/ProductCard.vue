@@ -306,12 +306,15 @@ const characteristics = computed(() => {
     // Вырез под «в корзину» — ТОЛЬКО здесь (нет 3D-переворота → нет задержки).
     // На главной и при открытом фильтре карточка переворачивается — выреза нет.
     // r/s ВЫЧИСЛЯЮТСЯ из размера плашки и зазора:
-    //   вырез по ширине = s + 2r = размер + 2*зазор
-    //   r ≈ 35% от размера плашки
+    //   вырез по ширине = s + 2r = (размер + 2*зазор) * масштаб выреза
+    //   r ≈ 35% от размера плашки × масштаб
+    // --notch-scale: визуальный размер выреза (1 = плашка впритык, 1.28 = +28%)
     .product-card__surface {
-      --notch-r: calc(var(--notch-size, 34px) * 0.35);
+      --notch-scale: 1.28;
+      --notch-r: calc(var(--notch-size, 34px) * 0.35 * var(--notch-scale));
       --notch-s: calc(
-        var(--notch-size, 34px) + 2 * var(--notch-gap, 5px) - 2 * var(--notch-r)
+        (var(--notch-size, 34px) + 2 * var(--notch-gap, 5px)) * var(--notch-scale) -
+          2 * var(--notch-r)
       );
       border-radius: var(--notch-r, 12px);
       @include invertedRadius(var(--notch-r, 12px), var(--notch-s, 18px));
