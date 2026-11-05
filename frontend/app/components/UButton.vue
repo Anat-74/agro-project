@@ -547,20 +547,25 @@ defineEmits<Emits>();
         box-shadow var(--transition-duration),
         filter var(--transition-duration);
 
-      &::before,
-      &::after {
-        right: auto;
-        left: calc(50% - 7.5px);
-        top: calc(50% - 1px);
-        bottom: auto;
-      }
+      // «+» по центру — только в базовом состоянии. В состоянии «в корзине»
+      // должна работать исходная геометрия галочки из &_add_is-added,
+      // поэтому эти правила не применяем при наличии btn_add_is-added.
+      &:not(.btn_add_is-added) {
+        &::before,
+        &::after {
+          right: auto;
+          left: calc(50% - 7.5px);
+          top: calc(50% - 1px);
+          bottom: auto;
+        }
 
-      &::before {
-        transform: rotate(-90deg);
-      }
+        &::before {
+          transform: rotate(-90deg);
+        }
 
-      &::after {
-        transform: rotate(180deg);
+        &::after {
+          transform: rotate(180deg);
+        }
       }
 
       @include hover {
