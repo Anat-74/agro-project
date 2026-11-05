@@ -37,12 +37,17 @@ watch(currentLocale, () => {
 
   <main class="page-main">
     <SearchOverlay />
-    <UBackground
-      v-if="global?.background?.enableBackground && isBgPage"
-      :background-options="global.background.options"
-      variant="clean"
-      size-mode="cover"
-    />
+    <!-- Обёртка с overflow:clip: transform-анимации фона (zoom/kenburns/press)
+         масштабируют .app-bg и раньше увеличивали scrollable overflow страницы —
+         появлялся «горизонтальный скролл» и «плыли» sticky-плашки. Клип режет
+         визуальный overflow, layout не затрагивается. -->
+    <div v-if="global?.background?.enableBackground && isBgPage" class="page-bg">
+      <UBackground
+        :background-options="global.background.options"
+        variant="clean"
+        size-mode="cover"
+      />
+    </div>
 
     <slot />
   </main>
@@ -71,5 +76,13 @@ watch(currentLocale, () => {
 .page-main {
   position: relative;
   z-index: 0;
+}
+
+// Слой фона страницы: клип, чтобы transform-анимации .app-bg не создавали
+// прокручиваемый overflow (страница «скроллилась» по горизонтали и плашки ехали).
+.page-bg {
+  position: absolute;
+  inset: 0;
+  overflow: clip;
 }
 </style>
