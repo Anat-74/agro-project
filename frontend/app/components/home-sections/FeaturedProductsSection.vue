@@ -117,7 +117,9 @@ v-if="featuredProd?.[0]?.products?.length"
       row-gap: toEm(4);
       justify-content: center;
       text-align: center;
-      height: 100%;
+      // Высота как у карточки, а не на всю высоту ленты
+      align-self: start;
+      @include containerAdaptive("height", 335, 265, 1000, 360);
       padding-inline: toEm(12);
       border-radius: toEm(6);
       color: var(--light-color);

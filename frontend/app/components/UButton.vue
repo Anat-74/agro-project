@@ -518,7 +518,7 @@ defineEmits<Emits>();
 		&::after {
          width: toRem(8);
          // +1px к left => правый штрих галочки смыкается с левым без зазора
-         right: calc(50% + 1px);
+         right: calc(50% + 2px);
          bottom: 40%;
          transform: rotate(60deg);
 		}
@@ -536,7 +536,7 @@ defineEmits<Emits>();
     // В карточке товара (контейнер `card`) та же кнопка играет роль «плашки»
     // в вырезе: фиксированный квадрат, непрозрачная, «+» по центру, тень.
     // Вне карточки (модалка, скидки, подкатегории) — прежний вид add.
-    @container card (max-width: 230px) {
+    @container compact (max-width: 230px) {
       width: var(--notch-size, 34px);
       height: var(--notch-size, 34px);
       padding: 0;

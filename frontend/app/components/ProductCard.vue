@@ -151,6 +151,18 @@ const characteristics = computed(() => {
         >
           {{ formatPrice(product.price) }}
         </span>
+        <UButton
+          v-if="!compact"
+          class="product-card__add"
+          variant="add"
+          :is-in-cart="isInCart(product.documentId)"
+          :aria-label="
+            isInCart(product.documentId)
+              ? buttonTranslations[currentLocale].ariaLabelAdded
+              : buttonTranslations[currentLocale].label
+          "
+          @click="handleAddToCart(product)"
+        />
       </div>
         </div>
       </div>
@@ -208,14 +220,26 @@ const characteristics = computed(() => {
         >
           {{ formatPrice(product.price) }}
         </span>
+        <UButton
+          class="product-card__add"
+          variant="add"
+          :is-in-cart="isInCart(product.documentId)"
+          :aria-label="
+            isInCart(product.documentId)
+              ? buttonTranslations[currentLocale].ariaLabelAdded
+              : buttonTranslations[currentLocale].label
+          "
+          @click="handleAddToCart(product)"
+        />
       </div>
         </div>
       </div>
     </div>
 
-    <!-- «В корзину» — плашка в нижнем вырезе: снаружи маски, слой выше поверхности -->
+    <!-- Компактный режим: «В корзину» — плашка в нижнем вырезе (снаружи маски) -->
     <UButton
-      class="product-card__add"
+      v-if="compact"
+      class="product-card__add product-card__add_plate"
       variant="add"
       :is-in-cart="isInCart(product.documentId)"
       :aria-label="
@@ -271,6 +295,10 @@ const characteristics = computed(() => {
   // Компактный режим (фильтр закрыт): переворота нет, кнопка модалки сверху справа
   &_compact {
     perspective: none;
+    // Отдельное имя контейнера для компактного режима: стили «плашки»
+    // в UButton включаются только здесь (@container compact), в обычном
+    // режиме кнопка остаётся обычной add в нижней полосе.
+    container-name: card productImage compact;
 
     .product-card__modal {
       position: absolute;
@@ -466,16 +494,14 @@ const characteristics = computed(() => {
     }
   }
 
-  // «В корзину» — плашка в нижнем вырезе (снаружи маски).
-  // Все размеры — переменные: база + оверрайды контейнерными запросами.
-  // Зазор с каждой стороны = --notch-gap, вырез = плашка + 2*зазор.
-  &__add {
+  // «В корзину»: в обычном режиме кнопка живёт в нижней полосе (у цены),
+  // в компактном — плашка в вырезе (absolute, снаружи маски).
+  &__add_plate {
     position: absolute;
     z-index: 150;
     width: var(--notch-size);
     height: var(--notch-size);
     right: var(--notch-gap);
-    // Низ плашки — по низу карточки (как в «Горячем предложении»)
     bottom: 0;
   }
 
