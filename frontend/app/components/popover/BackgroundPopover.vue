@@ -10,6 +10,8 @@ interface Props {
   selectedId?: number | string | null
   sizeMode?: "cover" | "contain" | "original"
   effectName?: string
+  // Фон отключён пользователем («Без фона»)
+  bgDisabled?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -17,10 +19,12 @@ const props = withDefaults(defineProps<Props>(), {
   selectedId: null,
   sizeMode: "cover",
   effectName: "",
+  bgDisabled: false,
 })
 
 const emit = defineEmits<{
   select: [bg: BackgroundItem]
+  disable: []
   sizeChange: [mode: "cover" | "contain" | "original"]
   cycleEffect: []
 }>()
@@ -56,6 +60,15 @@ const selectBackground = (bg: BackgroundItem) => {
   emit('select', bg)
   // Окно НЕ закрывается при выборе — можно перебирать фоны.
   // Закрытие: клик вне окна / Escape (нативный light-dismiss popover="auto").
+}
+
+// Клик по миниатюре: применяем фон сразу (важно, когда фон был выключен
+// «Без фона» и активный слайд не меняется — watcher тогда не сработает),
+// затем листаем слайдер.
+const selectByIndex = (index: number) => {
+  const bg = props.backgrounds[index]
+  if (bg) selectBackground(bg)
+  sliderRef.value?.go(index + 1)
 }
 
 // Уникальный ключ для v-for по фонам (id фона или индекс как fallback)
@@ -153,17 +166,28 @@ watch(isOpen, (open) => {
         </div>
 
         <!-- Пагинация — отдельный блок вне слайдера: миниатюры, активная с бордером.
-             Клик листает слайдер, фон применяет watch(sliderActive) -->
-        <div v-if="backgrounds.length > 1" class="background-popover__thumbs">
+             Клик листает слайдер, фон применяет watch(sliderActive).
+             Первая кнопка — «Без фона»: отключает картинку (и запоминает выбор). -->
+        <div v-if="backgrounds.length" class="background-popover__thumbs">
+          <button
+            type="button"
+            class="background-popover__thumb background-popover__thumb_off"
+            :class="{ 'background-popover__thumb_active': bgDisabled }"
+            :aria-label="backgroundT.ariaLabelNoBackground"
+            :aria-pressed="bgDisabled"
+            @click="emit('disable')"
+          >
+            <Icon name="mingcute:forbid-circle-line" />
+          </button>
           <button
             v-for="(bg, i) in backgrounds"
             :key="optionKey(bg, i)"
             type="button"
             class="background-popover__thumb"
-            :class="{ 'background-popover__thumb_active': sliderActive === i + 1 }"
+            :class="{ 'background-popover__thumb_active': sliderActive === i + 1 && !bgDisabled }"
             :aria-label="`${backgroundT.ariaLabelOption}: ${bg.title}`"
-            :aria-pressed="sliderActive === i + 1"
-            @click="sliderRef?.go(i + 1)"
+            :aria-pressed="sliderActive === i + 1 && !bgDisabled"
+            @click="selectByIndex(i)"
           >
             <UImage
               v-if="bg.thumbnail?.url || bg.imageWebp?.url"
@@ -348,6 +372,25 @@ watch(isOpen, (open) => {
   border-radius: toRem(4);
   background-color: var(--bg-product);
   display: block;
+}
+
+// «Без фона»: квадрат с перечёркнутой иконкой
+.background-popover__thumb_off {
+  display: grid;
+  place-items: center;
+  width: toRem(44);
+  height: toRem(44);
+  border-radius: toRem(6);
+  background-color: var(--bg-product);
+  color: var(--gray-color);
+
+  svg {
+    font-size: toRem(20);
+  }
+
+  &.background-popover__thumb_active {
+    color: var(--success-color);
+  }
 }
 
 // Размер фона: единый класс .select (fallback + base-select из _utils.scss),

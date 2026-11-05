@@ -47,44 +47,55 @@ const props = withDefaults(defineProps<Props>(), {
 
 const selectedBg = ref<BackgroundItem | null>(null)
 const isHovered = ref(false)
+// Пользователь отключил фон (в localStorage: selectedBackground:<key> = "none")
+const bgOff = ref(false)
 
 // Отложенная загрузка фона: пока false — background-image не ставится вовсе,
 // поэтому браузер не начинает качать картинку до загрузки контента.
 const bgReady = ref(!props.defer)
 const bgVisible = ref(!props.defer)
 
+const revealBg = () => {
+  bgReady.value = true
+  // Два кадра: сначала появляется элемент с картинкой (из кэша предзагрузки),
+  // затем включаем opacity-переход — получаем плавное проявление.
+  requestAnimationFrame(() => requestAnimationFrame(() => (bgVisible.value = true)))
+}
+
+const preloadBg = () => {
+  const { avifUrl, webpUrl } = imageUrls.value
+
+  const tryLoad = (url: string | null, ok: () => void, fail?: () => void) => {
+    if (!url) {
+      ;(fail ?? ok)()
+      return
+    }
+    const img = new Image()
+    img.decoding = "async"
+    img.onload = ok
+    img.onerror = fail ?? ok
+    img.src = url
+  }
+
+  // Предзагружаем тот же ресурс, что выберет браузер:
+  // DPR ≥ 2 → AVIF (2x), иначе WebP (1x). Второй — фолбэк при ошибке.
+  const prefersAvif = (window.devicePixelRatio || 1) > 1 && !!avifUrl
+  const first = prefersAvif ? avifUrl : webpUrl
+  const second = prefersAvif ? webpUrl : avifUrl
+
+  tryLoad(first, revealBg, () => tryLoad(second, revealBg, revealBg))
+}
+
 onMounted(() => {
   if (!props.defer) return
 
-  const reveal = () => {
-    bgReady.value = true
-    // Два кадра: сначала появляется элемент с картинкой (из кэша предзагрузки),
-    // затем включаем opacity-переход — получаем плавное проявление.
-    requestAnimationFrame(() => requestAnimationFrame(() => (bgVisible.value = true)))
-  }
-
   const start = () => {
-    const { avifUrl, webpUrl } = imageUrls.value
-
-    const tryLoad = (url: string | null, ok: () => void, fail?: () => void) => {
-      if (!url) {
-        ;(fail ?? ok)()
-        return
-      }
-      const img = new Image()
-      img.decoding = "async"
-      img.onload = ok
-      img.onerror = fail ?? ok
-      img.src = url
+    // Фон отключён пользователем — картинку не качаем вообще
+    if (localStorage.getItem(storageKey.value) === "none") {
+      revealBg()
+      return
     }
-
-    // Предзагружаем тот же ресурс, что выберет браузер:
-    // DPR ≥ 2 → AVIF (2x), иначе WebP (1x). Второй — фолбэк при ошибке.
-    const prefersAvif = (window.devicePixelRatio || 1) > 1 && !!avifUrl
-    const first = prefersAvif ? avifUrl : webpUrl
-    const second = prefersAvif ? webpUrl : avifUrl
-
-    tryLoad(first, reveal, () => tryLoad(second, reveal, reveal))
+    preloadBg()
   }
 
   const idle = () => {
@@ -135,6 +146,13 @@ const storageKey = computed(() => `selectedBackground:${backgroundKey.value}`)
 const loadSelectedBg = () => {
   if (!isDynamic.value || !props.backgroundOptions) return
   const saved = localStorage.getItem(storageKey.value)
+  // Пользователь отключил фон — не подставляем дефолт из CMS
+  if (saved === "none") {
+    bgOff.value = true
+    selectedBg.value = null
+    return
+  }
+  bgOff.value = false
   if (saved) {
     const found = props.backgroundOptions.find(bg => String(bg.id) === saved)
     if (found) { selectedBg.value = found; return }
@@ -149,8 +167,18 @@ onMounted(loadSelectedBg)
 watch(backgroundKey, loadSelectedBg)
 
 const onSelectBg = (bg: BackgroundItem) => {
+  bgOff.value = false
   selectedBg.value = bg
   localStorage.setItem(storageKey.value, String(bg.id))
+  // Если фон был выключен и картинка ещё не предзагружена — догружаем сейчас
+  if (props.defer && !bgReady.value) preloadBg()
+}
+
+// «Без фона»: выключаем картинку и запоминаем выбор для этого типа страниц
+const onDisableBg = () => {
+  bgOff.value = true
+  selectedBg.value = null
+  localStorage.setItem(storageKey.value, "none")
 }
 
 // ===== Размер отображения фона (пользовательский выбор) =====
@@ -237,7 +265,8 @@ const backgroundStyle = computed(() => {
   }
   // До готовности (defer) background-image не задаём — иначе браузер начнёт
   // грузить картинку в приоритете с основным контентом.
-  if (!bgReady.value) return styles
+  // Фон отключён пользователем или ещё не готов (defer) — картинку не ставим
+  if (bgOff.value || !bgReady.value) return styles
   const { avifUrl, webpUrl } = imageUrls.value;
   if (avifUrl || webpUrl) {
     const parts = [];
@@ -296,7 +325,9 @@ const interactiveClass = computed(() => ({
     :selected-id="selectedBg?.id"
     :size-mode="userSizeMode"
     :effect-name="effectName"
+    :bg-disabled="bgOff"
     @select="onSelectBg"
+    @disable="onDisableBg"
     @size-change="onSizeChange"
     @cycle-effect="cycleBgEffect"
   />

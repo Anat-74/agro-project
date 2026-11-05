@@ -7,6 +7,8 @@ export const backgroundTranslations: Record<LocaleCode, {
   sizeCover: string
   sizeContain: string
   sizeOriginal: string
+  noBackground: string
+  ariaLabelNoBackground: string
 }> = {
   ru: {
     title: "Выберите фон",
@@ -17,6 +19,8 @@ export const backgroundTranslations: Record<LocaleCode, {
     sizeCover: "Заполнить",
     sizeContain: "Целиком",
     sizeOriginal: "Натуральный",
+    noBackground: "Без фона",
+    ariaLabelNoBackground: "Отключить фон",
   },
   be: {
     title: "Выберыце фон",
@@ -27,5 +31,7 @@ export const backgroundTranslations: Record<LocaleCode, {
     sizeCover: "Запоўніць",
     sizeContain: "Цалкам",
     sizeOriginal: "Натуральны",
+    noBackground: "Без фону",
+    ariaLabelNoBackground: "Адключыць фон",
   },
 }
