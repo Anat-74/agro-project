@@ -64,17 +64,23 @@ onMounted(() => {
   }
 
   const start = () => {
-    const url = imageUrls.value.baseWebpUrl
-    if (!url) {
-      reveal()
-      return
+    const { avifUrl, webpUrl } = imageUrls.value
+
+    // Предзагружаем тот же ресурс, что выберет браузер: AVIF (основной),
+    // при ошибке — WebP (фолбэк). Только после успешной загрузки показываем.
+    const tryLoad = (url: string | null, ok: () => void, fail?: () => void) => {
+      if (!url) {
+        ;(fail ?? ok)()
+        return
+      }
+      const img = new Image()
+      img.decoding = "async"
+      img.onload = ok
+      img.onerror = fail ?? ok
+      img.src = url
     }
-    const img = new Image()
-    img.decoding = "async"
-    const done = () => reveal()
-    img.onload = done
-    img.onerror = done
-    img.src = url
+
+    tryLoad(avifUrl, reveal, () => tryLoad(webpUrl, reveal, reveal))
   }
 
   const idle = () => {
@@ -209,9 +215,10 @@ const imageUrls = computed(() => {
     }
   }
   const removeExtension = (url: string) => url.replace(/\.(avif|webp)$/i, "");
+  // AVIF — основной формат, WebP — фолбэк для старых браузеров.
   return {
-    baseWebpUrl: baseImageUrl ? `${removeExtension(baseImageUrl)}.webp` : null,
-    retinaAvifUrl: retinaImageUrl ? `${removeExtension(retinaImageUrl)}.avif` : null,
+    avifUrl: retinaImageUrl ? `${removeExtension(retinaImageUrl)}.avif` : null,
+    webpUrl: baseImageUrl ? `${removeExtension(baseImageUrl)}.webp` : null,
   };
 });
 
@@ -227,11 +234,12 @@ const backgroundStyle = computed(() => {
   // До готовности (defer) background-image не задаём — иначе браузер начнёт
   // грузить картинку в приоритете с основным контентом.
   if (!bgReady.value) return styles
-  const { baseWebpUrl, retinaAvifUrl } = imageUrls.value;
-  if (baseWebpUrl || retinaAvifUrl) {
+  const { avifUrl, webpUrl } = imageUrls.value;
+  if (avifUrl || webpUrl) {
     const parts = [];
-    if (baseWebpUrl) parts.push(`url('${baseWebpUrl}') type('image/webp') 1x`);
-    if (retinaAvifUrl) parts.push(`url('${retinaAvifUrl}') type('image/avif') 2x`);
+    // AVIF первым: браузер выберет его, если поддерживает; WebP — фолбэк.
+    if (avifUrl) parts.push(`url('${avifUrl}') type('image/avif') 1x`);
+    if (webpUrl) parts.push(`url('${webpUrl}') type('image/webp') 1x`);
     styles.backgroundImage = `image-set(${parts.join(", ")})`;
   }
   return styles;
