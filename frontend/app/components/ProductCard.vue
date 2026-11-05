@@ -523,6 +523,9 @@ const characteristics = computed(() => {
 
   &__content {
     flex: 1 1 auto;
+    // Длинный текст не должен выталкивать нижнюю полосу (и плашку) за карточку
+    min-height: 0;
+    overflow: hidden;
   }
 
   &__title {
@@ -532,6 +535,11 @@ const characteristics = computed(() => {
     padding-inline: toEm(4);
     padding-block-start: toEm(2);
     padding-block-end: toEm(12);
+    // Максимум 2 строки: длинные названия не растягивают карточку
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
     transition:
       color var(--transition-duration),
       margin-block-start var(--transition-duration);
