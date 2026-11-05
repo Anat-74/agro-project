@@ -16,7 +16,6 @@ interface Props {
     | "switch-locale-cart"
     | "add-to-cart"
     | "add"
-    | "notch"
     | "is-added"
     | "remove-cart-item"
     | "remove-quantity-prod"
@@ -62,7 +61,7 @@ defineEmits<Emits>();
       { 'btn_loading': isLoading, btn_disabled: isDisabled },
       { 'btn_selected': !colorMode.unknown && theme === colorMode.value },
       { 'btn_hamburger_is-open': isOpen && variant === 'hamburger' },
-      { 'btn_add_is-added': isInCart && (variant === 'add' || variant === 'notch') },
+      { 'btn_add_is-added': isInCart && variant === 'add' },
       size === 'large' ? 'btn_large' : '',
       icon ? 'btn_icon' : '',
     ]"
@@ -463,68 +462,6 @@ defineEmits<Emits>();
     }
   }
 
-   // Плашка в вырезе карточки (inverted radius): «выпуклая» кнопка «в корзину»
-   &_notch {
-     position: relative;
-     // размер задаёт карточка через --notch-size (вырез + равные отступы);
-     // если переменной нет — базовый 34px (как UImage: адаптация по контейнеру)
-     width: var(--notch-size, 34px);
-     height: var(--notch-size, 34px);
-     padding: 0;
-     border: none;
-     // форма/скругление как у исходной кнопки add (6px), размер ~46px
-     border-radius: toEm(6);
-     // База (товар НЕ в корзине) — как исходный вариант add: светлая,
-     // зелёная рамка, зелёный «+». «В корзине» — от btn_add_is-added (заливка).
-     background-color: var(--light-color);
-     border: toRem(1) solid var(--success-color);
-     color: var(--green-color);
-     box-shadow:
-       0 6px 14px rgba(39, 76, 91, 0.28),
-       inset 0 1px 0 rgba(255, 255, 255, 0.45);
-     transition:
-       box-shadow var(--transition-duration),
-       filter var(--transition-duration);
-
-     // крест «+» — по центру кнопки (left-based), чтобы стоял ровно
-     &::before,
-     &::after {
-       content: "";
-       position: absolute;
-       top: calc(50% - 1px);
-       left: calc(50% - 7.5px);
-       width: 15px;
-       height: 2px;
-       border-radius: 2px;
-       background-color: var(--green-color);
-       transition: all 0.2s ease;
-     }
-
-     &::before {
-       transform: rotate(-90deg);
-     }
-
-     &::after {
-       transform: rotate(180deg);
-     }
-
-     @include hover {
-       box-shadow:
-         0 8px 18px rgba(39, 76, 91, 0.4),
-         inset 0 1px 0 rgba(255, 255, 255, 0.55);
-       filter: brightness(1.06);
-     }
-
-     // Контейнерные запросы — внутри класса (как в UImage для productImage).
-     // Карточка объявляет `container: card productImage / inline-size`.
-     @container card (max-width: 230px) {
-       --notch-size: 34px;
-     }
-
-     @container card (max-width: 170px) {
-       --notch-size: 32px;
-     }
-   }
 
    &_add {
    position: relative;
@@ -593,6 +530,50 @@ defineEmits<Emits>();
             background-color: var(--light-color);
        }
       }
+    }
+
+    // В карточке товара (контейнер `card`) та же кнопка играет роль «плашки»
+    // в вырезе: фиксированный квадрат, непрозрачная, «+» по центру, тень.
+    // Вне карточки (модалка, скидки, подкатегории) — прежний вид add.
+    @container card (max-width: 230px) {
+      width: var(--notch-size, 34px);
+      height: var(--notch-size, 34px);
+      padding: 0;
+      opacity: 1;
+      box-shadow:
+        0 6px 14px rgba(39, 76, 91, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.45);
+      transition:
+        box-shadow var(--transition-duration),
+        filter var(--transition-duration);
+
+      &::before,
+      &::after {
+        right: auto;
+        left: calc(50% - 7.5px);
+        top: calc(50% - 1px);
+        bottom: auto;
+      }
+
+      &::before {
+        transform: rotate(-90deg);
+      }
+
+      &::after {
+        transform: rotate(180deg);
+      }
+
+      @include hover {
+        box-shadow:
+          0 8px 18px rgba(39, 76, 91, 0.4),
+          inset 0 1px 0 rgba(255, 255, 255, 0.55);
+        filter: brightness(1.06);
+      }
+    }
+
+    @container card (max-width: 170px) {
+      width: var(--notch-size, 32px);
+      height: var(--notch-size, 32px);
     }
   }
 

@@ -216,7 +216,7 @@ const characteristics = computed(() => {
     <!-- «В корзину» — плашка в нижнем вырезе: снаружи маски, слой выше поверхности -->
     <UButton
       class="product-card__add"
-      variant="notch"
+      variant="add"
       :is-in-cart="isInCart(product.documentId)"
       :aria-label="
         isInCart(product.documentId)
