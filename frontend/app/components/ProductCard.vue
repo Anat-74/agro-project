@@ -475,7 +475,8 @@ const characteristics = computed(() => {
     width: var(--notch-size);
     height: var(--notch-size);
     right: var(--notch-gap);
-    bottom: var(--notch-gap);
+    // Низ плашки — по низу карточки (как в «Горячем предложении»)
+    bottom: 0;
   }
 
   &__top-items {

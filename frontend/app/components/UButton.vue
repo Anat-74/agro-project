@@ -517,7 +517,8 @@ defineEmits<Emits>();
 		}
 		&::after {
          width: toRem(8);
-         right: 50%;
+         // +1px к left => правый штрих галочки смыкается с левым без зазора
+         right: calc(50% + 1px);
          bottom: 40%;
          transform: rotate(60deg);
 		}
@@ -539,16 +540,20 @@ defineEmits<Emits>();
       width: var(--notch-size, 34px);
       height: var(--notch-size, 34px);
       padding: 0;
-      opacity: 1;
       // Без тени: её размытие заливало зазор выреза, и он выглядел
       // как серый квадрат вместо открытого вогнутого угла.
       box-shadow: none;
-      transition: filter var(--transition-duration);
+      transition:
+        background-color var(--transition-duration),
+        border-color var(--transition-duration),
+        opacity var(--transition-duration),
+        filter var(--transition-duration);
 
       // «+» по центру — только в базовом состоянии. В состоянии «в корзине»
       // должна работать исходная геометрия галочки из &_add_is-added,
       // поэтому эти правила не применяем при наличии btn_add_is-added.
       &:not(.btn_add_is-added) {
+        opacity: 1;
         &::before,
         &::after {
           right: auto;
