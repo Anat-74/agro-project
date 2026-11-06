@@ -37,6 +37,8 @@ watch(
 
 const isVisibleLink = ref(false);
 const toggleVisibleLink = () => {
+  // В компактном режиме ссылки на товар нет (только «+» и «глаз»)
+  if (props.compact) return
   isVisibleLink.value = !isVisibleLink.value;
 };
 
@@ -129,6 +131,7 @@ const characteristics = computed(() => {
           {{ product.name }}
         </h3>
         <NuxtLink
+          v-if="!compact"
           :class="[
             'product-card__link',
             { 'product-card__link_is-visible': isVisibleLink },
