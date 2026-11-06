@@ -301,8 +301,8 @@ const characteristics = computed(() => {
     .product-card__modal {
       position: absolute;
       z-index: 150;
-      right: toEm(14);
-      top: toEm(22);
+      right: toEm(19);
+      top: toEm(27);
     }
 
     // Вырез под «в корзину» — ТОЛЬКО здесь (нет 3D-переворота → нет задержки).
@@ -360,8 +360,8 @@ const characteristics = computed(() => {
     .product-card__details {
       position: absolute;
       z-index: 150;
-      right: toEm(14);
-      top: toEm(22);
+      right: toEm(19);
+      top: toEm(27);
     }
 
     .product-card__content {

@@ -249,6 +249,27 @@ const handleAddToCart = () => {
   color: var(--gray-color);
   background-color: var(--whitesmoke-color);
   cursor: pointer;
+  width: toRem(32);
+  height: toRem(32);
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    font-size: toRem(20);
+  }
+
+  // Кнопка используется и в карточках товара (compact), и в «Горячем предложении»:
+  // размер следует за шириной контейнера карточки.
+  @container card (max-width: 230px) {
+    width: toRem(28);
+    height: toRem(28);
+
+    svg {
+      font-size: toRem(18);
+    }
+  }
 }
 
 // Модалка товара — по паттерну проекта (как Order/Checkout). Открывается

@@ -46,7 +46,6 @@ watch(currentLocale, () => {
         :background-options="global.background.options"
         variant="clean"
         size-mode="cover"
-        defer
       />
     </div>
 

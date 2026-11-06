@@ -593,6 +593,24 @@ defineEmits<Emits>();
     @include hover {
       filter: brightness(1.06);
     }
+
+    // Галочка плашки масштабируется вместе с размером кнопки (общая геометрия
+    // в .btn_add_is-added рассчитана на ~30px и на 44px «разъезжается»)
+    &.btn_add_is-added {
+      &::before {
+        width: calc(var(--notch-size, 44px) * 0.34);
+        top: 45%;
+        right: 15%;
+        transform: rotate(-58deg);
+      }
+
+      &::after {
+        width: calc(var(--notch-size, 44px) * 0.18);
+        right: calc(50% + 1px);
+        bottom: 40%;
+        transform: rotate(60deg);
+      }
+    }
   }
 
   &_remove-cart-item {
