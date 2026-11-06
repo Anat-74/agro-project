@@ -265,10 +265,10 @@ const characteristics = computed(() => {
   // Размер плашки и зазор — единый источник для кнопки И выреза.
   // Вырез (--notch-r/--notch-s) считается от них ниже, в .product-card__surface,
   // поэтому при изменении размера кнопки вырез подстраивается сам.
-  --notch-size: 39px;
+  --notch-size: 44px;
   --notch-gap: 5px;
   // Масштаб выреза относительно плашки (1 = впритык, 1.28 = +28% воздуха)
-  --notch-scale: 1.28;
+  --notch-scale: 1.03;
   @include containerParent(card productImage, inline-size);
   // Плавная реакция 3D-кнопки: scale (transform) + margin-block (сдвиг нижнего
   // ряда). Сохраняем глобальные li:hover-переходы (opacity/filter/shadow/color).
@@ -683,7 +683,7 @@ const characteristics = computed(() => {
   // Меняется только размер плашки/зазор — r и s пересчитаются на поверхности.
   .product-card__surface,
   .product-card__add {
-    --notch-size: 37px;
+    --notch-size: 42px;
     --notch-gap: 4px;
   }
 }
