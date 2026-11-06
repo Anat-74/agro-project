@@ -517,9 +517,9 @@ defineEmits<Emits>();
          @include adaptiveValue("right", 7, 5);
 		}
 		&::after {
-         width: toRem(8);
-         // +1px к left => правый штрих галочки смыкается с левым без зазора
-         right: calc(50% + 2px);
+         // Штрих длиннее, чтобы гарантированно перекрыть стык (зазор ~1px)
+         width: toRem(12);
+         right: calc(50% + 1px);
          bottom: 40%;
          transform: rotate(60deg);
 		}
@@ -605,7 +605,7 @@ defineEmits<Emits>();
       }
 
       &::after {
-        width: calc(var(--notch-size, 44px) * 0.18);
+        width: calc(var(--notch-size, 44px) * 0.27);
         right: calc(50% + 1px);
         bottom: 40%;
         transform: rotate(60deg);

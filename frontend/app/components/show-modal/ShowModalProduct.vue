@@ -24,6 +24,7 @@ const cartStore = useCartStore()
 const route = useRoute()
 const { isInCart } = useIsInCart()
 const { find } = useStrapi()
+const { getProductLink } = useProductLink()
 
 // Уникальный id диалога для инстанса (useId стабилен между SSR/CSR и уникален
 // между инстансами). useDialog захватывает его при setup, поэтому смена продукта
@@ -226,12 +227,21 @@ const handleAddToCart = () => {
           v-if="details.characteristics"
           :specs="parseCharacteristics(details.characteristics)"
         />
-        <UButton
-          class="product-modal__add"
-          variant="add"
-          :is-in-cart="isInCart(product?.documentId ?? '')"
-          @click="handleAddToCart"
-        />
+        <div class="product-modal__actions">
+          <NuxtLink
+            v-if="product"
+            class="product-modal__to-page"
+            :to="getProductLink(product)"
+          >
+            {{ buttonTranslations[currentLocale].toProductPage }}
+          </NuxtLink>
+          <UButton
+            class="product-modal__add"
+            variant="add"
+            :is-in-cart="isInCart(product?.documentId ?? '')"
+            @click="handleAddToCart"
+          />
+        </div>
       </div>
     </div>
   </dialog>
@@ -468,7 +478,33 @@ const handleAddToCart = () => {
   }
 
   &__add {
-    align-self: flex-end;
+    flex-shrink: 0;
+  }
+
+  // Строка действий: ссылка по центру, кнопка справа — на одном уровне
+  &__actions {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-block-start: toRem(16);
+    padding-block-end: toRem(4);
+  }
+
+  &__to-page {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: toEm(14);
+    font-weight: 600;
+    color: var(--success-color);
+    text-decoration: underline;
+    text-underline-offset: toRem(2);
+    white-space: nowrap;
+
+    @include hover {
+      color: var(--warning-hover);
+    }
   }
 }
 

@@ -22,10 +22,12 @@ export const buttonTranslations: Record<LocaleCode, {
    ariaLabelSocials: string
    ariaLabelShowAllProducts: string
    ariaLabelCollapseProducts: string
+   toProductPage: string
 
  }> = {
    ru: {
        label: "Добавить в корзину",
+       toProductPage: "На страницу товара",
        addedIsCart: "Товар в корзине",
        ariaLabelAdded: "Добавлено в корзину",
        ariaLabelLang: "Переключить язык",
@@ -51,6 +53,7 @@ export const buttonTranslations: Record<LocaleCode, {
    },
    be: {
       label: "Дадаць у кошык",
+      toProductPage: "На старонку тавара",
       addedIsCart: "Тавар у кошыку",
       ariaLabelAdded: "Паведамленні ў кошык",
       ariaLabelLang: "Пераключыць мову",
