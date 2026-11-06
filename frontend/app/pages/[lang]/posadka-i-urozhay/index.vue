@@ -7,6 +7,7 @@ import { GARDEN_MODES } from "~~/shared/utils/garden-modes";
 // Хаб-страница раздела «Всё для посадки и урожая»: разметка и SEO — в CalcPage,
 // здесь только конфигурация «Посадки»
 const { currentLocale } = useLocale();
+const gardenT = computed(() => gardenTranslations[currentLocale.value]);
 
 // ≤ $tablet: калькулятор открывается в панели каталога (вкладка «Посадка»),
 // а не дублируется на странице — запрос обрабатывает AppHeader
@@ -19,7 +20,7 @@ const modeKeys = GARDEN_MODES.map((mode) => mode.key);
   <CalcPage
     page-endpoint="calculator-page"
     :section="GARDEN_SECTION"
-    :texts="gardenTranslations[currentLocale]"
+    :texts="gardenT"
     items-endpoint="crops"
     articles-relation="crops"
     :mode-keys="modeKeys"

@@ -9,6 +9,11 @@ const route = useRoute();
 const { width } = useViewport();
 const { getProductLink } = useProductLink();
 
+// Локализация — единый стиль проекта: computed-объект на текущий язык
+const buttonT = computed(() => buttonTranslations[currentLocale.value]);
+const linkT = computed(() => linkTranslations[currentLocale.value]);
+const tooltipT = computed(() => tooltipTranslations[currentLocale.value]);
+
 interface Props {
   product: Product;
   index: number;
@@ -100,7 +105,7 @@ const characteristics = computed(() => {
           class="product-card__details"
           variant="product-details"
           icon="mdi:rotate-3d"
-          :aria-label="buttonTranslations[currentLocale].ariaLabelProductDetails"
+          :aria-label="buttonT.ariaLabelProductDetails"
           @click="toggleActive"
         />
         <!-- Компактный режим: вместо переворота — модалка товара.
@@ -138,12 +143,12 @@ const characteristics = computed(() => {
           ]"
           :to="getProductLink(product)"
           ><span>{{
-            linkTranslations[currentLocale].featuredProductLabel
+            linkT.featuredProductLabel
           }}</span>
         </NuxtLink>
       </div>
       <div class="product-card__bottom-items">
-        <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
+        <UTooltip :text="tooltipT.byRuble">
           <UIconLocal name="icon-by-regular" />
         </UTooltip>
         <span
@@ -161,8 +166,8 @@ const characteristics = computed(() => {
           :is-in-cart="isInCart(product.documentId)"
           :aria-label="
             isInCart(product.documentId)
-              ? buttonTranslations[currentLocale].ariaLabelAdded
-              : buttonTranslations[currentLocale].label
+              ? buttonT.ariaLabelAdded
+              : buttonT.label
           "
           @click="handleAddToCart(product)"
         />
@@ -190,7 +195,7 @@ const characteristics = computed(() => {
           class="product-card__details"
           variant="product-details"
           icon="mdi:rotate-3d"
-          :aria-label="buttonTranslations[currentLocale].ariaLabelProductDetails"
+          :aria-label="buttonT.ariaLabelProductDetails"
           @click="toggleActive"
         />
       </div>
@@ -207,12 +212,12 @@ const characteristics = computed(() => {
           class="product-card__link"
           :to="getProductLink(product)"
           ><span>{{
-            linkTranslations[currentLocale].featuredProductLabel
+            linkT.featuredProductLabel
           }}</span>
         </NuxtLink>
       </div>
       <div class="product-card__bottom-items">
-        <UTooltip :text="tooltipTranslations[currentLocale].byRuble">
+        <UTooltip :text="tooltipT.byRuble">
           <UIconLocal name="icon-by-regular" />
         </UTooltip>
         <span
@@ -229,8 +234,8 @@ const characteristics = computed(() => {
           :is-in-cart="isInCart(product.documentId)"
           :aria-label="
             isInCart(product.documentId)
-              ? buttonTranslations[currentLocale].ariaLabelAdded
-              : buttonTranslations[currentLocale].label
+              ? buttonT.ariaLabelAdded
+              : buttonT.label
           "
           @click="handleAddToCart(product)"
         />
@@ -247,8 +252,8 @@ const characteristics = computed(() => {
       :is-in-cart="isInCart(product.documentId)"
       :aria-label="
         isInCart(product.documentId)
-          ? buttonTranslations[currentLocale].ariaLabelAdded
-          : buttonTranslations[currentLocale].label
+          ? buttonT.ariaLabelAdded
+          : buttonT.label
       "
       @click="handleAddToCart(product)"
     />

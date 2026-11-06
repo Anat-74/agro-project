@@ -45,6 +45,8 @@ const { open, close } = useDialog(
 // Единый формат со страницами товара (product-${locale}-${slug}) — общий кэш:
 // данные страницы переиспользует модалка и наоборот (TTL 5 мин).
 const { currentLocale } = useLocale()
+// Локализация — единый стиль проекта: computed-объект на текущий язык
+const buttonT = computed(() => buttonTranslations[currentLocale.value])
 const detailsKey = computed(() =>
   "product-" + (currentLocale.value ?? "ru") + "-" + (props.product?.slug ?? "preview")
 )
@@ -136,7 +138,7 @@ const handleAddToCart = () => {
     <UButton
       class="product-modal__trigger-btn"
       icon="mdi:show-outline"
-      :aria-label="buttonTranslations[currentLocale].ariaLabelViewProduct"
+      :aria-label="buttonT.ariaLabelViewProduct"
       @click="openModal"
     />
   </div>
@@ -156,7 +158,7 @@ const handleAddToCart = () => {
       variant="close-modal"
       icon="mingcute:close-line"
       class="product-modal__close"
-      :aria-label="buttonTranslations[currentLocale].ariaLabelDialogClosed"
+      :aria-label="buttonT.ariaLabelDialogClosed"
       @click="close"
     />
 
@@ -233,7 +235,7 @@ const handleAddToCart = () => {
             class="product-modal__to-page"
             :to="getProductLink(product)"
           >
-            {{ buttonTranslations[currentLocale].toProductPage }}
+            {{ buttonT.toProductPage }}
           </NuxtLink>
           <UButton
             class="product-modal__add"
