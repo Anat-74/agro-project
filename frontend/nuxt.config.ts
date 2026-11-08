@@ -147,16 +147,27 @@ export default defineNuxtConfig({
     "/": { redirect: "/ru" },
     // /sitemap.xml больше НЕ static: генерируется на запрос → новые товары/статьи
     // попадают в карту сайта сразу (раньше требовалась пересборка).
-    "/**/about": { prerender: true },
-    "/**/contacts": { prerender: true },
-    "/**/services": { prerender: true },
+    // Ведущий /** в Nuxt 4.6 не поддерживается matcher'ом (rou3): такой ключ
+    // превращается в «любой путь» → prerender:true/payload:true применялись ко всем
+    // страницам, клиент префетчил /_payload.json для каждой ссылки, dev отдавал 404
+    // (NUXT_E7002, VUE_ROUTER_R0004). Только явные локали; /** — лишь в конце.
+    "/ru/about": { prerender: true },
+    "/be/about": { prerender: true },
+    "/ru/contacts": { prerender: true },
+    "/be/contacts": { prerender: true },
+    "/ru/services": { prerender: true },
+    "/be/services": { prerender: true },
 
     // === SWR — ТОЛЬКО контентные разделы (свежесть ≤5 мин) ===
-    // Паттерн без хвостового /** матчит сам список (/ru/blog), с /** — вложенные.
-    "/**/blog": { swr: 300 },
-    "/**/blog/**": { swr: 300 },
-    "/**/news": { swr: 300 },
-    "/**/news/**": { swr: 300 },
+    // Ключи с явной локалью: шаблон "/**" в начале матчит все пути (см. выше).
+    "/ru/blog": { swr: 300 },
+    "/be/blog": { swr: 300 },
+    "/ru/blog/**": { swr: 300 },
+    "/be/blog/**": { swr: 300 },
+    "/ru/news": { swr: 300 },
+    "/be/news": { swr: 300 },
+    "/ru/news/**": { swr: 300 },
+    "/be/news/**": { swr: 300 },
 
     // Каталог (products / [categorySlug]/products / карточки товаров) — БЕЗ SWR:
     // данные и так кэшируются useCachedAsyncData (1 мин), SSR дешёвый, страницы
