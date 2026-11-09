@@ -545,12 +545,9 @@ defineEmits<Emits>();
     padding: 0;
     // «Пазл»: все углы концентричны контуру выреза (r − зазор) —
     // TL повторяет дугу, TR/BL/BR не остаются угловатыми
-    // TL/TR/BL — радиус выреза; BR — радиус карточки (кромка)
-    border-radius:
-      var(--notch-r, 15px)
-      var(--notch-r, 15px)
-      var(--card-radius, 6px)
-      var(--notch-r, 15px);
+    // Все углы = видимому радиусу карточки (= радиус маски). TL совпадает с дугой
+    // выреза, BR — с углом карточки; меньше — «угловато», больше — круглая кнопка.
+    border-radius: var(--notch-r, 15px);
     border: toRem(1) solid var(--success-color);
     background-color: var(--light-color);
     color: var(--green-color);
