@@ -567,8 +567,12 @@ defineEmits<Emits>();
       font-size: calc(var(--notch-size, 44px) * 0.45);
     }
 
-    // «В корзине»: зелёная плашка, светлая галочка
+    // «В корзине»: зелёная плашка, светлая галочка (иначе фон плашки
+    // перебивает состояние — специфичность одинаковая, побеждает порядок)
     &.btn_add_is-added {
+      opacity: 0.8;
+      border-color: var(--success-color);
+      background-color: var(--success-color);
       color: var(--light-color);
     }
 
