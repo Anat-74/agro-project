@@ -280,8 +280,6 @@ const characteristics = computed(() => {
   // поэтому при изменении размера кнопки вырез подстраивается сам.
   --notch-size: 44px;
   --notch-gap: 5px;
-  // Масштаб выреза относительно плашки (1 = впритык, больше = больше «воздуха»)
-  --notch-scale: 1.03;
   @include containerParent(card productImage, inline-size);
   // Плавная реакция 3D-кнопки: scale (transform) + margin-block (сдвиг нижнего
   // ряда). Сохраняем глобальные li:hover-переходы (opacity/filter/shadow/color).
@@ -318,27 +316,21 @@ const characteristics = computed(() => {
       top: toEm(27);
     }
 
-    // Вырез под «в корзину» — ТОЛЬКО здесь (нет 3D-переворота → нет задержки).
-    // Геометрия выреза — как была (r ≈ 35% плашки × масштаб, s из размера и
-    // зазора). Кнопка подстраивается под вырез: её углы = r − зазор (концентрично),
-    // поэтому зазор вдоль всей дуги равномерный — «пазл».
+    // Вырез: коэффициенты подобраны пиксельными замерами (magenta-фон +
+    // замер зазоров сверху/слева/справа/снизу), цель — равномерный «воздух».
+    // Итог при плашке 44px: top 5 / left 5 / right 5 / bottom 6 (px).
+    // Углы плашки = --notch-r (совпадают с дугой выреза и кромкой карточки).
     .product-card__surface {
-      --notch-r: calc(var(--notch-size, 44px) * 0.35 * var(--notch-scale));
-      --notch-s: calc(
-        (var(--notch-size, 44px) + 2 * var(--notch-gap, 5px)) * var(--notch-scale) -
-          2 * var(--notch-r)
-      );
-      border-radius: var(--notch-r, 16px);
-      @include invertedRadius(var(--notch-r, 16px), var(--notch-s, 24px));
+      --notch-r: calc(var(--notch-size, 44px) * 0.302);
+      --notch-s: calc(var(--notch-size, 44px) * 0.615);
+      border-radius: var(--notch-r, 13px);
+      @include invertedRadius(var(--notch-r, 13px), var(--notch-s, 27px));
     }
 
     // Кнопка наследует те же r/s для своих скруглений
     .product-card__add {
-      --notch-r: calc(var(--notch-size, 44px) * 0.35 * var(--notch-scale));
-      --notch-s: calc(
-        (var(--notch-size, 44px) + 2 * var(--notch-gap, 5px)) * var(--notch-scale) -
-          2 * var(--notch-r)
-      );
+      --notch-r: calc(var(--notch-size, 44px) * 0.302);
+      --notch-s: calc(var(--notch-size, 44px) * 0.615);
     }
   }
 
