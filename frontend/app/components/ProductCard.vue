@@ -323,16 +323,24 @@ const characteristics = computed(() => {
     // r = size / 4 + 0.75 * gap (лево). Проверено пиксельными замерами (sharp).
     // Углы плашки = --notch-r (совпадают с дугой выреза и кромкой карточки).
     .product-card__surface {
-      --notch-r: calc(var(--notch-size, 44px) / 4 + var(--notch-gap, 5px) * 0.75);
-      --notch-s: calc((var(--notch-size, 44px) + var(--notch-gap, 5px)) / 2);
+      --notch-r: calc(
+        var(--notch-size, 44px) / 4 + var(--notch-gap, 5px) * 0.75 + 0.35px
+      );
+      --notch-s: calc(
+        (var(--notch-size, 44px) + var(--notch-gap, 5px)) / 2 - 0.75px
+      );
       border-radius: var(--notch-r, 13px);
       @include invertedRadius(var(--notch-r, 13px), var(--notch-s, 27px));
     }
 
     // Кнопка наследует те же r/s для своих скруглений
     .product-card__add {
-      --notch-r: calc(var(--notch-size, 44px) / 4 + var(--notch-gap, 5px) * 0.75);
-      --notch-s: calc((var(--notch-size, 44px) + var(--notch-gap, 5px)) / 2);
+      --notch-r: calc(
+        var(--notch-size, 44px) / 4 + var(--notch-gap, 5px) * 0.75 + 0.35px
+      );
+      --notch-s: calc(
+        (var(--notch-size, 44px) + var(--notch-gap, 5px)) / 2 - 0.75px
+      );
     }
 
     // Компакт: ссылки на товар нет, поэтому и контент не интерактивен. Иначе
