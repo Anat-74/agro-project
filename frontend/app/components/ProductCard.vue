@@ -249,6 +249,11 @@ const characteristics = computed(() => {
       v-if="compact"
       class="product-card__add product-card__add_plate"
       variant="add-plate"
+      :icon="
+        isInCart(product.documentId)
+          ? 'mingcute:check-line'
+          : 'mingcute:add-line'
+      "
       :is-in-cart="isInCart(product.documentId)"
       :aria-label="
         isInCart(product.documentId)
@@ -275,8 +280,6 @@ const characteristics = computed(() => {
   // поэтому при изменении размера кнопки вырез подстраивается сам.
   --notch-size: 44px;
   --notch-gap: 5px;
-  // Масштаб выреза относительно плашки (1 = впритык, 1.28 = +28% воздуха)
-  --notch-scale: 1.03;
   @include containerParent(card productImage, inline-size);
   // Плавная реакция 3D-кнопки: scale (transform) + margin-block (сдвиг нижнего
   // ряда). Сохраняем глобальные li:hover-переходы (opacity/filter/shadow/color).
@@ -314,19 +317,18 @@ const characteristics = computed(() => {
     }
 
     // Вырез под «в корзину» — ТОЛЬКО здесь (нет 3D-переворота → нет задержки).
-    // На главной и при открытом фильтре карточка переворачивается — выреза нет.
-    // r/s ВЫЧИСЛЯЮТСЯ из размера плашки и зазора:
-    //   вырез по ширине = s + 2r = (размер + 2*зазор) * масштаб выреза
-    //   r ≈ 35% от размера плашки × масштаб
-    // --notch-scale: визуальный размер выреза (1 = плашка впритык, 1.28 = +28%)
+    // Геометрия по правилу проекта (patterns.md §8): радиус дуги r = зазору,
+    // глубина s = размеру плашки → вырез = s + 2r = плашка + 2·зазор
+    // (равномерный «воздух» со всех сторон).
+    .product-card__surface,
+    .product-card__add {
+      --notch-r: var(--notch-gap);
+      --notch-s: var(--notch-size);
+    }
+
     .product-card__surface {
-      --notch-r: calc(var(--notch-size, 39px) * 0.35 * var(--notch-scale));
-      --notch-s: calc(
-        (var(--notch-size, 39px) + 2 * var(--notch-gap, 5px)) * var(--notch-scale) -
-          2 * var(--notch-r)
-      );
-      border-radius: var(--notch-r, 12px);
-      @include invertedRadius(var(--notch-r, 12px), var(--notch-s, 18px));
+      border-radius: var(--notch-r, 5px);
+      @include invertedRadius(var(--notch-r, 5px), var(--notch-s, 44px));
     }
   }
 

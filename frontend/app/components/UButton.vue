@@ -517,9 +517,9 @@ defineEmits<Emits>();
          @include adaptiveValue("right", 7, 5);
 		}
 		&::after {
-         // Штрих длиннее, чтобы гарантированно перекрыть стык (зазор ~1px)
-         width: toRem(12);
-         right: calc(50% + 1px);
+         // Исходная геометрия (проверенная на главной)
+         width: toRem(8);
+         right: 50%;
          bottom: 40%;
          transform: rotate(60deg);
 		}
@@ -540,15 +540,12 @@ defineEmits<Emits>();
   // квадрат, «+» по центру, без тени. Размер — из --notch-size (задаёт карточка).
   &_add-plate {
     position: relative;
-    width: var(--notch-size, 39px);
-    height: var(--notch-size, 39px);
+    width: var(--notch-size, 44px);
+    height: var(--notch-size, 44px);
     padding: 0;
-    // «Пазл»: верхний левый угол повторяет радиус выреза (--notch-r),
-    // остальные — малый радиус. Нижний правый вернул к 6px: при радиусе
-    // выреза ~18px угол срезал штрихи галочки (она ломалась).
+    // «Пазл»: TL и BR повторяют радиус выреза, кромки — малый радиус карточки
     border-radius:
-      calc(var(--notch-size, 44px) * 0.35 * var(--notch-scale, 1.03))
-      toRem(6) toRem(6) toRem(6);
+      var(--notch-r, 5px) toRem(6) var(--notch-r, 5px) toRem(6);
     border: toRem(1) solid var(--success-color);
     background-color: var(--light-color);
     color: var(--green-color);
@@ -559,57 +556,24 @@ defineEmits<Emits>();
       opacity var(--transition-duration),
       filter var(--transition-duration);
 
+    // Внутри — SVG-иконка (плюс/галочка), псевдоэлементы не используем:
+    // у плашки нет проблем с геометрией штрихов и их стыком.
     &::before,
     &::after {
-      content: "";
-      position: absolute;
-      width: 15px;
-      height: 2px;
-      border-radius: 2px;
-      background-color: var(--green-color);
-      transition: all 0.2s ease;
+      content: none;
     }
 
-    // «+» по центру — только в базовом состоянии; в состоянии «в корзине»
-    // работает общая геометрия галочки (.btn_add_is-added)
-    &:not(.btn_add_is-added) {
-      &::before,
-      &::after {
-        top: calc(50% - 1px);
-        left: calc(50% - 7.5px);
-        right: auto;
-        bottom: auto;
-      }
+    .btn-icon svg {
+      font-size: calc(var(--notch-size, 44px) * 0.45);
+    }
 
-      &::before {
-        transform: rotate(-90deg);
-      }
-
-      &::after {
-        transform: rotate(180deg);
-      }
+    // «В корзине»: зелёная плашка, светлая галочка
+    &.btn_add_is-added {
+      color: var(--light-color);
     }
 
     @include hover {
       filter: brightness(1.06);
-    }
-
-    // Галочка плашки масштабируется вместе с размером кнопки (общая геометрия
-    // в .btn_add_is-added рассчитана на ~30px и на 44px «разъезжается»)
-    &.btn_add_is-added {
-      &::before {
-        width: calc(var(--notch-size, 44px) * 0.34);
-        top: 45%;
-        right: 15%;
-        transform: rotate(-58deg);
-      }
-
-      &::after {
-        width: calc(var(--notch-size, 44px) * 0.27);
-        right: calc(50% + 1px);
-        bottom: 40%;
-        transform: rotate(60deg);
-      }
     }
   }
 
