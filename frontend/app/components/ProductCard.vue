@@ -365,8 +365,8 @@ const characteristics = computed(() => {
       .product-card__add {
         --notch-size: 42px;
         --notch-gap: 5px;
-        --notch-r: calc(var(--notch-size, 42px) * 0.329);
-        --notch-s: calc(var(--notch-size, 42px) * 0.571);
+        --notch-r: calc(var(--notch-size, 42px) * 0.3373);
+        --notch-s: calc(var(--notch-size, 42px) * 0.5531);
       }
     }
   }
