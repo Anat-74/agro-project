@@ -538,50 +538,30 @@ defineEmits<Emits>();
 
   // Плашка «в корзину» в вырезе карточки (компактный режим): фиксированный
   // квадрат, «+» по центру, без тени. Размер — из --notch-size (задаёт карточка).
+  // Внешний вид (= фон, рамку, скругления) рисуют ДВЕ ГРАНИ слота: лицевая
+  // (не в корзине) и обратная (в корзине) — сама кнопка прозрачная, чтобы при
+  // 3D-перевороте не было плоской подложки.
   &_add-plate {
     position: relative;
     width: var(--notch-size, 44px);
     height: var(--notch-size, 44px);
     padding: 0;
-    // «Пазл»: TR/BL/BR = видимому радиусу карточки (= радиус маски). TL концентричен
-    // дуге выреза: радиус = радиус дуги + зазор, иначе у угла воздух меньше, чем по
-    // прямым кромкам (проверено замерами на 3x).
-    border-radius: var(--notch-r, 15px);
-    border-top-left-radius: calc(
-      var(--notch-r, 15px) + var(--notch-gap, 5px)
-    );
-    border: toRem(1) solid var(--success-color);
-    background-color: var(--light-color);
-    color: var(--green-color);
+    // Перспектива для переворота граней — как у карточки (toRem(500)),
+    // в компакте у неё самой perspective: none, поэтому задаём на плашке
+    perspective: toRem(500);
+    border: 0;
+    background-color: transparent;
     box-shadow: none;
-    transition:
-      background-color var(--transition-duration),
-      border-color var(--transition-duration),
-      opacity var(--transition-duration),
-      filter var(--transition-duration);
+    transition: opacity var(--transition-duration);
 
-    // Внутри — SVG-иконка (плюс/галочка), псевдоэлементы не используем:
-    // у плашки нет проблем с геометрией штрихов и их стыком.
+    // Псевдоэлементы не используем: состояния рисуют грани
     &::before,
     &::after {
       content: none;
     }
 
-    .btn-icon svg {
-      font-size: calc(var(--notch-size, 44px) * 0.45);
-    }
-
-    // «В корзине»: зелёная плашка, светлая галочка (иначе фон плашки
-    // перебивает состояние — специфичность одинаковая, побеждает порядок)
-    &.btn_add_is-added {
-      opacity: 0.8;
-      border-color: var(--success-color);
-      background-color: var(--success-color);
-      color: var(--light-color);
-    }
-
     @include hover {
-      filter: brightness(1.06);
+      opacity: 0.92;
     }
   }
 

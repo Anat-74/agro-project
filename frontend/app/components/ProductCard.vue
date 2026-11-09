@@ -249,11 +249,6 @@ const characteristics = computed(() => {
       v-if="compact"
       class="product-card__add product-card__add_plate"
       variant="add-plate"
-      :icon="
-        isInCart(product.documentId)
-          ? 'mdi:package-variant-closed-check'
-          : 'mdi:cart-arrow-right'
-      "
       :is-in-cart="isInCart(product.documentId)"
       :aria-label="
         isInCart(product.documentId)
@@ -261,7 +256,23 @@ const characteristics = computed(() => {
           : buttonT.label
       "
       @click="handleAddToCart(product)"
-    />
+    >
+      <!-- Две грани: при добавлении/удалении плашка переворачивается (ось Y) -->
+      <span
+        class="product-card__plate-flip"
+        :class="{
+          'product-card__plate-flip_is-added': isInCart(product.documentId),
+        }"
+        aria-hidden="true"
+      >
+        <span class="product-card__plate-face product-card__plate-face_front">
+          <Icon name="mdi:cart-arrow-right" />
+        </span>
+        <span class="product-card__plate-face product-card__plate-face_back">
+          <Icon name="mdi:package-variant-closed-check" />
+        </span>
+      </span>
+    </UButton>
   </li>
 </template>
 
@@ -553,6 +564,67 @@ const characteristics = computed(() => {
     right: var(--notch-gap);
     // Низ кнопки совпадает с низом карточки
     bottom: 0;
+
+    // Слот у .btn обёрнут в .button-content — растягиваем на всю плашку,
+    // иначе absolute-грани не получат размеров. Элемент создаётся внутри
+    // UButton, поэтому нужен :deep (иначе scoped-атрибут не совпадёт).
+    :deep(.button-content) {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    // 3D-переворот вокруг оси Y: лицевая грань (не в корзине) ↔ обратная
+    .product-card__plate-flip {
+      position: relative;
+      display: block;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      // Тайминг как у переворота карточки
+      transition: transform 0.6s;
+
+      &_is-added {
+        transform: rotateY(180deg);
+      }
+    }
+
+    .product-card__plate-face {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: toRem(1) solid var(--success-color);
+      // «Пазл»: TR/BL/BR = радиус карточки, TL = радиус дуги + зазор
+      border-radius: var(--notch-r, 15px);
+      border-top-left-radius: calc(
+        var(--notch-r, 15px) + var(--notch-gap, 5px)
+      );
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+
+      :deep(svg) {
+        font-size: calc(var(--notch-size, 44px) * 0.45);
+      }
+    }
+
+    .product-card__plate-face_front {
+      background-color: var(--light-color);
+      color: var(--green-color);
+    }
+
+    .product-card__plate-face_back {
+      background-color: var(--success-color);
+      color: var(--light-color);
+      transform: rotateY(180deg);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .product-card__plate-flip {
+        transition: none;
+      }
+    }
   }
 
   &__top-items {
