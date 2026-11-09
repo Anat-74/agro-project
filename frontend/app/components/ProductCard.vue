@@ -514,8 +514,8 @@ const characteristics = computed(() => {
     width: var(--notch-size);
     height: var(--notch-size);
     right: var(--notch-gap);
-    // Симметрично правому: отступ от кромки карточки, а не «вплотную»
-    bottom: var(--notch-gap);
+    // Низ кнопки совпадает с низом карточки
+    bottom: 0;
   }
 
   &__top-items {

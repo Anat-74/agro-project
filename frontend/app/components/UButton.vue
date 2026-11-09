@@ -545,7 +545,12 @@ defineEmits<Emits>();
     padding: 0;
     // «Пазл»: все углы концентричны контуру выреза (r − зазор) —
     // TL повторяет дугу, TR/BL/BR не остаются угловатыми
-    border-radius: var(--notch-r, 14px);
+    // TL/TR/BL — радиус выреза; BR — радиус карточки (кромка)
+    border-radius:
+      var(--notch-r, 13px)
+      var(--notch-r, 13px)
+      toRem(6)
+      var(--notch-r, 13px);
     border: toRem(1) solid var(--success-color);
     background-color: var(--light-color);
     color: var(--green-color);
