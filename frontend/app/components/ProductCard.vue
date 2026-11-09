@@ -251,8 +251,8 @@ const characteristics = computed(() => {
       variant="add-plate"
       :icon="
         isInCart(product.documentId)
-          ? 'mingcute:check-line'
-          : 'mingcute:add-line'
+          ? 'mdi:package-variant-closed-check'
+          : 'mdi:cart-arrow-right'
       "
       :is-in-cart="isInCart(product.documentId)"
       :aria-label="
