@@ -321,16 +321,16 @@ const characteristics = computed(() => {
     // Итог при плашке 44px: top 5 / left 5 / right 5 / bottom 6 (px).
     // Углы плашки = --notch-r (совпадают с дугой выреза и кромкой карточки).
     .product-card__surface {
-      --notch-r: calc(var(--notch-size, 44px) * 0.302);
-      --notch-s: calc(var(--notch-size, 44px) * 0.615);
+      --notch-r: calc(var(--notch-size, 44px) * 0.336);
+      --notch-s: calc(var(--notch-size, 44px) * 0.551);
       border-radius: var(--notch-r, 13px);
       @include invertedRadius(var(--notch-r, 13px), var(--notch-s, 27px));
     }
 
     // Кнопка наследует те же r/s для своих скруглений
     .product-card__add {
-      --notch-r: calc(var(--notch-size, 44px) * 0.302);
-      --notch-s: calc(var(--notch-size, 44px) * 0.615);
+      --notch-r: calc(var(--notch-size, 44px) * 0.336);
+      --notch-s: calc(var(--notch-size, 44px) * 0.551);
     }
   }
 
