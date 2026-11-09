@@ -543,9 +543,13 @@ defineEmits<Emits>();
     width: var(--notch-size, 44px);
     height: var(--notch-size, 44px);
     padding: 0;
-    // «Пазл»: TL и BR повторяют радиус выреза, кромки — малый радиус карточки
+    // «Пазл»: TL/BR концентричны дуге выреза (r − зазор) → равномерный отступ;
+    // кромки — малый радиус карточки
     border-radius:
-      var(--notch-r, 5px) toRem(6) var(--notch-r, 5px) toRem(6);
+      calc(var(--notch-r, 16px) - var(--notch-gap, 5px))
+      toRem(6)
+      calc(var(--notch-r, 16px) - var(--notch-gap, 5px))
+      toRem(6);
     border: toRem(1) solid var(--success-color);
     background-color: var(--light-color);
     color: var(--green-color);

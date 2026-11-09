@@ -280,6 +280,8 @@ const characteristics = computed(() => {
   // поэтому при изменении размера кнопки вырез подстраивается сам.
   --notch-size: 44px;
   --notch-gap: 5px;
+  // Масштаб выреза относительно плашки (1 = впритык, больше = больше «воздуха»)
+  --notch-scale: 1.03;
   @include containerParent(card productImage, inline-size);
   // Плавная реакция 3D-кнопки: scale (transform) + margin-block (сдвиг нижнего
   // ряда). Сохраняем глобальные li:hover-переходы (opacity/filter/shadow/color).
@@ -317,18 +319,26 @@ const characteristics = computed(() => {
     }
 
     // Вырез под «в корзину» — ТОЛЬКО здесь (нет 3D-переворота → нет задержки).
-    // Геометрия по правилу проекта (patterns.md §8): радиус дуги r = зазору,
-    // глубина s = размеру плашки → вырез = s + 2r = плашка + 2·зазор
-    // (равномерный «воздух» со всех сторон).
-    .product-card__surface,
-    .product-card__add {
-      --notch-r: var(--notch-gap);
-      --notch-s: var(--notch-size);
+    // Геометрия выреза — как была (r ≈ 35% плашки × масштаб, s из размера и
+    // зазора). Кнопка подстраивается под вырез: её углы = r − зазор (концентрично),
+    // поэтому зазор вдоль всей дуги равномерный — «пазл».
+    .product-card__surface {
+      --notch-r: calc(var(--notch-size, 44px) * 0.35 * var(--notch-scale));
+      --notch-s: calc(
+        (var(--notch-size, 44px) + 2 * var(--notch-gap, 5px)) * var(--notch-scale) -
+          2 * var(--notch-r)
+      );
+      border-radius: var(--notch-r, 16px);
+      @include invertedRadius(var(--notch-r, 16px), var(--notch-s, 24px));
     }
 
-    .product-card__surface {
-      border-radius: var(--notch-r, 5px);
-      @include invertedRadius(var(--notch-r, 5px), var(--notch-s, 44px));
+    // Кнопка наследует те же r/s для своих скруглений
+    .product-card__add {
+      --notch-r: calc(var(--notch-size, 44px) * 0.35 * var(--notch-scale));
+      --notch-s: calc(
+        (var(--notch-size, 44px) + 2 * var(--notch-gap, 5px)) * var(--notch-scale) -
+          2 * var(--notch-r)
+      );
     }
   }
 
