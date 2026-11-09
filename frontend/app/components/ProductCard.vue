@@ -522,7 +522,8 @@ const characteristics = computed(() => {
     width: var(--notch-size);
     height: var(--notch-size);
     right: var(--notch-gap);
-    bottom: 0;
+    // Симметрично правому: отступ от кромки карточки, а не «вплотную»
+    bottom: var(--notch-gap);
   }
 
   &__top-items {
