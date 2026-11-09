@@ -543,10 +543,13 @@ defineEmits<Emits>();
     width: var(--notch-size, 44px);
     height: var(--notch-size, 44px);
     padding: 0;
-    // «Пазл»: все углы = видимому радиусу карточки (= радиус маски), BR — с углом
-    // карточки. TL повторяет дугу выреза — с ним воздух у угла такой же, как по
-    // прямым кромкам (проверено пиксельными замерами).
+    // «Пазл»: TR/BL/BR = видимому радиусу карточки (= радиус маски). TL концентричен
+    // дуге выреза: радиус = радиус дуги + зазор, иначе у угла воздух меньше, чем по
+    // прямым кромкам (проверено замерами на 3x).
     border-radius: var(--notch-r, 15px);
+    border-top-left-radius: calc(
+      var(--notch-r, 15px) + var(--notch-gap, 5px)
+    );
     border: toRem(1) solid var(--success-color);
     background-color: var(--light-color);
     color: var(--green-color);

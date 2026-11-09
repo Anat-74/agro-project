@@ -318,21 +318,48 @@ const characteristics = computed(() => {
       top: toEm(27);
     }
 
-    // Вырез: коэффициенты подобраны пиксельными замерами (magenta-фон +
-    // замер зазоров сверху/слева/справа/снизу), цель — равномерный «воздух».
-    // Итог при плашке 44px (390, s = 0.557): top 5 / left 5 / right 5 / bottom 0.
+    // Вырез: r и s выводятся из размера плашки и зазора (а не «на глаз»), чтобы
+    // «воздух» был одинаковым на всех кромках: s = (size + gap) / 2 (верх),
+    // r = size / 4 + 0.75 * gap (лево). Проверено пиксельными замерами (sharp).
     // Углы плашки = --notch-r (совпадают с дугой выреза и кромкой карточки).
     .product-card__surface {
-      --notch-r: calc(var(--notch-size, 44px) * 0.336);
-      --notch-s: calc(var(--notch-size, 44px) * 0.557);
+      --notch-r: calc(var(--notch-size, 44px) / 4 + var(--notch-gap, 5px) * 0.75);
+      --notch-s: calc((var(--notch-size, 44px) + var(--notch-gap, 5px)) / 2);
       border-radius: var(--notch-r, 13px);
       @include invertedRadius(var(--notch-r, 13px), var(--notch-s, 27px));
     }
 
     // Кнопка наследует те же r/s для своих скруглений
     .product-card__add {
-      --notch-r: calc(var(--notch-size, 44px) * 0.336);
-      --notch-s: calc(var(--notch-size, 44px) * 0.557);
+      --notch-r: calc(var(--notch-size, 44px) / 4 + var(--notch-gap, 5px) * 0.75);
+      --notch-s: calc((var(--notch-size, 44px) + var(--notch-gap, 5px)) / 2);
+    }
+
+    // Компакт: ссылки на товар нет, поэтому и контент не интерактивен. Иначе
+    // клик/тап по фото включает sticky-hover и заголовок «подпрыгивает» вверх.
+    .product-card__content {
+      pointer-events: none;
+    }
+
+    // Страховка: если заголовок был поднят до перехода в компакт (был hover на
+    // карточке с фильтром), класс _is-visible не должен оставлять его вверху.
+    .product-card__title_is-visible {
+      margin-block-start: 0;
+      color: inherit;
+      background-color: transparent;
+    }
+
+    // Мелкая карточка (узкий телефон): плашка меньше, зазор тот же. Коэффициенты
+    // поправлены по замерам 3x: у маски есть абсолютные px, из-за чего на 42
+    // верх выходит на ~1px меньше, чем бока.
+    @container card (max-width: 170px) {
+      .product-card__surface,
+      .product-card__add {
+        --notch-size: 42px;
+        --notch-gap: 5px;
+        --notch-r: calc(var(--notch-size, 42px) * 0.329);
+        --notch-s: calc(var(--notch-size, 42px) * 0.571);
+      }
     }
   }
 
@@ -691,15 +718,6 @@ const characteristics = computed(() => {
   .product-card__bottom-items {
     padding-inline: toEm(8);
     padding-block: toEm(6);
-  }
-}
-
-@container card (max-width: 170px) {
-  // Меняется только размер плашки/зазор — r и s пересчитаются на поверхности.
-  .product-card__surface,
-  .product-card__add {
-    --notch-size: 42px;
-    --notch-gap: 4px;
   }
 }
 
