@@ -2,14 +2,14 @@
 // ВРЕМЕННО: демо-страница вариантов иконок для плашки «в корзину».
 // Открыть: http://localhost:3000/icons-demo
 const pairs = [
-  { name: "mingcute:add-line / mingcute:check-line", add: "mingcute:add-line", check: "mingcute:check-line" },
-  { name: "mingcute:plus-line / mingcute:check-circle-line", add: "mingcute:plus-line", check: "mingcute:check-circle-line" },
-  { name: "mingcute:add-circle-line / mingcute:check-fill", add: "mingcute:add-circle-line", check: "mingcute:check-fill" },
-  { name: "mingcute:add-fill / mingcute:check-line", add: "mingcute:add-fill", check: "mingcute:check-line" },
-  { name: "mingcute:add-line / mingcute:check-fill", add: "mingcute:add-line", check: "mingcute:check-fill" },
-  { name: "mdi:plus / mdi:check-bold", add: "mdi:plus", check: "mdi:check-bold" },
-  { name: "mdi:cart-plus / mdi:check", add: "mdi:cart-plus", check: "mdi:check" },
-  { name: "mdi:plus-thick / mdi:check-decagram", add: "mdi:plus-thick", check: "mdi:check-decagram" },
+  { name: 'Корзина → отмечено', add: 'mdi:cart-outline', check: 'mdi:check-circle' },
+  { name: 'Корзина с плюсом → корзина с галочкой', add: 'mdi:cart-plus', check: 'mdi:cart-check' },
+  { name: 'Плетёнка → звезда-печать', add: 'mdi:basket-outline', check: 'mdi:check-decagram' },
+  { name: 'Тележка (mingcute) → отмечено (fill)', add: 'mingcute:shopping-cart-2-line', check: 'mingcute:check-circle-fill' },
+  { name: 'Корзина-вариант → жирная галочка', add: 'mdi:cart-variant', check: 'mdi:check-bold' },
+  { name: 'Корзина со стрелкой → посылка с галочкой', add: 'mdi:cart-arrow-right', check: 'mdi:package-variant-closed-check' },
+  { name: 'Сумка (mingcute) → галочка (fill)', add: 'mingcute:shopping-bag-2-line', check: 'mingcute:check-fill' },
+  { name: 'Корзина → звезда-печать', add: 'mdi:cart', check: 'mdi:check-decagram' },
 ]
 </script>
 
@@ -43,19 +43,21 @@ const pairs = [
     <!-- Статический список имён: сканер @nuxt/icon включает их в клиентский бандл
          (динамические :icon не сканируются, иначе на клиенте иконки пропадут) -->
     <div class="icons-demo__preload" aria-hidden="true">
-      <Icon name="mingcute:add-line" />
-      <Icon name="mingcute:check-line" />
-      <Icon name="mingcute:plus-line" />
-      <Icon name="mingcute:check-circle-line" />
-      <Icon name="mingcute:add-circle-line" />
-      <Icon name="mingcute:check-fill" />
-      <Icon name="mingcute:add-fill" />
-      <Icon name="mdi:plus" />
-      <Icon name="mdi:check-bold" />
+      <Icon name="mdi:cart-outline" />
+      <Icon name="mdi:check-circle" />
       <Icon name="mdi:cart-plus" />
-      <Icon name="mdi:check" />
-      <Icon name="mdi:plus-thick" />
+      <Icon name="mdi:cart-check" />
+      <Icon name="mdi:basket-outline" />
       <Icon name="mdi:check-decagram" />
+      <Icon name="mingcute:shopping-cart-2-line" />
+      <Icon name="mingcute:check-circle-fill" />
+      <Icon name="mdi:cart-variant" />
+      <Icon name="mdi:check-bold" />
+      <Icon name="mdi:cart-arrow-right" />
+      <Icon name="mdi:package-variant-closed-check" />
+      <Icon name="mingcute:shopping-bag-2-line" />
+      <Icon name="mingcute:check-fill" />
+      <Icon name="mdi:cart" />
     </div>
   </section>
 </template>
