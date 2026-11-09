@@ -547,10 +547,10 @@ defineEmits<Emits>();
     // TL повторяет дугу, TR/BL/BR не остаются угловатыми
     // TL/TR/BL — радиус выреза; BR — радиус карточки (кромка)
     border-radius:
-      var(--notch-r, 13px)
-      var(--notch-r, 13px)
-      toRem(6)
-      var(--notch-r, 13px);
+      var(--notch-r, 15px)
+      var(--notch-r, 15px)
+      var(--card-radius, 6px)
+      var(--notch-r, 15px);
     border: toRem(1) solid var(--success-color);
     background-color: var(--light-color);
     color: var(--green-color);

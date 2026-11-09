@@ -269,7 +269,9 @@ const characteristics = computed(() => {
 .product-card {
   width: 100%;
   position: relative;
-  border-radius: toEm(6);
+  // Радиус карточки — один источник для неё, вложенной поверхности и кнопки (BR)
+  --card-radius: #{toRem(6)};
+  border-radius: var(--card-radius);
   perspective: toRem(500);
   max-width: toRem(220);
   // Высота — от ширины самой карточки (авто-подстройка в любой сетке).
@@ -359,7 +361,7 @@ const characteristics = computed(() => {
     align-items: center;
     padding-block: toEm(12);
     border: toEm(2) solid var(--whitesmoke-color);
-    border-radius: toEm(6);
+    border-radius: var(--card-radius);
     background-color: var(--light-color);
     color: var(--gray-color);
     box-shadow: 0px toEm(6, 15) toEm(18, 15) toRem(5) hsla(0, 0%, 0%, 0.07);
