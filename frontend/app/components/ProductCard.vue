@@ -347,7 +347,8 @@ $notch-s-cq: ($plate-size-cq + $notch-gap) * 0.5; // 26
     // SVG-путь вместо градиентных слоёв: дуга остаётся резкой на телефоне.
     .product-card__surface {
       border-radius: var(--notch-r, 13px);
-      @include notchMask(172, 250, $notch-r * 1px, $notch-s * 1px);
+      // $r/$s — без единиц: это координаты SVG-пути (px в пути недопустимы)
+      @include notchMask(172, 250, $notch-r, $notch-s);
     }
 
     // Компакт: ссылки на товар нет, поэтому и контент не интерактивен. Иначе
@@ -367,12 +368,7 @@ $notch-s-cq: ($plate-size-cq + $notch-gap) * 0.5; // 26
     // Мелкая карточка (узкий телефон): плашка и вырез меньше, зазор тот же
     @container card (max-width: 170px) {
       .product-card__surface {
-        @include notchMask(
-          172,
-          250,
-          $notch-r-cq * 1px,
-          $notch-s-cq * 1px
-        );
+        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq);
       }
 
       .product-card__add {
