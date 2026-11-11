@@ -365,15 +365,15 @@ const characteristics = computed(() => {
     }
 
     // ВРЕМЕННО: прямоугольные варианты выреза (+10 / +18 / +26px влево)
-    &_wide-a .product-card__surface {
+    &.product-card_wide-a .product-card__surface {
       @include notchMask(172, 250, 14.92, 24.12, 10);
     }
 
-    &_wide-b .product-card__surface {
+    &.product-card_wide-b .product-card__surface {
       @include notchMask(172, 250, 14.92, 24.12, 18);
     }
 
-    &_wide-c .product-card__surface {
+    &.product-card_wide-c .product-card__surface {
       @include notchMask(172, 250, 14.92, 24.12, 26);
     }
 
