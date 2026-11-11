@@ -79,7 +79,13 @@ const characteristics = computed(() => {
   <li
     :class="[
       'product-card',
-      { 'product-card_rotate-active': rotateActive, 'product-card_compact': compact },
+      {
+        'product-card_rotate-active': rotateActive,
+        'product-card_compact': compact,
+        'product-card_tl-a': index === 0,
+        'product-card_tl-b': index === 1,
+        'product-card_tl-c': index === 2,
+      },
     ]"
   >
     <div
@@ -378,6 +384,20 @@ const characteristics = computed(() => {
     }
   }
 
+  // ВРЕМЕННО: три варианта TL-угла плашки на первых трёх карточках, чтобы
+  // выбрать самый плавный стык с дугой (остальные — как есть, 0).
+  &_tl-a {
+    --tl-adjust: -1.5px;
+  }
+
+  &_tl-b {
+    --tl-adjust: -1px;
+  }
+
+  &_tl-c {
+    --tl-adjust: -0.5px;
+  }
+
   &__front,
   &__back {
     position: absolute;
@@ -595,7 +615,7 @@ const characteristics = computed(() => {
       // «Пазл»: TR/BL/BR = радиус карточки, TL = радиус дуги + зазор
       border-radius: var(--notch-r, 15px);
       border-top-left-radius: calc(
-        var(--notch-r, 15px) + var(--notch-gap, 5px)
+        var(--notch-r, 15px) + var(--notch-gap, 5px) + var(--tl-adjust, 0px)
       );
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
