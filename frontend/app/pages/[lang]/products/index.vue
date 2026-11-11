@@ -219,9 +219,15 @@ const isLoading = computed(
 // (status === 'success') — и на desktop, и на mobile. На мобильном это то
 // поведение, при котором крошки липнут, а шапка сайта скрыта (схлопнута),
 // т.е. «как работало раньше». При входе и на SSR панель закрыта в любом случае.
+// На mobile фильтр при загрузке ЗАКРЫТ (карточки сразу компактные, с вырезом) —
+// авто-открытие только на планшете/десктопе (>= 768px, брейкпоинт $mobile).
+const isDesktopViewport = () =>
+  import.meta.client && window.matchMedia("(min-width: 768px)").matches
+
 let filterDialogOpened = false
 const openFilterDialogOnce = () => {
   if (filterDialogOpened || !import.meta.client) return
+  if (!isDesktopViewport()) return
   if (status.value === "success" && shopFilterRef.value) {
     filterDialogOpened = true
     shopFilterRef.value.open?.()
