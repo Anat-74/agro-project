@@ -79,7 +79,13 @@ const characteristics = computed(() => {
   <li
     :class="[
       'product-card',
-      { 'product-card_rotate-active': rotateActive, 'product-card_compact': compact },
+      {
+        'product-card_rotate-active': rotateActive,
+        'product-card_compact': compact,
+        'product-card_wide-a': index === 1,
+        'product-card_wide-b': index === 2,
+        'product-card_wide-c': index === 3,
+      },
     ]"
   >
     <div
@@ -357,6 +363,19 @@ const characteristics = computed(() => {
       );
     }
 
+    // ВРЕМЕННО: прямоугольные варианты выреза (+10 / +18 / +26px влево)
+    &_wide-a .product-card__surface {
+      @include notchMask(172, 250, 14.92, 24.12, 10);
+    }
+
+    &_wide-b .product-card__surface {
+      @include notchMask(172, 250, 14.92, 24.12, 18);
+    }
+
+    &_wide-c .product-card__surface {
+      @include notchMask(172, 250, 14.92, 24.12, 26);
+    }
+
     // Компакт: ссылки на товар нет, поэтому и контент не интерактивен. Иначе
     // клик/тап по фото включает sticky-hover и заголовок «подпрыгивает» вверх.
     .product-card__content {
@@ -388,6 +407,20 @@ const characteristics = computed(() => {
 
   // TL-угол плашки: −1.5px — выбранный вариант (стык с дугой)
   --tl-adjust: -1.5px;
+
+  // ВРЕМЕННО: прямоугольные варианты плашки (маска — в &_compact).
+  // 1-я карточка — квадрат 42.5, дальше +10 / +18 / +26 к ширине.
+  &_wide-a {
+    --plate-w: 52.5px;
+  }
+
+  &_wide-b {
+    --plate-w: 60.5px;
+  }
+
+  &_wide-c {
+    --plate-w: 68.5px;
+  }
 
 
 
@@ -567,7 +600,7 @@ const characteristics = computed(() => {
   &__add_plate {
     position: absolute;
     z-index: 150;
-    width: var(--plate-size, var(--notch-size));
+    width: var(--plate-w, var(--plate-size, var(--notch-size)));
     height: var(--plate-size, var(--notch-size));
     right: var(--plate-inset, var(--notch-gap));
     // Низ кнопки совпадает с низом карточки
