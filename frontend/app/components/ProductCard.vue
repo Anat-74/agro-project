@@ -79,13 +79,7 @@ const characteristics = computed(() => {
   <li
     :class="[
       'product-card',
-      {
-        'product-card_rotate-active': rotateActive,
-        'product-card_compact': compact,
-        'product-card_wide-a': index === 1,
-        'product-card_wide-b': index === 2,
-        'product-card_wide-c': index === 3,
-      },
+      { 'product-card_rotate-active': rotateActive, 'product-card_compact': compact },
     ]"
   >
     <div
@@ -283,6 +277,17 @@ const characteristics = computed(() => {
 </template>
 
 <style lang="scss" scoped>
+// Геометрия выреза — ОДИН источник для маски и плашки: меняешь размер плашки
+// или зазор, и маска (r/s), и кнопка пересчитываются вместе.
+$plate-size: 50.5;
+$notch-gap: 6;
+$notch-r: $plate-size * 0.25 + $notch-gap * 0.75; // 17.125
+$notch-s: ($plate-size + $notch-gap) * 0.5; // 28.25
+// Узкая карточка (CQ ≤170px)
+$plate-size-cq: 46;
+$notch-r-cq: $plate-size-cq * 0.25 + $notch-gap * 0.75; // 16
+$notch-s-cq: ($plate-size-cq + $notch-gap) * 0.5; // 26
+
 .product-card {
   width: 100%;
   position: relative;
@@ -294,15 +299,12 @@ const characteristics = computed(() => {
   // Высота — от ширины самой карточки (авто-подстройка в любой сетке).
   // На главной секции переопределяют высоту через containerAdaptive (335/265).
   aspect-ratio: 172 / 250;
-  // Размер плашки и зазор — единый источник для кнопки И выреза.
-  // Вырез (--notch-r/--notch-s) считается от них ниже, в .product-card__surface,
-  // поэтому при изменении размера кнопки вырез подстраивается сам.
-  --notch-size: 44px;
-  --notch-gap: 5px;
-  // Плашка меньше выреза и сдвинута влево: воздух ~6px сверху и по бокам,
-  // снизу 0 — плашка по-прежнему заподлицо с кромкой карточки.
-  --plate-size: 42.5px;
-  --plate-inset: 6px;
+  // Плашка и зазор; r/s выводятся из них (SCSS-константы $notch-*) и зашиты
+  // в маску. Плашка заподлицо с нижней кромкой, воздух = зазор сверху/по бокам.
+  --plate-size: #{$plate-size}px;
+  --notch-gap: #{$notch-gap}px;
+  --plate-inset: #{$notch-gap}px;
+  --notch-r: #{$notch-r}px;
   // Плавная реакция 3D-кнопки: scale (transform) + margin-block (сдвиг нижнего
   // ряда). Сохраняем глобальные li:hover-переходы (opacity/filter/shadow/color).
   transition:
@@ -340,41 +342,12 @@ const characteristics = computed(() => {
       top: toEm(27);
     }
 
-    // Вырез: r и s выводятся из размера плашки и зазора (а не «на глаз»), чтобы
-    // «воздух» был одинаковым на всех кромках: s = (size + gap) / 2 (верх),
-    // r = size / 4 + 0.75 * gap (лево). Проверено пиксельными замерами (sharp).
-    // Углы плашки = --notch-r (совпадают с дугой выреза и кромкой карточки).
+    // Вырез снизу справа строится напрямую (без scaleY(-1)): трансформ
+    // промоутит маскированный слой, и на телефоне край маски мылится.
+    // SVG-путь вместо градиентных слоёв: дуга остаётся резкой на телефоне.
     .product-card__surface {
-      --notch-r: calc(var(--notch-size, 44px) / 4 + var(--notch-gap, 5px) * 0.75);
-      --notch-s: calc(
-        (var(--notch-size, 44px) + var(--notch-gap, 5px)) / 2 - 1.05px
-      );
       border-radius: var(--notch-r, 13px);
-      // Вырез снизу справа строится напрямую (без scaleY(-1)): трансформ
-      // промоутит маскированный слой, и на телефоне край маски мылится.
-      // SVG-путь вместо градиентных слоёв: дуга остаётся резкой на телефоне
-      @include notchMask();
-    }
-
-    // Кнопка наследует те же r/s для своих скруглений
-    .product-card__add {
-      --notch-r: calc(var(--notch-size, 44px) / 4 + var(--notch-gap, 5px) * 0.75);
-      --notch-s: calc(
-        (var(--notch-size, 44px) + var(--notch-gap, 5px)) / 2 - 1.05px
-      );
-    }
-
-    // ВРЕМЕННО: прямоугольные варианты выреза (+10 / +18 / +26px влево)
-    &.product-card_wide-a .product-card__surface {
-      @include notchMask(172, 250, 14.92, 24.12, 10);
-    }
-
-    &.product-card_wide-b .product-card__surface {
-      @include notchMask(172, 250, 14.92, 24.12, 18);
-    }
-
-    &.product-card_wide-c .product-card__surface {
-      @include notchMask(172, 250, 14.92, 24.12, 26);
+      @include notchMask(172, 250, $notch-r * 1px, $notch-s * 1px);
     }
 
     // Компакт: ссылки на товар нет, поэтому и контент не интерактивен. Иначе
@@ -391,17 +364,20 @@ const characteristics = computed(() => {
       background-color: transparent;
     }
 
-    // Мелкая карточка (узкий телефон): плашка меньше, зазор тот же. Коэффициенты
-    // поправлены по замерам 3x: у маски есть абсолютные px, из-за чего на 42
-    // верх выходит на ~1px меньше, чем бока.
+    // Мелкая карточка (узкий телефон): плашка и вырез меньше, зазор тот же
     @container card (max-width: 170px) {
-      .product-card__surface,
+      .product-card__surface {
+        @include notchMask(
+          172,
+          250,
+          $notch-r-cq * 1px,
+          $notch-s-cq * 1px
+        );
+      }
+
       .product-card__add {
-        // Меняется только размер выреза/плашки — r/s считаются по общим
-        // формулам от --notch-size и --notch-gap.
-        --notch-size: 42px;
-        --plate-size: 40px;
-        --plate-inset: 6px;
+        --plate-size: #{$plate-size-cq}px;
+        --notch-r: #{$notch-r-cq}px;
       }
     }
   }
@@ -409,19 +385,7 @@ const characteristics = computed(() => {
   // TL-угол плашки: −1.5px — выбранный вариант (стык с дугой)
   --tl-adjust: -1.5px;
 
-  // ВРЕМЕННО: прямоугольные варианты плашки (маска — в &_compact).
-  // 1-я карточка — квадрат 42.5, дальше +10 / +18 / +26 к ширине.
-  &_wide-a {
-    --plate-w: 52.5px;
-  }
 
-  &_wide-b {
-    --plate-w: 60.5px;
-  }
-
-  &_wide-c {
-    --plate-w: 68.5px;
-  }
 
 
 
