@@ -79,12 +79,7 @@ const characteristics = computed(() => {
   <li
     :class="[
       'product-card',
-      {
-        'product-card_rotate-active': rotateActive,
-        'product-card_compact': compact,
-        'product-card_notch-a': index === 0,
-        'product-card_notch-b': index !== 0,
-      },
+      { 'product-card_rotate-active': rotateActive, 'product-card_compact': compact },
     ]"
   >
     <div
@@ -339,12 +334,9 @@ const characteristics = computed(() => {
     // r = size / 4 + 0.75 * gap (лево). Проверено пиксельными замерами (sharp).
     // Углы плашки = --notch-r (совпадают с дугой выреза и кромкой карточки).
     .product-card__surface {
-      --notch-r: calc(
-        var(--notch-size, 44px) / 4 + var(--notch-gap, 5px) * 0.75 + 0.35px
-      );
+      --notch-r: calc(var(--notch-size, 44px) / 4 + var(--notch-gap, 5px) * 0.75);
       --notch-s: calc(
-        (var(--notch-size, 44px) + var(--notch-gap, 5px)) / 2 - 0.75px +
-          var(--notch-s-extra, 0px)
+        (var(--notch-size, 44px) + var(--notch-gap, 5px)) / 2 - 1.05px
       );
       border-radius: var(--notch-r, 13px);
       @include invertedRadius(var(--notch-r, 13px), var(--notch-s, 27px));
@@ -352,11 +344,9 @@ const characteristics = computed(() => {
 
     // Кнопка наследует те же r/s для своих скруглений
     .product-card__add {
-      --notch-r: calc(
-        var(--notch-size, 44px) / 4 + var(--notch-gap, 5px) * 0.75 + 0.35px
-      );
+      --notch-r: calc(var(--notch-size, 44px) / 4 + var(--notch-gap, 5px) * 0.75);
       --notch-s: calc(
-        (var(--notch-size, 44px) + var(--notch-gap, 5px)) / 2 - 0.75px
+        (var(--notch-size, 44px) + var(--notch-gap, 5px)) / 2 - 1.05px
       );
     }
 
@@ -382,22 +372,10 @@ const characteristics = computed(() => {
       .product-card__add {
         --notch-size: 42px;
         --notch-gap: 5px;
-        --notch-r: calc(var(--notch-size, 42px) * 0.3373);
-        --notch-s: calc(
-          var(--notch-size, 42px) * 0.5531 + var(--notch-s-extra, 0px)
-        );
+        --notch-r: calc(var(--notch-size, 42px) * 0.3286);
+        --notch-s: calc(var(--notch-size, 42px) * 0.5455);
       }
     }
-  }
-
-  // ВРЕМЕННО (A/B-сравнение на устройстве): A — первая карточка, мягче TL-угол
-  // плашки; B — все остальные, чуть положе дуга выреза. После выбора убрать.
-  &_notch-a {
-    --notch-tl-extra: 2px;
-  }
-
-  &_notch-b {
-    --notch-s-extra: -1px;
   }
 
   &__front,
@@ -617,8 +595,7 @@ const characteristics = computed(() => {
       // «Пазл»: TR/BL/BR = радиус карточки, TL = радиус дуги + зазор
       border-radius: var(--notch-r, 15px);
       border-top-left-radius: calc(
-        var(--notch-r, 15px) + var(--notch-gap, 5px) +
-          var(--notch-tl-extra, 0px)
+        var(--notch-r, 15px) + var(--notch-gap, 5px)
       );
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
