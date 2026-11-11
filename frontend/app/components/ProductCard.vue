@@ -79,13 +79,7 @@ const characteristics = computed(() => {
   <li
     :class="[
       'product-card',
-      {
-        'product-card_rotate-active': rotateActive,
-        'product-card_compact': compact,
-        'product-card_air-a': index === 0,
-        'product-card_air-b': index === 1,
-        'product-card_air-c': index === 2,
-      },
+      { 'product-card_rotate-active': rotateActive, 'product-card_compact': compact },
     ]"
   >
     <div
@@ -299,9 +293,9 @@ const characteristics = computed(() => {
   // поэтому при изменении размера кнопки вырез подстраивается сам.
   --notch-size: 44px;
   --notch-gap: 5px;
-  // Плашка меньше выреза на 2px и сдвинута на 1px влево: воздух +2 сверху и
-  // по бокам, снизу 0 — плашка по-прежнему заподлицо с кромкой карточки.
-  --plate-size: 42px;
+  // Плашка меньше выреза и сдвинута влево: воздух ~6px сверху и по бокам,
+  // снизу 0 — плашка по-прежнему заподлицо с кромкой карточки.
+  --plate-size: 42.5px;
   --plate-inset: 6px;
   @include containerParent(card productImage, inline-size);
   // Плавная реакция 3D-кнопки: scale (transform) + margin-block (сдвиг нижнего
@@ -395,22 +389,7 @@ const characteristics = computed(() => {
   // TL-угол плашки: −1.5px — выбранный вариант (стык с дугой)
   --tl-adjust: -1.5px;
 
-  // ВРЕМЕННО: три варианта зазора на первых трёх карточках (остальные — как
-  // по умолчанию, 42/6), чтобы выбрать «воздух» на устройстве.
-  &_air-a {
-    --plate-size: 42px;
-    --plate-inset: 6px;
-  }
 
-  &_air-b {
-    --plate-size: 40px;
-    --plate-inset: 7px;
-  }
-
-  &_air-c {
-    --plate-size: 38px;
-    --plate-inset: 8px;
-  }
 
   &__front,
   &__back {
