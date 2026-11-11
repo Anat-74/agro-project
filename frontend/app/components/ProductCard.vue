@@ -303,7 +303,6 @@ const characteristics = computed(() => {
   // снизу 0 — плашка по-прежнему заподлицо с кромкой карточки.
   --plate-size: 42.5px;
   --plate-inset: 6px;
-  @include containerParent(card productImage, inline-size);
   // Плавная реакция 3D-кнопки: scale (transform) + margin-block (сдвиг нижнего
   // ряда). Сохраняем глобальные li:hover-переходы (opacity/filter/shadow/color).
   transition:
@@ -313,6 +312,8 @@ const characteristics = computed(() => {
     filter 0.4s,
     box-shadow 0.4s,
     color 0.4s;
+  // Миксины — после всех свойств, перед вложенными селекторами
+  @include containerParent(card productImage, inline-size);
 
   &_rotate-active {
     z-index: 150;

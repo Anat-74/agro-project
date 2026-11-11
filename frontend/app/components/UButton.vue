@@ -553,15 +553,14 @@ defineEmits<Emits>();
     background-color: transparent;
     box-shadow: none;
     transition: opacity var(--transition-duration);
+    @include hover {
+      opacity: 0.92;
+    }
 
     // Псевдоэлементы не используем: состояния рисуют грани
     &::before,
     &::after {
       content: none;
-    }
-
-    @include hover {
-      opacity: 0.92;
     }
   }
 
