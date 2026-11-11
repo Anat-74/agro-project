@@ -340,3 +340,38 @@
       calc(2 * var(--_ir-s)) no-repeat;
   mask-repeat: no-repeat;
 }
+
+//* Тот же вырез, но в ПРАВОМ НИЖНЕМ углу — вертикальное зеркало предыдущего.
+//* Нужен, чтобы не переворачивать маскированный слой через scaleY(-1):
+//* трансформ промоутит слой, и на телефоне край маски растеризуется мыльно.
+@mixin invertedRadiusBottomRight($r: 16px, $s: 24px) {
+  --_br-r: #{$r};
+  --_br-s: #{$s};
+  --_br-m: / calc(2 * var(--_br-r)) calc(2 * var(--_br-r))
+    radial-gradient(#000 70%, #0000 72%) no-repeat;
+
+  mask:
+    right calc(var(--_br-s) + 2 * var(--_br-r)) bottom 0 var(--_br-m),
+    right 0 bottom calc(2 * var(--_br-s)) var(--_br-m),
+    radial-gradient(var(--_br-s) at 100% 100%, #0000 99%, #000 calc(100% + 1px))
+      left calc(-2 * var(--_br-r)) bottom var(--_br-s) no-repeat,
+    // Прозрачный квадрант — 25%..50% (низ-право): при зеркале по Y он
+    // переезжает из верх-право (0..25%) вниз.
+    conic-gradient(
+        at calc(100% - var(--_br-r)) calc(100% - var(--_br-r)),
+        #000 25%,
+        #0000 25%,
+        #0000 50%,
+        #000 50%
+      )
+      left calc(-1 * (var(--_br-s) + 2 * var(--_br-r))) bottom 0 no-repeat,
+    conic-gradient(
+        at calc(100% - var(--_br-r)) calc(100% - var(--_br-r)),
+        #000 25%,
+        #0000 25%,
+        #0000 50%,
+        #000 50%
+      )
+      left 0 bottom calc(2 * var(--_br-s)) no-repeat;
+  mask-repeat: no-repeat;
+}

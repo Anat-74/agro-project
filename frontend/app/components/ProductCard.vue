@@ -345,7 +345,14 @@ const characteristics = computed(() => {
         (var(--notch-size, 44px) + var(--notch-gap, 5px)) / 2 - 1.05px
       );
       border-radius: var(--notch-r, 13px);
-      @include invertedRadius(var(--notch-r, 13px), var(--notch-s, 27px));
+      // Вырез снизу справа строится напрямую (без scaleY(-1)): трансформ
+      // промоутит маскированный слой, и на телефоне край маски мылится.
+      // +0.17/+0.67 — компенсация: зеркальный набор слоёв даёт ту же форму,
+      // но на ~1.3px мельче по вертикали (проверено пиксельными замерами).
+      @include invertedRadiusBottomRight(
+        calc(var(--notch-r, 13px) + 0.17px),
+        calc(var(--notch-s, 27px) + 0.67px)
+      );
     }
 
     // Кнопка наследует те же r/s для своих скруглений
@@ -406,15 +413,15 @@ const characteristics = computed(() => {
     transition: transform 0.6s;
   }
 
-  // Слой-«поверхность»: перевёрнут, поэтому тот же код режет низ-справа.
-  // Сам вырез включается ТОЛЬКО в компактном режиме (фильтр закрыт) — см. &_compact.
+  // Слой-«поверхность»: маска строит вырез сразу в правом нижнем углу,
+  // без переворота слоя. Сам вырез включается ТОЛЬКО в компактном режиме
+  // (фильтр закрыт) — см. &_compact.
   &__surface {
     position: absolute;
     inset: 0;
-    transform: scaleY(-1);
   }
 
-  // Контент возвращаем в нормаль; здесь же фон, рамка, скругление и тень
+  // Здесь фон, рамка, скругление и тень
   &__surface-inner {
     position: absolute;
     inset: 0;
@@ -427,7 +434,6 @@ const characteristics = computed(() => {
     background-color: var(--light-color);
     color: var(--gray-color);
     box-shadow: 0px toEm(6, 15) toEm(18, 15) toRem(5) hsla(0, 0%, 0%, 0.07);
-    transform: scaleY(-1);
   }
 
   &__front {
