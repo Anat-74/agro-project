@@ -82,9 +82,9 @@ const characteristics = computed(() => {
       {
         'product-card_rotate-active': rotateActive,
         'product-card_compact': compact,
-        'product-card_tl-a': index === 0,
-        'product-card_tl-b': index === 1,
-        'product-card_tl-c': index === 2,
+        'product-card_air-a': index === 0,
+        'product-card_air-b': index === 1,
+        'product-card_air-c': index === 2,
       },
     ]"
   >
@@ -299,6 +299,10 @@ const characteristics = computed(() => {
   // поэтому при изменении размера кнопки вырез подстраивается сам.
   --notch-size: 44px;
   --notch-gap: 5px;
+  // Плашка меньше выреза на 2px и сдвинута на 1px влево: воздух +2 сверху и
+  // по бокам, снизу 0 — плашка по-прежнему заподлицо с кромкой карточки.
+  --plate-size: 42px;
+  --plate-inset: 6px;
   @include containerParent(card productImage, inline-size);
   // Плавная реакция 3D-кнопки: scale (transform) + margin-block (сдвиг нижнего
   // ряда). Сохраняем глобальные li:hover-переходы (opacity/filter/shadow/color).
@@ -347,12 +351,8 @@ const characteristics = computed(() => {
       border-radius: var(--notch-r, 13px);
       // Вырез снизу справа строится напрямую (без scaleY(-1)): трансформ
       // промоутит маскированный слой, и на телефоне край маски мылится.
-      // +0.17/+0.67 — компенсация: зеркальный набор слоёв даёт ту же форму,
-      // но на ~1.3px мельче по вертикали (проверено пиксельными замерами).
-      @include invertedRadiusBottomRight(
-        calc(var(--notch-r, 13px) + 0.17px),
-        calc(var(--notch-s, 27px) + 0.67px)
-      );
+      // SVG-путь вместо градиентных слоёв: дуга остаётся резкой на телефоне
+      @include notchMask();
     }
 
     // Кнопка наследует те же r/s для своих скруглений
@@ -383,26 +383,33 @@ const characteristics = computed(() => {
     @container card (max-width: 170px) {
       .product-card__surface,
       .product-card__add {
+        // Меняется только размер выреза/плашки — r/s считаются по общим
+        // формулам от --notch-size и --notch-gap.
         --notch-size: 42px;
-        --notch-gap: 5px;
-        --notch-r: calc(var(--notch-size, 42px) * 0.3286);
-        --notch-s: calc(var(--notch-size, 42px) * 0.5455);
+        --plate-size: 40px;
+        --plate-inset: 6px;
       }
     }
   }
 
-  // ВРЕМЕННО: три варианта TL-угла плашки на первых трёх карточках, чтобы
-  // выбрать самый плавный стык с дугой (остальные — как есть, 0).
-  &_tl-a {
-    --tl-adjust: -1.5px;
+  // TL-угол плашки: −1.5px — выбранный вариант (стык с дугой)
+  --tl-adjust: -1.5px;
+
+  // ВРЕМЕННО: три варианта зазора на первых трёх карточках (остальные — как
+  // по умолчанию, 42/6), чтобы выбрать «воздух» на устройстве.
+  &_air-a {
+    --plate-size: 42px;
+    --plate-inset: 6px;
   }
 
-  &_tl-b {
-    --tl-adjust: -1px;
+  &_air-b {
+    --plate-size: 40px;
+    --plate-inset: 7px;
   }
 
-  &_tl-c {
-    --tl-adjust: -0.5px;
+  &_air-c {
+    --plate-size: 38px;
+    --plate-inset: 8px;
   }
 
   &__front,
@@ -581,9 +588,9 @@ const characteristics = computed(() => {
   &__add_plate {
     position: absolute;
     z-index: 150;
-    width: var(--notch-size);
-    height: var(--notch-size);
-    right: var(--notch-gap);
+    width: var(--plate-size, var(--notch-size));
+    height: var(--plate-size, var(--notch-size));
+    right: var(--plate-inset, var(--notch-gap));
     // Низ кнопки совпадает с низом карточки
     bottom: 0;
 
@@ -627,7 +634,7 @@ const characteristics = computed(() => {
       -webkit-backface-visibility: hidden;
 
       :deep(svg) {
-        font-size: calc(var(--notch-size, 44px) * 0.45);
+        font-size: calc(var(--plate-size, var(--notch-size, 44px)) * 0.45);
       }
     }
 
