@@ -572,10 +572,13 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     position: absolute;
     z-index: 150;
     width: var(--plate-w, var(--plate-size, var(--notch-size)));
-    height: var(--plate-size, var(--notch-size));
+    // +1px компенсирует сдвиг вниз: верх кнопки остаётся на месте, воздух
+    // сверху не меняется, а низ совпадает с видимой кромкой карточки
+    height: calc(var(--plate-size, var(--notch-size)) + 1px);
     right: var(--plate-inset, var(--notch-gap));
-    // Низ кнопки совпадает с низом карточки
-    bottom: 0;
+    // Низ кнопки = видимая кромка карточки: маска обрезает кромку с AA, и её
+    // последняя строка полупрозрачная — без -1px кнопка читается на 1px выше.
+    bottom: -1px;
 
     // Слот у .btn обёрнут в .button-content — растягиваем на всю плашку,
     // иначе absolute-грани не получат размеров. Элемент создаётся внутри
