@@ -99,7 +99,13 @@ const characteristics = computed(() => {
           class="product-card__discount"
           name="mdi:discount"
         />
-        <ProductStatus class="product-card__in-stock" :product="product" />
+        <!-- В компакте статус живёт в вырезе левого верхнего угла (см. ниже):
+             внутри маски его обрезало бы вместе с карточкой -->
+        <ProductStatus
+          v-if="!compact"
+          class="product-card__in-stock"
+          :product="product"
+        />
         <UButton
           v-if="!compact"
           class="product-card__details"
@@ -273,6 +279,13 @@ const characteristics = computed(() => {
         </span>
       </span>
     </UButton>
+
+    <!-- Статус в вырезе левого верхнего угла (над маской) -->
+    <ProductStatus
+      v-if="compact"
+      class="product-card__status"
+      :product="product"
+    />
   </li>
 </template>
 
@@ -287,6 +300,10 @@ $notch-x: $plate-size + $notch-gap; // вырез по X и Y = 58.5
 $notch-r: ($notch-x - $notch-s) * 0.5; // радиус кромок карточки/BR плашки = 14.625
 $plate-tl: $notch-s - $notch-gap; // TL: концентричен дуге = 21.25
 $plate-inner: 12; // TR/BL: меньше, чем BR — они у прямых кромок выреза
+// Вырез под статус в левом верхнем углу (координаты viewBox карточки)
+$stat-w: 104;
+$stat-h: 30;
+$stat-r: 6;
 // Узкая карточка (CQ ≤170px)
 $plate-size-cq: 46;
 $notch-s-cq: ($plate-size-cq + $notch-gap) * 0.5; // 27
@@ -357,7 +374,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     .product-card__surface {
       border-radius: var(--notch-r, 13px);
       // $r/$s — без единиц: это координаты SVG-пути (px в пути недопустимы)
-      @include notchMask(172, 250, $notch-r, $notch-s);
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, $stat-w, $stat-h, $stat-r);
     }
 
     // Компакт: ссылки на товар нет, поэтому и контент не интерактивен. Иначе
@@ -377,7 +394,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     // Мелкая карточка (узкий телефон): плашка и вырез меньше, зазор тот же
     @container card (max-width: 170px) {
       .product-card__surface {
-        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq);
+        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, $stat-w, $stat-h, $stat-r);
       }
 
       .product-card__add {
@@ -666,6 +683,29 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     padding: toEm(4);
   }
 
+  // Статус в вырезе левого верхнего угла (слой над маской). Размеры — те же
+  // координаты viewBox, что у выреза, поэтому заданы в процентах: совпадают
+  // при любом размере карточки (маска тоже тянется).
+  &__status {
+    position: absolute;
+    z-index: 160;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    display: grid;
+    place-items: center;
+    width: calc(#{$stat-w} / 172 * 100%);
+    height: calc(#{$stat-h} / 250 * 100%);
+    padding-inline: 6%;
+    color: var(--light-color);
+    font-size: toEm(14);
+    text-align: center;
+
+    :deep(.in-stock),
+    :deep(.to-order) {
+      color: var(--light-color);
+    }
+  }
+
   &__content {
     flex: 1 1 auto;
     // Длинный текст не должен выталкивать нижнюю полосу (и плашку) за карточку
@@ -738,7 +778,8 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     align-items: center;
     padding-inline: toEm(12);
     padding-block: toEm(8);
-    background-color: var(--whitesmoke-color);
+    // Фон — как у самой карточки (серая полоса на уровне цены убрана)
+    background-color: transparent;
   }
 
   &__price {

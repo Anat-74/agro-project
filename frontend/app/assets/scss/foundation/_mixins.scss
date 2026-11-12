@@ -348,7 +348,18 @@
 //* $s — радиус дуги выреза. Тянется через mask-size: 100% 100%.
 //* ВАЖНО: $w/$h/$r/$s — БЕЗ единиц (координаты SVG-пути; `17px` в path невалиден
 //* и маска становится пустой — элемент исчезает).
-@mixin notchMask($w: 172, $h: 250, $r: 14.92, $s: 24.12, $extra: 0) {
+//* $stat-w/$stat-h/$stat-r — прямоугольный вырез в левом верхнем углу под
+//* статус («В наличии / Под заказ»); 0 — вырез не нужен.
+@mixin notchMask(
+  $w: 172,
+  $h: 250,
+  $r: 14.92,
+  $s: 24.12,
+  $extra: 0,
+  $stat-w: 0,
+  $stat-h: 0,
+  $stat-r: 6
+) {
   $wr: $w - $r;
   $hr: $h - $r;
   $x: $s + 2 * $r + $extra; // ширина выреза от правой кромки
@@ -366,7 +377,13 @@
   // Нижний левый угол — такая же дуга r, как у верхнего правого (кубическая
   // кривая читалась как «срезанный» угол).
   $cut: "M #{$xl},#{$ya} A #{$s},#{$s} 0 0 1 #{$xa},#{$yt} H #{$w - $r} A #{$r},#{$r} 0 0 0 #{$w},#{$yt - $r} V #{$h} H #{$xl - $r} A #{$r},#{$r} 0 0 0 #{$xl},#{$h - $r} Z";
-  $svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 #{$w} #{$h}' preserveAspectRatio='none'%3E%3Cpath fill-rule='evenodd' fill='%23fff' d='#{$card} #{$cut}'/%3E%3C/svg%3E";
+  // Вырез под статус (левый верх): прямоугольник со скруглённым внутренним
+  // углом (материал получает вогнутый уголок).
+  $stat: "";
+  @if $stat-w > 0 {
+    $stat: " M 0,0 H #{$stat-w} V #{$stat-h - $stat-r} A #{$stat-r},#{$stat-r} 0 0 0 #{$stat-w - $stat-r},#{$stat-h} H 0 Z";
+  }
+  $svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 #{$w} #{$h}' preserveAspectRatio='none'%3E%3Cpath fill-rule='evenodd' fill='%23fff' d='#{$card} #{$cut}#{$stat}'/%3E%3C/svg%3E";
 
   mask-image: url("#{$svg}");
   mask-size: 100% 100%;
