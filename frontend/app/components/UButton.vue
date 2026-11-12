@@ -552,10 +552,9 @@ defineEmits<Emits>();
     border: 0;
     background-color: transparent;
     box-shadow: none;
-    transition: opacity var(--transition-duration);
-    @include hover {
-      opacity: 0.92;
-    }
+    // НЕ менять opacity у этой кнопки: opacity < 1 делает элемент композитным
+    // слоем и «сплющивает» preserve-3d у граней — обратная грань просвечивает
+    // (hover на тач-экране «залипает» и плашка становится полупрозрачной).
 
     // Псевдоэлементы не используем: состояния рисуют грани
     &::before,

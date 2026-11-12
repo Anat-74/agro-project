@@ -625,6 +625,8 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
 
     .product-card__plate-face_front {
       background-color: var(--light-color);
+      // Рамка в цвет фона кнопки — на фронтальной грани зелёный контур не нужен
+      border-color: var(--light-color);
       color: var(--green-color);
     }
 
