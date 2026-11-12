@@ -428,8 +428,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     position: absolute;
     inset: 0;
     backface-visibility: hidden;
-    // Переворот карточки ускорен: 0.6s → 0.4s
-    transition: transform 0.4s;
+    transition: transform 0.6s;
   }
 
   // Слой-«поверхность»: маска строит вырез сразу в правом нижнем углу,
