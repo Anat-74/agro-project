@@ -625,7 +625,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
       height: 100%;
       transform-style: preserve-3d;
       // Тайминг как у переворота карточки (0.4s)
-      transition: transform 0.4s;
+      transition: transform 0.5s;
 
       &_is-added {
         transform: rotateY(180deg);
