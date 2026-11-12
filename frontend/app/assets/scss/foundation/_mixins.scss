@@ -381,7 +381,9 @@
   // углом (материал получает вогнутый уголок).
   $stat: "";
   @if $stat-w > 0 {
-    $stat: " M 0,0 H #{$stat-w} V #{$stat-h - $stat-r} A #{$stat-r},#{$stat-r} 0 0 0 #{$stat-w - $stat-r},#{$stat-h} H 0 Z";
+    // Как у выреза под кнопку: внутренний угол — дуга $stat-r, внешние
+    // (верх-право и низ-лево) — скругления $r материала
+    $stat: " M 0,0 H #{$stat-w - $r} A #{$r},#{$r} 0 0 1 #{$stat-w},#{$r} V #{$stat-h - $stat-r} A #{$stat-r},#{$stat-r} 0 0 0 #{$stat-w - $stat-r},#{$stat-h} H #{$r} A #{$r},#{$r} 0 0 1 0,#{$stat-h - $r} Z";
   }
   $svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 #{$w} #{$h}' preserveAspectRatio='none'%3E%3Cpath fill-rule='evenodd' fill='%23fff' d='#{$card} #{$cut}#{$stat}'/%3E%3C/svg%3E";
 
