@@ -300,10 +300,15 @@ $notch-x: $plate-size + $notch-gap; // вырез по X и Y = 58.5
 $notch-r: ($notch-x - $notch-s) * 0.5; // радиус кромок карточки/BR плашки = 14.625
 $plate-tl: $notch-s - $notch-gap; // TL: концентричен дуге = 21.25
 $plate-inner: 12; // TR/BL: меньше, чем BR — они у прямых кромок выреза
-// Вырез под статус в левом верхнем углу (координаты viewBox карточки)
-$stat-w: 104;
-$stat-h: 30;
-$stat-r: 6;
+// Вырез под статус в левом верхнем углу (координаты viewBox карточки).
+// Устроен как вырез под кнопку: вырез = плашка(чип) + зазор, внутренний угол
+// чипа концентричен дуге выреза.
+$stat-w: 104; // вырез: чип 96 + зазор 8
+$stat-h: 40; // вырез: чип 32 + зазор 8
+$stat-s: 20; // радиус дуги выреза
+$chip-w: 96;
+$chip-h: 32;
+$chip-br: $stat-s - $notch-gap; // концентричен дуге = 12
 // Узкая карточка (CQ ≤170px)
 $plate-size-cq: 46;
 $notch-s-cq: ($plate-size-cq + $notch-gap) * 0.5; // 27
@@ -374,7 +379,13 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     .product-card__surface {
       border-radius: var(--notch-r, 13px);
       // $r/$s — без единиц: это координаты SVG-пути (px в пути недопустимы)
-      @include notchMask(172, 250, $notch-r, $notch-s, 0, $stat-w, $stat-h, $stat-r);
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, $stat-w, $stat-h, $stat-s);
+    }
+
+    // Компакт (страница продуктов, фильтр закрыт): полоса цены без серого фона —
+    // фон как у самой карточки. В обычном режиме полоса остаётся.
+    .product-card__bottom-items {
+      background-color: transparent;
     }
 
     // Компакт: ссылки на товар нет, поэтому и контент не интерактивен. Иначе
@@ -394,7 +405,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     // Мелкая карточка (узкий телефон): плашка и вырез меньше, зазор тот же
     @container card (max-width: 170px) {
       .product-card__surface {
-        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, $stat-w, $stat-h, $stat-r);
+        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, $stat-w, $stat-h, $stat-s);
       }
 
       .product-card__add {
@@ -417,7 +428,8 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     position: absolute;
     inset: 0;
     backface-visibility: hidden;
-    transition: transform 0.6s;
+    // Переворот карточки ускорен: 0.6s → 0.4s
+    transition: transform 0.4s;
   }
 
   // Слой-«поверхность»: маска строит вырез сразу в правом нижнем углу,
@@ -613,8 +625,8 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
       width: 100%;
       height: 100%;
       transform-style: preserve-3d;
-      // Тайминг как у переворота карточки
-      transition: transform 0.6s;
+      // Тайминг как у переворота карточки (0.4s)
+      transition: transform 0.4s;
 
       &_is-added {
         transform: rotateY(180deg);
@@ -693,17 +705,18 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     inset-inline-start: 0;
     display: grid;
     place-items: center;
-    width: calc(#{$stat-w} / 172 * 100%);
-    height: calc(#{$stat-h} / 250 * 100%);
-    padding-inline: 6%;
-    color: var(--light-color);
+    width: calc(#{$chip-w} / 172 * 100%);
+    height: calc(#{$chip-h} / 250 * 100%);
+    padding-inline: toRem(10);
     font-size: toEm(14);
     text-align: center;
-
-    :deep(.in-stock),
-    :deep(.to-order) {
-      color: var(--light-color);
-    }
+    // Чип с фоном карточки; BR концентричен дуге выреза, TL — кромка карточки,
+    // TR/BL — как у плашки (меньше)
+    border-radius: var(--notch-r, 15px);
+    border-top-right-radius: var(--plate-inner, 12px);
+    border-bottom-left-radius: var(--plate-inner, 12px);
+    border-bottom-right-radius: #{$chip-br}px;
+    background-color: var(--light-color);
   }
 
   &__content {
@@ -778,8 +791,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     align-items: center;
     padding-inline: toEm(12);
     padding-block: toEm(8);
-    // Фон — как у самой карточки (серая полоса на уровне цены убрана)
-    background-color: transparent;
+    background-color: var(--whitesmoke-color);
   }
 
   &__price {
