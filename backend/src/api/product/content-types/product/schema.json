@@ -78,6 +78,17 @@
       "type": "boolean",
       "default": false
     },
+    "discountPercent": {
+      "type": "integer",
+      "min": 0,
+      "max": 99,
+      "default": 0,
+      "pluginOptions": {
+        "i18n": {
+          "localized": false
+        }
+      }
+    },
     "subcategory": {
       "type": "relation",
       "relation": "oneToOne",

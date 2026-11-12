@@ -94,11 +94,6 @@ const characteristics = computed(() => {
       <div class="product-card__surface">
         <div class="product-card__surface-inner">
           <div class="product-card__top-items">
-        <Icon
-          v-if="product.isDiscount"
-          class="product-card__discount"
-          name="mdi:discount"
-        />
         <!-- В компакте статус живёт в вырезе левого верхнего угла (см. ниже):
              внутри маски его обрезало бы вместе с карточкой -->
         <ProductStatus
@@ -154,16 +149,30 @@ const characteristics = computed(() => {
         </NuxtLink>
       </div>
       <div class="product-card__bottom-items">
+        <!-- Иконка акции: перенесена вниз, перед рублём, размер уменьшен вдвое -->
+        <Icon
+          v-if="hasDiscount(product)"
+          class="product-card__discount"
+          name="mdi:discount"
+        />
         <UTooltip :text="tooltipT.byRuble">
           <UIconLocal name="icon-by-regular" />
         </UTooltip>
-        <span
-          :class="[
-            'product-card__price',
-            { 'product-card__price_discount': product.isDiscount },
-          ]"
-        >
-          {{ formatPrice(product.price) }}
+        <span class="product-card__prices">
+          <span
+            :class="[
+              'product-card__price',
+              { 'product-card__price_discount': hasDiscount(product) },
+            ]"
+          >
+            {{ formatPrice(finalPrice(product)) }}
+          </span>
+          <span v-if="hasDiscount(product)" class="product-card__price-old">
+            <s>{{ formatPrice(product.price) }}</s>
+            <span class="product-card__price-percent"
+              >−{{ discountPercent(product) }}%</span
+            >
+          </span>
         </span>
         <UButton
           v-if="!compact"
@@ -191,11 +200,6 @@ const characteristics = computed(() => {
       <div class="product-card__surface">
         <div class="product-card__surface-inner">
           <div class="product-card__top-items">
-        <Icon
-          v-if="product.isDiscount"
-          class="product-card__discount"
-          name="mdi:discount"
-        />
         <ProductStatus :product="product" class="product-card__in-stock" />
         <UButton
           class="product-card__details"
@@ -223,16 +227,29 @@ const characteristics = computed(() => {
         </NuxtLink>
       </div>
       <div class="product-card__bottom-items">
+        <Icon
+          v-if="hasDiscount(product)"
+          class="product-card__discount"
+          name="mdi:discount"
+        />
         <UTooltip :text="tooltipT.byRuble">
           <UIconLocal name="icon-by-regular" />
         </UTooltip>
-        <span
-          :class="[
-            'product-card__price',
-            { 'product-card__price_discount': product?.isDiscount },
-          ]"
-        >
-          {{ formatPrice(product.price) }}
+        <span class="product-card__prices">
+          <span
+            :class="[
+              'product-card__price',
+              { 'product-card__price_discount': hasDiscount(product) },
+            ]"
+          >
+            {{ formatPrice(finalPrice(product)) }}
+          </span>
+          <span v-if="hasDiscount(product)" class="product-card__price-old">
+            <s>{{ formatPrice(product.price) }}</s>
+            <span class="product-card__price-percent"
+              >−{{ discountPercent(product) }}%</span
+            >
+          </span>
         </span>
         <UButton
           class="product-card__add"
@@ -686,7 +703,36 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
 
   &__discount {
     color: var(--success-color);
-    font-size: toEm(27);
+    // В нижней полосе перед рублём; вдвое меньше прежнего размера (было 27)
+    font-size: toEm(13.5);
+  }
+
+  // Колонка цен: новая цена сверху, старая (перечёркнутая) — под ней
+  &__prices {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: toEm(1);
+    padding-inline-start: toEm(3);
+  }
+
+  &__price-old {
+    display: inline-flex;
+    align-items: baseline;
+    gap: toEm(3);
+    // В 2–3 раза мельче новой цены
+    font-size: toEm(7);
+    color: var(--gray-color);
+
+    s {
+      text-decoration: line-through;
+    }
+  }
+
+  &__price-percent {
+    font-weight: 600;
+    color: var(--success-color);
   }
 
   &__in-stock {
@@ -794,13 +840,11 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
   }
 
   &__price {
-    flex: 1 1 auto;
-    padding-inline-start: toEm(3);
     font-weight: 600;
     color: var(--gray-color);
 
     &_discount {
-      font-weight: 600;
+      font-weight: 700;
       color: var(--green-color);
     }
   }

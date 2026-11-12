@@ -9,6 +9,8 @@ export type Product = {
   characteristics: string;
   isAvailable?: boolean;
   isDiscount?: boolean;
+  /** Процент скидки из Strapi (0..99); итоговая цена — `finalPrice()` */
+  discountPercent?: number | null;
   image: Image[];
   mainImage?: Image;
   seo?: {
