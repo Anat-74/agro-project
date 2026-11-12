@@ -8,7 +8,7 @@ export const useOrderStore = defineStore('order', () => {
          const orderItems = cartStore.items.map((item: any) => ({
             productId: item.product.documentId,
             name: item.product.name,
-            price: item.product.price,
+            price: finalPrice(item.product),
             quantity: item.quantity,
             mainImage: item.product.mainImage || '',
             slug: item.product.slug || '',

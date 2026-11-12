@@ -40,6 +40,7 @@ const buildModalProduct = (item: CartItem): Product => ({
   slug: item.product.slug,
   name: item.product.name,
   price: item.product.price,
+  discountPercent: item.product.discountPercent,
   description: '',
   characteristics: '',
   image: item.product.mainImage
@@ -133,7 +134,7 @@ onMounted(() => {
 
           <span class="cart-items__price">
             <UIconLocal name="icon-by-regular" />
-            {{ formatPrice(item.product.price) }}
+            {{ formatPrice(finalPrice(item.product)) }}
           </span>
         </div>
       </div>

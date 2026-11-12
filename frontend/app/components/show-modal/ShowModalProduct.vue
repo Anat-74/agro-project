@@ -221,7 +221,9 @@ const handleAddToCart = () => {
 
       <div class="product-modal__info">
         <h2 class="product-modal__title">{{ product?.name }}</h2>
-        <p class="product-modal__price">{{ formatPrice(product?.price ?? 0) }}</p>
+        <p class="product-modal__price">
+          {{ formatPrice(finalPrice(product ?? { price: 0 })) }}
+        </p>
         <div class="product-modal__desc">
           <LazyMDC :value="details.description" />
         </div>

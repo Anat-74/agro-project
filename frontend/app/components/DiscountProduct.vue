@@ -70,7 +70,7 @@ const visibleImagesCount = computed(() => {
         ]"
         itemprop="price"
       >
-        {{ formatPrice(product.price) }}
+        {{ formatPrice(finalPrice(product)) }}
       </span>
     </div>
     <div class="visually-hidden" itemprop="description">

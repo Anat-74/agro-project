@@ -15,13 +15,14 @@ interface ChatProduct {
   category?: string
   categoryName?: string
   isDiscount?: boolean
+  discountPercent?: number | null
 }
 
 const props = defineProps<{
   product: ChatProduct
 }>()
 
-const formattedPrice = computed(() => formatPrice(props.product.price))
+const formattedPrice = computed(() => formatPrice(finalPrice(props.product)))
 
 const modalRef = useTemplateRef<InstanceType<typeof ShowModalProduct>>('product-modal')
 
@@ -39,6 +40,7 @@ const modalProduct = computed<Product>(() => ({
     ? ([{ url: props.product.image }] as unknown as Product["image"])
     : [],
   isDiscount: props.product.isDiscount,
+  discountPercent: props.product.discountPercent,
 }))
 
 const openPreview = () => {
@@ -52,6 +54,7 @@ const handleAddToCart = () => {
       documentId: props.product.documentId,
       name: props.product.name,
       price: props.product.price,
+      discountPercent: props.product.discountPercent,
       slug: props.product.slug,
       image: props.product.image ? [{ url: props.product.image }] : []
     } as any,

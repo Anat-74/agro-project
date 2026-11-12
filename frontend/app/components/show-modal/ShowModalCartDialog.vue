@@ -121,7 +121,9 @@ onMounted(() => {
               />
               <div class="cart-dialog__recommend-info">
                 <span class="cart-dialog__recommend-name">{{ prod.name }}</span>
-                <span class="cart-dialog__recommend-price">{{ formatPrice(prod.price) }}</span>
+                <span class="cart-dialog__recommend-price">{{
+                  formatPrice(finalPrice(prod))
+                }}</span>
               </div>
             </button>
           </div>

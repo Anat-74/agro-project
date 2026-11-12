@@ -26,8 +26,12 @@ export const useCartStore = defineStore('cart', () => {
       items.value.reduce((total, item) => total + item.quantity, 0)
    )
 
+   // Цена со скидкой — единая утилита (то же, что на карточке/в заказе)
    const totalPrice = computed(() =>
-      items.value.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
+      items.value.reduce(
+        (sum, item) => sum + finalPrice(item.product) * item.quantity,
+        0
+      )
     )
 
    // quantity — сколько единиц товара добавить за раз (например, N пачек из
