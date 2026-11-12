@@ -79,12 +79,7 @@ const characteristics = computed(() => {
   <li
     :class="[
       'product-card',
-      {
-        'product-card_rotate-active': rotateActive,
-        'product-card_compact': compact,
-        // ВРЕМЕННО: 2-я карточка — плашка заподлицо с правой кромкой
-        'product-card_plate-flush-right': index === 1,
-      },
+      { 'product-card_rotate-active': rotateActive, 'product-card_compact': compact },
     ]"
   >
     <div
@@ -282,16 +277,22 @@ const characteristics = computed(() => {
 </template>
 
 <style lang="scss" scoped>
-// Геометрия выреза — ОДИН источник для маски и плашки: меняешь размер плашки
-// или зазор, и маска (r/s), и кнопка пересчитываются вместе.
+// Геометрия выреза — ОДИН источник для маски и плашки. Плашка стоит В УГЛУ
+// (заподлицо справа и снизу), поэтому вырез по X и Y = плашка + зазор.
+// Меняешь $plate-size/$notch-gap — маска и кнопка пересчитываются вместе.
 $plate-size: 50.5;
-$notch-gap: 10;
-$notch-r: $plate-size * 0.25 + $notch-gap * 0.75; // 17.125
-$notch-s: ($plate-size + $notch-gap) * 0.5; // 28.25
+$notch-gap: 8;
+$notch-s: ($plate-size + $notch-gap) * 0.5; // радиус дуги = 29.25
+$notch-x: $plate-size + $notch-gap; // вырез по X и Y = 58.5
+$notch-r: ($notch-x - $notch-s) * 0.5; // радиус кромок карточки/BR плашки = 14.625
+$plate-tl: $notch-s - $notch-gap; // TL: концентричен дуге = 21.25
+$plate-inner: 12; // TR/BL: меньше, чем BR — они у прямых кромок выреза
 // Узкая карточка (CQ ≤170px)
 $plate-size-cq: 46;
-$notch-r-cq: $plate-size-cq * 0.25 + $notch-gap * 0.75; // 16
-$notch-s-cq: ($plate-size-cq + $notch-gap) * 0.5; // 26
+$notch-s-cq: ($plate-size-cq + $notch-gap) * 0.5; // 27
+$notch-x-cq: $plate-size-cq + $notch-gap; // 54
+$notch-r-cq: ($notch-x-cq - $notch-s-cq) * 0.5; // 13.5
+$plate-tl-cq: $notch-s-cq - $notch-gap; // 19
 
 .product-card {
   width: 100%;
@@ -305,12 +306,14 @@ $notch-s-cq: ($plate-size-cq + $notch-gap) * 0.5; // 26
   // На главной секции переопределяют высоту через containerAdaptive (335/265).
   aspect-ratio: 172 / 250;
   // Плашка и зазор; r/s выводятся из них (SCSS-константы $notch-*) и зашиты
-  // в маску. Плашка заподлицо с нижней кромкой, воздух = зазор сверху/по бокам.
+  // в маску. Плашка в углу: заподлицо справа и снизу, воздух сверху и слева.
   --plate-size: #{$plate-size}px;
   --notch-gap: #{$notch-gap}px;
-  --plate-inset: #{$notch-gap}px;
+  --plate-inset: 0px;
   --notch-r: #{$notch-r}px;
   --notch-s: #{$notch-s}px;
+  --plate-tl: #{$plate-tl}px;
+  --plate-inner: #{$plate-inner}px;
   // Плавная реакция 3D-кнопки: scale (transform) + margin-block (сдвиг нижнего
   // ряда). Сохраняем глобальные li:hover-переходы (opacity/filter/shadow/color).
   transition:
@@ -357,23 +360,6 @@ $notch-s-cq: ($plate-size-cq + $notch-gap) * 0.5; // 26
       @include notchMask(172, 250, $notch-r, $notch-s);
     }
 
-    // ВРЕМЕННО (сравнение): плашка заподлицо справа. Вырез уже: X = плашка + зазор,
-    // поэтому r пересчитан под тот же s.
-    &.product-card_plate-flush-right {
-      .product-card__surface {
-        @include notchMask(
-          172,
-          250,
-          ($plate-size + $notch-gap - $notch-s) * 0.5,
-          $notch-s
-        );
-      }
-
-      .product-card__add {
-        --plate-inset: 0px;
-      }
-    }
-
     // Компакт: ссылки на товар нет, поэтому и контент не интерактивен. Иначе
     // клик/тап по фото включает sticky-hover и заголовок «подпрыгивает» вверх.
     .product-card__content {
@@ -398,6 +384,7 @@ $notch-s-cq: ($plate-size-cq + $notch-gap) * 0.5; // 26
         --plate-size: #{$plate-size-cq}px;
         --notch-r: #{$notch-r-cq}px;
         --notch-s: #{$notch-s-cq}px;
+        --plate-tl: #{$plate-tl-cq}px;
       }
     }
   }
@@ -621,12 +608,13 @@ $notch-s-cq: ($plate-size-cq + $notch-gap) * 0.5; // 26
       align-items: center;
       justify-content: center;
       border: toRem(1) solid var(--success-color);
-      // «Пазл»: TL = радиус дуги выреза − зазор → угол плашки КОНЦЕНТРИЧЕН
-      // дуге (зазор одинаковый по всей дуге, а не только по кромкам).
+      // «Пазл»: TL = радиус дуги − зазор (концентричен дуге), BR = радиус
+      // кромки карточки, а TR/BL — меньше: они примыкают к прямым кромкам
+      // выреза, и такой же радиус там читался бы слишком круглым.
       border-radius: var(--notch-r, 15px);
-      border-top-left-radius: calc(
-        var(--notch-s, 27px) - var(--notch-gap, 5px)
-      );
+      border-top-left-radius: var(--plate-tl, 21.25px);
+      border-top-right-radius: var(--plate-inner, 12px);
+      border-bottom-left-radius: var(--plate-inner, 12px);
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
 
