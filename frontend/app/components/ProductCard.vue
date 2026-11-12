@@ -79,7 +79,12 @@ const characteristics = computed(() => {
   <li
     :class="[
       'product-card',
-      { 'product-card_rotate-active': rotateActive, 'product-card_compact': compact },
+      {
+        'product-card_rotate-active': rotateActive,
+        'product-card_compact': compact,
+        // ВРЕМЕННО: 2-я карточка — плашка заподлицо с правой кромкой
+        'product-card_plate-flush-right': index === 1,
+      },
     ]"
   >
     <div
@@ -350,6 +355,23 @@ $notch-s-cq: ($plate-size-cq + $notch-gap) * 0.5; // 26
       border-radius: var(--notch-r, 13px);
       // $r/$s — без единиц: это координаты SVG-пути (px в пути недопустимы)
       @include notchMask(172, 250, $notch-r, $notch-s);
+    }
+
+    // ВРЕМЕННО (сравнение): плашка заподлицо справа. Вырез уже: X = плашка + зазор,
+    // поэтому r пересчитан под тот же s.
+    &.product-card_plate-flush-right {
+      .product-card__surface {
+        @include notchMask(
+          172,
+          250,
+          ($plate-size + $notch-gap - $notch-s) * 0.5,
+          $notch-s
+        );
+      }
+
+      .product-card__add {
+        --plate-inset: 0px;
+      }
     }
 
     // Компакт: ссылки на товар нет, поэтому и контент не интерактивен. Иначе
