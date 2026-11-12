@@ -305,6 +305,7 @@ $notch-s-cq: ($plate-size-cq + $notch-gap) * 0.5; // 26
   --notch-gap: #{$notch-gap}px;
   --plate-inset: #{$notch-gap}px;
   --notch-r: #{$notch-r}px;
+  --notch-s: #{$notch-s}px;
   // Плавная реакция 3D-кнопки: scale (transform) + margin-block (сдвиг нижнего
   // ряда). Сохраняем глобальные li:hover-переходы (opacity/filter/shadow/color).
   transition:
@@ -374,12 +375,12 @@ $notch-s-cq: ($plate-size-cq + $notch-gap) * 0.5; // 26
       .product-card__add {
         --plate-size: #{$plate-size-cq}px;
         --notch-r: #{$notch-r-cq}px;
+        --notch-s: #{$notch-s-cq}px;
       }
     }
   }
 
-  // TL-угол плашки: −1.5px — выбранный вариант (стык с дугой)
-  --tl-adjust: -1.5px;
+
 
 
 
@@ -598,10 +599,11 @@ $notch-s-cq: ($plate-size-cq + $notch-gap) * 0.5; // 26
       align-items: center;
       justify-content: center;
       border: toRem(1) solid var(--success-color);
-      // «Пазл»: TR/BL/BR = радиус карточки, TL = радиус дуги + зазор
+      // «Пазл»: TL = радиус дуги выреза − зазор → угол плашки КОНЦЕНТРИЧЕН
+      // дуге (зазор одинаковый по всей дуге, а не только по кромкам).
       border-radius: var(--notch-r, 15px);
       border-top-left-radius: calc(
-        var(--notch-r, 15px) + var(--notch-gap, 5px) + var(--tl-adjust, 0px)
+        var(--notch-s, 27px) - var(--notch-gap, 5px)
       );
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
