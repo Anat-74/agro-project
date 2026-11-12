@@ -280,7 +280,7 @@ const characteristics = computed(() => {
 // Геометрия выреза — ОДИН источник для маски и плашки: меняешь размер плашки
 // или зазор, и маска (r/s), и кнопка пересчитываются вместе.
 $plate-size: 50.5;
-$notch-gap: 6;
+$notch-gap: 8;
 $notch-r: $plate-size * 0.25 + $notch-gap * 0.75; // 17.125
 $notch-s: ($plate-size + $notch-gap) * 0.5; // 28.25
 // Узкая карточка (CQ ≤170px)
