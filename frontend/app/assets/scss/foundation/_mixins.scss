@@ -356,12 +356,7 @@
   $r: 14.92,
   $s: 24.12,
   $extra: 0,
-  $stat-w: 0,
-  $stat-h: 0,
-  $stat-r: 6,
-  $stat-f: null,
-  $stat-sweep: 1,
-  $stat-f-sweep: 0
+  $stat-extra: null
 ) {
   $wr: $w - $r;
   $hr: $h - $r;
@@ -380,19 +375,12 @@
   // Нижний левый угол — такая же дуга r, как у верхнего правого (кубическая
   // кривая читалась как «срезанный» угол).
   $cut: "M #{$xl},#{$ya} A #{$s},#{$s} 0 0 1 #{$xa},#{$yt} H #{$w - $r} A #{$r},#{$r} 0 0 0 #{$w},#{$yt - $r} V #{$h} H #{$xl - $r} A #{$r},#{$r} 0 0 0 #{$xl},#{$h - $r} Z";
-  // Вырез под статус (левый верх): прямоугольник со скруглённым внутренним
-  // углом (материал получает вогнутый уголок).
+  // Вырез под статус (левый верх) = ТОЧНЫЙ поворот выреза под кнопку на 180°:
+  // (x,y) → (W−x, H−y), sweep'ы при жёстком повороте НЕ меняются (это и была
+  // повторяющаяся ошибка). $stat-extra расширяет вырез вправо (под текст).
   $stat: "";
-  @if $stat-w > 0 {
-    // Как у выреза под кнопку: внутренний угол — дуга $stat-r, внешние
-    // (верх-право и низ-лево) — скругления материала $stat-f (по умолчанию $r).
-    // Внутренняя дуга — sweep 1: выпуклость у ВЫРЕЗА (материал вогнутый), как
-    // у выреза под кнопку. sweep 0 выгибает материал наружу — получается «шишка».
-    $sf: $r;
-    @if $stat-f != null {
-      $sf: $stat-f;
-    }
-    $stat: " M 0,0 H #{$stat-w - $sf} A #{$sf},#{$sf} 0 0 #{$stat-f-sweep} #{$stat-w},#{$sf} V #{$stat-h - $stat-r} A #{$stat-r},#{$stat-r} 0 0 #{$stat-sweep} #{$stat-w - $stat-r},#{$stat-h} H #{$sf} A #{$sf},#{$sf} 0 0 #{$stat-f-sweep} 0,#{$stat-h - $sf} Z";
+  @if $stat-extra != null {
+    $stat: " M #{$w - $xl + $stat-extra},#{$h - $ya} A #{$s},#{$s} 0 0 1 #{$w - $xa + $stat-extra},#{$h - $yt} H #{$r} A #{$r},#{$r} 0 0 0 0,#{$h - $yt + $r} V 0 H #{$w - ($xl - $r) + $stat-extra} A #{$r},#{$r} 0 0 0 #{$w - $xl + $stat-extra},#{$r} Z";
   }
   $svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 #{$w} #{$h}' preserveAspectRatio='none'%3E%3Cpath fill-rule='evenodd' fill='%23fff' d='#{$card} #{$cut}#{$stat}'/%3E%3C/svg%3E";
 
