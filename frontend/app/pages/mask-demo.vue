@@ -18,6 +18,38 @@ const surfaceStyle = computed(() => ({
   '--notch-r': `calc(${size.value}px / 4 + ${gap.value}px * 0.75)`,
   '--notch-s': `calc((${size.value}px + ${gap.value}px) / 2)`,
 }))
+
+// «Как под кнопку», но в левом верхнем углу: варианты выреза.
+// Координаты — как у карточки товара (172×250), чип внутри = контент.
+const tlVariants = [
+  { key: 'copy', label: 'Копия кнопки — 58.5×58.5, дуга 29.25', cutW: 58.5, cutH: 58.5, arc: 29.25, fil: 14.625 },
+  { key: 'wide29', label: 'Шире, та же дуга 29.25 — 104×58.5', cutW: 104, cutH: 58.5, arc: 29.25, fil: 14.625 },
+  { key: 'wide22', label: '104×52, дуга 22', cutW: 104, cutH: 52, arc: 22, fil: 12 },
+  { key: 'wide18', label: '104×44, дуга 18 (текущая)', cutW: 104, cutH: 44, arc: 18, fil: 12 },
+]
+
+const tlMask = (v: { cutW: number; cutH: number; arc: number; fil: number }) => {
+  const w = 172
+  const h = 250
+  const r = 14.625
+  const cw = v.cutW
+  const ch = v.cutH
+  const a = v.arc
+  const f = v.fil
+  const card = `M ${r},0 H ${w - r} A ${r},${r} 0 0 1 ${w},${r} V ${h - r} A ${r},${r} 0 0 1 ${w - r},${h} H ${r} A ${r},${r} 0 0 1 0,${h - r} V ${r} A ${r},${r} 0 0 1 ${r},0 Z`
+  const cut = `M 0,0 H ${cw - f} A ${f},${f} 0 0 0 ${cw},${f} V ${ch - a} A ${a},${a} 0 0 1 ${cw - a},${ch} H ${f} A ${f},${f} 0 0 0 0,${ch - f} Z`
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${w} ${h}' preserveAspectRatio='none'><path fill-rule='evenodd' fill='#fff' d='${card} ${cut}'/></svg>`
+  return {
+    maskImage: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`,
+    maskSize: '100% 100%',
+    maskRepeat: 'no-repeat',
+  }
+}
+
+const tlChip = (v: { cutW: number; cutH: number }) => ({
+  width: `${((v.cutW - 8) / 172) * 100}%`,
+  height: `${((v.cutH - 8) / 250) * 100}%`,
+})
 </script>
 
 <template>
@@ -148,6 +180,26 @@ const surfaceStyle = computed(() => ({
             Другая геометрия из тех же переменных: `--notch-size: 30px`, `--notch-gap: 18px` —
             широкий мелкий вырез под язык шторки или панели.
           </p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="mask-demo__section">
+      <h2 class="mask-demo__subtitle">3b. Вырез как под кнопку, но слева сверху</h2>
+      <p class="mask-demo__hint">
+        Одна схема: примыкание к кромкам, зазор 8px, дуга на внутреннем угле,
+        скругления материала наружу. Чип внутри = будущий контент (статус).
+      </p>
+      <ul class="mask-demo__params">
+        <li v-for="v in tlVariants" :key="v.key" class="mask-demo__param">
+          <div class="mask-demo__stage mask-demo__stage_tight">
+            <div class="mask-demo__tlCard" :style="tlMask(v)">
+              <div class="mask-demo__tlChip" :style="tlChip(v)">
+                <span>Под заказ</span>
+              </div>
+            </div>
+          </div>
+          <p class="mask-demo__caption">{{ v.label }}</p>
         </li>
       </ul>
     </section>
@@ -372,6 +424,28 @@ const surfaceStyle = computed(() => ({
     display: flex;
     flex-direction: column;
     gap: toRem(8);
+  }
+
+  // Карточка 1:1 (координаты выреза — как у товарной карточки)
+  &__tlCard {
+    position: relative;
+    width: toRem(172);
+    height: toRem(250);
+    background-color: var(--light-color);
+  }
+
+  // Чип внутри выреза: примыкает к верхней/левой кромкам, фон — как у карточки
+  &__tlChip {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    display: grid;
+    place-items: center;
+    border-radius: toRem(10);
+    background-color: var(--light-color);
+    color: var(--danger-color);
+    font-size: toRem(13);
+    font-weight: 600;
   }
 
   &__notes {
