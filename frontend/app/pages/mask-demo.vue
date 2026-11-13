@@ -21,6 +21,35 @@ const surfaceStyle = computed(() => ({
 
 // «Как под кнопку», но в левом верхнем углу: варианты выреза.
 // Координаты — как у карточки товара (172×250), чип внутри = контент.
+// Вырез под кнопку (низ-справа) SVG-путём — как на странице продуктов.
+// bleed: нижний контур маски выводится за блок (борьба с субпиксельным швом).
+const brMask = (bleed: number) => {
+  const w = 172
+  const h = 250
+  const plate = 50.5
+  const gap = 8
+  const s = (plate + gap) / 2
+  const r = (plate + gap - s) / 2
+  const hb = h + bleed
+  const xl = w - (s + 2 * r)
+  const yt = h - 2 * s
+  const xa = xl + s
+  const ya = yt + s
+  const card = `M ${r},0 H ${w - r} A ${r},${r} 0 0 1 ${w},${r} V ${hb - r} A ${r},${r} 0 0 1 ${w - r},${hb} H ${r} A ${r},${r} 0 0 1 0,${hb - r} V ${r} A ${r},${r} 0 0 1 ${r},0 Z`
+  const cut = `M ${xl},${ya} A ${s},${s} 0 0 1 ${xa},${yt} H ${w - r} A ${r},${r} 0 0 0 ${w},${yt - r} V ${hb} H ${xl - r} A ${r},${r} 0 0 0 ${xl},${hb - r} Z`
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${w} ${hb}' preserveAspectRatio='none'><path fill-rule='evenodd' fill='#fff' d='${card} ${cut}'/></svg>`
+  return {
+    maskImage: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`,
+    maskSize: '100% 100%',
+    maskRepeat: 'no-repeat',
+  }
+}
+
+const brVariants = [
+  { key: 'b0', label: 'bleed 0 — как сейчас в карточке', bleed: 0 },
+  { key: 'b1', label: 'bleed 1px — нижний контур за блоком', bleed: 1 },
+]
+
 // Вырез в левом верхнем углу = ТОЧНЫЙ поворот кнопочного на 180°.
 // Проверено попиксельно (рендер маски): расхождение 0.
 // Параметры кнопки в карточке: плашка 50.5, зазор 8 → s = 29.25, r = 14.625.
@@ -220,6 +249,25 @@ const tlChip = (v: TlVariant) => {
               <div class="mask-demo__tlChip" :style="tlChip(v)">
                 <span>Под заказ</span>
               </div>
+            </div>
+          </div>
+          <p class="mask-demo__caption">{{ v.label }}</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="mask-demo__section">
+      <h2 class="mask-demo__subtitle">3c. Шов на нижней кромке (bleed)</h2>
+      <p class="mask-demo__hint">
+        Вырез под кнопку, SVG-маска (как на странице продуктов). Слева — нижний
+        контур маски ровно по границе блока, справа — выведен на 1px ниже.
+        Смотреть на стык дуги с нижней кромкой (слева от кнопки).
+      </p>
+      <ul class="mask-demo__params">
+        <li v-for="v in brVariants" :key="v.key" class="mask-demo__param">
+          <div class="mask-demo__stage mask-demo__stage_tight">
+            <div class="mask-demo__tlCard" :style="brMask(v.bleed)">
+              <div class="mask-demo__brPlate" />
             </div>
           </div>
           <p class="mask-demo__caption">{{ v.label }}</p>
@@ -454,6 +502,18 @@ const tlChip = (v: TlVariant) => {
     position: relative;
     width: toRem(172);
     height: toRem(250);
+    background-color: var(--light-color);
+  }
+
+  // Плашка кнопки в вырезе (низ-справа) для тайлов bleed
+  &__brPlate {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-end: 0;
+    width: 50.5px;
+    height: calc(50.5px + 1px);
+    border: toRem(1) solid var(--success-color);
+    border-radius: 21.25px 14.625px 14.625px 14.625px;
     background-color: var(--light-color);
   }
 
