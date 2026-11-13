@@ -324,11 +324,11 @@ $plate-inner: 12; // TR/BL: меньше, чем BR — они у прямых �
 // Вырез под статус в левом верхнем углу (координаты viewBox карточки).
 // Устроен как вырез под кнопку: вырез = плашка(чип) + зазор, внутренний угол
 // чипа концентричен дуге выреза.
-$chip-w: 84; // плашка статуса 26 + расширение 58
-$chip-h: 26; // компактная плашка статуса (текст + паддинги 4/6)
-$chip-tl: 8.5; // TL = r плашки статуса
-$chip-trbl: 8; // TR/BL — меньше, у прямых кромок выреза
-$chip-br: 9; // BR = s − gap = 17 − 8 (концентричен дуге)
+$chip-w: 76; // плашка статуса 20 + расширение 56
+$chip-h: 20; // тонкая плашка: текст + паддинги 2/4
+$chip-tl: 7; // TL = r плашки статуса
+$chip-trbl: 6; // TR/BL — меньше, у прямых кромок выреза
+$chip-br: 6; // BR = s − gap = 14 − 8 (концентричен дуге)
 // Узкая карточка (CQ ≤170px)
 $plate-size-cq: 46;
 $notch-s-cq: ($plate-size-cq + $notch-gap) * 0.5; // 27
@@ -399,20 +399,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     .product-card__surface {
       border-radius: var(--notch-r, 13px);
       // $r/$s — без единиц: это координаты SVG-пути (px в пути недопустимы)
-      @include notchMask(172, 250, $notch-r, $notch-s, 0, 58, 17, 8.5, 1);
-    }
-
-    // ВРЕМЕННО: варианты bleed (вывод нижней кромки маски за блок)
-    &.product-card_bleed-a .product-card__surface {
-      @include notchMask(172, 250, $notch-r, $notch-s, 0, 58, 17, 8.5, 0.5);
-    }
-
-    &.product-card_bleed-b .product-card__surface {
-      @include notchMask(172, 250, $notch-r, $notch-s, 0, 58, 17, 8.5, 1);
-    }
-
-    &.product-card_bleed-c .product-card__surface {
-      @include notchMask(172, 250, $notch-r, $notch-s, 0, 58, 17, 8.5, 2);
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, 56, 14, 7, 0);
     }
 
     // Компакт (страница продуктов, фильтр закрыт): полоса цены без серого фона —
@@ -438,7 +425,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     // Мелкая карточка (узкий телефон): плашка и вырез меньше, зазор тот же
     @container card (max-width: 170px) {
       .product-card__surface {
-        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, 58, 17, 8.5, 1);
+        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, 56, 14, 7, 0);
       }
 
       .product-card__add {
@@ -768,9 +755,9 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     place-items: center;
     width: calc(#{$chip-w} / 172 * 100%);
     height: calc(#{$chip-h} / 250 * 100%);
-    // Логические свойства: 4px сверху/снизу, 6px по горизонтали
-    padding-block: toEm(4);
-    padding-inline: toEm(6);
+    // Логические свойства: 2px сверху/снизу, 4px по горизонтали
+    padding-block: toEm(2);
+    padding-inline: toEm(4);
     font-size: toEm(14);
     text-align: center;
     // Чип с фоном карточки; BR концентричен дуге выреза, TL — кромка карточки,
