@@ -755,7 +755,9 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     place-items: center;
     width: calc(#{$chip-w} / 172 * 100%);
     height: calc(#{$chip-h} / 250 * 100%);
-    padding-inline: toRem(10);
+    // Логические свойства: 4px сверху/снизу, 6px по горизонтали
+    padding-block: toEm(4);
+    padding-inline: toEm(6);
     font-size: toEm(14);
     text-align: center;
     // Чип с фоном карточки; BR концентричен дуге выреза, TL — кромка карточки,
