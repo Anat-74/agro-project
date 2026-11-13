@@ -399,7 +399,20 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     .product-card__surface {
       border-radius: var(--notch-r, 13px);
       // $r/$s — без единиц: это координаты SVG-пути (px в пути недопустимы)
-      @include notchMask(172, 250, $notch-r, $notch-s, 0, 58, 17, 8.5);
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, 58, 17, 8.5, 1);
+    }
+
+    // ВРЕМЕННО: варианты bleed (вывод нижней кромки маски за блок)
+    &.product-card_bleed-a .product-card__surface {
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, 58, 17, 8.5, 0.5);
+    }
+
+    &.product-card_bleed-b .product-card__surface {
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, 58, 17, 8.5, 1);
+    }
+
+    &.product-card_bleed-c .product-card__surface {
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, 58, 17, 8.5, 2);
     }
 
     // Компакт (страница продуктов, фильтр закрыт): полоса цены без серого фона —
@@ -425,7 +438,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     // Мелкая карточка (узкий телефон): плашка и вырез меньше, зазор тот же
     @container card (max-width: 170px) {
       .product-card__surface {
-        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, 58, 17, 8.5);
+        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, 58, 17, 8.5, 1);
       }
 
       .product-card__add {
