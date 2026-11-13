@@ -359,7 +359,9 @@
   $stat-w: 0,
   $stat-h: 0,
   $stat-r: 6,
-  $stat-f: null
+  $stat-f: null,
+  $stat-sweep: 1,
+  $stat-f-sweep: 0
 ) {
   $wr: $w - $r;
   $hr: $h - $r;
@@ -390,7 +392,7 @@
     @if $stat-f != null {
       $sf: $stat-f;
     }
-    $stat: " M 0,0 H #{$stat-w - $sf} A #{$sf},#{$sf} 0 0 1 #{$stat-w},#{$sf} V #{$stat-h - $stat-r} A #{$stat-r},#{$stat-r} 0 0 1 #{$stat-w - $stat-r},#{$stat-h} H #{$sf} A #{$sf},#{$sf} 0 0 1 0,#{$stat-h - $sf} Z";
+    $stat: " M 0,0 H #{$stat-w - $sf} A #{$sf},#{$sf} 0 0 #{$stat-f-sweep} #{$stat-w},#{$sf} V #{$stat-h - $stat-r} A #{$stat-r},#{$stat-r} 0 0 #{$stat-sweep} #{$stat-w - $stat-r},#{$stat-h} H #{$sf} A #{$sf},#{$sf} 0 0 #{$stat-f-sweep} 0,#{$stat-h - $sf} Z";
   }
   $svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 #{$w} #{$h}' preserveAspectRatio='none'%3E%3Cpath fill-rule='evenodd' fill='%23fff' d='#{$card} #{$cut}#{$stat}'/%3E%3C/svg%3E";
 

@@ -79,7 +79,14 @@ const characteristics = computed(() => {
   <li
     :class="[
       'product-card',
-      { 'product-card_rotate-active': rotateActive, 'product-card_compact': compact },
+      {
+        'product-card_rotate-active': rotateActive,
+        'product-card_compact': compact,
+        // ВРЕМЕННО: три варианта скругления у выреза под статус
+        'product-card_stat-a': index === 0,
+        'product-card_stat-b': index === 1,
+        'product-card_stat-c': index === 2,
+      },
     ]"
   >
     <div
@@ -397,7 +404,30 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     .product-card__surface {
       border-radius: var(--notch-r, 13px);
       // $r/$s — без единиц: это координаты SVG-пути (px в пути недопустимы)
-      @include notchMask(172, 250, $notch-r, $notch-s, 0, $stat-w, $stat-h, $stat-s, $stat-f);
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, $stat-w, $stat-h, $stat-s, $stat-f, 1, 0);
+    }
+
+    // ВРЕМЕННО: варианты выреза под статус (скругления как у кнопки).
+    // A — высота выреза 44, дуга 18, чип 36 (базовый, карточки 4+);
+    // B — 52 / 22 / чип 44; C — 60 / 26 / чип 52 (дуга почти как у кнопки).
+    &.product-card_stat-a .product-card__surface {
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, $stat-w, 44, 18, 12, 1, 0);
+    }
+
+    &.product-card_stat-b .product-card__surface {
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, $stat-w, 52, 22, 12, 1, 0);
+    }
+
+    &.product-card_stat-c .product-card__surface {
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, $stat-w, 60, 26, 12, 1, 0);
+    }
+
+    &.product-card_stat-b .product-card__status {
+      --chip-h: 44;
+    }
+
+    &.product-card_stat-c .product-card__status {
+      --chip-h: 52;
     }
 
     // Компакт (страница продуктов, фильтр закрыт): полоса цены без серого фона —
@@ -423,7 +453,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     // Мелкая карточка (узкий телефон): плашка и вырез меньше, зазор тот же
     @container card (max-width: 170px) {
       .product-card__surface {
-        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, $stat-w, $stat-h, $stat-s, $stat-f);
+        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, $stat-w, $stat-h, $stat-s, $stat-f, 1, 0);
       }
 
       .product-card__add {
@@ -752,7 +782,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     display: grid;
     place-items: center;
     width: calc(#{$chip-w} / 172 * 100%);
-    height: calc(#{$chip-h} / 250 * 100%);
+    height: calc(var(--chip-h, #{$chip-h}) / 250 * 100%);
     padding-inline: toRem(10);
     font-size: toEm(14);
     text-align: center;
