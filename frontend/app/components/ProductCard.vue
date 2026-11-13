@@ -321,11 +321,12 @@ $plate-inner: 12; // TR/BL: меньше, чем BR — они у прямых �
 // Устроен как вырез под кнопку: вырез = плашка(чип) + зазор, внутренний угол
 // чипа концентричен дуге выреза.
 $stat-w: 104; // вырез: чип 96 + зазор 8
-$stat-h: 40; // вырез: чип 32 + зазор 8
-$stat-s: 20; // радиус дуги выреза
+$stat-h: 44; // вырез: чип 36 + зазор 8
+$stat-s: 18; // дуга выреза (меньше половины высоты — иначе широкий вырез читается как стадион)
+$stat-f: 12; // скругление материала у внешних углов выреза
 $chip-w: 96;
-$chip-h: 32;
-$chip-br: $stat-s - $notch-gap; // концентричен дуге = 12
+$chip-h: 36; // выше 32: иначе TL-радиус (радиус кромки карточки) читается как пилюля
+$chip-r: 10; // углы чипа: небольшие, чтобы широкий чип не был «пилюлей»
 // Узкая карточка (CQ ≤170px)
 $plate-size-cq: 46;
 $notch-s-cq: ($plate-size-cq + $notch-gap) * 0.5; // 27
@@ -396,7 +397,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     .product-card__surface {
       border-radius: var(--notch-r, 13px);
       // $r/$s — без единиц: это координаты SVG-пути (px в пути недопустимы)
-      @include notchMask(172, 250, $notch-r, $notch-s, 0, $stat-w, $stat-h, $stat-s);
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, $stat-w, $stat-h, $stat-s, $stat-f);
     }
 
     // Компакт (страница продуктов, фильтр закрыт): полоса цены без серого фона —
@@ -422,7 +423,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     // Мелкая карточка (узкий телефон): плашка и вырез меньше, зазор тот же
     @container card (max-width: 170px) {
       .product-card__surface {
-        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, $stat-w, $stat-h, $stat-s);
+        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, $stat-w, $stat-h, $stat-s, $stat-f);
       }
 
       .product-card__add {
@@ -757,10 +758,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     text-align: center;
     // Чип с фоном карточки; BR концентричен дуге выреза, TL — кромка карточки,
     // TR/BL — как у плашки (меньше)
-    border-radius: var(--notch-r, 15px);
-    border-top-right-radius: var(--plate-inner, 12px);
-    border-bottom-left-radius: var(--plate-inner, 12px);
-    border-bottom-right-radius: #{$chip-br}px;
+    border-radius: #{$chip-r}px;
     background-color: var(--light-color);
   }
 

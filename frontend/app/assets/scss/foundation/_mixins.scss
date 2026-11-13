@@ -358,7 +358,8 @@
   $extra: 0,
   $stat-w: 0,
   $stat-h: 0,
-  $stat-r: 6
+  $stat-r: 6,
+  $stat-f: null
 ) {
   $wr: $w - $r;
   $hr: $h - $r;
@@ -382,10 +383,14 @@
   $stat: "";
   @if $stat-w > 0 {
     // Как у выреза под кнопку: внутренний угол — дуга $stat-r, внешние
-    // (верх-право и низ-лево) — скругления $r материала
+    // (верх-право и низ-лево) — скругления материала $stat-f (по умолчанию $r).
     // Внутренняя дуга — sweep 1: выпуклость у ВЫРЕЗА (материал вогнутый), как
     // у выреза под кнопку. sweep 0 выгибает материал наружу — получается «шишка».
-    $stat: " M 0,0 H #{$stat-w - $r} A #{$r},#{$r} 0 0 1 #{$stat-w},#{$r} V #{$stat-h - $stat-r} A #{$stat-r},#{$stat-r} 0 0 1 #{$stat-w - $stat-r},#{$stat-h} H #{$r} A #{$r},#{$r} 0 0 1 0,#{$stat-h - $r} Z";
+    $sf: $r;
+    @if $stat-f != null {
+      $sf: $stat-f;
+    }
+    $stat: " M 0,0 H #{$stat-w - $sf} A #{$sf},#{$sf} 0 0 1 #{$stat-w},#{$sf} V #{$stat-h - $stat-r} A #{$stat-r},#{$stat-r} 0 0 1 #{$stat-w - $stat-r},#{$stat-h} H #{$sf} A #{$sf},#{$sf} 0 0 1 0,#{$stat-h - $sf} Z";
   }
   $svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 #{$w} #{$h}' preserveAspectRatio='none'%3E%3Cpath fill-rule='evenodd' fill='%23fff' d='#{$card} #{$cut}#{$stat}'/%3E%3C/svg%3E";
 
