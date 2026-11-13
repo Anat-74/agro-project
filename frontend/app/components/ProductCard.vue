@@ -324,11 +324,11 @@ $plate-inner: 12; // TR/BL: меньше, чем BR — они у прямых �
 // Вырез под статус в левом верхнем углу (координаты viewBox карточки).
 // Устроен как вырез под кнопку: вырез = плашка(чип) + зазор, внутренний угол
 // чипа концентричен дуге выреза.
-$chip-w: 96; // = плашка 50.5 + расширение 45.5
-$chip-h: 50.5; // высота = высоте плашки кнопки (точный поворот)
-$chip-tl: 14.625; // TL = BR плашки (радиус кромки карточки)
-$chip-trbl: 12; // TR/BL = как у плашки
-$chip-br: $notch-s - $notch-gap; // BR = TL плашки (дуга - зазор) = 21.25
+$chip-w: 84; // плашка статуса 26 + расширение 58
+$chip-h: 26; // компактная плашка статуса (текст + паддинги 4/6)
+$chip-tl: 8.5; // TL = r плашки статуса
+$chip-trbl: 8; // TR/BL — меньше, у прямых кромок выреза
+$chip-br: 9; // BR = s − gap = 17 − 8 (концентричен дуге)
 // Узкая карточка (CQ ≤170px)
 $plate-size-cq: 46;
 $notch-s-cq: ($plate-size-cq + $notch-gap) * 0.5; // 27
@@ -399,7 +399,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     .product-card__surface {
       border-radius: var(--notch-r, 13px);
       // $r/$s — без единиц: это координаты SVG-пути (px в пути недопустимы)
-      @include notchMask(172, 250, $notch-r, $notch-s, 0, 45.5);
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, 58, 17, 8.5);
     }
 
     // Компакт (страница продуктов, фильтр закрыт): полоса цены без серого фона —
@@ -425,7 +425,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     // Мелкая карточка (узкий телефон): плашка и вырез меньше, зазор тот же
     @container card (max-width: 170px) {
       .product-card__surface {
-        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, 45.5);
+        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, 58, 17, 8.5);
       }
 
       .product-card__add {
