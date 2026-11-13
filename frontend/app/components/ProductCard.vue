@@ -422,6 +422,12 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
       @include notchMask(172, 250, $notch-r, $notch-s, 0, $stat-w, 60, 26, 12, 1, 0);
     }
 
+    // Вариант B: без подложки — текст лежит прямо в вырезе (светлый, на фоне страницы)
+    &.product-card_stat-b {
+      --status-bg: transparent;
+      --status-color: var(--light-color);
+    }
+
     &.product-card_stat-b .product-card__status {
       --chip-h: 44;
     }
@@ -788,8 +794,9 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     text-align: center;
     // Чип с фоном карточки; BR концентричен дуге выреза, TL — кромка карточки,
     // TR/BL — как у плашки (меньше)
-    border-radius: #{$chip-r}px;
-    background-color: var(--light-color);
+    border-radius: var(--status-radius, #{$chip-r}px);
+    background-color: var(--status-bg, var(--light-color));
+    color: var(--status-color, currentColor);
   }
 
   &__content {
