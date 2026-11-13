@@ -46,9 +46,13 @@ const tlMask = (v: { cutW: number; cutH: number; arc: number; fil: number }) => 
   }
 }
 
-const tlChip = (v: { cutW: number; cutH: number }) => ({
+// Чип = «перевёрнутая плашка кнопки»: BR концентричен дуге (arc − 8),
+// TL — радиус кромки карточки, TR/BL — как у плашки (12).
+const tlChip = (v: { cutW: number; cutH: number; arc: number }) => ({
   width: `${((v.cutW - 8) / 172) * 100}%`,
   height: `${((v.cutH - 8) / 250) * 100}%`,
+  borderRadius: '14.625px 12px 0 12px',
+  borderBottomRightRadius: `${v.arc - 8}px`,
 })
 </script>
 
