@@ -21,14 +21,22 @@ const surfaceStyle = computed(() => ({
 
 // «Как под кнопку», но в левом верхнем углу: варианты выреза.
 // Координаты — как у карточки товара (172×250), чип внутри = контент.
+// Варианты выреза в левом верхнем углу. fSweep — направление внешних
+// скруглений (верх-право и низ-лево), arcSweep — внутренней дуги.
+// Включены и варианты, которые я считаю «неправильными» — пусть решает глаз.
 const tlVariants = [
-  { key: 'copy', label: 'Копия кнопки — 58.5×58.5, дуга 29.25', cutW: 58.5, cutH: 58.5, arc: 29.25, fil: 14.625 },
-  { key: 'wide29', label: 'Шире, та же дуга 29.25 — 104×58.5', cutW: 104, cutH: 58.5, arc: 29.25, fil: 14.625 },
-  { key: 'wide22', label: '104×52, дуга 22', cutW: 104, cutH: 52, arc: 22, fil: 12 },
-  { key: 'wide18', label: '104×44, дуга 18 (текущая)', cutW: 104, cutH: 44, arc: 18, fil: 12 },
+  { key: 'copy', label: 'Копия кнопки 58.5×58.5, дуга 29.25, внешн. sweep 0', cutW: 58.5, cutH: 58.5, arc: 29.25, fil: 14.625, fSweep: 0, arcSweep: 1, chip: 'rot' },
+  { key: 'copy-f1', label: 'То же, внешн. sweep 1 (моя прежняя ошибка)', cutW: 58.5, cutH: 58.5, arc: 29.25, fil: 14.625, fSweep: 1, arcSweep: 1, chip: 'rot' },
+  { key: 'copy-a0', label: 'То же, дуга sweep 0', cutW: 58.5, cutH: 58.5, arc: 29.25, fil: 14.625, fSweep: 0, arcSweep: 0, chip: 'rot' },
+  { key: 'wide29', label: 'Шире 104×58.5, дуга 29.25, sweep 0', cutW: 104, cutH: 58.5, arc: 29.25, fil: 14.625, fSweep: 0, arcSweep: 1, chip: 'rot' },
+  { key: 'wide29-sq', label: 'Шире, чип без скруглений (углы 0)', cutW: 104, cutH: 58.5, arc: 29.25, fil: 14.625, fSweep: 0, arcSweep: 1, chip: 'sq' },
+  { key: 'wide29-u', label: 'Шире, чип с углами 10 (равномерно)', cutW: 104, cutH: 58.5, arc: 29.25, fil: 14.625, fSweep: 0, arcSweep: 1, chip: 'uni' },
+  { key: 'wide18', label: '104×44, дуга 18 (то, что сейчас)', cutW: 104, cutH: 44, arc: 18, fil: 12, fSweep: 0, arcSweep: 1, chip: 'rot' },
 ]
 
-const tlMask = (v: { cutW: number; cutH: number; arc: number; fil: number }) => {
+type TlVariant = (typeof tlVariants)[number]
+
+const tlMask = (v: TlVariant) => {
   const w = 172
   const h = 250
   const r = 14.625
@@ -37,7 +45,7 @@ const tlMask = (v: { cutW: number; cutH: number; arc: number; fil: number }) => 
   const a = v.arc
   const f = v.fil
   const card = `M ${r},0 H ${w - r} A ${r},${r} 0 0 1 ${w},${r} V ${h - r} A ${r},${r} 0 0 1 ${w - r},${h} H ${r} A ${r},${r} 0 0 1 0,${h - r} V ${r} A ${r},${r} 0 0 1 ${r},0 Z`
-  const cut = `M 0,0 H ${cw - f} A ${f},${f} 0 0 0 ${cw},${f} V ${ch - a} A ${a},${a} 0 0 1 ${cw - a},${ch} H ${f} A ${f},${f} 0 0 0 0,${ch - f} Z`
+  const cut = `M 0,0 H ${cw - f} A ${f},${f} 0 0 ${v.fSweep} ${cw},${f} V ${ch - a} A ${a},${a} 0 0 ${v.arcSweep} ${cw - a},${ch} H ${f} A ${f},${f} 0 0 ${v.fSweep} 0,${ch - f} Z`
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${w} ${h}' preserveAspectRatio='none'><path fill-rule='evenodd' fill='#fff' d='${card} ${cut}'/></svg>`
   return {
     maskImage: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`,
@@ -46,14 +54,21 @@ const tlMask = (v: { cutW: number; cutH: number; arc: number; fil: number }) => 
   }
 }
 
-// Чип = «перевёрнутая плашка кнопки»: BR концентричен дуге (arc − 8),
-// TL — радиус кромки карточки, TR/BL — как у плашки (12).
-const tlChip = (v: { cutW: number; cutH: number; arc: number }) => ({
-  width: `${((v.cutW - 8) / 172) * 100}%`,
-  height: `${((v.cutH - 8) / 250) * 100}%`,
-  borderRadius: '14.625px 12px 0 12px',
-  borderBottomRightRadius: `${v.arc - 8}px`,
-})
+// Чип: rot — как «перевёрнутая плашка» (TL 14.625, TR/BL 12, BR = дуга − 8),
+// uni — равномерно 10, sq — без скруглений.
+const tlChip = (v: TlVariant) => {
+  const base = {
+    width: `${((v.cutW - 8) / 172) * 100}%`,
+    height: `${((v.cutH - 8) / 250) * 100}%`,
+  }
+  if (v.chip === 'sq') return { ...base, borderRadius: '0' }
+  if (v.chip === 'uni') return { ...base, borderRadius: '10px' }
+  return {
+    ...base,
+    borderRadius: '14.625px 12px 0 12px',
+    borderBottomRightRadius: `${v.arc - 8}px`,
+  }
+}
 </script>
 
 <template>
