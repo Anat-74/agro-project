@@ -399,7 +399,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     .product-card__surface {
       border-radius: var(--notch-r, 13px);
       // $r/$s — без единиц: это координаты SVG-пути (px в пути недопустимы)
-      @include notchMask(172, 250, $notch-r, $notch-s, 0, 56, 13, 6.5, 1);
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, 56, 13, 6.5, 0);
     }
 
     // Компакт: без внутренней тени — её срез маской по вырезу давал тёмный шов
@@ -430,7 +430,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     // Мелкая карточка (узкий телефон): плашка и вырез меньше, зазор тот же
     @container card (max-width: 170px) {
       .product-card__surface {
-        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, 56, 13, 6.5, 1);
+        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, 56, 13, 6.5, 0);
       }
 
       .product-card__add {
