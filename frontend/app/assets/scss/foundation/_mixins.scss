@@ -361,6 +361,8 @@
   $stat-c: 2,
   $stat-ci: 11,
   $btn-f: 4,
+  $btn-inner: null,
+  $stat-sweep: 0,
   $bleed: 0
 ) {
   $wr: $w - $r;
@@ -381,12 +383,16 @@
   // а не просто срезан прямоугольником.
   // Нижний левый угол — такая же дуга r, как у верхнего правого (кубическая
   // кривая читалась как «срезанный» угол).
-  // Вырез под кнопку — скруглённый прямоугольник с радиусом $btn-f (4px)
-  $cut: "M #{$xl + $btn-f},#{$yt} H #{$w - $btn-f} A #{$btn-f},#{$btn-f} 0 0 1 #{$w},#{$yt + $btn-f} V #{$hb - $btn-f} A #{$btn-f},#{$btn-f} 0 0 1 #{$w - $btn-f},#{$hb} H #{$xl + $btn-f} A #{$btn-f},#{$btn-f} 0 0 1 #{$xl},#{$hb - $btn-f} V #{$yt + $btn-f} A #{$btn-f},#{$btn-f} 0 0 1 #{$xl + $btn-f},#{$yt} Z";
+  // Вырез под кнопку: TR/BL — $btn-f, внутренний TL — $btn-inner (по умолчанию = $btn-f)
+  $bi: $btn-f;
+  @if $btn-inner != null {
+    $bi: $btn-inner;
+  }
+  $cut: "M #{$xl + $bi},#{$yt} H #{$w - $btn-f} A #{$btn-f},#{$btn-f} 0 0 1 #{$w},#{$yt + $btn-f} V #{$hb - $btn-f} A #{$btn-f},#{$btn-f} 0 0 1 #{$w - $btn-f},#{$hb} H #{$xl + $btn-f} A #{$btn-f},#{$btn-f} 0 0 1 #{$xl},#{$hb - $btn-f} V #{$yt + $bi} A #{$bi},#{$bi} 0 0 1 #{$xl + $bi},#{$yt} Z";
   // Вырез под статус (левый верх): прямоугольник со скруглением $stat-c (2px).
   $stat: "";
   @if $stat-w > 0 {
-    $stat: " M 0,0 H #{$stat-w - $stat-c} A #{$stat-c},#{$stat-c} 0 0 0 #{$stat-w},#{$stat-c} V #{$stat-h - $stat-ci} A #{$stat-ci},#{$stat-ci} 0 0 1 #{$stat-w - $stat-ci},#{$stat-h} H #{$stat-c} A #{$stat-c},#{$stat-c} 0 0 0 0,#{$stat-h - $stat-c} Z";
+    $stat: " M 0,0 H #{$stat-w - $stat-c} A #{$stat-c},#{$stat-c} 0 0 #{$stat-sweep} #{$stat-w},#{$stat-c} V #{$stat-h - $stat-ci} A #{$stat-ci},#{$stat-ci} 0 0 1 #{$stat-w - $stat-ci},#{$stat-h} H #{$stat-c} A #{$stat-c},#{$stat-c} 0 0 #{$stat-sweep} 0,#{$stat-h - $stat-c} Z";
   }
   $svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 #{$w} #{$hb}' preserveAspectRatio='none'%3E%3Cpath fill-rule='evenodd' fill='%23fff' d='#{$card} #{$cut}#{$stat}'/%3E%3C/svg%3E";
 

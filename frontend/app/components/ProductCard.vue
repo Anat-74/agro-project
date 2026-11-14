@@ -399,7 +399,22 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     .product-card__surface {
       border-radius: var(--notch-r, 13px);
       // $r/$s — без единиц: это координаты SVG-пути (px в пути недопустимы)
-      @include notchMask(172, 250, $notch-r, $notch-s, 0, 78, 22, 2, 11, 4, 0);
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, 78, 22, 2, 11, 4, 4, 0, 0);
+    }
+
+    // ВРЕМЕННО: варианты — v1 (базовый): вырез 4px прямоуг., статус наружу;
+    // v2: внутренний угол выреза 11px; v3: статус внутрь (sweep 1);
+    // v4: классический вырез (TR/BL 14.625, внутренний 29.25).
+    &.product-card_v2 .product-card__surface {
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, 78, 22, 2, 11, 4, 11, 0, 0);
+    }
+
+    &.product-card_v3 .product-card__surface {
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, 78, 22, 2, 11, 4, 4, 1, 0);
+    }
+
+    &.product-card_v4 .product-card__surface {
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, 78, 22, 2, 11, 14.625, 29.25, 0, 0);
     }
 
     // Компакт = структура демо-тайла: маскированный слой с фоном, без рамки и
@@ -432,7 +447,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     // Мелкая карточка (узкий телефон): плашка и вырез меньше, зазор тот же
     @container card (max-width: 170px) {
       .product-card__surface {
-        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, 78, 22, 2, 11, 4, 0);
+        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, 78, 22, 2, 11, 4, 4, 0, 0);
       }
 
       .product-card__add {
