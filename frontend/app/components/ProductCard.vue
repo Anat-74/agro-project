@@ -314,8 +314,8 @@ const characteristics = computed(() => {
 // Геометрия выреза — ОДИН источник для маски и плашки. Плашка стоит В УГЛУ
 // (заподлицо справа и снизу), поэтому вырез по X и Y = плашка + зазор.
 // Меняешь $plate-size/$notch-gap — маска и кнопка пересчитываются вместе.
-$plate-size: 50.5;
-$notch-gap: 8;
+$plate-size: 48.5;
+$notch-gap: 10;
 $notch-s: ($plate-size + $notch-gap) * 0.5; // радиус дуги = 29.25
 $notch-x: $plate-size + $notch-gap; // вырез по X и Y = 58.5
 $notch-r: ($notch-x - $notch-s) * 0.5; // радиус кромок карточки/BR плашки = 14.625
@@ -326,9 +326,9 @@ $plate-inner: 12; // TR/BL: меньше, чем BR — они у прямых �
 // чипа концентричен дуге выреза.
 $chip-w: 76; // плашка статуса 20 + расширение 56
 $chip-h: 20; // тонкая плашка: текст + паддинги 2/4
-$chip-tl: 6.5; // TL = r плашки статуса
+$chip-tl: 5.5; // TL = r плашки статуса
 $chip-trbl: 6; // TR/BL — меньше, у прямых кромок выреза
-$chip-br: 7; // BR = s − gap = 13 − 6 (концентричен дуге)
+$chip-br: 9; // BR = s − gap = 11 − 2 (концентричен дуге)
 // Узкая карточка (CQ ≤170px)
 $plate-size-cq: 46;
 $notch-s-cq: ($plate-size-cq + $notch-gap) * 0.5; // 27
@@ -402,7 +402,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     .product-card__surface {
       border-radius: var(--notch-r, 13px);
       // $r/$s — без единиц: это координаты SVG-пути (px в пути недопустимы)
-      @include notchMask(172, 250, $notch-r, $notch-s, 0, 56, 13, 6.5, 0);
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, 56, 11, 5.5, 0);
     }
 
     // Компакт = структура демо-тайла: маскированный слой с фоном, без рамки и
@@ -435,7 +435,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     // Мелкая карточка (узкий телефон): плашка и вырез меньше, зазор тот же
     @container card (max-width: 170px) {
       .product-card__surface {
-        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, 56, 13, 6.5, 0);
+        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, 56, 11, 5.5, 0);
       }
 
       .product-card__add {
