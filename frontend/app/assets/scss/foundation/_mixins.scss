@@ -383,7 +383,7 @@
   // Вырез под статус (левый верх): прямоугольник со скруглением $stat-c (2px).
   $stat: "";
   @if $stat-w > 0 {
-    $stat: " M #{$stat-c},0 H #{$stat-w - $stat-c} A #{$stat-c},#{$stat-c} 0 0 1 #{$stat-w},#{$stat-c} V #{$stat-h - $stat-c} A #{$stat-c},#{$stat-c} 0 0 1 #{$stat-w - $stat-c},#{$stat-h} H #{$stat-c} A #{$stat-c},#{$stat-c} 0 0 1 0,#{$stat-h - $stat-c} V #{$stat-c} A #{$stat-c},#{$stat-c} 0 0 1 #{$stat-c},0 Z";
+    $stat: " M 0,0 H #{$stat-w - $stat-c} A #{$stat-c},#{$stat-c} 0 0 1 #{$stat-w},#{$stat-c} V #{$stat-h - $stat-ci} A #{$stat-ci},#{$stat-ci} 0 0 1 #{$stat-w - $stat-ci},#{$stat-h} H #{$stat-c} A #{$stat-c},#{$stat-c} 0 0 1 0,#{$stat-h - $stat-c} Z";
   }
   $svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 #{$w} #{$hb}' preserveAspectRatio='none'%3E%3Cpath fill-rule='evenodd' fill='%23fff' d='#{$card} #{$cut}#{$stat}'/%3E%3C/svg%3E";
 
