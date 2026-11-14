@@ -320,7 +320,7 @@ $notch-s: ($plate-size + $notch-gap) * 0.5; // радиус дуги = 29.25
 $notch-x: $plate-size + $notch-gap; // вырез по X и Y = 58.5
 $notch-r: ($notch-x - $notch-s) * 0.5; // радиус кромок карточки/BR плашки = 14.625
 $plate-tl: $notch-s - $notch-gap; // TL: концентричен дуге = 21.25
-$plate-inner: 12; // TR/BL: меньше, чем BR — они у прямых кромок выреза
+$plate-inner: 4; // TR/BL плашки (по просьбе — меньше)
 // Вырез под статус в левом верхнем углу (координаты viewBox карточки).
 // Устроен как вырез под кнопку: вырез = плашка(чип) + зазор, внутренний угол
 // чипа концентричен дуге выреза.
@@ -399,7 +399,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     .product-card__surface {
       border-radius: var(--notch-r, 13px);
       // $r/$s — без единиц: это координаты SVG-пути (px в пути недопустимы)
-      @include notchMask(172, 250, $notch-r, $notch-s, 0, 78, 22, 2, 11, 0);
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, 78, 22, 2, 11, 4, 0);
     }
 
     // Компакт = структура демо-тайла: маскированный слой с фоном, без рамки и
@@ -432,7 +432,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     // Мелкая карточка (узкий телефон): плашка и вырез меньше, зазор тот же
     @container card (max-width: 170px) {
       .product-card__surface {
-        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, 78, 22, 2, 11, 0);
+        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, 78, 22, 2, 11, 4, 0);
       }
 
       .product-card__add {
@@ -665,13 +665,14 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
       align-items: center;
       justify-content: center;
       border: toRem(1) solid var(--success-color);
+      // TR/BL — 4px (по просьбе), TL — концентричен дуге, BR — радиус карточки
       // «Пазл»: TL = радиус дуги − зазор (концентричен дуге), BR = радиус
       // кромки карточки, а TR/BL — меньше: они примыкают к прямым кромкам
       // выреза, и такой же радиус там читался бы слишком круглым.
       border-radius: var(--notch-r, 15px);
       border-top-left-radius: var(--plate-tl, 21.25px);
-      border-top-right-radius: var(--plate-inner, 12px);
-      border-bottom-left-radius: var(--plate-inner, 12px);
+      border-top-right-radius: 4px;
+      border-bottom-left-radius: 4px;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
 
