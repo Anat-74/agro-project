@@ -380,14 +380,10 @@
   // Нижний левый угол — такая же дуга r, как у верхнего правого (кубическая
   // кривая читалась как «срезанный» угол).
   $cut: "M #{$xl},#{$ya} A #{$s},#{$s} 0 0 1 #{$xa},#{$yt} H #{$w - $r} A #{$r},#{$r} 0 0 0 #{$w},#{$yt - $r} V #{$hb} H #{$xl - $r} A #{$r},#{$r} 0 0 0 #{$xl},#{$hb - $r} Z";
-  // Вырез под статус (левый верх) = поворот кнопочного на 180° (sweep НЕ меняются):
-  // радиусы у текста и в вырезе — как у кнопки. $stat-extra расширяет вправо.
+  // Вырез под статус (левый верх): прямоугольник со скруглением $stat-c (2px).
   $stat: "";
-  @if $stat-extra != null {
-    $s2: $stat-s;
-    $r2: $stat-r;
-    $e: $stat-extra;
-    $stat: " M #{$s2 + 2 * $r2 + $e},#{$s2} A #{$s2},#{$s2} 0 0 1 #{2 * $r2 + $e},#{2 * $s2} H #{$r2} A #{$r2},#{$r2} 0 0 0 0,#{2 * $s2 + $r2} V 0 H #{$s2 + 3 * $r2 + $e} A #{$r2},#{$r2} 0 0 0 #{$s2 + 2 * $r2 + $e},#{$r2} Z";
+  @if $stat-w > 0 {
+    $stat: " M #{$stat-c},0 H #{$stat-w - $stat-c} A #{$stat-c},#{$stat-c} 0 0 1 #{$stat-w},#{$stat-c} V #{$stat-h - $stat-c} A #{$stat-c},#{$stat-c} 0 0 1 #{$stat-w - $stat-c},#{$stat-h} H #{$stat-c} A #{$stat-c},#{$stat-c} 0 0 1 0,#{$stat-h - $stat-c} V #{$stat-c} A #{$stat-c},#{$stat-c} 0 0 1 #{$stat-c},0 Z";
   }
   $svg: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 #{$w} #{$hb}' preserveAspectRatio='none'%3E%3Cpath fill-rule='evenodd' fill='%23fff' d='#{$card} #{$cut}#{$stat}'/%3E%3C/svg%3E";
 
