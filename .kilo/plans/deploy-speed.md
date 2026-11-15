@@ -78,3 +78,19 @@
 - План: получить ключ → посмотреть openapi (есть ли `ext nodejs`, `ext git` через cli-гейт) →
   переписать `scripts/deploy.mjs` на REST (fetch, без Playwright, с кодами/логами) →
   опционально подключить `mcp-plesk-lite`.
+
+## Plesk vs ISPmanager — автоматизация (анализ 15.11)
+
+| | Plesk | ISPmanager 6 |
+|---|---|---|
+| API | REST `/api/v2` (JSON), ключи `X-API-Key` + CLI-гейт (`plesk bin …`) | «функции» `https://server:1500/ispmgr?func=…&out=json` (XML/JSON), логин/пароль или ключи + IP-фильтр; локальный `mgrctl` от root |
+| MCP | есть `mcp-plesk-lite` (78+ инструментов) | официального MCP нет (только плагины панели) |
+| Node.js | расширение Node.js: run-script/npm/restart, env | «Создать приложение»: systemd-юнит за Nginx, `npm install`, команда запуска, до 10 env, restart, логи `journalctl` |
+| Git-деплой | расширение Git (pull/deploy) | нативного деплоя нет → деплой через SSH + `mgrctl`/`systemctl restart app-<домен>` (и это, наоборот, проще и прозрачнее) |
+| Прозрачность | логи сборки в UI расширения | логи в `journalctl -u app-<домен>` напрямую |
+| Цена/экосистема | дороже, расширений много | дешевле, расширений меньше |
+
+Вывод для нашего кейса: **автоматизация возможна на обеих панелях без браузера**. У ISPmanager ключевой плюс —
+полный root-доступ к `mgrctl` и systemd (деплой = `git pull` + `pnpm i` + `pnpm build` + `systemctl restart`),
+минусы — нет MCP и меньше готовых расширений (Git-деплой придётся писать самому). У Plesk — готовый REST+MCP,
+но Node.js-приложение управляется через расширение, а CLI-гейт нужно проверять по версии.
