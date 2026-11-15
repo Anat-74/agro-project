@@ -66,3 +66,15 @@
 - В `netlify.toml` сейчас `NODE_VERSION = "20"` и `npm run build` — под pnpm/Node 22 поправить.
 - Nitro-пресет: `netlify` (functions) — SSR работает, но каждая страница = вызов функции
   (free-лимит 125k вызовов/мес).
+
+## Plesk: REST API и API-ключи вместо кликов (найдено 15.11)
+
+- **Plesk REST API**: база `https://<host>:8443/api/v2`, авторизация — **`X-API-Key`** (или Basic).
+  Ключ: `plesk bin secret_key -c` (можно привязать к IP и TTL) или `POST /api/v2/auth/keys` под админом.
+  Есть CLI-гейт `POST /api/v2/cli/commands` — можно выполнять `plesk bin ...`/`plesk ext ...` через API.
+- Спецификация на каждом сервере: `https://<host>:8443/api/v2/openapi.yml` — проверять покрытие по версии.
+- **MCP-сервер `mcp-plesk-lite`** (npm): 78+ инструментов поверх того же REST API, поддержка
+  API-ключа; ставится как MCP (stdio) — тогда деплоем можно управлять типизированными вызовами.
+- План: получить ключ → посмотреть openapi (есть ли `ext nodejs`, `ext git` через cli-гейт) →
+  переписать `scripts/deploy.mjs` на REST (fetch, без Playwright, с кодами/логами) →
+  опционально подключить `mcp-plesk-lite`.
