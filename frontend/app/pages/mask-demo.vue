@@ -53,6 +53,45 @@ const brVariants = [
 // Вырез в левом верхнем углу = ТОЧНЫЙ поворот кнопочного на 180°.
 // Проверено попиксельно (рендер маски): расхождение 0.
 // Параметры кнопки в карточке: плашка 50.5, зазор 8 → s = 29.25, r = 14.625.
+// Варианты ФОРМЫ выреза под кнопку и плашки — для выбора «где что».
+// f — внешние скругления выреза, inner — внутренний угол (дуга), plate — плашка,
+// gap — зазор, tl/trbl/br — радиусы плашки (TL / TR+BL / BR).
+const brShapeVariants = [
+  { key: 'a', label: 'A. Классика (как было): дуга 29.25, скругления 14.6, плашка 50.5', f: 14.625, inner: 29.25, plate: 50.5, gap: 6, tl: 19.25, trbl: 12, br: 14.625 },
+  { key: 'b', label: 'B. Классика, плашка −40% (29.1), зазор 6', f: 8.775, inner: 17.55, plate: 29.1, gap: 6, tl: 11.55, trbl: 4, br: 8.775 },
+  { key: 'c', label: 'C. Вырез-прямоугольник 4px (текущий в карточке)', f: 4, inner: 4, plate: 29.1, gap: 6, tl: 4, trbl: 4, br: 8.775 },
+  { key: 'd', label: 'D. Прямоугольник 4px, углы плашки 8.8', f: 4, inner: 4, plate: 29.1, gap: 6, tl: 8.775, trbl: 8.775, br: 8.775 },
+  { key: 'e', label: 'E. Скругления 4 + внутренняя дуга 17.55', f: 4, inner: 17.55, plate: 29.1, gap: 6, tl: 11.55, trbl: 4, br: 8.775 },
+  { key: 'f', label: 'F. Скругления 14.6 + внутренняя дуга 17.55', f: 14.625, inner: 17.55, plate: 29.1, gap: 6, tl: 11.55, trbl: 4, br: 8.775 },
+]
+
+type BrShape = (typeof brShapeVariants)[number]
+
+const brShapeMask = (v: BrShape) => {
+  const w = 172
+  const h = 250
+  const size = v.plate + v.gap
+  const xl = w - size
+  const yt = h - size
+  const f = v.f
+  const i = v.inner
+  const r = v.br
+  const card = `M ${r},0 H ${w - r} A ${r},${r} 0 0 1 ${w},${r} V ${h - r} A ${r},${r} 0 0 1 ${w - r},${h} H ${r} A ${r},${r} 0 0 1 0,${h - r} V ${r} A ${r},${r} 0 0 1 ${r},0 Z`
+  const cut = `M ${xl + i},${yt} H ${w - f} A ${f},${f} 0 0 1 ${w},${yt + f} V ${h - f} A ${f},${f} 0 0 1 ${w - f},${h} H ${xl + f} A ${f},${f} 0 0 1 ${xl},${h - f} V ${yt + i} A ${i},${i} 0 0 1 ${xl + i},${yt} Z`
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${w} ${h}' preserveAspectRatio='none'><path fill-rule='evenodd' fill='#fff' d='${card} ${cut}'/></svg>`
+  return {
+    maskImage: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`,
+    maskSize: '100% 100%',
+    maskRepeat: 'no-repeat',
+  }
+}
+
+const brShapePlate = (v: BrShape) => ({
+  width: `${v.plate}px`,
+  height: `${v.plate}px`,
+  borderRadius: `${v.tl}px ${v.trbl}px ${v.br}px ${v.trbl}px`,
+})
+
 const tlVariants = [
   { key: 'copy', label: 'Точный поворот кнопки (без расширения)', extra: 0, chip: 'rot' },
   { key: 'w20', label: 'Тот же поворот, шире на 20 (под текст)', extra: 20, chip: 'rot' },
@@ -268,6 +307,24 @@ const tlChip = (v: TlVariant) => {
           <div class="mask-demo__stage mask-demo__stage_tight">
             <div class="mask-demo__tlCard" :style="brMask(v.bleed)">
               <div class="mask-demo__brPlate" />
+            </div>
+          </div>
+          <p class="mask-demo__caption">{{ v.label }}</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="mask-demo__section">
+      <h2 class="mask-demo__subtitle">3d. Форма выреза и кнопки — варианты</h2>
+      <p class="mask-demo__hint">
+        Один и тот же угол карточки. Меняются: внешние скругления выреза, внутренний
+        угол (дуга), размер плашки и её радиусы. Скажите букву — перенесу в карточку.
+      </p>
+      <ul class="mask-demo__params">
+        <li v-for="v in brShapeVariants" :key="v.key" class="mask-demo__param">
+          <div class="mask-demo__stage mask-demo__stage_tight">
+            <div class="mask-demo__tlCard" :style="brShapeMask(v)">
+              <div class="mask-demo__shapePlate" :style="brShapePlate(v)" />
             </div>
           </div>
           <p class="mask-demo__caption">{{ v.label }}</p>
@@ -502,7 +559,8 @@ const tlChip = (v: TlVariant) => {
     position: relative;
     width: toRem(172);
     height: toRem(250);
-    background-color: var(--light-color);
+    // Светло-серая «карточка»: белая плашка видна на ней, а вырез — на тёмной сцене
+    background-color: #e9e7e2;
   }
 
   // Плашка кнопки в вырезе (низ-справа) для тайлов bleed
@@ -529,6 +587,15 @@ const tlChip = (v: TlVariant) => {
     color: var(--danger-color);
     font-size: toRem(13);
     font-weight: 600;
+  }
+
+  // Плашка кнопки в вариантах 3d (размер и радиусы задаются инлайном)
+  &__shapePlate {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-end: 0;
+    border: toRem(1) solid var(--success-color);
+    background-color: var(--light-color);
   }
 
   &__notes {
