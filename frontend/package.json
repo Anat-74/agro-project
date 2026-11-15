@@ -14,7 +14,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "nuxt typecheck",
-    "generate-sitemap": "npx tsx scripts/generate-sitemap.ts"
+    "generate-sitemap": "npx tsx scripts/generate-sitemap.ts",
+    "kill:stale": "pkill -9 -f \"[n]uxt.mjs\" || true; pkill -9 -f \"[n]uxt build\" || true",
+    "artifacts:clean": "node -e \"const fs=require('fs');for(const d of ['.output','.nuxt'])fs.rmSync(d,{recursive:true,force:true})\"",
+    "build:bg": "setsid nohup npm run build > .build.log 2>&1 < /dev/null & echo started",
+    "deploy:build": "setsid nohup sh -c 'npm run kill:stale; npm run artifacts:clean; npm ci; npm run build' > .build.log 2>&1 < /dev/null & echo started"
   },
   "dependencies": {
     "@nuxt/a11y": "^1.0.0-alpha.1",
