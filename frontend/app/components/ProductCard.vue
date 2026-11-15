@@ -326,9 +326,9 @@ $plate-inner: 4; // TR/BL плашки (по просьбе — меньше)
 // чипа концентричен дуге выреза.
 $chip-w: 76; // плашка статуса 20 + расширение 56
 $chip-h: 20; // тонкая плашка: текст + паддинги 2/4
-$chip-tl: 5.5; // TL — как у плашки
+$chip-tl: 4; // TL — 4px (по просьбе)
 $chip-trbl: 2;
-$chip-br: 9; // BR — как у плашки (концентричен дуге)
+$chip-br: 4; // BR — 4px (по просьбе)
 // Узкая карточка (CQ ≤170px)
 $plate-size-cq: 46;
 $notch-s-cq: ($plate-size-cq + $notch-gap) * 0.5; // 27
@@ -399,7 +399,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     .product-card__surface {
       border-radius: var(--notch-r, 13px);
       // $r/$s — без единиц: это координаты SVG-пути (px в пути недопустимы)
-      @include notchMask(172, 250, $notch-r, $notch-s, 0, 78, 22, 2, 11, 4, 4, 0, 0);
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, 78, 22, 2, 11, 4, 4, 1, 0);
     }
 
     // ВРЕМЕННО: варианты — v1 (базовый): вырез 4px прямоуг., статус наружу;
@@ -410,7 +410,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     }
 
     &.product-card_v3 .product-card__surface {
-      @include notchMask(172, 250, $notch-r, $notch-s, 0, 78, 22, 2, 11, 4, 4, 1, 0);
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, 78, 22, 2, 11, 4, 4, 0, 0);
     }
 
     &.product-card_v4 .product-card__surface {
@@ -447,7 +447,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     // Мелкая карточка (узкий телефон): плашка и вырез меньше, зазор тот же
     @container card (max-width: 170px) {
       .product-card__surface {
-        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, 78, 22, 2, 11, 4, 4, 0, 0);
+        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, 78, 22, 2, 11, 4, 4, 1, 0);
       }
 
       .product-card__add {
