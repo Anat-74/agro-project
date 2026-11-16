@@ -21,13 +21,10 @@ const { isOpen: filterDialogOpen } = useDialog("shopFilterDialog")
 
 // Компактные карточки (без переворота, с кнопкой модалки и вырезом под «в корзину»)
 // — когда фильтр ЗАКРЫТ (на mobile это состояние по умолчанию).
-// mounted: на SSR разметка всегда «обычная» (компакт содержит ClientOnly-модалку —
-// иначе hydration mismatch), переключение — сразу после гидратации, до отрисовки.
-const mounted = ref(false)
-onMounted(() => {
-  mounted.value = true
-})
-const compactCards = computed(() => mounted.value && !filterDialogOpen.value)
+// Состояние вычисляется и на SSR: модалка товара внутри карточки обёрнута в
+// ClientOnly, поэтому серверная и первый клиентский рендер совпадают — вспышки
+// «обычных» карточек и переключения после гидратации нет.
+const compactCards = computed(() => !filterDialogOpen.value)
 
 // Кнопка-гамбургер в крошках (mobile): переиспользуем панель ШАПКИ (запрос →
 // AppHeader переключает свой экземпляр ShowHamburger — без дублирования/повторной
