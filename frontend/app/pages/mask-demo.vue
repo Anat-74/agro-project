@@ -92,6 +92,53 @@ const brShapePlate = (v: BrShape) => ({
   borderRadius: `${v.tl}px ${v.trbl}px ${v.br}px ${v.trbl}px`,
 })
 
+// === Конструктор выреза и плашки (раздел 3e) ===
+// Значения по умолчанию = то, что сейчас в карточке товара.
+const ctor = reactive({
+  plate: 29.1, // размер плашки
+  gap: 6, // зазор между плашкой и кромкой выреза
+  f: 4, // внешние скругления выреза
+  inner: 4, // внутренний угол выреза (дуга)
+  tl: 4, // радиус TL плашки
+  trbl: 4, // радиусы TR и BL плашки
+  br: 8.78, // радиус BR плашки
+})
+
+// Производные величины (как в SCSS-константах карточки):
+// s = (plate + gap) / 2, r = (plate + gap − s) / 2 — радиус кромки карточки.
+const ctorSize = computed(() => ctor.plate + ctor.gap)
+const ctorS = computed(() => ctorSize.value / 2)
+const ctorCardR = computed(() => (ctorSize.value - ctorS.value) / 2)
+
+const ctorMask = computed(() => {
+  const w = 172
+  const h = 250
+  const xl = w - ctorSize.value
+  const yt = h - ctorSize.value
+  const f = ctor.f
+  const i = ctor.inner
+  const r = ctorCardR.value
+  const card = `M ${r},0 H ${w - r} A ${r},${r} 0 0 1 ${w},${r} V ${h - r} A ${r},${r} 0 0 1 ${w - r},${h} H ${r} A ${r},${r} 0 0 1 0,${h - r} V ${r} A ${r},${r} 0 0 1 ${r},0 Z`
+  const cut = `M ${xl + i},${yt} H ${w - f} A ${f},${f} 0 0 1 ${w},${yt + f} V ${h - f} A ${f},${f} 0 0 1 ${w - f},${h} H ${xl + f} A ${f},${f} 0 0 1 ${xl},${h - f} V ${yt + i} A ${i},${i} 0 0 1 ${xl + i},${yt} Z`
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${w} ${h}' preserveAspectRatio='none'><path fill-rule='evenodd' fill='#fff' d='${card} ${cut}'/></svg>`
+  return {
+    maskImage: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`,
+    maskSize: '100% 100%',
+    maskRepeat: 'no-repeat',
+  }
+})
+
+const ctorPlate = computed(() => ({
+  width: `${ctor.plate}px`,
+  height: `${ctor.plate}px`,
+  borderRadius: `${ctor.tl}px ${ctor.trbl}px ${ctor.br}px ${ctor.trbl}px`,
+}))
+
+const ctorCode = computed(
+  () =>
+    `plate ${ctor.plate} · gap ${ctor.gap} · cut ${ctorSize.value.toFixed(2)} · s ${ctorS.value.toFixed(2)} · r ${ctorCardR.value.toFixed(3)} | вырез: внешн ${ctor.f} · внутр ${ctor.inner} | плашка: TL ${ctor.tl} · TR/BL ${ctor.trbl} · BR ${ctor.br}`
+)
+
 const tlVariants = [
   { key: 'copy', label: 'Точный поворот кнопки (без расширения)', extra: 0, chip: 'rot' },
   { key: 'w20', label: 'Тот же поворот, шире на 20 (под текст)', extra: 20, chip: 'rot' },
@@ -330,6 +377,52 @@ const tlChip = (v: TlVariant) => {
           <p class="mask-demo__caption">{{ v.label }}</p>
         </li>
       </ul>
+    </section>
+
+    <section class="mask-demo__section">
+      <h2 class="mask-demo__subtitle">3e. Конструктор выреза и плашки</h2>
+      <p class="mask-demo__hint">
+        Меняйте значения — карточка справа обновляется сразу. Строка внизу — то, что нужно
+        прислать, чтобы перенести параметры в карточку товара.
+      </p>
+      <div class="mask-demo__ctor">
+        <div class="mask-demo__ctorControls">
+          <label class="mask-demo__ctorRow">
+            <span>Плашка: {{ ctor.plate }}px</span>
+            <input v-model.number="ctor.plate" type="range" min="16" max="60" step="0.1">
+          </label>
+          <label class="mask-demo__ctorRow">
+            <span>Зазор: {{ ctor.gap }}px</span>
+            <input v-model.number="ctor.gap" type="range" min="0" max="16" step="0.5">
+          </label>
+          <label class="mask-demo__ctorRow">
+            <span>Вырез, внешние: {{ ctor.f }}px</span>
+            <input v-model.number="ctor.f" type="range" min="0" max="20" step="0.5">
+          </label>
+          <label class="mask-demo__ctorRow">
+            <span>Вырез, внутренний: {{ ctor.inner }}px</span>
+            <input v-model.number="ctor.inner" type="range" min="0" max="30" step="0.5">
+          </label>
+          <label class="mask-demo__ctorRow">
+            <span>Плашка TL: {{ ctor.tl }}px</span>
+            <input v-model.number="ctor.tl" type="range" min="0" max="20" step="0.5">
+          </label>
+          <label class="mask-demo__ctorRow">
+            <span>Плашка TR/BL: {{ ctor.trbl }}px</span>
+            <input v-model.number="ctor.trbl" type="range" min="0" max="20" step="0.5">
+          </label>
+          <label class="mask-demo__ctorRow">
+            <span>Плашка BR: {{ ctor.br }}px</span>
+            <input v-model.number="ctor.br" type="range" min="0" max="20" step="0.5">
+          </label>
+        </div>
+        <div class="mask-demo__stage">
+          <div class="mask-demo__tlCard" :style="ctorMask">
+            <div class="mask-demo__shapePlate" :style="ctorPlate" />
+          </div>
+        </div>
+      </div>
+      <p class="mask-demo__caption mask-demo__caption_code">{{ ctorCode }}</p>
     </section>
 
     <section class="mask-demo__section">
@@ -594,8 +687,41 @@ const tlChip = (v: TlVariant) => {
     position: absolute;
     inset-block-end: 0;
     inset-inline-end: 0;
-    border: toRem(1) solid var(--success-color);
+    border: toRem(2) solid var(--success-color);
     background-color: var(--light-color);
+  }
+
+  // Конструктор: слева инпуты, справа живая карточка
+  &__ctor {
+    display: grid;
+    gap: toRem(16);
+    grid-template-columns: repeat(auto-fit, minmax(toRem(240), 1fr));
+    align-items: start;
+  }
+
+  &__ctorControls {
+    display: grid;
+    gap: toRem(10);
+  }
+
+  &__ctorRow {
+    display: grid;
+    gap: toRem(4);
+    font-size: toRem(13);
+
+    input {
+      width: 100%;
+      accent-color: var(--success-color);
+    }
+  }
+
+  &__caption_code {
+    padding: toRem(8);
+    border-radius: toRem(6);
+    background-color: var(--whitesmoke-color);
+    color: var(--color);
+    font-family: monospace;
+    font-size: toRem(12);
   }
 
   &__notes {
