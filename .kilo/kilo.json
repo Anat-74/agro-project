@@ -59,7 +59,8 @@
       "command": [
         "npx.cmd",
         "-y",
-        "@playwright/mcp"
+        "@playwright/mcp",
+        "--ignore-https-errors"
       ],
       "enabled": true
     }
