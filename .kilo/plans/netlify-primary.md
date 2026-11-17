@@ -40,8 +40,18 @@ production branch случайно станет `master`, сборка для д
    ```
    Удалить `[[redirects]] /* → /.netlify/functions/server` (путь старого layout Netlify Functions,
    у nitropack 2.13.5 выход — `.netlify/v1/functions`).
-3. Удалить `.github/workflows/nuxthub.yml` (деплой в NuxtHub на каждый push).
-4. Домен пока технический: `https://lustrous-medovik-a82e20.netlify.app` (переезд домена — позже,
+3. Удалить **все GitHub Actions workflow** — они шаблонные, ничего не деплоят и шлют письма о падении:
+   - `.github/workflows/frontend-deploy.yml` (push в `frontend/**` → `npm ci` + `npm run build` на **Node 18**;
+     Nuxt 4.6.3 требует `^22.22.3 || ^24.15.0 || >=26.0.0` → exit 1 → письма «All jobs have failed»;
+     шаг «деплой» — просто `echo`);
+   - `.github/workflows/backend-deploy.yml` (то же для `backend/**`, деплой — `echo`);
+   - `.github/workflows/full-deploy.yml` (условие `contains(head_commit.modified, 'frontend')` всегда false);
+   - `frontend/.github/workflows/nuxthub.yml` (неудачный деплой в NuxtHub на каждый push).
+   Причина удаления: только тратят минуты Actions и шлют письма. Позже, отдельным шагом, можно добавить один
+   осмысленный CI (Node 22: `npm ci` + `npm run test` + lint на pull request).
+4. `NODE_VERSION` на Netlify — **22** (Netlify ставит последнюю 22.x, это ≥ минимальных 22.22.3 из engines Nuxt);
+   Node 20 и ниже для этого проекта не годятся.
+5. Домен пока технический: `https://lustrous-medovik-a82e20.netlify.app` (переезд домена — позже,
    отдельной задачей).
 
 ## Netlify: настройки (автоматизирую через CLI/API)
