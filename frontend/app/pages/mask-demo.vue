@@ -88,8 +88,10 @@ const brShapeMask = (v: BrShape) => {
 
 const brShapePlate = (v: BrShape) => ({
   width: `${v.plate}px`,
-  height: `${v.plate}px`,
+  // +1px по высоте и сдвиг на 1px вниз — напуск на шов маски (как в проде)
+  height: `${v.plate + 1}px`,
   borderRadius: `${v.tl}px ${v.trbl}px ${v.br}px ${v.trbl}px`,
+  bottom: '-1px',
 })
 
 // === Конструктор выреза и плашки (раздел 3e) ===
@@ -130,8 +132,10 @@ const ctorMask = computed(() => {
 
 const ctorPlate = computed(() => ({
   width: `${ctor.plate}px`,
-  height: `${ctor.plate}px`,
+  // Напуск на шов маски, как в проде: +1px высоты и сдвиг на 1px вниз.
+  height: `${ctor.plate + 1}px`,
   borderRadius: `${ctor.tl}px ${ctor.trbl}px ${ctor.br}px ${ctor.trbl}px`,
+  bottom: '-1px',
 }))
 
 const ctorCode = computed(
@@ -370,7 +374,10 @@ const tlChip = (v: TlVariant) => {
       <ul class="mask-demo__params">
         <li v-for="v in brShapeVariants" :key="v.key" class="mask-demo__param">
           <div class="mask-demo__stage mask-demo__stage_tight">
-            <div class="mask-demo__tlCard" :style="brShapeMask(v)">
+            <!-- Плашка — снаружи маски и с напуском +1px: иначе в шве между
+                 срезом маски и плашкой просвечивает материал карточки (артефакт). -->
+            <div class="mask-demo__tlCardWrap">
+              <div class="mask-demo__tlCard" :style="brShapeMask(v)" />
               <div class="mask-demo__shapePlate" :style="brShapePlate(v)" />
             </div>
           </div>
