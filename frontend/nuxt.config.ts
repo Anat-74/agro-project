@@ -247,6 +247,11 @@ export default defineNuxtConfig({
   },
   css: ["@/assets/scss/styles.scss"],
   vite: {
+    // Dev-превью с телефона через туннель (Cloudflare Quick Tunnel): Vite блокирует
+    // неизвестный Host как защиту от DNS-rebinding. Только dev; на сборку не влияет.
+    server: {
+      allowedHosts: [".trycloudflare.com", ".lhr.life", ".loca.lt"],
+    },
     css: {
       preprocessorOptions: {
         scss: {
