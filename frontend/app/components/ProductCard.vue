@@ -403,7 +403,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     .product-card__surface {
       border-radius: var(--notch-r, 13px);
       // $r/$s — без единиц: это координаты SVG-пути (px в пути недопустимы)
-      @include notchMask(172, 250, $notch-r, $notch-s, 0, 78, 22, 2, 11, 4, 4, 1, 0);
+      @include notchMask(172, 250, $notch-r, $notch-s, 0, 78, 22, 2, 11, 4, 4, 1, 0, $shave: 0.6, $btn-br: 6);
     }
 
     // ВРЕМЕННО: варианты — v1 (базовый): вырез 4px прямоуг., статус наружу;
@@ -451,7 +451,7 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     // Мелкая карточка (узкий телефон): плашка и вырез меньше, зазор тот же
     @container card (max-width: 170px) {
       .product-card__surface {
-        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, 78, 22, 2, 11, 4, 4, 1, 0);
+        @include notchMask(172, 250, $notch-r-cq, $notch-s-cq, 0, 78, 22, 2, 11, 4, 4, 1, 0, $shave: 0.6, $btn-br: 6);
       }
 
       .product-card__add {
@@ -646,13 +646,12 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     position: absolute;
     z-index: 150;
     width: var(--plate-w, var(--plate-size, var(--notch-size)));
-    // +1px компенсирует сдвиг вниз: верх кнопки остаётся на месте, воздух
-    // сверху не меняется, а низ совпадает с видимой кромкой карточки
-    // +1px компенсирует сдвиг вниз (верх кнопки остаётся на месте)
-    height: calc(var(--plate-size, var(--notch-size)) + 1px);
+    // Высоту и позицию НЕ сдвигаем: сдвиг на 1px разводил дугу нижнего-правого
+    // угла плашки с дугой карточки, и в углу просвечивал фон (артефакт).
+    // Шов закрывается срезом маски ($shave в notchMask), а не напуском плашки.
+    height: var(--plate-size, var(--notch-size));
     right: var(--plate-inset, var(--notch-gap));
-    // По просьбе: кнопка сдвинута на 1px вниз (артефакт у низа не ушёл)
-    bottom: -1px;
+    bottom: 0;
 
     // Слот у .btn обёрнут в .button-content — растягиваем на всю плашку,
     // иначе absolute-грани не получат размеров. Элемент создаётся внутри
@@ -689,7 +688,10 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
       // «Пазл»: TL = радиус дуги − зазор (концентричен дуге), BR = радиус
       // кромки карточки, а TR/BL — меньше: они примыкают к прямым кромкам
       // выреза, и такой же радиус там читался бы слишком круглым.
-      border-radius: var(--notch-r, 15px);
+      // Нижний-правый угол плашки должен повторять угол КАРТОЧКИ (--card-radius),
+      // а не радиуса выреза: дуга выреза круглее силуэта карточки, и в углу
+      // просвечивал фон. Остальные углы переопределены ниже.
+      border-radius: var(--card-radius, 6px);
       border-top-left-radius: var(--plate-tl, 21.25px);
       border-top-right-radius: 4px;
       border-bottom-left-radius: 4px;

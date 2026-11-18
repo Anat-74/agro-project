@@ -77,7 +77,7 @@ const brShapeMask = (v: BrShape) => {
   const i = v.inner
   const r = v.br
   const card = `M ${r},0 H ${w - r} A ${r},${r} 0 0 1 ${w},${r} V ${h - r} A ${r},${r} 0 0 1 ${w - r},${h} H ${r} A ${r},${r} 0 0 1 0,${h - r} V ${r} A ${r},${r} 0 0 1 ${r},0 Z`
-  const cut = `M ${xl + i},${yt} H ${w - f} A ${f},${f} 0 0 1 ${w},${yt + f} V ${h - f} A ${f},${f} 0 0 1 ${w - f},${h} H ${xl + f} A ${f},${f} 0 0 1 ${xl},${h - f} V ${yt + i} A ${i},${i} 0 0 1 ${xl + i},${yt} Z`
+  const cut = `M ${xl + i},${yt} H ${(w - 0.6) - f} A ${f},${f} 0 0 1 ${w - 0.6},${yt + f} V ${(h - 0.6) - r} A ${r},${r} 0 0 1 ${(w - 0.6) - r},${h - 0.6} H ${xl + f} A ${f},${f} 0 0 1 ${xl},${(h - 0.6) - f} V ${yt + i} A ${i},${i} 0 0 1 ${xl + i},${yt} Z`
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${w} ${h}' preserveAspectRatio='none'><path fill-rule='evenodd' fill='#fff' d='${card} ${cut}'/></svg>`
   return {
     maskImage: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`,
@@ -88,10 +88,9 @@ const brShapeMask = (v: BrShape) => {
 
 const brShapePlate = (v: BrShape) => ({
   width: `${v.plate}px`,
-  // +1px по высоте и сдвиг на 1px вниз — напуск на шов маски (как в проде)
-  height: `${v.plate + 1}px`,
+  // Без сдвига: шов закрывает срез маски (shave), а не напуск — иначе дуги угла разъезжаются
+  height: `${v.plate}px`,
   borderRadius: `${v.tl}px ${v.trbl}px ${v.br}px ${v.trbl}px`,
-  bottom: '-1px',
 })
 
 // === Конструктор выреза и плашки (раздел 3e) ===
@@ -121,7 +120,7 @@ const ctorMask = computed(() => {
   const i = ctor.inner
   const r = ctorCardR.value
   const card = `M ${r},0 H ${w - r} A ${r},${r} 0 0 1 ${w},${r} V ${h - r} A ${r},${r} 0 0 1 ${w - r},${h} H ${r} A ${r},${r} 0 0 1 0,${h - r} V ${r} A ${r},${r} 0 0 1 ${r},0 Z`
-  const cut = `M ${xl + i},${yt} H ${w - f} A ${f},${f} 0 0 1 ${w},${yt + f} V ${h - f} A ${f},${f} 0 0 1 ${w - f},${h} H ${xl + f} A ${f},${f} 0 0 1 ${xl},${h - f} V ${yt + i} A ${i},${i} 0 0 1 ${xl + i},${yt} Z`
+  const cut = `M ${xl + i},${yt} H ${(w - 0.6) - f} A ${f},${f} 0 0 1 ${w - 0.6},${yt + f} V ${(h - 0.6) - r} A ${r},${r} 0 0 1 ${(w - 0.6) - r},${h - 0.6} H ${xl + f} A ${f},${f} 0 0 1 ${xl},${(h - 0.6) - f} V ${yt + i} A ${i},${i} 0 0 1 ${xl + i},${yt} Z`
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${w} ${h}' preserveAspectRatio='none'><path fill-rule='evenodd' fill='#fff' d='${card} ${cut}'/></svg>`
   return {
     maskImage: `url("data:image/svg+xml,${encodeURIComponent(svg)}")`,
@@ -132,10 +131,8 @@ const ctorMask = computed(() => {
 
 const ctorPlate = computed(() => ({
   width: `${ctor.plate}px`,
-  // Напуск на шов маски, как в проде: +1px высоты и сдвиг на 1px вниз.
-  height: `${ctor.plate + 1}px`,
+  height: `${ctor.plate}px`,
   borderRadius: `${ctor.tl}px ${ctor.trbl}px ${ctor.br}px ${ctor.trbl}px`,
-  bottom: '-1px',
 }))
 
 const ctorCode = computed(
