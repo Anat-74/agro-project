@@ -6,6 +6,8 @@
     "build": "nuxt build",
     "build:with-sitemap": "nuxt build && npm run generate-sitemap",
     "dev": "nuxt dev",
+    "dev:local": "nuxt dev --dotenv .env",
+    "dev:prod": "nuxt dev --dotenv env/prod-api.env",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
