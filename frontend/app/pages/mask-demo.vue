@@ -382,10 +382,18 @@ const tlChip = (v: TlVariant) => {
     <section class="mask-demo__section">
       <h2 class="mask-demo__subtitle">3e. Конструктор выреза и плашки</h2>
       <p class="mask-demo__hint">
-        Меняйте значения — карточка справа обновляется сразу. Строка внизу — то, что нужно
-        прислать, чтобы перенести параметры в карточку товара.
+        Меняйте значения — карточка сверху обновляется сразу, ползунки — под ней.
+        Строка внизу — то, что нужно прислать, чтобы перенести параметры в карточку товара.
       </p>
       <div class="mask-demo__ctor">
+        <div class="mask-demo__stage">
+          <!-- Плашка ОБЯЗАТЕЛЬНО снаружи маскированного элемента: маска срезает
+               всё поддерево, и вложенная плашка попадала в «дырку» и исчезала. -->
+          <div class="mask-demo__tlCardWrap">
+            <div class="mask-demo__tlCard" :style="ctorMask" />
+            <div class="mask-demo__shapePlate" :style="ctorPlate" />
+          </div>
+        </div>
         <div class="mask-demo__ctorControls">
           <label class="mask-demo__ctorRow">
             <span>Плашка: {{ ctor.plate }}px</span>
@@ -415,11 +423,6 @@ const tlChip = (v: TlVariant) => {
             <span>Плашка BR: {{ ctor.br }}px</span>
             <input v-model.number="ctor.br" type="range" min="0" max="20" step="0.5">
           </label>
-        </div>
-        <div class="mask-demo__stage">
-          <div class="mask-demo__tlCard" :style="ctorMask">
-            <div class="mask-demo__shapePlate" :style="ctorPlate" />
-          </div>
         </div>
       </div>
       <p class="mask-demo__caption mask-demo__caption_code">{{ ctorCode }}</p>
@@ -656,6 +659,13 @@ const tlChip = (v: TlVariant) => {
     background-color: #e9e7e2;
   }
 
+  // Обёртка конструктора: плашка лежит рядом с маскированной карточкой, а не внутри.
+  &__tlCardWrap {
+    position: relative;
+    width: toRem(172);
+    height: toRem(250);
+  }
+
   // Плашка кнопки в вырезе (низ-справа) для тайлов bleed
   &__brPlate {
     position: absolute;
@@ -693,10 +703,11 @@ const tlChip = (v: TlVariant) => {
 
   // Конструктор: слева инпуты, справа живая карточка
   &__ctor {
-    display: grid;
+    // Карточка сверху, ползунки — сразу под ней (одна колонка на любой ширине).
+    display: flex;
+    flex-direction: column;
     gap: toRem(16);
-    grid-template-columns: repeat(auto-fit, minmax(toRem(240), 1fr));
-    align-items: start;
+    align-items: stretch;
   }
 
   &__ctorControls {
