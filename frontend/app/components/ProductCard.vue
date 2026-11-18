@@ -345,7 +345,9 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
   // при скролле — и в dev, и на телефоне). Размер задаёт aspect-ratio, поэтому
   // дополнительно ничего не «прыгает»; intrinsic-size — страховка от CLS.
   content-visibility: auto;
-  contain-intrinsic-size: auto 250px;
+  // Только высота: ширину задаёт сетка. Однозначная запись задавала бы
+  // и ширину (250px), из-за чего карточка распирала колонку на 390px.
+  contain-intrinsic-size: none 250px;
   position: relative;
   // Радиус карточки — один источник для неё, вложенной поверхности и кнопки (BR)
   --card-radius: #{toRem(6)};
