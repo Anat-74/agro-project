@@ -3,6 +3,7 @@ import { shopFiltersTranslations } from '~/locales/shopFilters'
 import { productFilterTranslations } from '~/locales/productFilter'
 import { visuallyHiddenTranslations } from '~/locales/visuallyHidden'
 import { buttonTranslations } from '~/locales/button'
+import { devTranslations } from '~/locales/dev'
 import ShowShopFilter from '~/components/show-modal/ShowShopFilter.vue'
 
 const { find } = useStrapi();
@@ -12,6 +13,8 @@ const t = computed(() => shopFiltersTranslations[currentLocale.value])
 const pf = computed(() => productFilterTranslations[currentLocale.value])
 const vh = computed(() => visuallyHiddenTranslations[currentLocale.value])
 const bt = computed(() => buttonTranslations[currentLocale.value])
+// ВРЕМЕННО: ссылка на демо маски выреза. Удалить по команде пользователя.
+const dv = computed(() => devTranslations[currentLocale.value])
 
 const shopFilterRef = useTemplateRef<InstanceType<typeof ShowShopFilter>>("shopFilter")
 
@@ -429,6 +432,15 @@ useSeoMeta({
       />
     </div>
 
+    <!-- ВРЕМЕННО: ссылка на демо маски выреза. Удалить по команде пользователя. -->
+    <NuxtLink
+      class="products-page__dev-link"
+      to="/mask-demo"
+      :aria-label="dv.maskDemoHint"
+    >
+      {{ dv.maskDemo }}
+    </NuxtLink>
+
   </section>
 </template>
 <style lang="scss" scoped>
@@ -606,6 +618,22 @@ useSeoMeta({
     position: absolute;
     bottom: toRem(12);
     right: toRem(8);
+  }
+
+  // ВРЕМЕННО: плавающая ссылка на демо маски (удалить по команде пользователя).
+  &__dev-link {
+    position: fixed;
+    z-index: 500;
+    left: toRem(8);
+    bottom: toRem(8);
+    padding: toRem(4) toRem(8);
+    border-radius: toRem(6);
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    font-size: toRem(11);
+    line-height: 1.2;
+    text-decoration: none;
+    opacity: 0.7;
   }
 
   &__empty {
