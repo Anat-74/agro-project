@@ -7,7 +7,6 @@ interface SelectOption {
 }
 
 interface Props {
-  modelValue?: string | number
   options?: SelectOption[]
   name?: string
   id?: string
@@ -18,7 +17,6 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  modelValue: undefined,
   options: () => [],
   name: "",
   id: "",
@@ -28,9 +26,9 @@ const props = withDefaults(defineProps<Props>(), {
   placeholder: "",
 })
 
-const emit = defineEmits<{
-  "update:modelValue": [v: string | number]
-}>()
+// defineModel создаёт тот же внешний контракт (modelValue + update:modelValue),
+// но без ручной пары prop/emit.
+const model = defineModel<string | number>()
 
 const inputId = computed(() => props.id || `uselect-${useId()}`)
 </script>
@@ -46,8 +44,8 @@ const inputId = computed(() => props.id || `uselect-${useId()}`)
       :disabled="disabled"
       :aria-label="ariaLabel || undefined"
       class="select"
-      :value="modelValue"
-      @change="emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
+      :value="model"
+      @change="model = ($event.target as HTMLSelectElement).value"
     >
       <option v-if="placeholder" value="" disabled>
         {{ placeholder }}
