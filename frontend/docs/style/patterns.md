@@ -328,6 +328,17 @@ body:has(
 - DOM-прямоугольники для маски **не показательны**. Рабочий замер: magenta-фон → скриншот →
   анализ `sharp` → зазоры по 4 сторонам + размер выреза.
 
+### ГРАБЛИ: `options.hostname.toLowerCase is not a function` при `nuxt dev`
+
+19.11.2026, после обновления на Nuxt 4.6.4: `nuxt dev` падал с этой ошибкой, «Invalid host `[object Object]`».
+
+Причина двойная:
+1. `@nuxt/cli` **4.0.1** (шёл с 4.6.4) имеет баг в `#syncAllowedHosts` — падает, когда hostname не строка;
+2. в `node_modules/.cache/nuxt/dev-server.json` лежал сохранённый hint `{"hostname":{}}` (попал туда из промежуточного конфига) — CLI подхватывает его **до** загрузки конфига и падает.
+
+Лечение: `npm i -D @nuxt/cli@4.0.3` + удалить `node_modules/.cache/nuxt/dev-server.json`.
+Правильный ключ конфига для туннелей в 4.6.4 — **`devServer.allowedHosts`** (не `vite.server.allowedHosts`).
+
 ### ГРАБЛИ: `content-visibility` на элементе-контейнере ломает container queries
 
 18.11.2026: для ускорения скролла на `.product-card` добавили `content-visibility: auto`
