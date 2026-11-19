@@ -246,12 +246,12 @@ export default defineNuxtConfig({
     classSuffix: "-mode",
   },
   css: ["@/assets/scss/styles.scss"],
+  // Dev-превью с телефона через туннель: с Nuxt 4.6.4 dev-сервер сам проверяет Host
+  // (защита от DNS-rebinding), список разрешённых хостов задаётся здесь.
+  devServer: {
+    allowedHosts: [".trycloudflare.com", ".lhr.life", ".loca.lt", ".a.tuna.free", ".tuna.am"],
+  },
   vite: {
-    // Dev-превью с телефона через туннель (Cloudflare Quick Tunnel): Vite блокирует
-    // неизвестный Host как защиту от DNS-rebinding. Только dev; на сборку не влияет.
-    server: {
-      allowedHosts: [".trycloudflare.com", ".lhr.life", ".loca.lt", ".a.tuna.free", ".tuna.am"],
-    },
     css: {
       preprocessorOptions: {
         scss: {
