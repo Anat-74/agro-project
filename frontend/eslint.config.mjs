@@ -3,6 +3,10 @@ import withNuxt from './.nuxt/eslint.config.mjs'
 
 export default withNuxt(
   {
+    // Локальные вспомогательные скрипты агента/диагностики — не часть приложения.
+    ignores: ['.tmp/**', '.data/**'],
+  },
+  {
     rules: {
       // Strapi v5 API динамичен и типы @nuxtjs/strapi слишком строгие для
       // произвольных populate/filters (см. app/stores/useSearchStore.ts).

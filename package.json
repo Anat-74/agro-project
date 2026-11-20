@@ -1,13 +1,13 @@
 {
   "name": "agro-project-strapi",
   "private": true,
+  "packageManager": "pnpm@10.34.9",
   "scripts": {
     "build": "cd backend && npm run build",
     "start": "cd backend && npm run start",
-    "develop": "cd backend && npm run dev",
-    "install": "cd backend && npm install"
+    "develop": "cd backend && npm run dev"
   },
   "devDependencies": {
-    "playwright": "^1.61.1"
+    "playwright": "1.65.1"
   }
 }

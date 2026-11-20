@@ -2,6 +2,15 @@
   "name": "nuxt-app",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.34.9",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "sharp",
+      "@parcel/watcher",
+      "esbuild",
+      "unrs-resolver"
+    ]
+  },
   "scripts": {
     "build": "nuxt build",
     "build:with-sitemap": "nuxt build && npm run generate-sitemap",
