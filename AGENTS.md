@@ -18,6 +18,17 @@
 что прочитано (AGENTS.md, patterns.md §7–§9, cards-notch.md и т.д.). Не продолжать работу молча,
 делая вид, что помнишь историю.
 
+## Пакетный менеджер
+
+- **Фронтенд (`frontend/`) — pnpm 10.34.9.** Зафиксировано в `package.json` (`packageManager`), есть
+  `pnpm-lock.yaml` и `.npmrc` с `node-linker=hoisted` (нужен, иначе ESLint не находит парсеры).
+  Команды: `pnpm dev` / `pnpm dev:local` / `pnpm dev:prod` / `pnpm build` / `pnpm test` / `pnpm lint`.
+  Устанавливать зависимости **только** `pnpm install`; `npm install` во фронтенде создаёт лишний
+  `package-lock.json` и рассинхронизирует lock-файл.
+- **Бэкенд (`backend/`) — npm.** `better-sqlite3` на Windows/Node 26 собирается только в npm-раскладке.
+- Перед апгрейдом pnpm на 11 — выполнить их codemod: настройки из `package.json#pnpm` переезжают
+  в `pnpm-workspace.yaml` (`nodeLinker`, `allowBuilds`). См. `.kilo/plans/npm-to-pnpm.md`.
+
 ## CRITICAL: git push / deploy запрещены без явной команды
 
 - **"закомить"** — только `git commit`, без push.
