@@ -146,9 +146,8 @@ pm2 restart agro || pm2 start .output/server/index.mjs --name agro
 
 **Ограничения:** нет веб-интерфейса (нет issues/PR/просмотра кода), нет CI (его роль выполняет `post-receive`), хостинг общий с сайтом (падение хостинга затрагивает обе копии).
 
-## Порядо
+## Порядок работ
 
-к работ
 1. Получить новый домен + SSH → прописать в `prod-api.env`, `.env`, `netlify.toml`, `image.domains`.
 2. Strapi на новом сервере: тип сайта Node.js, точка входа, env (`NUXT_APP_SECRET`, `DEEPSEEK_API_KEY`… — для бэкенда свои), SSL, проверить `/api/products`.
 3. Проверить медиа: картинки из `uploads` отдаются по новому адресу.
