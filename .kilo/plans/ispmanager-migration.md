@@ -99,7 +99,56 @@
    Удалить Plesk-скрипты и закоммиченные креды.
 5. Проверка критериев приёмки из этого плана + прогон проверок фронта (12 карточек, 0 битых картинок).
 
-## Порядок работ
+## Свой git на хостинге: bare-репозиторий (после переезда)
+
+Цель — собственная копия кода, которой не касаются внешние блокировки. Gitea/GitLab **не нужны**: git уже есть.
+Bare-репозиторий — это папка без рабочей копии (только история): `objects/`, `refs/`, `HEAD`, `config`, `hooks/`.
+
+```bash
+# на сервере (один раз, по SSH)
+mkdir -p ~/git && git init --bare ~/git/agro-project.git
+
+# на ПК — второй remote (GitHub остаётся основным)
+git remote add hosting ssh://<user>@<host>:<port>/~/git/agro-project.git
+git push hosting master && git push hosting --tags
+git fetch hosting && git log hosting/master --oneline -5
+```
+
+**Деплой** — рабочая копия в каталоге приложения обновляется из bare-репозитория:
+
+```bash
+# вручную/скриптом
+cd <каталог-приложения>
+git remote add hosting ~/git/agro-project.git
+git pull hosting master
+pnpm install --frozen-lockfile && pnpm build
+pm2 restart agro
+```
+
+```bash
+# автоматически: ~/git/agro-project.git/hooks/post-receive
+#!/bin/sh
+set -e
+APP=/var/www/.../frontend
+git --work-tree="$APP" --git-dir="$HOME/git/agro-project.git" checkout -f master
+cd "$APP"
+pnpm install --frozen-lockfile
+pnpm build
+pm2 restart agro || pm2 start .output/server/index.mjs --name agro
+```
+
+**Копии кода (все три):**
+1. GitHub — основной remote;
+2. bare-репозиторий на хостинге — своя копия, не зависит от блокировок;
+3. локальное зеркало на ПК (`git clone --mirror . C:/kilo-bridje/git/agro-project.git`).
+
+**Проверить на новом хостинге:** `git --version` по SSH (в chroot), наличие `corepack`/`pnpm`, `pm2` (или менеджер процессов панели), права записи пользователя SSH в каталог приложения.
+
+**Ограничения:** нет веб-интерфейса (нет issues/PR/просмотра кода), нет CI (его роль выполняет `post-receive`), хостинг общий с сайтом (падение хостинга затрагивает обе копии).
+
+## Порядо
+
+к работ
 1. Получить новый домен + SSH → прописать в `prod-api.env`, `.env`, `netlify.toml`, `image.domains`.
 2. Strapi на новом сервере: тип сайта Node.js, точка входа, env (`NUXT_APP_SECRET`, `DEEPSEEK_API_KEY`… — для бэкенда свои), SSL, проверить `/api/products`.
 3. Проверить медиа: картинки из `uploads` отдаются по новому адресу.
