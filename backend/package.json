@@ -36,6 +36,9 @@
     "uuid": "5bccc4e6-006c-41b7-810e-062f22292d10"
   },
   "allowScripts": {
-    "better-sqlite3@11.3.0": true
+    "better-sqlite3@13.0.3": true,
+    "esbuild@0.28.2": true,
+    "esbuild@0.25.12": true,
+    "@swc/core@1.16.21": true
   }
 }
