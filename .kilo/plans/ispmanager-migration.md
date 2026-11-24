@@ -278,6 +278,27 @@ Error pages, Redirects settings, Access limits, Log, **Run settings (Node.js)**,
   затем положить в `~/www/agro-api.by/.tmp/data.db` и перезапустить. `public/uploads` в архиве есть — их переносить не нужно.
 - Порядок после переноса БД: проверить `/api/products` (200 + данные) → Let's Encrypt → переключение фронта.
 
+### РАЗГАДКА (24.11): база у Strapi — MySQL, а не SQLite
+
+На странице «Информация о подключении» старого Plesk видно: **MySQL/MariaDB** `localhost:3306`, база
+**`agro-project`**, пользователь **`agro_user`**. Значит `.tmp/data.db` (SQLite) в архиве — **старый мусор**,
+поэтому он и был пустым. Настоящий дамп лежит в архиве рядом:
+**`agro-project_2026-11-22_17-48-52.sql.zip`** (111 КБ, 92 INSERT, все таблицы Strapi).
+
+**Что сделано на новом сервере:**
+1. Создана БД `agro-project` + пользователь `agro_user` (MySQL 10.5.29, `127.0.0.1:3306`) через API панели
+   (`func=db.edit`, `server=MySQL`, `charset=utf8mb4`). Пароль сгенерирован и лежит в `~/db-created.txt` (600).
+2. Дамп распакован (`~/dbrestore/…sql`) и импортирован клиентом `mysql` (есть в chroot, MariaDB 10.5).
+   Проверка: **products = 78**, **admin_users = 1**, **categories = 31**.
+3. В `.env` добавлены `DATABASE_CLIENT=mysql`, `DATABASE_HOST=127.0.0.1`, `DATABASE_PORT=3306`,
+   `DATABASE_NAME=agro-project`, `DATABASE_USERNAME=agro_user`, `DATABASE_PASSWORD=…`.
+4. Запуск: **Strapi started successfully**, `/api/products` → **200**, `total: 33`.
+
+**Осталось:** перезапустить через панель (Restart (Node.js)), чтобы процессом владел pm2 панели и nginx
+направил сайт на него; затем Let's Encrypt (HTTP-проверка пройдёт) и переключение фронта.
+
+Ручной `node server.js` после проверки остановлен, чтобы не занимать порт.
+
 ## Критерии приёмки
 - `https://<новый домен>/api/products` → 200, данные и картинки доступны.
 - Strapi-админка открывается, вход работает.
