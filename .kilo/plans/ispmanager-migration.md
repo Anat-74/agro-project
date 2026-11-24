@@ -324,3 +324,66 @@ Error pages, Redirects settings, Access limits, Log, **Run settings (Node.js)**,
 - **Let's Encrypt не выпускается**: панель возвращает `letsencrypt_has_error: on`, а nginx в логе пишет
   `openat() "/usr/local/mgr5/www/letsencrypt/<token>" failed (No such file or directory)` — плагин LE не создаёт
   challenge-файл. Это на стороне хостера → запрос в поддержку. До HTTPS фронт переключать нельзя (mixed content).
+
+### Рекомендации из документации Strapi 5 (24.11)
+
+Источники: [Deployment](https://docs.strapi.io/cms/deployment), [Process manager](https://docs.strapi.io/cms/deployment/process-manager).
+
+**Требования (официальные) и наше соответствие**
+
+| Параметр | Требование | У нас |
+|---|---|---|
+| CPU | мин. 1, рек. 2+ | 4 ✓ |
+| RAM | мин. 2 ГБ, рек. 4 ГБ | 4 ГБ ✓ |
+| Диск | мин. 8 ГБ | 61 ГБ ✓ |
+| Node.js | только LTS (22/24/26) | 22.21.0 ✓ |
+| БД | MySQL ≥8.0 / MariaDB ≥10.3 | MariaDB 10.5.29 ✓ |
+
+**Что обязательно**
+1. `NODE_ENV=production` для сборки и запуска; сборка админки — `npm run build` (у нас `dist` уже собран).
+2. Env-переменные: `APP_KEYS`, `API_TOKEN_SALT`, `ADMIN_JWT_SECRET`, `JWT_SECRET`, `TRANSFER_TOKEN_SALT`,
+   `ENCRYPTION_KEY` + доступы к БД. **Не менять между деплоями** — иначе инвалидируются сессии и API-токены.
+3. **Процесс-менеджер — PM2** (документация: «We highly recommend using a process manager such as PM2»).
+4. Health-check `/_health` → **204** (есть у Strapi, использовать для мониторинга).
+5. **Strapi однопроцессный** — не запускать в cluster (`-i max`).
+6. **pnpm для бэкенда не использовать** (документация: агрессивный hoisting ломает нативные модули вроде `mysql2`).
+   У нас бэкенд на npm — соответствует. Фронтенд на pnpm — это отдельный проект, к Strapi отношения не имеет.
+
+**Настроить (сейчас отсутствует)**
+- `config/server.ts`: добавить `proxy: true` (работа за nginx с SSL) и `url: env('PUBLIC_URL')` — сейчас есть только
+  `host`, `port`, `app.keys`.
+- `NODE_ENV=production` — явно в окружении pm2.
+
+**Целевой запуск: pm2, одна инстанция**
+
+```js
+// ecosystem.config.cjs (в каталоге приложения)
+module.exports = {
+  apps: [{
+    name: 'agro-api',
+    script: 'server.js',
+    cwd: '/var/www/u34165-8120/data/www/agro-api.by',
+    instances: 1,
+    autorestart: true,
+    max_memory_restart: '700M',
+    env: { NODE_ENV: 'production', PORT: 10006 },
+  }],
+};
+```
+
+```bash
+pm2 start ecosystem.config.cjs && pm2 save
+# pm2 startup требует root — автозапуск после ребута обеспечивает панель (её pm2)
+```
+
+**Деплой-цепочка (после SSH/bare-репозитория):**
+```bash
+git pull
+npm ci --omit=dev --ignore-scripts   # нативная сборка лучше-sqlite3 не нужна (БД MySQL)
+npm run build                        # при изменениях кода/конфига админки
+pm2 restart agro-api
+curl -s -o /dev/null -w '%{http_code}' https://<домен>/_health   # ожидаем 204
+```
+
+**Вывод:** по требованиям Strapi мы проходим с запасом; осталось (1) дождаться от хостера SSL и рабочего
+запуска панельного pm2, (2) добавить `proxy`/`url`, (3) перевести процесс на pm2, (4) переключить фронт.
