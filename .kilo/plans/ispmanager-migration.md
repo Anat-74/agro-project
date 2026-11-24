@@ -1,6 +1,7 @@
 # Переезд хостинга: Plesk → ISPmanager (hb.by)
 
-Статус: **согласовано 19.11.2026, ждём переноса.** Ничего не меняем до сообщения поддержки о завершении.
+Статус: **перенос выполнен 22.11.2026, старый хостинг скоро отключат.** Панель новая (ISPmanager),
+старые Plesk-скрипты нерабочие. Текущее состояние — см. «Состояние на 23.11.2026» ниже.
 
 ## Что подтвердила поддержка
 - **SSH (chroot) будет доступен** для пользователя на ISPmanager.
@@ -10,6 +11,55 @@
 
 Источники: письмо поддержки 19.11.2026; [новость HB.BY о переходе на ISPmanager](https://hb.by/company/news/perehod-na-ispmanager) (22.05.2026);
 [тарифы Unix](https://hb.by/solutions/hosting/unix) — ISPmanager, Node.js 18–25, SSH/FTP/SFTP, «Бизнес» 4 ГБ / 4 ядра / 25 ГБ.
+
+## Состояние на 23.11.2026 (проверено по панели и API)
+
+### Доступ
+- Панель: **ISPmanager 6** (не Plesk). Вход из-за пределов РБ: `https://by5010.hbby-cloud.com:2087/`,
+  из РБ: `https://by5010.hb.by:1500/`. Логин `u34165-8120`, пароль — в письме поддержки
+  (в репозиторий не пишем).
+- Доступ к панели по HTTP ограничен списком белорусских IP, поэтому используется адрес «из-за пределов РБ».
+- **API панели работает с нашего ПК** (проверено): `POST https://by5010.hbby-cloud.com:2087/ispmgr`
+  с `authinfo=ЛОГИН:ПАРОЛЬ`, `out=JSONdata` (или `json`), `func=<функция>`.
+- **SSH извне РБ закрыт** (письмо поддержки): «доступ по SSH будет доступен только из панели управления
+  и не будет доступен из-за пределов Республики Беларусь». Shell-клиент в панели — единственный путь к CLI.
+
+### Что уже сделано
+- Сайт `agro-api.by` (id `851`, docroot `/www/agro-api.by` = `/var/www/u34165-8120/data/www/agro-api.by`).
+- **Node.js переключён 27.0.0-alpha.0.1.1 → 22.23.5** (LTS 22) через
+  `func=webdomain.edit&elid=agro-api.by&nodejs_version=22.23.5&sok=ok`; проверено в списке сайтов.
+  Обоснование: Nuxt 4 требует ≥ 22.12, `backend/package.json` — `node >=18 <=22.x`.
+- Техдомен `u34165-8120.by5010.ihb.by` теперь резолвится (поддержка: «нужно было время»).
+- Каталог сайта пуст: только заглушки панели `index.html`, `package.json`, `server.js`.
+
+### Чего нет (проверено)
+- **Git-модуля в панели нет**: `func=git` → «The associated module is missing».
+  Значит вариант «Git-репозитории» из документации ISPmanager на этом тарифе недоступен.
+- **Shell выключен у пользователя**: `func=shell` → «You have insufficient permissions».
+  Включается в «Пользователи → Изменить → Может использовать shell» (права администратора тарифа,
+  сам пользователь себе не включит) — нужен запрос в поддержку.
+- Нет отдельного домена под фронтенд (в списке только `agro-api.by` и `test.by`).
+
+### Архивы переноса (в `/var/www/u34165-8120/data/www/`)
+- `api.vh324.by3020.ihb.by.zip` — 257 МБ (файлы Strapi, вероятно с `uploads`);
+- `httpdocs.zip` — 231 МБ, `other.zip` — 1.86 ГБ, `createx…zip`, `loft…zip`, `vue…zip` — прочее со старой подписки;
+- `agro-project_2026-11-22_17-48-52.sql.zip` — 108 КБ, **дамп БД** (прод работал на MySQL:
+  в `backend/config/database.ts` клиент задаётся `DATABASE_CLIENT`, локально `sqlite`).
+  БД и медиа, судя по архивам, перенесены — риск потери данных снят, но требует проверки импорта.
+
+### Грабли API панели
+- `elid` у `webdomain.edit` — **имя домена**, не числовой id.
+- Файловый API (`func=file`) принимает только **абсолютный** путь; относительный трактуется от
+  `/usr/local/mgr5/...` и даёт `noaccess`.
+- Git Bash на Windows ломает аргументы, начинающиеся с `/` (превращает в `C:/Program Files/Git/...`),
+  поэтому путь передаём percent-encoded: `path=%2Fvar%2Fwww%2F...`.
+
+### Следствия для планов автоматизации
+- Вариант **A (SSH-скрипты с ПК)** и **C (post-receive хук)** из раздела ниже **нереализуемы без shell**;
+  даже с shell SSH из-за пределов РБ закрыт → команды придётся гонять через Shell-клиент панели
+  или через API + фоновые задачи.
+- Вариант **B (API панели)** — единственный, работающий сейчас: домены, SSL, файлы, запуск/перезапуск
+  Node.js. Сборку (`npm ci`, `npm run build`) API не запускает.
 
 ## Что нужно от пользователя после переноса
 1. Новый домен для API (например `api.<домен>.by`) — создаётся в панели.
@@ -155,6 +205,65 @@ pm2 restart agro || pm2 start .output/server/index.mjs --name agro
 5. Перегенерировать sitemap, обновить доки и планы, поправить `AGENTS.md`.
 6. Прогнать проверку фронта: 12 товаров, 0 битых картинок, `scrollWidth == clientWidth` на 390.
 7. Только после этого — деплой фронта на Netlify с новыми переменными.
+
+## Фактическое состояние и найденные грабли (24.11.2026)
+
+**Ресурсы:** новая подписка — **4 ГБ RAM** (старая была 2 ГБ). Несмотря на это, `npm ci` на сервере
+идёт очень медленно (6+ минут без прогресса в логе) — упираемся в процессор/лимиты shared-хостинга.
+
+**Доступы (вне репозитория):** `C:\kilo-bridje\secrets\panel.txt` — URL панели, логин, пароль, FTP-хост.
+SSH-ключ: `C:\kilo-bridje\ssh\agro_deploy` (+ `.pub`), публичная часть уже в `~/.ssh/authorized_keys`
+(права 700/600 ставил через FTP `SITE CHMOD`).
+
+**Панель (ISPmanager 6, тема Phoenix, Angular SPA), URL `https://by5010.hb.by:1500/`:**
+- разделы: Dashboard, Sites, Databases, Mail, SSL certificates, DNS management, CRON jobs, Backup copies,
+  File manager, IP addresses, FTP users, Migration tool, Action log, Access log, Site logs, Traffic usage,
+  Limit statistics, Notifications, Disk usage, PHP, **Shell-client**;
+- доступ к панели разграничен белорусскими IP; shell-клиент доступен из любого места;
+- **Shell-client** — это iframe `https://by5010.hb.by:1500/shell/ispmgr/1/<session>/` (внутри ещё
+  `keyboard.html`). Ввод команд: найти frame по `/shell/ispmgr/`, кликнуть в него, `keyboard.type`.
+  В шелле **нет `node` в PATH** → `export PATH=$HOME/.nvm/versions/node/v22.21.0/bin:$PATH`.
+  **Длинные команды обрываются при закрытии сессии** → запускать через `nohup … &` и опрашивать лог.
+
+**Меню строки сайта (⋮ в карточке сайта в Sites):** Open the website in a browser, Edit, Site files,
+Error pages, Redirects settings, Access limits, Log, **Run settings (Node.js)**, **Restart (Node.js)**,
+**Npm install**, View Node.js packages, **Shell client**, Create a backup copy, Restore website from a copy.
+«Restart (Node.js)» — правильная кнопка для перезапуска приложения.
+
+**API панели (работает из Беларуси):**
+`https://by5010.hb.by:1500/ispmgr?authinfo=ЛОГИН:ПАРОЛЬ&out=JSONdata&func=…`
+- `webdomain` — список сайтов; `webdomain.edit&elid=САЙТ` — параметры (в т.ч. `nodejs`, `techdomain`,
+  `document_root`, `nodejs_server`, `nodejs_use_port`, `nodejs_socket`) → **изменение версии Node:
+  `webdomain.edit&elid=…&nodejs_version=22.21.0&sok=ok`** (проверено, применилось);
+- `sslcert` — сертификаты (`is_letsencrypt`, `letsencrypt_has_error`), `sslcert.edit&elid=…` — детали;
+- `letsencrypt.generate` — выпуск (`domain_name`, `domain`, `email`, `crtname`, `name`, `username`,
+  `keylen`, `wildcard`, `dns_check`, `skip_check_a_record`, `enable_cert`, `sok=ok`);
+- `file&path=…` — файловый менеджер (есть `extract_action`), `func=user`/`database` — нет прав/модуля.
+
+**Сайт API:** `agro-api.by` (id 851), docroot `/var/www/u34165-8120/data/www/agro-api.by`
+(в FTP — `/www/agro-api.by`), handler **Node.js 22.21.0**, соединение через unix-socket,
+технический домен **`u34165-8120.by5010.ihb.by`** (резолвится на 176.60.210.124), SSL — self-signed
+(выпуск LE падал: `letsencrypt_has_error`).
+
+**Грабли (подтверждено на практике):**
+1. **Архив `api.vh324…zip` неполный** для запуска: потеряны `.bin`-симлинки (→ `strapi: command not found`)
+   и часть вложенных зависимостей (пример: `globalthis` → падение `@strapi/core`). Вывод: нужна свежая
+   установка зависимостей, а не распаковка.
+2. **`npm install` на сервере убивается лимитами** и оставляет `node_modules` неполным (пропал
+   `@strapi/strapi`). Не запускать «на живую» без `nohup` и без плана восстановления.
+3. **`better-sqlite3` требует Python/node-gyp** → сборка падает. Решение: `npm ci --omit=dev --ignore-scripts`
+   (в пакете есть готовые `prebuilds`), при необходимости — подложить бинарник из сохранённой копии
+   (`~/bsq-backup`).
+4. **Let's Encrypt по HTTP не выпустится, пока Node-приложение не запущено**: ACME-запрос идёт на сайт,
+   а nginx отдаёт 502. Порядок: сначала приложение, потом сертификат.
+5. **SSH**: ключ принимается (аутентификация проходит), но **каналы не открываются**
+   (`channel 0: open failed: connect failed: open failed`) — и для команд, и для SFTP. Передано поддержке.
+6. **Перенос каталогов вместо `cp -a` больших `node_modules`**: копирование зависает; `mv` директорий
+   (распакованное приложение ↔ каталог сайта) работает мгновенно.
+
+**Текущее состояние:** приложение Strapi развёрнуто в каталоге сайта (БД `.tmp/data.db`, `public/uploads`,
+собранная админка `dist`), Node 22.21.0, идёт `npm ci --omit=dev --ignore-scripts`; сайт отдаёт 502.
+Старый сервер и старый API (`api.vh324.by3020.ihb.by`) пока живы — фронт и превью не затронуты.
 
 ## Критерии приёмки
 - `https://<новый домен>/api/products` → 200, данные и картинки доступны.
