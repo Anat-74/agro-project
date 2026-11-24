@@ -314,3 +314,13 @@ Error pages, Redirects settings, Access limits, Log, **Run settings (Node.js)**,
 ## Не делать
 - Не менять `master` под новый адрес до фактического переключения (пока Plesk-фронт живой).
 - Не удалять Plesk-скрипты до успешной проверки SSH-схемы.
+
+### Рабочее состояние API (24.11, вечер)
+
+- Сайт проксируется nginx на **127.0.0.1:10006** (панель переключила на порт) → в `.env` выставлено `PORT=10006`.
+- Strapi работает: `http://u34165-8120.by5010.ihb.by/api/products` → **200**, `total: 33`.
+- Процесс сейчас запущен вручную (`nohup node server.js`) — **не переживёт перезагрузку**; штатный запуск через
+  панель (pm2) нужно наладить отдельно: при «Restart (Node.js)» процесс панели не поднимался.
+- **Let's Encrypt не выпускается**: панель возвращает `letsencrypt_has_error: on`, а nginx в логе пишет
+  `openat() "/usr/local/mgr5/www/letsencrypt/<token>" failed (No such file or directory)` — плагин LE не создаёт
+  challenge-файл. Это на стороне хостера → запрос в поддержку. До HTTPS фронт переключать нельзя (mixed content).
