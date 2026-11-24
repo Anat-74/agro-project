@@ -265,6 +265,19 @@ Error pages, Redirects settings, Access limits, Log, **Run settings (Node.js)**,
 собранная админка `dist`), Node 22.21.0, идёт `npm ci --omit=dev --ignore-scripts`; сайт отдаёт 502.
 Старый сервер и старый API (`api.vh324.by3020.ihb.by`) пока живы — фронт и превью не затронуты.
 
+### Обновление 24.11 (вечер): Strapi запущен, но данные нужно забрать со старого сервера
+
+- `npm ci --omit=dev --ignore-scripts` завершился: **added 1392 packages in 15m** (это и есть ориентир
+  по времени на этом тарифе), `node_modules` = 770 МБ.
+- После запуска Strapi потребовал `.env` → сгенерировали ключи (`APP_KEYS`, `API_TOKEN_SALT`,
+  `ADMIN_JWT_SECRET`, `TRANSFER_TOKEN_SALT`, `JWT_SECRET`, `ENCRYPTION_KEY`) → **Strapi started successfully**.
+- **Критично: база из архива пустая.** В `api.vh324…zip` файл `.tmp/data.db` (1 384 448 байт) содержит
+  только схему (74 таблицы), но **`admin_users = 0`, `products = 0`** → данных в бэкапе нет.
+  Запуск на ней создаёт новую пустую базу, панель просит «создать первого администратора», API отдаёт 403.
+- **Вывод:** базу (и `.env`) нужно забрать с **живого старого сервера** (Plesk, `/httpdocs/backend/.tmp/data.db`),
+  затем положить в `~/www/agro-api.by/.tmp/data.db` и перезапустить. `public/uploads` в архиве есть — их переносить не нужно.
+- Порядок после переноса БД: проверить `/api/products` (200 + данные) → Let's Encrypt → переключение фронта.
+
 ## Критерии приёмки
 - `https://<новый домен>/api/products` → 200, данные и картинки доступны.
 - Strapi-админка открывается, вход работает.
