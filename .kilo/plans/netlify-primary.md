@@ -215,3 +215,24 @@ NUXT_APP_SECRET, DEEPSEEK_API_KEY, SITEMAP_GENERATION_TOKEN) → `netlify deploy
 
 Почему не `[[headers]]` в netlify.toml: они применяются к статике, а SSR-ответы формирует функция —
 заголовок до страницы не доходил.
+
+### Проверено после деплоя (25.11, 21:20)
+
+- `X-Robots-Tag: noindex, nofollow` — **есть** в SSR-ответах; `<meta name="robots" content="noindex, nofollow">` — есть.
+- `/ru` и `/ru/products` — 200.
+
+### Бейдж «Powered by Netlify» (25.11)
+
+- Официально: бейдж включён по умолчанию у **новых публичных проектов Free-плана, созданных с 19.08.2026**
+  (наш — 17.11.2026, поэтому включён). Клик открывает карточку «Build your own site with Netlify».
+- Отключение: **Project configuration → General → Powered by Netlify badge → off**, без передеплоя
+  ([док](https://docs.netlify.com/manage/projects/powered-by-netlify-badge/)).
+- Попытка через API (`PATCH {"built_with_badge_enabled": false}`) **не сработала** — поле только на чтение,
+  отключать нужно в UI.
+
+### Картинка героя и «пропадает при перезагрузке» (25.11)
+
+Это не отсутствие SSR: картинка есть в HTML (123 `srcset`), место зарезервировано (замер с блокировкой
+картинок: 311×209). Эффект даёт `UImage` со `smoothLoad`: до события `load` контейнер с `filter: blur`,
+класс `app-image_loaded` снимает блюр. При кэше эффект мгновенный, при холодном IPX-ресайзе — заметная
+пауза с размытием. Если мешает: у героя `:smooth-load="false"` и/или `preload` для первой картинки.
