@@ -78,6 +78,9 @@ export default defineNuxtConfig({
     preset: process.env.NETLIFY ? "netlify" : "node-server",
     prerender: {
       ignore: ["/sitemap.xml"],
+      // НЕ обходим ссылки: иначе в статику попадают страницы каталога (товары,
+      // категории) и на проде они отдаются как застывшие копии вместо SSR.
+      crawlLinks: false,
     },
   },
 
