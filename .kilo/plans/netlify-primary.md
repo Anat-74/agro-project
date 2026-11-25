@@ -160,3 +160,9 @@
 - Вариант A: деплой не привязан к коммиту — деплоить только из чистой ветки `netlify` (merge `master` → сборка → деплой),
   иначе в проде может оказаться локальное состояние, которого нет в git.
 - Лимиты Netlify (build minutes): при B — релизы только через ветку `netlify`; при A не расходуются.
+
+## Индексация превью (25.11.2026)
+
+Добавлен `frontend/server/middleware/noindex.ts`: если Host заканчивается на `.ihb.by`, `.netlify.app`,
+`.netlify.com` или это localhost — ставится `X-Robots-Tag: noindex, nofollow`. На реальном домене заголовок
+не добавляется (индексация обычная). Проверено: `localhost` → `noindex, nofollow`, `Host: example.com` → заголовка нет.
