@@ -209,7 +209,7 @@ export default defineNuxtConfig({
     },
   },
   image: {
-    domains: ["http://127.0.0.1:1337", "api.vh324.by3020.ihb.by"],
+    domains: ["http://127.0.0.1:1337", "u34165-8120.by5010.ihb.by", "api.vh324.by3020.ihb.by"],
     screens: {
       xs: 320,
       sm: 480,

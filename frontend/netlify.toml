@@ -4,8 +4,8 @@
 
 [build.environment]
   NODE_VERSION = "20"
-  NUXT_PUBLIC_STRAPI_URL = "https://api.vh324.by3020.ihb.by"
-  NUXT_STRAPI_URL = "https://api.vh324.by3020.ihb.by"
+  NUXT_PUBLIC_STRAPI_URL = "https://u34165-8120.by5010.ihb.by"
+  NUXT_STRAPI_URL = "https://u34165-8120.by5010.ihb.by"
   SITE_URL = "https://lustrous-medovik-a82e20.netlify.app"
 
 [[redirects]]
