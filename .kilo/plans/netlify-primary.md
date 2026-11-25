@@ -194,3 +194,13 @@
 **После токена:** `netlify sites:list` → привязать/создать сайт → `netlify env:set` (API-URL, SITE_URL,
 NUXT_APP_SECRET, DEEPSEEK_API_KEY, SITEMAP_GENERATION_TOKEN) → `netlify deploy --prod --dir=frontend/dist`
 (вариант A из плана) → проверка: 200 + товары + 0 битых картинок.
+
+## Токен Netlify: срок действия (важно)
+
+- **Создан:** 25.11.2026, срок — **90 дней** → **истекает ~23.02.2027**.
+- Хранится: `C:\kilo-bridje\secrets\netlify.token` (вне репозитория).
+- Если `api.netlify.com` начнёт отвечать **401** — первым делом проверить срок токена; новый выпускается в
+  app.netlify.com → User settings → Applications → Personal access tokens.
+- Данные аккаунта: `web7anat@gmail.com`, айди аккаунта `6afbf1ed3764c339b7bf5664`,
+  сайт **`agro-proj`** (`https://agro-proj.netlify.app`, site_id `c48250af-d820-4f31-ba63-7d9e1b1d97eb`),
+  репозиторий не привязан → деплой через CLI/API.
