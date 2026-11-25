@@ -166,3 +166,31 @@
 Добавлен `frontend/server/middleware/noindex.ts`: если Host заканчивается на `.ihb.by`, `.netlify.app`,
 `.netlify.com` или это localhost — ставится `X-Robots-Tag: noindex, nofollow`. На реальном домене заголовок
 не добавляется (индексация обычная). Проверено: `localhost` → `noindex, nofollow`, `Host: example.com` → заголовка нет.
+
+## Состояние на 25.11.2026 (что готово к Netlify)
+
+**Сделано и проверено:**
+- Фронт переключён на новый API: `env/prod-api.env`, `image.domains`, `netlify.toml` → `https://u34165-8120.by5010.ihb.by`.
+  Проверка страницы товаров: **378** ссылок на новый хост, **0** на старый; 12 карточек, 0 битых картинок.
+- API работает по HTTPS: `https://u34165-8120.by5010.ihb.by/api/products` → 200 (`total: 33`), `/admin` → 200, `/_health` → 204.
+- `.github/workflows/ci.yml` — единый CI (Node 22 + pnpm, lint/test/build) вместо четырёх мёртвых workflow.
+- `server/middleware/noindex.ts` — превью на `*.ihb.by` / `*.netlify.app` / localhost не индексируются.
+- Локальные dev-серверы: `pnpm dev:prod` (боевой API) / `dev:local` (локальный Strapi).
+
+**Осталось до первого деплоя (код):**
+- `frontend/netlify.toml`: убрать легаси-редирект `/* → /.netlify/functions/server`, `publish = "dist"`,
+  `NODE_VERSION = "22"`, guard `ignore` по ветке; проверить `PNPM_FLAGS` (devDependencies на Netlify).
+- Добавить `swr` каталогу в `routeRules` (раздел «Кэширование» выше).
+
+**Блокер:** нет доступа к аккаунту Netlify (personal access token). Без него нельзя `netlify sites:list`,
+привязать сайт, задать env и деплоить.
+
+**Как получить токен:** app.netlify.com → вход по **email/Google** (не GitHub — OAuth с телефона падает) →
+аватар → **User settings** → **Applications** → **Personal access tokens** → **New access token** →
+имя (например `kilo-agent`), срок действия → **Generate token** → скопировать (показывается один раз).
+Токен положить в файл `C:\kilo-bridje\secrets\netlify.token` или прислать файлом `.txt` (не в чат;
+если прислан в чат — после настройки отозвать и создать новый).
+
+**После токена:** `netlify sites:list` → привязать/создать сайт → `netlify env:set` (API-URL, SITE_URL,
+NUXT_APP_SECRET, DEEPSEEK_API_KEY, SITEMAP_GENERATION_TOKEN) → `netlify deploy --prod --dir=frontend/dist`
+(вариант A из плана) → проверка: 200 + товары + 0 битых картинок.
