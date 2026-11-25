@@ -1,5 +1,9 @@
 import { defineNuxtConfig } from "nuxt/config";
 
+// Стенд (Netlify/техдомен) закрываем от индексации: NUXT_PUBLIC_NOINDEX=1 при сборке.
+// На боевом домене переменная не выставляется — поведение не меняется.
+const NOINDEX = process.env.NUXT_PUBLIC_NOINDEX === "1";
+
 export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   // @nuxtjs/seo 6 подключает nuxt-ai-ready: его MCP-инструменты требуют БД,
@@ -25,6 +29,10 @@ export default defineNuxtConfig({
       name: "page-fade",
       mode: "out-in",
     },
+    // Стенд: noindex в meta (заголовок X-Robots-Tag ставим routeRules ниже)
+    ...(NOINDEX
+      ? { head: { meta: [{ name: "robots", content: "noindex, nofollow" }] } }
+      : {}),
   },
   modules: [
     "@nuxt/image",
@@ -96,6 +104,9 @@ export default defineNuxtConfig({
 
   robots: {
     blockAiBots: true,
+    // Заголовок X-Robots-Tag задаём сами (netlify.toml для стенда, middleware для
+    // техдоменов) — иначе модуль ставит `index, follow` и перебивает noindex.
+    header: false,
     disallow: ["/admin"],
     groups: [
       {
@@ -146,6 +157,16 @@ export default defineNuxtConfig({
   },
   ssr: true,
   routeRules: {
+    // Стенд: явные noindex-заголовки для SSR-ответов (matcher "/**" в Nuxt 4.6
+    // матчит все пути — поэтому только явные локали, см. комментарий ниже).
+    ...(NOINDEX
+      ? {
+          "/ru": { headers: { "X-Robots-Tag": "noindex, nofollow" } },
+          "/ru/**": { headers: { "X-Robots-Tag": "noindex, nofollow" } },
+          "/be": { headers: { "X-Robots-Tag": "noindex, nofollow" } },
+          "/be/**": { headers: { "X-Robots-Tag": "noindex, nofollow" } },
+        }
+      : {}),
     // === SSG (Static prerender) — статичные страницы ===
     "/": { redirect: "/ru" },
     // /sitemap.xml больше НЕ static: генерируется на запрос → новые товары/статьи

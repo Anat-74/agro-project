@@ -204,3 +204,14 @@ NUXT_APP_SECRET, DEEPSEEK_API_KEY, SITEMAP_GENERATION_TOKEN) → `netlify deploy
 - Данные аккаунта: `web7anat@gmail.com`, айди аккаунта `6afbf1ed3764c339b7bf5664`,
   сайт **`agro-proj`** (`https://agro-proj.netlify.app`, site_id `c48250af-d820-4f31-ba63-7d9e1b1d97eb`),
   репозиторий не привязан → деплой через CLI/API.
+
+## noindex для стенда: вариант 3 (25.11.2026)
+
+Реализовано через переменную сборки `NUXT_PUBLIC_NOINDEX=1` (в `netlify.toml` → `[build.environment]`):
+- `nuxt.config.ts`: `app.head.meta` добавляет `<meta name="robots" content="noindex, nofollow">`;
+- `routeRules` для `/ru`, `/ru/**`, `/be`, `/be/**` ставят `X-Robots-Tag` в SSR-ответах;
+- `@nuxtjs/robots` переведён на `header: false` (он перебивал `X-Robots-Tag` своим `index, follow`);
+- на боевом домене переменная не выставляется — индексация обычная, код не меняется.
+
+Почему не `[[headers]]` в netlify.toml: они применяются к статике, а SSR-ответы формирует функция —
+заголовок до страницы не доходил.
