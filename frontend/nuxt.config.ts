@@ -75,7 +75,7 @@ export default defineNuxtConfig({
     },
   },
   nitro: {
-    preset: "node-server",
+    preset: process.env.NETLIFY ? "netlify" : "node-server",
     prerender: {
       ignore: ["/sitemap.xml"],
     },
