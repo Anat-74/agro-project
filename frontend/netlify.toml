@@ -2,6 +2,13 @@
   command = "pnpm build"
   publish = "dist"
 
+# Превью-стенд: закрыт от поисковиков. На боевом домене этот сайт не используется,
+# а noindex для него — требование (иначе *.netlify.app попадёт в индекс).
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
 [build.environment]
   NODE_VERSION = "22"
   NODE_OPTIONS = "--max-old-space-size=6144"
