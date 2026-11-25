@@ -42,7 +42,6 @@
 | `frontend/netlify.toml` — `NUXT_PUBLIC_STRAPI_URL`/`NUXT_STRAPI_URL` | указывать на актуальный API; старый `api.vh324…` убрать после полного переезда |
 | `frontend/nuxt.config.ts` — `image.domains` | после переезда убрать `api.vh324.by3020.ihb.by`, оставить реальный домен (и `127.0.0.1` для локальной разработки) |
 | `frontend/env/prod-api.env` | оставить, но обновить адрес при появлении реального домена (`https://api.<домен>`) |
-| `frontend/about-page-content/*.json`, `products-page-content/*.json` | вспомогательные JSON для контента — проверить, используются ли ещё |
 
 ## 5. Постоянные изменения (НЕ удалять)
 
