@@ -657,6 +657,11 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
     right: var(--plate-inset, var(--notch-gap));
     bottom: 0;
 
+    // ВРЕМЕННО (по запросу пользователя): яркий цвет плашки, чтобы визуально
+    // убедиться, что правка доехала до прод-сборки. Удалить вместе с записью
+    // в .kilo/plans/temporary-code.md.
+    background: #ff2d55 !important;
+
     // Слот у .btn обёрнут в .button-content — растягиваем на всю плашку,
     // иначе absolute-грани не получат размеров. Элемент создаётся внутри
     // UButton, поэтому нужен :deep (иначе scoped-атрибут не совпадёт).
