@@ -642,7 +642,11 @@ $plate-tl-cq: $notch-s-cq - $notch-gap; // 19
 
   // «В корзину»: в обычном режиме кнопка живёт в нижней полосе (у цены),
   // в компактном — плашка в вырезе (absolute, снаружи маски).
-  &__add_plate {
+  // Специфичность: в прод-сборке Nuxt стили UButton (.btn/.btn_add-plate) идут
+  // ПОЗЖЕ и при равном весе перебивают плашку (nuxt#33041, «incorrect component
+  // style order») — плашка становилась position: relative и вставала в поток.
+  // @at-root .product-card .product-card__add_plate даёт вес 0,3,0 и выигрывает.
+  @at-root .product-card .product-card__add_plate {
     position: absolute;
     z-index: 150;
     width: var(--plate-w, var(--plate-size, var(--notch-size)));
